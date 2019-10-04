@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2019 ForgeRock AS. All Rights Reserved
+
+    Use of this code requires a commercial software license with ForgeRock AS.
+    or with one of its affiliates. All use shall be exclusively subject
+    to such license between the licensee and ForgeRock AS.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <name>ForgeRock OpenBanking Reference Implementation - ASPSP</name>
+    <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
+    <artifactId>forgerock-openbanking-uk-aspsp</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <parent>
+        <groupId>com.forgerock.openbanking</groupId>
+        <artifactId>forgerock-openbanking-starter-parent</artifactId>
+        <version>1.0.21</version>
+        <relativePath /> <!-- lookup parent from repository -->
+    </parent>
+
+    <organization>
+        <name>ForgeRock</name>
+        <url>http://www.forgerock.org</url>
+    </organization>
+    <url>http://www.forgerock.org</url>
+
+    <properties>
+        <ob-common.version>1.0.31</ob-common.version>
+        <spring-security-multi-auth-starter.version>0.0.15</spring-security-multi-auth-starter.version>
+        <ob-auth.version>1.0.0</ob-auth.version>
+        <ob-jwkms.version>1.1.10</ob-jwkms.version>
+
+        <mockito.version>3.0.0</mockito.version>
+        <asserts.version>3.13.2</asserts.version>
+    </properties>
+
+    <modules>
+        <module>forgerock-openbanking-uk-aspsp-common</module>
+        <module>forgerock-openbanking-uk-aspsp-as</module>
+        <module>forgerock-openbanking-uk-aspsp-rs</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
+                <artifactId>forgerock-openbanking-uk-aspsp-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- OpenBanking -->
+            <dependency>
+                <groupId>com.forgerock.openbanking</groupId>
+                <artifactId>forgerock-openbanking-model</artifactId>
+                <version>${ob-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock.openbanking</groupId>
+                <artifactId>forgerock-openbanking-upgrade</artifactId>
+                <version>${ob-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock.openbanking</groupId>
+                <artifactId>forgerock-openbanking-ssl</artifactId>
+                <version>${ob-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock.openbanking</groupId>
+                <artifactId>forgerock-openbanking-upgrade</artifactId>
+                <version>${ob-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock</groupId>
+                <artifactId>spring-security-multi-auth-starter</artifactId>
+                <version>${spring-security-multi-auth-starter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock.openbanking</groupId>
+                <artifactId>forgerock-openbanking-auth</artifactId>
+                <version>${ob-auth.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock.openbanking.jwkms</groupId>
+                <artifactId>forgerock-openbanking-jwkms-embedded</artifactId>
+                <version>${ob-jwkms.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.forgerock.openbanking.analytics</groupId>
+                <artifactId>forgerock-openbanking-analytics-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock.openbanking.analytics</groupId>
+                <artifactId>forgerock-openbanking-analytics-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${asserts.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/ForgeCloud/ob-analytics.git</connection>
+        <developerConnection>scm:git:https://github.com/ForgeCloud/ob-analytics.git</developerConnection>
+        <url>https://github.com/ForgeCloud/ob-analytics.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>forgerock-private-releases</id>
+            <name>ForgeRock Private Releases Repository</name>
+            <url>https://maven.forgerock.org/repo/private-releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+</project>

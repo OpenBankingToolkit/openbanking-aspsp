@@ -1,0 +1,153 @@
+/**
+ * Copyright 2019 ForgeRock AS. All Rights Reserved
+ *
+ * Use of this code requires a commercial software license with ForgeRock AS.
+ * or with one of its affiliates. All use shall be exclusively subject
+ * to such license between the licensee and ForgeRock AS.
+ */
+package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.accounts;
+
+
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
+import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.commons.services.openbanking.converter.FRAccountConverter;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import io.swagger.annotations.ApiParam;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.service.converter.OBExternalAccountIdentificationConverter;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+
+@Controller("AccountsApiV2.0")
+public class AccountsApiController implements AccountsApi {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountsApiController.class);
+
+    @Autowired
+    private FRAccount3Repository frAccount3Repository;
+
+    public ResponseEntity<OBReadAccount2> getAccount(
+            @ApiParam(value = "A unique identifier used to identify the account resource.",required=true )
+            @PathVariable("AccountId") String accountId,
+
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
+            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
+            @RequestHeader(value="Authorization", required=true) String authorization,
+
+            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC" )
+            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
+            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+
+            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
+            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+
+            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+
+            @RequestHeader(value = "x-ob-permissions", required = true) List<OBExternalPermissions1Code> permissions,
+
+            @RequestHeader(value = "x-ob-url", required = true) String httpUrl
+    ) throws OBErrorResponseException {
+
+        LOGGER.info("Read account {} with permission {}", accountId, permissions);
+        FRAccount3 response = frAccount3Repository.byAccountId(accountId, permissions);
+        convertAccounts(response);
+
+        final List<OBAccount2> obAccount2s = Collections.singletonList(
+                FRAccountConverter.toOBAccount2(response.getAccount())
+        );
+
+        return ResponseEntity.ok(new OBReadAccount2()
+                .data(new OBReadAccount2Data().account(obAccount2s))
+                .links(PaginationUtil.generateLinksOnePager(httpUrl))
+                .meta(PaginationUtil.generateMetaData(1)));
+    }
+
+    public ResponseEntity<OBReadAccount2> getAccounts(
+            @ApiParam(value = "Page number.", required = false, defaultValue = "0")
+            @RequestParam(value = "page", defaultValue = "0") String page,
+
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
+            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
+            @RequestHeader(value="Authorization", required=true) String authorization,
+
+            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC" )
+            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
+
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
+            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+
+            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
+            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+
+            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+
+            @RequestHeader(value = "x-ob-account-ids", required = true) List<String> accountIds,
+
+            @RequestHeader(value = "x-ob-permissions", required = true) List<OBExternalPermissions1Code> permissions,
+
+            @RequestHeader(value = "x-ob-url", required = true) String httpUrl
+    ) throws OBErrorResponseException {
+
+        LOGGER.info("Accounts from account ids {}", accountIds);
+
+        List<OBAccount2> accounts = frAccount3Repository.byAccountIds(accountIds, permissions)
+                .stream()
+                .map(this::convertAccounts)
+                .map(FRAccount3::getAccount)
+                .map(FRAccountConverter::toOBAccount2)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(new OBReadAccount2()
+                .data(new OBReadAccount2Data().account(accounts))
+                .links(PaginationUtil.generateLinksOnePager(httpUrl))
+                .meta(PaginationUtil.generateMetaData(1)));
+    }
+
+    /**
+     * Because we always use latest model in persistent store, older API controller may need to do conversions on some of values e.g. the Account identifier codes.
+     * This can be overidden is later versions of controller.
+     */
+    protected FRAccount3 convertAccounts(FRAccount3 account) {
+        if (account.getAccount().getAccount() != null) {
+            account.getAccount().getAccount()
+                    .forEach(this::checkAndConvertV3SchemeNameToV2);
+        }
+        return account;
+    }
+
+    // This is a special case because V2.0 used enum and V3.x uses String so we cannot do simple type conversion - we need to map the V3.x strings into a corresponding V2 type if possible
+    private void checkAndConvertV3SchemeNameToV2(OBCashAccount5 obCashAccount) {
+        OBExternalAccountIdentification4Code code4 = OBExternalAccountIdentification4Code.fromValue(obCashAccount.getSchemeName());
+        if (code4 == null) {
+            // Not a V3.x OBExternalAccountIdentification4Code scheme name so no action required
+            return;
+        }
+        Optional<OBExternalAccountIdentification3Code> code3 = Optional.ofNullable(OBExternalAccountIdentificationConverter.toOBExternalAccountIdentification3(code4));
+        obCashAccount.setSchemeName(code3.map(OBExternalAccountIdentification3Code::toString).orElse(""));
+    }
+
+}
