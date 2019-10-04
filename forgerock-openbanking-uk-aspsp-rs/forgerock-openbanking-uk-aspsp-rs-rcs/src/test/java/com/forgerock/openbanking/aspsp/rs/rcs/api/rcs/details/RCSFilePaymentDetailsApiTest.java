@@ -9,13 +9,13 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRFileConsent2;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRAccount3;
-import com.forgerock.openbanking.commons.model.rcs.consentdetails.FilePaymentConsentDetails;
-import com.forgerock.openbanking.commons.services.store.payment.FilePaymentService;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.rcs.consentdetails.FilePaymentConsentDetails;
+import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.Tpp;
 import org.junit.Before;
@@ -37,6 +37,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent2;
 import java.math.BigDecimal;
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

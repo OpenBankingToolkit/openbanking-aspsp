@@ -8,8 +8,8 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.standingorder;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.standingorders.FRStandingOrder5Repository;
-import com.forgerock.openbanking.commons.model.openbanking.status.StandingOrderStatus;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;

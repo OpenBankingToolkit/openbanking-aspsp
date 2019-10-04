@@ -8,10 +8,10 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.fundconfirmations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecision;
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
-import com.forgerock.openbanking.commons.services.store.account.AccountStoreService;
-import com.forgerock.openbanking.commons.services.store.funds.FundsConfirmationService;
+import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
+import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,7 @@ public class FundsConfirmationConsentDecisionFactory {
         this.accountStoreService = accountStoreService;
     }
 
-    public ConsentDecision create(final String intentId) {
+    public ConsentDecisionDelegate create(final String intentId) {
         FRFundsConfirmationConsent1 consent = fundsConfirmationService.getConsent(intentId);
         return new FundsConfirmationConsentDecisionDelegate(fundsConfirmationService, accountStoreService, objectMapper, consent);
     }

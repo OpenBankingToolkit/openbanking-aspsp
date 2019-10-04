@@ -10,13 +10,12 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.in
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalConsent2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalPaymentSubmission2Repository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.IntentType;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRInternationalConsent2;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
-import com.forgerock.openbanking.commons.model.version.OBVersion;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -27,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
@@ -36,7 +34,9 @@ import uk.org.openbanking.datamodel.payment.*;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
+
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -54,8 +54,7 @@ public class InternationalPaymentsApiControllerIT {
     @Autowired
     private RSConfiguration rsConfiguration;
 
-    @MockBean
-    private Authenticator authenticator;
+
 
     @Before
     public void setUp() {
@@ -65,7 +64,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testGetInternationalPaymentSubmission() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalConsent2 consent = saveConsent();
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
@@ -87,7 +86,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testGetMissingInternationalPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalConsent2 consent = saveConsent();
         OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
         FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
@@ -108,7 +107,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testGetInternationalPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalConsent2 consent = JMockData.mock(FRInternationalConsent2.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
@@ -126,7 +125,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testCreateInternationalPaymentSubmission() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalConsent2 consent = saveConsent();
         OBWriteInternational2 submissionRequest = new OBWriteInternational2()
                 .risk(consent.getRisk())
@@ -156,7 +155,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testDuplicatePaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalConsent2 consent = saveConsent();
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -183,7 +182,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalConsent2 consent = JMockData.mock(FRInternationalConsent2.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");

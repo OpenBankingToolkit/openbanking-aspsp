@@ -7,8 +7,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.validator;
 
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRFileConsent2;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Test;
 import uk.org.openbanking.datamodel.payment.OBFile2;

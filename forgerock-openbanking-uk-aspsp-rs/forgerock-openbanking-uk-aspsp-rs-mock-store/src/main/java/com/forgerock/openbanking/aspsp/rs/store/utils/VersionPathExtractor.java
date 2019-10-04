@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.utils;
 
-import com.forgerock.openbanking.commons.model.version.OBVersion;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;

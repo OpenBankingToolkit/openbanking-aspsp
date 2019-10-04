@@ -8,9 +8,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.account.v3_0.accountaccessconsent;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.AccountAccessConsentPermittedPermissionsFilter;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
@@ -36,7 +35,6 @@ import java.text.ParseException;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -52,8 +50,7 @@ public class AccountAccessConsentsApiControllerIT {
     private int port;
     @Autowired
     private RSConfiguration rsConfiguration;
-    @MockBean
-    private Authenticator authenticator;
+
     @MockBean(name = "cryptoApiClient") // Required to avoid Spring auto-wiring exception
     private CryptoApiClient cryptoApiClient;
     @MockBean
@@ -70,7 +67,7 @@ public class AccountAccessConsentsApiControllerIT {
     public void createAccountAccessConsent() throws Exception {
         // Given
         String jws = jws("accounts", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         OBReadConsentResponse1 readConsentResponse = new OBReadConsentResponse1()
                 .data(new OBReadConsentResponse1Data()
@@ -103,7 +100,7 @@ public class AccountAccessConsentsApiControllerIT {
 
         // Given
         String jws = jws("accounts", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
 
         OBReadConsentResponse1 readConsentResponse = new OBReadConsentResponse1();

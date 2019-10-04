@@ -7,8 +7,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.data.FRAccountData4;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.data.FRUserData4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.data.FRAccountData4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.data.FRUserData4;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;

@@ -7,9 +7,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.event.v3_0;
 
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
+
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -54,8 +53,7 @@ public class CallbackUrlApiControllerIT {
 
     @MockBean
     private UserInfoService userInfoService;
-    @MockBean
-    private Authenticator authenticator;
+
 
     @MockBean(name="cryptoApiClient")
     private CryptoApiClient cryptoApiClient;
@@ -71,7 +69,7 @@ public class CallbackUrlApiControllerIT {
     public void getCallbackUrls() throws Exception {
         // Given
         String jws = jws("accounts", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         OBCallbackUrlsResponse1 obCallbackUrlsResponse = new OBCallbackUrlsResponse1();
         obCallbackUrlsResponse.data(new OBCallbackUrlsResponseData1().callbackUrl(Collections.singletonList(new OBCallbackUrlResponseData1().callbackUrlId("123").url("https://localhost").version("v3.0"))));

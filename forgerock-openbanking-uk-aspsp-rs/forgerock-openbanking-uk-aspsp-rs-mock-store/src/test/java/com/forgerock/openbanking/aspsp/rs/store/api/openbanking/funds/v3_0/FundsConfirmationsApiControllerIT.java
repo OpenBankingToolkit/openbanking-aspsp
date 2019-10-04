@@ -10,13 +10,12 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.funds.v3_0;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfirmationConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfirmationRepository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.IntentType;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.funds.FRFundsConfirmation1;
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
-import com.forgerock.openbanking.commons.services.openbanking.FundsAvailabilityService;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmation1;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -39,7 +38,7 @@ import uk.org.openbanking.datamodel.fund.OBFundsConfirmationData1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -64,8 +63,7 @@ public class FundsConfirmationsApiControllerIT {
     @MockBean
     private FundsAvailabilityService fundsAvailabilityService;
 
-    @MockBean
-    private Authenticator authenticator;
+
 
     @Before
     public void setUp() {
@@ -75,7 +73,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testGetFundsConfirmation() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRFundsConfirmationConsent1 consent = saveConsent();
         FRFundsConfirmation1 fundsConfirmation = saveFundsConfirmation(consent);
 
@@ -97,7 +95,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testGetMissing_ReturnNotFound() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.0/cbpii/funds-confirmations/12345")
@@ -112,7 +110,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testGetFundsConfirmationWithMissingConsent_ReturnNotFound() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRFundsConfirmationConsent1 consent = JMockData.mock(FRFundsConfirmationConsent1.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         // Consent not saved in repo
@@ -131,7 +129,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testCreateFundsConfirmation() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRFundsConfirmationConsent1 consent = saveConsent();
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
                 .data(new OBFundsConfirmationData1()
@@ -164,7 +162,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testDuplicateCreation_UpdateAndReturn() throws Exception {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRFundsConfirmationConsent1 consent = saveConsent();
         FRFundsConfirmation1 frFundsConfirmation = saveFundsConfirmation(consent);
 
@@ -192,7 +190,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
                 .data(new OBFundsConfirmationData1()
                         .consentId(IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId())

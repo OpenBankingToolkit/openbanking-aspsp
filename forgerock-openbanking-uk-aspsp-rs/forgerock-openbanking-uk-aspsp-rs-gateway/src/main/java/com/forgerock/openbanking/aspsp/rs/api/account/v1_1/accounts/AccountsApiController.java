@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.account.v1_1.accounts;
 
 
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;

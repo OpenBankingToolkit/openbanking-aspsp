@@ -7,11 +7,13 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
-import com.forgerock.openbanking.commons.configuration.discovery.DiscoveryConfigurationProperties;
-import com.forgerock.openbanking.commons.services.notification.EventSubject;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
+import com.forgerock.openbanking.common.services.notification.EventSubject;
 import com.github.jsonzou.jmockdata.JMockData;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class PaymentToResourceConverterTest {
     private static final String VERSION_2 = "2.0";

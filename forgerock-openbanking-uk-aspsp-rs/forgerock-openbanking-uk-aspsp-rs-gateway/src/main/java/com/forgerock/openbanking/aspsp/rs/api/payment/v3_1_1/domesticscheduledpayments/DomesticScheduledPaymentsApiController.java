@@ -8,10 +8,10 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.domesticscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
-import com.forgerock.openbanking.commons.services.store.account.scheduledpayment.ScheduledPaymentService;
-import com.forgerock.openbanking.commons.services.store.payment.DomesticScheduledPaymentService;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
+import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 

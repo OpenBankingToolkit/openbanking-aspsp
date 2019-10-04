@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.register.service;
 
-import com.forgerock.openbanking.commons.model.onboarding.ManualRegistrationApplication;
+import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationApplication;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

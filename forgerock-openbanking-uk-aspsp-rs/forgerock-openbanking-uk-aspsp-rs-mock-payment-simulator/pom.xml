@@ -32,6 +32,19 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.forgerock.openbanking</groupId>
+			<artifactId>forgerock-openbanking-model</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.forgerock.openbanking</groupId>
+			<artifactId>forgerock-openbanking-am</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.forgerock.openbanking</groupId>
+			<artifactId>forgerock-openbanking-jwt</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
@@ -83,10 +96,6 @@
 			<artifactId>springfox-swagger-ui</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.forgerock.openbanking</groupId>
-			<artifactId>forgerock-openbanking-commons</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-joda</artifactId>
 		</dependency>
@@ -124,6 +133,11 @@
 		<dependency>
 			<groupId>com.github.jsonzou</groupId>
 			<artifactId>jmockdata</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.forgerock.openbanking.uk.aspsp</groupId>
+			<artifactId>integration-test-support</artifactId>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

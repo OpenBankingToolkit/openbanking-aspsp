@@ -10,7 +10,7 @@ package com.forgerock.openbanking.aspsp.as.api.authorisation;
 import com.forgerock.openbanking.am.services.AMGatewayService;
 import com.forgerock.openbanking.aspsp.as.api.authorisation.redirect.AuthorisationApiController;
 import com.forgerock.openbanking.aspsp.as.service.headless.authorisation.HeadLessAuthorisationService;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
@@ -29,7 +29,7 @@ import java.net.URI;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.aspsp.as.api.authorisation.JwtTestHelper.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)

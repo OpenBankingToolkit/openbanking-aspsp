@@ -10,8 +10,8 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1.st
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.standingorders.FRStandingOrder5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRStandingOrder5;
-import com.forgerock.openbanking.commons.services.openbanking.converter.FRStandingOrderConverter;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.services.openbanking.converter.FRStandingOrderConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;

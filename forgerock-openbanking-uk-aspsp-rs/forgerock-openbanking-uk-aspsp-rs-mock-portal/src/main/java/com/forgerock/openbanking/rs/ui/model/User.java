@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.rs.ui.model;
 
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.account.data.FRUserData3;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.account.data.FRUserData3;
 import lombok.Builder;
 import lombok.Data;
 

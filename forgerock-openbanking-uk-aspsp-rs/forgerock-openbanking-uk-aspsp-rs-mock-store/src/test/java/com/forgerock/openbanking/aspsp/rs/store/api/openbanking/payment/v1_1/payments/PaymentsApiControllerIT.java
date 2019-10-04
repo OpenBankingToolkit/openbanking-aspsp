@@ -10,10 +10,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v1_1.pa
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.payments.paymentsetup.FRPaymentSetup1Repository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -38,7 +37,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.*;
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.jodatime.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -56,8 +55,7 @@ public class PaymentsApiControllerIT {
     @Autowired
     private FRPaymentSetup1Repository repository;
 
-    @MockBean
-    private Authenticator authenticator;
+
     @MockBean
     private TppRepository tppRepository;
 
@@ -70,7 +68,7 @@ public class PaymentsApiControllerIT {
     @Test
     public void shouldCreateSinglePaymentConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         setupMockTpp(tppRepository);
         OBPaymentSetup1 consentRequest = JMockData.mock(OBPaymentSetup1.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
@@ -111,7 +109,7 @@ public class PaymentsApiControllerIT {
     @Test
     public void shouldGetSinglePaymentConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRPaymentSetup1 consent = JMockData.mock(FRPaymentSetup1.class);
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
         repository.save(consent);
@@ -138,7 +136,7 @@ public class PaymentsApiControllerIT {
     @Test
     public void getSinglePaymentConsent_wrongConsentId_badRequest() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
 
         // When
         HttpResponse<OBPaymentSetupResponse1> response = Unirest.get("https://rs-store:" + port + "/open-banking/v1.1/payments/wrongId")

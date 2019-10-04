@@ -14,11 +14,11 @@ import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.BalanceTransferPa
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.MoneyTransferPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.PaymPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.*;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.services.openbanking.OBHeaderCheckerService;
-import com.forgerock.openbanking.commons.services.store.accountrequest.AccountRequestStoreService;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
-import com.forgerock.openbanking.commons.services.token.AccessTokenService;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.services.openbanking.OBHeaderCheckerService;
+import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.services.token.AccessTokenService;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

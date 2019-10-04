@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository;
 
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 

@@ -8,8 +8,8 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.commons.services.store.account.AccountStoreService;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 
 import java.util.Collections;
 import java.util.List;

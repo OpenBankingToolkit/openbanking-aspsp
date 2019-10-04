@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.as.api.oauth2.discovery;
 
 import com.forgerock.openbanking.am.gateway.AMASPSPGateway;
-import com.forgerock.openbanking.commons.model.as.discovery.OIDCDiscoveryResponse;
+import com.forgerock.openbanking.common.model.as.discovery.OIDCDiscoveryResponse;
 import com.github.jsonzou.jmockdata.JMockData;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +24,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.util.Objects;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)

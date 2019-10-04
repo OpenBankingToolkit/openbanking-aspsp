@@ -9,9 +9,9 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.internationalschedul
 
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.ExchangeRateVerifier;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRInternationalScheduledConsent2;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
-import com.forgerock.openbanking.commons.services.store.payment.InternationalScheduledPaymentService;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledConsent2;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.payment.InternationalScheduledPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;

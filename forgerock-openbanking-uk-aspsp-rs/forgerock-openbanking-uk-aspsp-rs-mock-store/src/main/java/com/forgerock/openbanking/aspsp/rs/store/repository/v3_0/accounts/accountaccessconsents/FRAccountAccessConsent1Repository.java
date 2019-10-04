@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.accounts.accountaccessconsents;
 
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.account.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRAccountAccessConsent1;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;

@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.service.event;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.FRPendingEventsRepository;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;

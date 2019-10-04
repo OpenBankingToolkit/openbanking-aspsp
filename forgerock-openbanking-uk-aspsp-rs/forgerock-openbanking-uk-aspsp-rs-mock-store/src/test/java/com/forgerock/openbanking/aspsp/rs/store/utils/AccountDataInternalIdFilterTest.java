@@ -10,6 +10,8 @@ package com.forgerock.openbanking.aspsp.rs.store.utils;
 import org.junit.Test;
 import uk.org.openbanking.datamodel.account.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class AccountDataInternalIdFilterTest {
     private AccountDataInternalIdFilter accountDataInternalIdFilter_showId = new AccountDataInternalIdFilter(true);
     private AccountDataInternalIdFilter accountDataInternalIdFilter_hideId = new AccountDataInternalIdFilter(false);

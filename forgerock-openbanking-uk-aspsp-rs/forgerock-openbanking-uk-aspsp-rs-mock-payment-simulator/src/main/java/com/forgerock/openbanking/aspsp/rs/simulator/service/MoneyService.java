@@ -7,11 +7,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRAccount;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRBalance;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRTransaction5;
-import com.forgerock.openbanking.commons.services.store.balance.BalanceStoreService;
-import com.forgerock.openbanking.commons.services.store.transaction.TransactionStoreService;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.services.store.balance.BalanceStoreService;
+import com.forgerock.openbanking.common.services.store.transaction.TransactionStoreService;
 import com.tunyk.currencyconverter.BankUaCom;
 import com.tunyk.currencyconverter.api.Currency;
 import com.tunyk.currencyconverter.api.CurrencyConverter;

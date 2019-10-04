@@ -8,11 +8,10 @@
 package com.forgerock.openbanking.aspsp.rs.api.account.v3_1.transactions;
 
 import com.forgerock.openbanking.analytics.services.MetricService;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.account.FRAccountRequest1;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
-import com.forgerock.openbanking.commons.services.store.accountrequest.AccountRequestStoreService;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.Tpp;
@@ -47,7 +46,6 @@ import static com.forgerock.openbanking.analytics.utils.MetricUtils.ANALYTICS_EN
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.TO_BOOKING_DATE_TIME;
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,8 +72,7 @@ public class TransactionsApiControllerIT {
 
     @MockBean
     private UserInfoService userInfoService;
-    @MockBean
-    private Authenticator authenticator;
+
 
     @MockBean(name = "cryptoApiClient") // Required to avoid Spring auto-wiring exception
     private CryptoApiClient cryptoApiClient;
@@ -91,7 +88,7 @@ public class TransactionsApiControllerIT {
     public void getAccountTransactionShouldBeOk() throws Exception {
         // Given
         String jws = jws("accounts");
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
@@ -114,7 +111,7 @@ public class TransactionsApiControllerIT {
     public void getAccountTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
@@ -144,7 +141,7 @@ public class TransactionsApiControllerIT {
     public void getAccountStatementTransactionShouldBeOk() throws Exception {
         // Given
         String jws = jws("accounts");
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READSTATEMENTSDETAIL,
@@ -168,7 +165,7 @@ public class TransactionsApiControllerIT {
     public void getAccountStatementTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READSTATEMENTSDETAIL,
@@ -199,7 +196,7 @@ public class TransactionsApiControllerIT {
     public void getTransactionShouldBeOk() throws Exception {
         // Given
         String jws = jws("accounts");
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
@@ -222,7 +219,7 @@ public class TransactionsApiControllerIT {
     public void getTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
@@ -252,7 +249,7 @@ public class TransactionsApiControllerIT {
     public void shouldContainTransactionMetics() throws Exception {
         // Given
         String jws = jws("accounts");
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READTRANSACTIONSDETAIL,

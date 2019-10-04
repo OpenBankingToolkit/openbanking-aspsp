@@ -8,10 +8,10 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.filepayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecision;
+import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRFileConsent2;
-import com.forgerock.openbanking.commons.services.store.payment.FilePaymentService;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
+import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ public class FilePaymentConsentDecisionFactory {
         this.objectMapper = objectMapper;
     }
 
-    public ConsentDecision create(final String intentId) {
+    public ConsentDecisionDelegate create(final String intentId) {
         FRFileConsent2 consent = paymentsService.getPayment(intentId);
         return new FilePaymentConsentDecisionDelegate(paymentConsentDecisionUpdater, paymentsService, objectMapper, consent);
     }

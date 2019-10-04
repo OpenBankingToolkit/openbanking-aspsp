@@ -7,11 +7,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.account.v2_0.accounts;
 
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.account.FRAccountRequest1;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
-import com.forgerock.openbanking.commons.services.store.accountrequest.AccountRequestStoreService;
+
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.Tpp;
@@ -39,7 +39,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -61,8 +60,7 @@ public class AccountsApiControllerIT {
 
     @MockBean
     private UserInfoService userInfoService;
-    @MockBean
-    private Authenticator authenticator;
+
 
     @MockBean(name="cryptoApiClient") // Required to avoid Spring auto-wiring exception
     private CryptoApiClient cryptoApiClient;
@@ -78,7 +76,7 @@ public class AccountsApiControllerIT {
     public void getAccountShouldReturnAccountInfo() throws Exception {
         // Given
         String jws = jws("accounts");
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Collections.singletonList(READACCOUNTSDETAIL));
         OBReadAccount2 obReadAccount2 = new OBReadAccount2();
@@ -97,7 +95,7 @@ public class AccountsApiControllerIT {
     @Test
     public void getAccountShouldBeForbiddenWhenNotAISP() throws Exception {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
 
         // When
         HttpResponse<JsonNode> response = Unirest.get("https://rs-api:" + port + "/open-banking/v2.0/accounts/100000123")
@@ -113,7 +111,7 @@ public class AccountsApiControllerIT {
     public void getAccountShouldBeForbiddenWhenNoReadAccountDetailsPermission() throws Exception {
         // Given
         String jws = jws("accounts");
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Collections.singletonList(READBALANCES));
 

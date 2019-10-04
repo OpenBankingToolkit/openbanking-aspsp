@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.accounts;
 
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;

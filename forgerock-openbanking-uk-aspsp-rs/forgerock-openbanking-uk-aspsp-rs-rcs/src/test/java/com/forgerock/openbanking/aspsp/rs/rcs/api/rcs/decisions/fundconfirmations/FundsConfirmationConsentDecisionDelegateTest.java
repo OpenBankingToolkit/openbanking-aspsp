@@ -8,10 +8,10 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.fundconfirmations;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
-import com.forgerock.openbanking.commons.services.store.account.AccountStoreService;
-import com.forgerock.openbanking.commons.services.store.funds.FundsConfirmationService;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
+import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;

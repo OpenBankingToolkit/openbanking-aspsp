@@ -8,8 +8,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.verifier;
 
 
-import com.forgerock.openbanking.commons.model.openbanking.obie.payment.AccountSchemeName;
-import com.forgerock.openbanking.commons.model.openbanking.obie.payment.LocalInstrument;
+import com.forgerock.openbanking.common.model.openbanking.obie.payment.AccountSchemeName;
+import com.forgerock.openbanking.common.model.openbanking.obie.payment.LocalInstrument;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.google.common.base.Preconditions;

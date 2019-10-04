@@ -8,10 +8,10 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v1_1.old;
 
 import com.forgerock.openbanking.aspsp.rs.api.OBHeaders;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.payment.FRPaymentSetup1;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.payment.OBPaymentDataSetupResponse1;

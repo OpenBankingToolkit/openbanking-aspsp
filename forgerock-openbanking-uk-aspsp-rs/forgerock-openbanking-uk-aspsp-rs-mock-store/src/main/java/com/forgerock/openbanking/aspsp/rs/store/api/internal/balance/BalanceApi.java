@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.balance;
 
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.account.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

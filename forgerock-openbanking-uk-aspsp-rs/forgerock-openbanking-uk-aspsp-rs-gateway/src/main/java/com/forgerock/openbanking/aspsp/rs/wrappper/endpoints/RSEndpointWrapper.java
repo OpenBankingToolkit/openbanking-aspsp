@@ -10,7 +10,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.filter.MultiReadHttpServletRequest;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.commons.services.openbanking.IdempotencyService;
+import com.forgerock.openbanking.common.services.openbanking.IdempotencyService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;

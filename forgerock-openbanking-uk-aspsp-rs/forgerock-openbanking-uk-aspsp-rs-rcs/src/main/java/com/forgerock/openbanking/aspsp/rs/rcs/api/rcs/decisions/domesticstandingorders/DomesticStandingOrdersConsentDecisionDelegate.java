@@ -8,12 +8,12 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.domesticstandingorders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecision;
+import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
-import com.forgerock.openbanking.commons.model.rcs.consentdecision.DomesticStandingOrderConsentDecision;
-import com.forgerock.openbanking.commons.services.store.payment.DomesticStandingOrderService;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.rcs.consentdecision.DomesticStandingOrderConsentDecision;
+import com.forgerock.openbanking.common.services.store.payment.DomesticStandingOrderService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-class DomesticStandingOrdersConsentDecisionDelegate implements ConsentDecision {
+class DomesticStandingOrdersConsentDecisionDelegate implements ConsentDecisionDelegate {
 
     private PaymentConsentDecisionUpdater paymentConsentDecisionUpdater;
     private DomesticStandingOrderService paymentsService;

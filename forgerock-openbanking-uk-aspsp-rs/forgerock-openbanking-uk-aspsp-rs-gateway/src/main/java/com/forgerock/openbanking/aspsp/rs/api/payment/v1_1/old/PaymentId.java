@@ -11,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
-import static com.forgerock.openbanking.commons.rcs.RCSConstants.Claims.PAYMENT_ID;
+import static com.forgerock.openbanking.common.constants.RCSConstants.Claims.PAYMENT_ID;
+
 
 @Service
 public class PaymentId {

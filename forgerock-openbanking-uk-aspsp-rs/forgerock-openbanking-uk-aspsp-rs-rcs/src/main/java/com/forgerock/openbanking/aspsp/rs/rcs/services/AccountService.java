@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.services;
 
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;

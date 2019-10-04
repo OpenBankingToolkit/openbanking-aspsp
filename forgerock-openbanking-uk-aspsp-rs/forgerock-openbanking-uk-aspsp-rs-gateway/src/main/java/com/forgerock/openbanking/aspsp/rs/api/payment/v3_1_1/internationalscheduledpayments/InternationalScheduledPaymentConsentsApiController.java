@@ -9,8 +9,8 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.internationalsched
 
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.ExchangeRateVerifier;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
-import com.forgerock.openbanking.commons.services.store.payment.InternationalScheduledPaymentService;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.payment.InternationalScheduledPaymentService;
 import org.springframework.stereotype.Controller;
 
 @Controller("InternationalScheduledPaymentConsentsApiV3.1.1")

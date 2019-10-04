@@ -9,7 +9,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.commons.services.openbanking.OBHeaderCheckerService;
+import com.forgerock.openbanking.common.services.openbanking.OBHeaderCheckerService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;

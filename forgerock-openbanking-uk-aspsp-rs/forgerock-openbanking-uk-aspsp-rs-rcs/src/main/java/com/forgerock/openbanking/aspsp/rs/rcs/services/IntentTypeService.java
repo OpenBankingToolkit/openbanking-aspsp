@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.services;
 
-import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecision;
+import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts.AccountAccessConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.domesticpayments.DomesticPaymentConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.domesticscheduledpayments.DomesticScheduledPaymentConsentDecisionFactory;
@@ -19,8 +19,8 @@ import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalsch
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalstandingorders.InternationalStandingOrderConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.singlepayments.SinglePaymentConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details.*;
-import com.forgerock.openbanking.commons.model.openbanking.IntentType;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
@@ -78,7 +78,7 @@ public class IntentTypeService {
     @Autowired
     private FilePaymentConsentDecisionFactory filePaymentConsentDecisionFactory;
 
-    public ConsentDecision getConsentDecision(String intentId) throws OBErrorException {
+    public ConsentDecisionDelegate getConsentDecision(String intentId) throws OBErrorException {
         switch (IntentType.identify(intentId)) {
             case ACCOUNT_REQUEST:
             case ACCOUNT_ACCESS_CONSENT:

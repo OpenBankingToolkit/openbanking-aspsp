@@ -7,8 +7,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.payments;
 
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.payment.FRFileConsent1;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRFileConsent1;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 

@@ -10,8 +10,8 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalScheduledConsent2Repository;
-import com.forgerock.openbanking.commons.configuration.discovery.ResourceLinkService;
-import com.forgerock.openbanking.commons.services.openbanking.FundsAvailabilityService;
+import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import org.springframework.stereotype.Controller;
 
 @Controller("InternationalScheduledPaymentConsentsApiV3.1.1")

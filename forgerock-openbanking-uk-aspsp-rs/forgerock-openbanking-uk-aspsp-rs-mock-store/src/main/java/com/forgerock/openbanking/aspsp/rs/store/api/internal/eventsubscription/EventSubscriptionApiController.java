@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.eventsubscription;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events.EventSubscriptionsRepository;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_2.event.FREventSubscription1;
+import com.forgerock.openbanking.common.model.openbanking.event.FREventSubscription1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;

@@ -8,7 +8,6 @@
 package com.forgerock.openbanking.aspsp.rs.api.actuator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.commons.auth.Authenticator;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.JsonNode;
@@ -20,11 +19,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -35,8 +32,7 @@ public class ActuatorIT {
     private int port;
     @Autowired
     private ObjectMapper objectMapper;
-    @MockBean
-    private Authenticator authenticator;
+
 
 
     @Before
@@ -47,7 +43,7 @@ public class ActuatorIT {
     @Test
     public void actuatorHealthEndpointShouldReturnUp() throws Exception {
         // Given
-        mockAuthentication(authenticator, "PISP");
+        //mockAuthentication(authenticator, "PISP");
 
         // When
         HttpResponse<JsonNode> response = Unirest.get("https://rs-api:" + port + "/actuator/health")
@@ -61,7 +57,7 @@ public class ActuatorIT {
     @Test
     public void actuatorInfoEndpointShouldReturnBuildData() throws Exception {
         // Given
-        mockAuthentication(authenticator, "PISP");
+        //mockAuthentication(authenticator, "PISP");
 
         // When
         HttpResponse<ActuatorInfo> response = Unirest.get("https://rs-api:" + port + "/actuator/info")

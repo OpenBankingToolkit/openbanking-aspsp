@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.discovery;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.commons.configuration.discovery.GenericOBDiscoveryAPILinks;
+import com.forgerock.openbanking.common.conf.discovery.GenericOBDiscoveryAPILinks;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;

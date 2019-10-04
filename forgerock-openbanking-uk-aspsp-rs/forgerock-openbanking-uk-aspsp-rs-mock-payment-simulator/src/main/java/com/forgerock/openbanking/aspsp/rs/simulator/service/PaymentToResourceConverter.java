@@ -7,9 +7,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
-import com.forgerock.openbanking.commons.configuration.discovery.DiscoveryConfigurationProperties;
-import com.forgerock.openbanking.commons.model.openbanking.IntentType;
-import com.forgerock.openbanking.commons.services.notification.EventSubject;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
+import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.services.notification.EventSubject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

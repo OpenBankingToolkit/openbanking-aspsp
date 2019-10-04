@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.accountrequest;
 
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.account.FRAccountRequest1;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;

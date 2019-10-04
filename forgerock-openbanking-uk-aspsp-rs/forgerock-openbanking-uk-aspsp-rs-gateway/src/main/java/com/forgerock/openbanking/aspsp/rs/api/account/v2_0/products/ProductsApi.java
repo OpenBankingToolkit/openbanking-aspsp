@@ -12,9 +12,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.account.v2_0.products;
 
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OBGroupName;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OBReference;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OpenBankingAPI;
+import com.forgerock.openbanking.common.openbanking.OBGroupName;
+import com.forgerock.openbanking.common.openbanking.OBReference;
+import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;

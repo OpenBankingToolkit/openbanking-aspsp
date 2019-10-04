@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.as.api.oauth2.discovery;
 
 import com.forgerock.openbanking.am.gateway.AMASPSPGateway;
-import com.forgerock.openbanking.commons.model.as.discovery.OIDCDiscoveryResponse;
+import com.forgerock.openbanking.common.model.as.discovery.OIDCDiscoveryResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;

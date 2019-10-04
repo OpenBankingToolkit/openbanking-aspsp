@@ -9,8 +9,8 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.ag
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.service.event.EventPollingService;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OBReference;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OpenBankingAPI;
+import com.forgerock.openbanking.common.openbanking.OBReference;
+import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;

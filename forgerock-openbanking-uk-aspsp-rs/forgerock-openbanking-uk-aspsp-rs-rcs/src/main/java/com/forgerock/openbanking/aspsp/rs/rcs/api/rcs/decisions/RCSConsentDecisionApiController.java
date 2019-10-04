@@ -13,10 +13,11 @@ import com.forgerock.openbanking.am.services.UserProfileService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.IntentTypeService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RcsService;
-import com.forgerock.openbanking.commons.configuration.applications.RcsConfiguration;
-import com.forgerock.openbanking.commons.model.rcs.RedirectionAction;
-import com.forgerock.openbanking.commons.rcs.RCSConstants;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.conf.RcsConfiguration;
+import com.forgerock.openbanking.common.constants.RCSConstants;
+import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
+import com.forgerock.openbanking.common.model.rcs.consentdecision.ConsentDecision;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -77,10 +78,10 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
             log.debug("Consent decision is empty");
             return rcsErrorService.error(OBRIErrorType.RCS_CONSENT_DECISION_EMPTY);
         }
-        com.forgerock.openbanking.commons.model.rcs.consentdecision.ConsentDecision consentDecision;
+        ConsentDecision consentDecision;
         String consentRequestJwt;
         try {
-            consentDecision = objectMapper.readValue(consentDecisionSerialised, com.forgerock.openbanking.commons.model.rcs.consentdecision.ConsentDecision.class);
+            consentDecision = objectMapper.readValue(consentDecisionSerialised, ConsentDecision.class);
             consentRequestJwt = consentDecision.getConsentJwt();
         } catch (IOException e) {
             log.error("Remote consent decisions invalid", e);
@@ -110,7 +111,7 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
                         .getStringClaim(OIDCConstants.OIDCClaim.CONSENT_APPROVAL_REDIRECT_URI);
 
 
-                ConsentDecision consentDecisionController = intentTypeService.getConsentDecision(intentId);
+                ConsentDecisionDelegate consentDecisionController = intentTypeService.getConsentDecision(intentId);
                 //Verify consent is own by the right TPP
                 String tppIdBehindConsent = consentDecisionController.getTppIdBehindConsent();
                 Optional<Tpp> isTpp = tppStoreService.findById(tppIdBehindConsent);

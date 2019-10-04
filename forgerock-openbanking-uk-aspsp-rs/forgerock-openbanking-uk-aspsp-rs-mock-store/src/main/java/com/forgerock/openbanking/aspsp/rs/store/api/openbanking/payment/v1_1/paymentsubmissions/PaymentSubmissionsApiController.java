@@ -11,9 +11,9 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryA
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.payments.paymentsetup.FRPaymentSetup1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.payments.paymentsubmission.FRPaymentSubmission1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
-import com.forgerock.openbanking.commons.configuration.discovery.ResourceLinkService;
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.payment.FRPaymentSetup1;
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.payment.FRPaymentSubmission1;
+import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSubmission1;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;

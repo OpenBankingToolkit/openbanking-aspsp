@@ -7,8 +7,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.discovery;
 
-import com.forgerock.openbanking.commons.configuration.discovery.RSAPIsConfigurationProperties;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OBGroupName;
+import com.forgerock.openbanking.common.conf.discovery.RSAPIsConfigurationProperties;
+import com.forgerock.openbanking.common.openbanking.OBGroupName;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

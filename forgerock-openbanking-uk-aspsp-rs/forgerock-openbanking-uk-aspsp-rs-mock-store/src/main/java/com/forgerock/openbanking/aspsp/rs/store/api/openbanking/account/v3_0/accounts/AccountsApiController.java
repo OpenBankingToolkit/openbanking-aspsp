@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_0.accounts;
 
 
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification3Code;

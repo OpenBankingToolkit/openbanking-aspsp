@@ -8,10 +8,10 @@
 package com.forgerock.openbanking.aspsp.rs.api.event.v3_1_2.aggregatedpolling;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.commons.openbanking.OpenBankingHttpHeaders;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OBReference;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OpenBankingAPI;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.constants.OpenBankingHttpHeaders;
+import com.forgerock.openbanking.common.openbanking.OBReference;
+import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;

@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.discovery;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.forgerock.openbanking.commons.configuration.discovery.GenericOBDiscoveryAPILinks;
+import com.forgerock.openbanking.common.conf.discovery.GenericOBDiscoveryAPILinks;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -10,10 +10,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.funds.v3_0;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfirmationConsentRepository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -34,7 +33,8 @@ import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsentResponse1;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.*;
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -52,8 +52,7 @@ public class FundsConfirmationConsentsApiControllerIT {
     @MockBean
     private TppRepository tppRepository;
 
-    @MockBean
-    private Authenticator authenticator;
+
 
     @Before
     public void setUp() {
@@ -63,7 +62,7 @@ public class FundsConfirmationConsentsApiControllerIT {
     @Test
     public void testGetConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRFundsConfirmationConsent1 consent = JMockData.mock(FRFundsConfirmationConsent1.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         repository.save(consent);
@@ -85,7 +84,7 @@ public class FundsConfirmationConsentsApiControllerIT {
     @Test
     public void testGetConsentReturnNotFound() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.0/pisp/international-scheduled-payment-consents/12345")
@@ -100,7 +99,7 @@ public class FundsConfirmationConsentsApiControllerIT {
     @Test
     public void testCreateConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         setupMockTpp(tppRepository);
         OBFundsConfirmationConsent1 consentRequest = JMockData.mock(OBFundsConfirmationConsent1.class);
         consentRequest.getData().getDebtorAccount().identification("123").name("tester");

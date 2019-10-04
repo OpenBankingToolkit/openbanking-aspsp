@@ -8,10 +8,10 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecision;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRAccountRequest;
-import com.forgerock.openbanking.commons.services.store.account.AccountStoreService;
-import com.forgerock.openbanking.commons.services.store.accountrequest.AccountRequestStoreService;
+import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
+import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +35,7 @@ public class AccountAccessConsentDecisionFactory {
         this.objectMapper = objectMapper;
     }
 
-    public ConsentDecision create(final String intentId) throws OBErrorException {
+    public ConsentDecisionDelegate create(final String intentId) throws OBErrorException {
         FRAccountRequest accountRequest = getAccountRequest(intentId);
         return new AccountAccessConsentDecisionDelegate(accountsService, objectMapper, accountRequestStoreService, accountRequest);
     }

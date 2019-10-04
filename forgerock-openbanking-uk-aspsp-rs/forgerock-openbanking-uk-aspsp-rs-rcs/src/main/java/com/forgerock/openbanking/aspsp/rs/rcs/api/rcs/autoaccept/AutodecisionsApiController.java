@@ -9,16 +9,16 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.autoaccept;
 
 import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
 import com.forgerock.openbanking.am.services.UserProfileService;
-import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecision;
+import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.IntentTypeService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RcsService;
-import com.forgerock.openbanking.commons.configuration.applications.RcsConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.commons.model.rcs.RedirectionAction;
-import com.forgerock.openbanking.commons.rcs.RCSConstants;
-import com.forgerock.openbanking.commons.services.store.account.AccountStoreService;
-import com.forgerock.openbanking.commons.services.store.data.UserDataService;
+import com.forgerock.openbanking.common.conf.RcsConfiguration;
+import com.forgerock.openbanking.common.constants.RCSConstants;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
+import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
+import com.forgerock.openbanking.common.services.store.data.UserDataService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -96,7 +96,7 @@ public class AutodecisionsApiController implements AutodecisionsApi {
             String username = profile.get(amOpenBankingConfiguration.userProfileId);
             List<FRAccount2> accounts = getAccountOrGenerateData(username);
             //Call the right decision controller, cased on the intent type
-            ConsentDecision consentDecisionController = intentTypeService.getConsentDecision(intentId);
+            ConsentDecisionDelegate consentDecisionController = intentTypeService.getConsentDecision(intentId);
             consentDecisionController.autoaccept(accounts, username);
 
             log.debug("Redirect the resource owner to the original oauth2/openid request but this time, with the " +

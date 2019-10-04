@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.filter;
 
 import brave.Tracer;
-import com.forgerock.openbanking.commons.rest.ErrorHandler;
+import com.forgerock.openbanking.common.error.ErrorHandler;
 import com.forgerock.openbanking.model.error.ErrorCode;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;

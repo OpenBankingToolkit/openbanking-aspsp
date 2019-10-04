@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.accountaccessconsent;
 
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.account.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRAccountAccessConsent1;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;

@@ -25,7 +25,14 @@
             <groupId>com.forgerock.openbanking</groupId>
             <artifactId>forgerock-openbanking-model</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.forgerock.openbanking.analytics</groupId>
+            <artifactId>forgerock-openbanking-analytics-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.openbanking.jwkms</groupId>
+            <artifactId>forgerock-openbanking-jwkms-client</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
@@ -77,6 +84,18 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.modelmapper</groupId>
+            <artifactId>modelmapper</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

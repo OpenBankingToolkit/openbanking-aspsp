@@ -7,8 +7,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.filter;
 
-import com.forgerock.openbanking.commons.configuration.discovery.ControllerEndpointBlacklist;
-import com.forgerock.openbanking.commons.configuration.discovery.RSAPIsConfigurationProperties;
+import com.forgerock.openbanking.common.conf.discovery.ControllerEndpointBlacklist;
+import com.forgerock.openbanking.common.conf.discovery.RSAPIsConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.method.HandlerMethod;

@@ -7,8 +7,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.autoaccept;
 
-import com.forgerock.openbanking.commons.model.rcs.RedirectionAction;
-import com.forgerock.openbanking.commons.model.rcs.consentdetails.ConsentDetails;
+import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
+import com.forgerock.openbanking.common.model.rcs.consentdetails.ConsentDetails;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;

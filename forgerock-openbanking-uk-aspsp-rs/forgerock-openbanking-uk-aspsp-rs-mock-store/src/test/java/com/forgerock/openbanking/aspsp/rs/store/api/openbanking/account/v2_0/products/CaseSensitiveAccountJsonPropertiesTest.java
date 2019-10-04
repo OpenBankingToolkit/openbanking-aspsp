@@ -14,6 +14,8 @@ import uk.org.openbanking.datamodel.account.OBBCAData1;
 import uk.org.openbanking.datamodel.account.OBPCAData1;
 import uk.org.openbanking.datamodel.account.OBProduct2;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 @Slf4j
 public class CaseSensitiveAccountJsonPropertiesTest {
     private static ObjectMapper om = new ObjectMapper();

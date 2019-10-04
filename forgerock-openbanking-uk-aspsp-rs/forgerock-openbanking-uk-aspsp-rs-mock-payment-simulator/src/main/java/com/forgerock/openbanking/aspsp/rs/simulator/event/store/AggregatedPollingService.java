@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.event.store;
 
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

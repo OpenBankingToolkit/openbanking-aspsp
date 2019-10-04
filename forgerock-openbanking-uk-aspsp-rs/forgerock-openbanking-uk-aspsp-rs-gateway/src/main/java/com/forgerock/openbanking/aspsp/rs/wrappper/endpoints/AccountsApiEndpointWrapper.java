@@ -8,8 +8,8 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.commons.exception.PermissionDenyException;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.error.exception.PermissionDenyException;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import org.joda.time.DateTime;

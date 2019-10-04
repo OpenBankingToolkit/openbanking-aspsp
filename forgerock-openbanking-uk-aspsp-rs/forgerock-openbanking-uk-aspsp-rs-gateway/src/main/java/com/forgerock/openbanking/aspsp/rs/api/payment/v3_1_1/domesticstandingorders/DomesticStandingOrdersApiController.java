@@ -8,15 +8,15 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.domesticstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
-import com.forgerock.openbanking.commons.services.openbanking.converter.FRAccountConverter;
-import com.forgerock.openbanking.commons.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
-import com.forgerock.openbanking.commons.services.openbanking.frequency.FrequencyService;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
-import com.forgerock.openbanking.commons.services.store.account.standingorder.StandingOrderService;
-import com.forgerock.openbanking.commons.services.store.payment.DomesticStandingOrderService;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
+import com.forgerock.openbanking.common.services.openbanking.converter.FRAccountConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
+import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.account.standingorder.StandingOrderService;
+import com.forgerock.openbanking.common.services.store.payment.DomesticStandingOrderService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;

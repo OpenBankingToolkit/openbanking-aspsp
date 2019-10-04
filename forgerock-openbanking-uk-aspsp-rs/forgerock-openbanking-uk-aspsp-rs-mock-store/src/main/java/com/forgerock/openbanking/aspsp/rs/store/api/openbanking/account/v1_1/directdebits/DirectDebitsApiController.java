@@ -10,7 +10,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.di
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.directdebits.FRDirectDebit1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.account.FRDirectDebit1;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRDirectDebit1;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;

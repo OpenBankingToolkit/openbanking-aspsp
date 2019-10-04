@@ -9,12 +9,12 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
-import com.forgerock.openbanking.commons.model.openbanking.status.StandingOrderStatus;
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRStandingOrder5;
-import com.forgerock.openbanking.commons.services.openbanking.frequency.FrequencyService;
-import com.forgerock.openbanking.commons.services.store.account.AccountStoreService;
-import com.forgerock.openbanking.commons.services.store.account.standingorder.StandingOrderService;
+import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
+import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
+import com.forgerock.openbanking.common.services.store.account.standingorder.StandingOrderService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -27,10 +27,10 @@ import uk.org.openbanking.datamodel.account.*;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AcceptDomesticStandingOrderTaskTest {

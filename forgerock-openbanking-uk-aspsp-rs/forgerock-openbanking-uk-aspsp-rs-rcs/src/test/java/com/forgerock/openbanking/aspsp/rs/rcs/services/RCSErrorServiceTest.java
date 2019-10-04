@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.services;
 
 
-import com.forgerock.openbanking.commons.model.rcs.RedirectionAction;
+import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.integration.test.support.Tracer;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -19,6 +19,8 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Objects;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class RCSErrorServiceTest {
     private RCSErrorService rcsErrorService;

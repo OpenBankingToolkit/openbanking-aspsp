@@ -9,11 +9,11 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
-import com.forgerock.openbanking.commons.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRScheduledPayment1;
-import com.forgerock.openbanking.commons.services.store.account.AccountStoreService;
-import com.forgerock.openbanking.commons.services.store.account.scheduledpayment.ScheduledPaymentService;
+import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
+import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
+import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -29,10 +29,10 @@ import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AcceptDomesticScheduledPaymentTaskTest {

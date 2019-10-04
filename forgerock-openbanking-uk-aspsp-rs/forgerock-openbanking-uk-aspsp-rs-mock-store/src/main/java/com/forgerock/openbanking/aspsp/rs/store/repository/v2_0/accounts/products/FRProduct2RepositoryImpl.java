@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.products;
 
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRProduct2;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRProduct2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

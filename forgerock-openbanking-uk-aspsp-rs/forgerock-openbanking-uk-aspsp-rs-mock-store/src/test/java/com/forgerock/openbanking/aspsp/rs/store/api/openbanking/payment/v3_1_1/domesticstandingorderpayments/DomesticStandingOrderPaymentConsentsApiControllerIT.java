@@ -11,12 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.DomesticStandingOrderConsent3Repository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRDomesticStandingOrderConsent2;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
-import com.forgerock.openbanking.commons.model.version.OBVersion;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticStandingOrderConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -44,7 +43,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
+
+
 
 
 @RunWith(SpringRunner.class)
@@ -62,8 +63,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     @Autowired
     private RSConfiguration rsConfiguration;
 
-    @MockBean
-    private Authenticator authenticator;
+
 
     @MockBean
     private TppRepository tppRepository;
@@ -76,7 +76,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticStandingOrderPaymentConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRDomesticStandingOrderConsent3 consent =  JMockData.mock(FRDomesticStandingOrderConsent3.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         setupTestConsentInitiation(consent.getInitiation());
@@ -102,7 +102,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticStandingOrderPaymentConsentReturnNotFound() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRDomesticStandingOrderConsent2 consent = JMockData.mock(FRDomesticStandingOrderConsent2.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
@@ -119,7 +119,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     @Test
     public void testCreateDomesticStandingOrderPaymentConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         PaymentTestHelper.setupMockTpp(tppRepository);
         OBWriteDomesticStandingOrderConsent3 consentRequest = JMockData.mock(OBWriteDomesticStandingOrderConsent3.class);
         setupTestConsentInitiation(consentRequest.getData().getInitiation());
@@ -169,7 +169,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     @Test
     public void testCreateDomesticStandingOrderPaymentConsent_noOptionalFields() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         PaymentTestHelper.setupMockTpp(tppRepository);
         OBWriteDomesticStandingOrderConsent3 consentRequest = JMockData.mock(OBWriteDomesticStandingOrderConsent3.class);
         setupTestConsentInitiation(consentRequest.getData().getInitiation());

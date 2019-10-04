@@ -8,10 +8,10 @@
 package com.forgerock.openbanking.aspsp.rs.simulator.event.notification;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.commons.model.notification.ResourceUpdateEvent;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.event.FREventNotification;
-import com.forgerock.openbanking.commons.services.notification.EventSubject;
-import com.forgerock.openbanking.commons.services.notification.EventType;
+import com.forgerock.openbanking.common.model.notification.ResourceUpdateEvent;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.services.notification.EventSubject;
+import com.forgerock.openbanking.common.services.notification.EventType;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.Tpp;
 import com.nimbusds.jwt.JWTClaimsSet;

@@ -10,10 +10,8 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.ag
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.FRPendingEventsRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.event.FREventNotification;
-import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
 import com.forgerock.openbanking.model.Tpp;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -35,7 +33,7 @@ import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -57,8 +55,7 @@ public class AggregatedPollingApiControllerIT {
     @Autowired
     private RSConfiguration rsConfiguration;
 
-    @MockBean
-    private Authenticator authenticator;
+
 
     @MockBean
     private TppRepository tppRepository;
@@ -76,7 +73,7 @@ public class AggregatedPollingApiControllerIT {
         clientId = UUID.randomUUID().toString();
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
 
-        mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
     }
 
     @Test

@@ -8,13 +8,13 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.domesticscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
-import com.forgerock.openbanking.commons.services.openbanking.converter.payment.FRDomesticScheduledConsentConverter;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
-import com.forgerock.openbanking.commons.services.store.account.scheduledpayment.ScheduledPaymentService;
-import com.forgerock.openbanking.commons.services.store.payment.DomesticScheduledPaymentService;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
+import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticScheduledConsentConverter;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
+import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;

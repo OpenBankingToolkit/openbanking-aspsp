@@ -9,9 +9,8 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.ac
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -22,14 +21,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadAccount2;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
+
+
 
 
 @RunWith(SpringRunner.class)
@@ -46,8 +46,7 @@ public class Accounts2ApiControllerIT {
     @Autowired
     private RSConfiguration rsConfiguration;
 
-    @MockBean
-    private Authenticator authenticator;
+
 
     @Before
     public void setUp() {
@@ -57,7 +56,7 @@ public class Accounts2ApiControllerIT {
     @Test
     public void testGetAnAccount() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         FRAccount3 account = JMockData.mock(FRAccount3.class);
         frAccountRepository.save(account);
 

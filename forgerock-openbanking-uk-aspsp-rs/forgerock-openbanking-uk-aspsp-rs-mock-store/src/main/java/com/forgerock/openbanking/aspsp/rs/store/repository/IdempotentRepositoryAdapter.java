@@ -7,14 +7,14 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository;
 
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.Optional;
 
-import static com.forgerock.openbanking.commons.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 
 /**
  * This class allows reuse of idempotent save logic for payment submissions.

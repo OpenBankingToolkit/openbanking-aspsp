@@ -7,12 +7,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.account.FRBalance1;
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.payment.FRPaymentSetup1;
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRTransaction5;
-import com.forgerock.openbanking.commons.services.store.balance.BalanceStoreService;
-import com.forgerock.openbanking.commons.services.store.transaction.TransactionStoreService;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.services.store.balance.BalanceStoreService;
+import com.forgerock.openbanking.common.services.store.transaction.TransactionStoreService;
 import com.github.jsonzou.jmockdata.JMockData;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
 import org.junit.Test;

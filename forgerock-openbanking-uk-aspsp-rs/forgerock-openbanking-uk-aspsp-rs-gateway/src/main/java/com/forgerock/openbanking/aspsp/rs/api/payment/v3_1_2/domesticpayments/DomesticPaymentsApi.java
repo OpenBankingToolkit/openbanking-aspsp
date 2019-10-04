@@ -12,9 +12,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_2.domesticpayments;
 
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OBGroupName;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OBReference;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OpenBankingAPI;
+import com.forgerock.openbanking.common.openbanking.OBGroupName;
+import com.forgerock.openbanking.common.openbanking.OBReference;
+import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 

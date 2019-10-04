@@ -12,8 +12,8 @@
  */
 package com.forgerock.openbanking.register.api.manual;
 
-import com.forgerock.openbanking.commons.model.onboarding.ManualRegistrationApplication;
-import com.forgerock.openbanking.commons.model.onboarding.ManualRegistrationRequest;
+import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationApplication;
+import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;

@@ -7,9 +7,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.event.v3_1_2.eventsubscription;
 
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OBGroupName;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OBReference;
-import com.forgerock.openbanking.commons.rest.annotations.openbanking.OpenBankingAPI;
+import com.forgerock.openbanking.common.openbanking.OBGroupName;
+import com.forgerock.openbanking.common.openbanking.OBReference;
+import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;

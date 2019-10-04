@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.services;
 
 import com.forgerock.openbanking.am.gateway.AMASPSPGateway;
-import com.forgerock.openbanking.commons.model.rcs.RedirectionAction;
+import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
 import com.forgerock.openbanking.config.ApplicationConfiguration;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.nimbusds.jose.JOSEException;

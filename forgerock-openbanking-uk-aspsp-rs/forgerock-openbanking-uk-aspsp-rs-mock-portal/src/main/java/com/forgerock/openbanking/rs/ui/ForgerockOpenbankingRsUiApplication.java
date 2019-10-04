@@ -8,9 +8,9 @@
 package com.forgerock.openbanking.rs.ui;
 
 import brave.Tracer;
-import com.forgerock.openbanking.commons.rest.ErrorHandler;
-import com.forgerock.openbanking.commons.services.security.FormValueSanitisationFilter;
-import com.forgerock.openbanking.commons.services.security.JsonRequestSanitisiationFilter;
+import com.forgerock.openbanking.common.error.ErrorHandler;
+import com.forgerock.openbanking.common.services.security.FormValueSanitisationFilter;
+import com.forgerock.openbanking.common.services.security.JsonRequestSanitisiationFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;

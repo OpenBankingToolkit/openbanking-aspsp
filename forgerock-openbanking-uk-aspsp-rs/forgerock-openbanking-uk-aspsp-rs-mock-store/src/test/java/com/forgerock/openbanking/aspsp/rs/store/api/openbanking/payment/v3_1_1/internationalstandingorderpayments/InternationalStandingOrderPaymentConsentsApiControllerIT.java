@@ -11,10 +11,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.InternationalStandingOrderConsent3Repository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -41,7 +40,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
 
@@ -61,8 +60,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
 
     @MockBean
     private TppRepository tppRepository;
-    @MockBean
-    private Authenticator authenticator;
+
 
     @Before
     public void setUp() {
@@ -72,7 +70,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
     @Test
     public void testGetInternationalStandingOrderPaymentConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalStandingOrderConsent3 consent = JMockData.mock(FRInternationalStandingOrderConsent3.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         setupTestConsentInitiation(consent.getInitiation());
@@ -94,7 +92,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
     @Test
     public void testGetInternationalStandingOrderPaymentConsentReturnNotFound() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalStandingOrderConsent3 consent = JMockData.mock(FRInternationalStandingOrderConsent3.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
@@ -111,7 +109,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
     @Test
     public void testCreateInternationalStandingOrderPaymentConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         PaymentTestHelper.setupMockTpp(tppRepository);
         OBWriteInternationalStandingOrderConsent3 consentRequest = JMockData.mock(OBWriteInternationalStandingOrderConsent3.class);
         setupTestConsentInitiation(consentRequest.getData().getInitiation());

@@ -8,11 +8,11 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRInternationalConsent2;
-import com.forgerock.openbanking.commons.model.rcs.consentdetails.InternationalPaymentConsentDetails;
-import com.forgerock.openbanking.commons.services.store.payment.InternationalPaymentService;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
+import com.forgerock.openbanking.common.model.rcs.consentdetails.InternationalPaymentConsentDetails;
+import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.Tpp;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 

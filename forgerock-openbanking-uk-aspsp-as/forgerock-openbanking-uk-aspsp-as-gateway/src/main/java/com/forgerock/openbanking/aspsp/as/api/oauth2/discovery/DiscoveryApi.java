@@ -12,7 +12,7 @@
  */
 package com.forgerock.openbanking.aspsp.as.api.oauth2.discovery;
 
-import com.forgerock.openbanking.commons.model.as.discovery.OIDCDiscoveryResponse;
+import com.forgerock.openbanking.common.model.as.discovery.OIDCDiscoveryResponse;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

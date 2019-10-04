@@ -8,11 +8,11 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRAccountRequest;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.commons.model.rcs.consentdetails.AccountsConsentDetails;
-import com.forgerock.openbanking.commons.services.store.accountrequest.AccountRequestStoreService;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.rcs.consentdetails.AccountsConsentDetails;
+import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;

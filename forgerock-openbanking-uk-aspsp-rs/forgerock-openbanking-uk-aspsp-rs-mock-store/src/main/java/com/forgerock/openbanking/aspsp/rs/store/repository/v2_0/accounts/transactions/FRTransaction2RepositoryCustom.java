@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.transactions;
 
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRTransaction2;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRTransaction2;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

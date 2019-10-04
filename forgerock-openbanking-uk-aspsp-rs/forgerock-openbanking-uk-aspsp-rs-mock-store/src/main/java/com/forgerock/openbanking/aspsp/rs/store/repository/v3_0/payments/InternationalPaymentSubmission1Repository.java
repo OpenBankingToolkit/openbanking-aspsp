@@ -7,7 +7,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.payments;
 
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.payment.FRInternationalPaymentSubmission1;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRInternationalPaymentSubmission1;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface InternationalPaymentSubmission1Repository extends MongoRepository<FRInternationalPaymentSubmission1, String> {

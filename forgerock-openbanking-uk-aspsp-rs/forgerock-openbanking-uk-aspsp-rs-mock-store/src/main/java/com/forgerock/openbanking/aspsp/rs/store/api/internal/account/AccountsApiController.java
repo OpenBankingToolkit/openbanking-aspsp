@@ -10,9 +10,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.account.FRBalance1;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

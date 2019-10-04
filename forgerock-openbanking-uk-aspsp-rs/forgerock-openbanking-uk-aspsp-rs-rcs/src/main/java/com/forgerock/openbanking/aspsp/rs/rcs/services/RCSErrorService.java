@@ -8,7 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.services;
 
 import brave.Tracer;
-import com.forgerock.openbanking.commons.model.rcs.RedirectionAction;
+import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;

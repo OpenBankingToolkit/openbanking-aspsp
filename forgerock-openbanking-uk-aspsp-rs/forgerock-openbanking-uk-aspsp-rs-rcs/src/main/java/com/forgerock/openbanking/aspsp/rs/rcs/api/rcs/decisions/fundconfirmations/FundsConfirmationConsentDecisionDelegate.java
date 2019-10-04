@@ -8,13 +8,13 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.fundconfirmations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecision;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
-import com.forgerock.openbanking.commons.model.rcs.consentdecision.InternationalPaymentConsentDecision;
-import com.forgerock.openbanking.commons.services.store.account.AccountStoreService;
-import com.forgerock.openbanking.commons.services.store.funds.FundsConfirmationService;
+import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.rcs.consentdecision.InternationalPaymentConsentDecision;
+import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
+import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.util.List;
 
 @Slf4j
-class FundsConfirmationConsentDecisionDelegate implements ConsentDecision {
+class FundsConfirmationConsentDecisionDelegate implements ConsentDecisionDelegate {
 
     private FundsConfirmationService fundsConfirmationService;
     private AccountStoreService accountStoreService;

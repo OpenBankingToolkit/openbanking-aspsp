@@ -9,11 +9,11 @@ package com.forgerock.openbanking.aspsp.rs.simulator.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.SignedJwtEventBuilder;
-import com.forgerock.openbanking.commons.configuration.discovery.DiscoveryConfigurationProperties;
-import com.forgerock.openbanking.commons.model.notification.ResourceUpdateEvent;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.event.FREventNotification;
-import com.forgerock.openbanking.commons.services.notification.EventSubject;
-import com.forgerock.openbanking.commons.services.notification.EventType;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
+import com.forgerock.openbanking.common.model.notification.ResourceUpdateEvent;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.services.notification.EventSubject;
+import com.forgerock.openbanking.common.services.notification.EventType;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.Tpp;
 import com.google.common.base.Charsets;
@@ -36,6 +36,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.EventNotificationClaims.OB_SUBJECT_TYPE;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;

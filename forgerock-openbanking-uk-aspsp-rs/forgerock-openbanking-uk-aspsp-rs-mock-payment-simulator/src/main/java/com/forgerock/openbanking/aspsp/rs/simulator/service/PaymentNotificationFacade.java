@@ -9,12 +9,12 @@ package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.CallbackFailedException;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.EventNotificationService;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.commons.model.openbanking.v2_0.account.FRScheduledPayment1;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRStandingOrder5;
-import com.forgerock.openbanking.commons.services.notification.EventSubject;
-import com.forgerock.openbanking.commons.services.notification.EventType;
-import com.forgerock.openbanking.commons.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.services.notification.EventSubject;
+import com.forgerock.openbanking.common.services.notification.EventType;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.model.Tpp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

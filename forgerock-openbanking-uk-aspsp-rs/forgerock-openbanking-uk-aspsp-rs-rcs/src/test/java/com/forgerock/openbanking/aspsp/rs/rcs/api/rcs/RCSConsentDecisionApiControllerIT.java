@@ -9,15 +9,14 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.UserProfileService;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.model.openbanking.IntentType;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v1_1.payment.FRPaymentSetup1;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRDomesticConsent2;
-import com.forgerock.openbanking.commons.model.rcs.consentdetails.DomesticPaymentConsentDetails;
-import com.forgerock.openbanking.commons.model.rcs.consentdetails.SinglePaymentConsentDetails;
-import com.forgerock.openbanking.commons.services.store.payment.DomesticPaymentService;
-import com.forgerock.openbanking.commons.services.store.payment.SinglePaymentService;
+import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
+import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticPaymentConsentDetails;
+import com.forgerock.openbanking.common.model.rcs.consentdetails.SinglePaymentConsentDetails;
+import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
+import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
 import com.forgerock.openbanking.core.services.ApplicationApiClientImpl;
 import com.google.common.collect.ImmutableMap;
 import kong.unirest.HttpResponse;
@@ -36,7 +35,7 @@ import uk.org.openbanking.datamodel.payment.*;
 import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetup1;
 
 import static com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.JwtTestHelper.*;
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -59,8 +58,6 @@ public class RCSConsentDecisionApiControllerIT {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
-    private Authenticator authenticator;
 
     @MockBean
     public ApplicationApiClientImpl applicationApiClientImpl;
@@ -77,7 +74,6 @@ public class RCSConsentDecisionApiControllerIT {
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
-        mockAuthentication(authenticator, "PISP");
         when(userProfileService.getProfile(any(), anyString(), anyString())).thenReturn(ImmutableMap.of("id", USER_ID));
     }
 

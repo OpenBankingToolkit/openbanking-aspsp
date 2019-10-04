@@ -8,9 +8,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v1_1.payments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.core.services.CryptoApiClientImpl;
 import com.forgerock.openbanking.oidc.services.UserInfoService;
@@ -39,8 +38,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAccessTokenVerification;
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -63,8 +60,7 @@ public class PaymentsApiControllerIT {
 
     @MockBean
     private UserInfoService userInfoService;
-    @MockBean
-    private Authenticator authenticator;
+
 
     @MockBean(name="cryptoApiClient")
     private CryptoApiClientImpl cryptoApiClient;
@@ -81,8 +77,8 @@ public class PaymentsApiControllerIT {
     public void createSinglePaymentShouldReturnCreated() throws Exception {
         // Given
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
-        mockAuthentication(authenticator, "ROLE_PISP");
-        mockAccessTokenVerification(cryptoApiClient, jws);
+        //mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAccessTokenVerification(cryptoApiClient, jws);
         OBPaymentSetupResponse1 paymentSetupResponse = defaultPaymentResponse();
         OBPaymentSetup1 request = defaultPaymentSetupRequest(paymentSetupResponse);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(paymentSetupResponse));
@@ -105,7 +101,7 @@ public class PaymentsApiControllerIT {
     public void createPaymentShouldBeForbiddenWhenHavingAISPPermission() throws Exception {
         // Given
         String jws = jws("payments");
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
         OBPaymentSetupResponse1 paymentSetupResponse = defaultPaymentResponse();
         OBPaymentSetup1 request = defaultPaymentSetupRequest(paymentSetupResponse);
 
@@ -125,7 +121,7 @@ public class PaymentsApiControllerIT {
     @Test
     public void getPaymentShouldBeForbiddenWhenHavingAISPPermission() throws Exception {
         // Given
-        mockAuthentication(authenticator, "ROLE_AISP");
+        //mockAuthentication(authenticator, "ROLE_AISP");
 
         // When
         HttpResponse<JsonNode> response = Unirest.get("https://rs-api:" + port + "/open-banking/v2.0/payments/1")
@@ -141,8 +137,8 @@ public class PaymentsApiControllerIT {
     public void createSinglePayment_noAuthHeader_401() throws Exception {
         // Given
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
-        mockAuthentication(authenticator, "ROLE_PISP");
-        mockAccessTokenVerification(cryptoApiClient, jws);
+        //mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAccessTokenVerification(cryptoApiClient, jws);
         OBPaymentSetupResponse1 paymentSetupResponse = defaultPaymentResponse();
         OBPaymentSetup1 request = defaultPaymentSetupRequest(paymentSetupResponse);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(paymentSetupResponse));

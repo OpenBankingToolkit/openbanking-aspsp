@@ -14,11 +14,11 @@ import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.TppEventN
 import com.forgerock.openbanking.aspsp.rs.simulator.event.store.AggregatedPollingService;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.store.CallbackUrlsService;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.store.EventSubscriptionService;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.event.FREventNotification;
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.event.FRCallbackUrl1;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_2.event.FREventSubscription1;
-import com.forgerock.openbanking.commons.services.notification.EventSubject;
-import com.forgerock.openbanking.commons.services.notification.EventType;
+import com.forgerock.openbanking.common.model.openbanking.event.FREventSubscription1;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.services.notification.EventSubject;
+import com.forgerock.openbanking.common.services.notification.EventType;
 import com.forgerock.openbanking.model.Tpp;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +37,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EventNotificationServiceTest {

@@ -10,12 +10,11 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.do
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticConsent2Repository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRDomesticConsent2;
-import com.forgerock.openbanking.commons.model.version.OBVersion;
-import com.forgerock.openbanking.commons.services.openbanking.FundsAvailabilityService;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
+import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.oidc.services.OpenIdService;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
@@ -43,7 +42,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.*;
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -68,8 +67,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     @MockBean
     private FundsAvailabilityService fundsAvailabilityService;
 
-    @MockBean
-    private Authenticator authenticator;
+
 
     @MockBean
     private TppRepository tppRepository;
@@ -82,7 +80,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticPaymentConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
@@ -107,7 +105,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticPaymentConsentFunds() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
@@ -131,7 +129,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticPaymentConsentReturnNotFound() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
 
@@ -148,7 +146,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     @Test
     public void testCreateDomesticPaymentConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         setupMockTpp(tppRepository);
         OBWriteDomesticConsent2 consentRequest = JMockData.mock(OBWriteDomesticConsent2.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
@@ -189,7 +187,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     public void testCreateDomesticPaymentConsent_exists_idempotencyKeyValid_noActionButReturn201() throws UnirestException {
         // Given
         final String idempotencyKey = UUID.randomUUID().toString();
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         setupMockTpp(tppRepository);
         OBWriteDomesticConsent2 consentRequest = JMockData.mock(OBWriteDomesticConsent2.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
@@ -231,7 +229,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     public void testCreateDomesticPaymentConsent_exists_idempotencyKeyExpired() throws UnirestException {
         // Given
         final String idempotencyKey = UUID.randomUUID().toString();
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         setupMockTpp(tppRepository);
         OBWriteDomesticConsent1 consentRequest = JMockData.mock(OBWriteDomesticConsent1.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");

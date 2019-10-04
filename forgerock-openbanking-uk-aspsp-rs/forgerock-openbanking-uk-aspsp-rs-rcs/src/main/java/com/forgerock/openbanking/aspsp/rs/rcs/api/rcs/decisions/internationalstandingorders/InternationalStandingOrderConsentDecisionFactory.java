@@ -8,10 +8,10 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalstandingorders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecision;
+import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
-import com.forgerock.openbanking.commons.services.store.payment.InternationalStandingOrderService;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
+import com.forgerock.openbanking.common.services.store.payment.InternationalStandingOrderService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,7 @@ public class InternationalStandingOrderConsentDecisionFactory {
         this.objectMapper = objectMapper;
     }
 
-    public ConsentDecision create(final String intentId) {
+    public ConsentDecisionDelegate create(final String intentId) {
         FRInternationalStandingOrderConsent3 consent = paymentsService.getPayment(intentId);
         return new InternationalStandingOrderConsentDecisionDelegate(paymentConsentDecisionUpdater, paymentsService, objectMapper, consent);
     }

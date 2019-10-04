@@ -8,20 +8,17 @@
 package com.forgerock.openbanking.aspsp.rs;
 
 import brave.Tracer;
-import com.forgerock.openbanking.aspsp.rs.x509.TppDetailsService;
-import com.forgerock.openbanking.commons.rest.ErrorHandler;
-import com.forgerock.openbanking.commons.services.security.FormValueSanitisationFilter;
-import com.forgerock.openbanking.commons.services.security.JsonRequestSanitisiationFilter;
+import com.forgerock.openbanking.common.error.ErrorHandler;
+import com.forgerock.openbanking.common.services.security.FormValueSanitisationFilter;
+import com.forgerock.openbanking.common.services.security.JsonRequestSanitisiationFilter;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.Filter;
@@ -38,12 +35,6 @@ public class ForgerockOpenbankingRsApiApplication {
 
     public static void main(String[] args) {
         new SpringApplication(ForgerockOpenbankingRsApiApplication.class).run(args);
-    }
-
-    @Bean
-    @Primary
-    public UserDetailsService userDetailsService(TppDetailsService tppDetailsService) {
-        return tppDetailsService;
     }
 
     @Bean

@@ -10,10 +10,8 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_0;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.v3_0.event.FRCallbackUrl1;
-import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
 import com.forgerock.openbanking.model.Tpp;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -38,7 +36,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -57,8 +55,7 @@ public class CallbackUrlsApiControllerIT {
     @Autowired
     private RSConfiguration rsConfiguration;
 
-    @MockBean
-    private Authenticator authenticator;
+
 
     @MockBean
     private TppRepository tppRepository;
@@ -82,7 +79,7 @@ public class CallbackUrlsApiControllerIT {
     public void createCallbackUrls_urlDoesNotExistForTpp_created() throws Exception {
         // Given
         String url = "http://callback"+UUID.randomUUID().toString();
-        mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
         OBCallbackUrl1 obCallbackUrl = new OBCallbackUrl1()
                 .data(new OBCallbackUrlData1()
                         .url(url)
@@ -111,7 +108,7 @@ public class CallbackUrlsApiControllerIT {
     @Test
     public void createCallbackUrls_urlAlreadyExistsForTpp_conflict() throws Exception {
         // Given
-        mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
         String callbackId = UUID.randomUUID().toString();
         callbackUrlsRepository.save(newFRCallbackUrl1(callbackId)); // Existing URL
         OBCallbackUrl1 obCallbackUrl = new OBCallbackUrl1()
@@ -139,7 +136,7 @@ public class CallbackUrlsApiControllerIT {
     @Test
     public void readCallBackUrls_twoResults() throws Exception {
         // Given
-        mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
+        //mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
         callbackUrlsRepository.save(newFRCallbackUrl1(UUID.randomUUID().toString()));
         callbackUrlsRepository.save(newFRCallbackUrl1(UUID.randomUUID().toString()));
 
@@ -159,7 +156,7 @@ public class CallbackUrlsApiControllerIT {
     @Test
     public void readCallBackUrls_noResults() throws Exception {
         // Given
-        mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
+        //mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
 
         // When
         HttpResponse<OBCallbackUrlsResponse1> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.0/callback-urls")
@@ -177,7 +174,7 @@ public class CallbackUrlsApiControllerIT {
     @Test
     public void updateCallbackUrl_exists_updated() throws Exception {
         // Given
-        mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
+        //mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
         String callbackId = UUID.randomUUID().toString();
         OBCallbackUrl1 obCallbackUrl = new OBCallbackUrl1()
                 .data(new OBCallbackUrlData1()
@@ -211,7 +208,7 @@ public class CallbackUrlsApiControllerIT {
     @Test
     public void updateCallbackUrl_doesNotExist_notFound() throws Exception {
         // Given
-        mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
         OBCallbackUrl1 obCallbackUrl = new OBCallbackUrl1()
                 .data(new OBCallbackUrlData1()
                         .url("http://callback-update")
@@ -235,7 +232,7 @@ public class CallbackUrlsApiControllerIT {
     @Test
     public void deleteCallbackUrl_exists_deleted() throws Exception {
         // Given
-        mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
         String callbackId = UUID.randomUUID().toString();
         FRCallbackUrl1 frCallbackUrl1 = FRCallbackUrl1.builder()
                 .id(callbackId)
@@ -261,7 +258,7 @@ public class CallbackUrlsApiControllerIT {
     @Test
     public void deleteCallbackUrl_doesNotExist_notFound() throws Exception {
         // Given
-        mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
 
         // When
         HttpResponse response = Unirest.delete("https://rs-store:" + port + "/open-banking/v3.0/callback-urls/"+ UUID.randomUUID().toString())

@@ -12,8 +12,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.scheduledpayment;
 
-import com.forgerock.openbanking.commons.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1_1.account.FRScheduledPayment2;
+import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRScheduledPayment2;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;

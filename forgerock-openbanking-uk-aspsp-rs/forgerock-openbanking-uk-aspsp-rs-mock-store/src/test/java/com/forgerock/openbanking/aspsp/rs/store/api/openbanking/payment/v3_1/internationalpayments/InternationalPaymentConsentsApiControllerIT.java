@@ -11,12 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalConsent2Repository;
-import com.forgerock.openbanking.commons.auth.Authenticator;
-import com.forgerock.openbanking.commons.configuration.applications.RSConfiguration;
-import com.forgerock.openbanking.commons.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.commons.model.openbanking.v3_1.payment.FRInternationalConsent2;
-import com.forgerock.openbanking.commons.model.version.OBVersion;
-import com.forgerock.openbanking.commons.services.openbanking.FundsAvailabilityService;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
+import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.oidc.services.OpenIdService;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
@@ -42,7 +41,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.integration.test.support.Authentication.mockAuthentication;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -70,8 +69,7 @@ public class InternationalPaymentConsentsApiControllerIT {
     @MockBean
     private TppRepository tppRepository;
 
-    @MockBean
-    private Authenticator authenticator;
+
 
     @Before
     public void setUp() {
@@ -81,7 +79,7 @@ public class InternationalPaymentConsentsApiControllerIT {
     @Test
     public void testGetInternationalPaymentConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalConsent2 consent = JMockData.mock(FRInternationalConsent2.class);
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
         consent.setStatus(ConsentStatusCode.CONSUMED);
@@ -105,7 +103,7 @@ public class InternationalPaymentConsentsApiControllerIT {
     @Test
     public void testGetInternationalPaymentConsentReturnNotFound() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalConsent2 consent = JMockData.mock(FRInternationalConsent2.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
@@ -122,7 +120,7 @@ public class InternationalPaymentConsentsApiControllerIT {
     @Test
     public void testCreateInternationalPaymentConsent() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         PaymentTestHelper.setupMockTpp(tppRepository);
         OBWriteInternationalConsent2 consentRequest = JMockData.mock(OBWriteInternationalConsent2.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
@@ -163,7 +161,7 @@ public class InternationalPaymentConsentsApiControllerIT {
     @Test
     public void testCreateInternationalPaymentConsent_noExchangeRate() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         PaymentTestHelper.setupMockTpp(tppRepository);
         OBWriteInternationalConsent2 consentRequest = JMockData.mock(OBWriteInternationalConsent2.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
@@ -199,7 +197,7 @@ public class InternationalPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticPaymentConsentFunds() throws UnirestException {
         // Given
-        mockAuthentication(authenticator, "ROLE_PISP");
+        //mockAuthentication(authenticator, "ROLE_PISP");
         FRInternationalConsent2 consent = JMockData.mock(FRInternationalConsent2.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
