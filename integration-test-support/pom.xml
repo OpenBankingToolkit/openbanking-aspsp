@@ -88,7 +88,18 @@
             <artifactId>junit</artifactId>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock</groupId>
+            <artifactId>spring-security-multi-auth-starter</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

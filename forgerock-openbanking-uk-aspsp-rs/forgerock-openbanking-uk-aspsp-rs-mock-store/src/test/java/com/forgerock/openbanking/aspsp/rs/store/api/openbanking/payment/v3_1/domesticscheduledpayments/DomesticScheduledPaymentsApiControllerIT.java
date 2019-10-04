@@ -16,6 +16,8 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatu
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledPayment;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -54,7 +56,8 @@ public class DomesticScheduledPaymentsApiControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
     @Before
@@ -65,7 +68,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
     @Test
     public void testGetDomesticScheduledPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent2 consent = saveConsent();
         FRDomesticScheduledPayment submission = savePaymentSubmission(consent);
 
@@ -86,7 +89,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
     @Test
     public void testGetMissingDomesticScheduledPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent2 consent = saveConsent();
         OBWriteDomestic2 submissionRequest = JMockData.mock(OBWriteDomestic2.class);
         FRDomesticPaymentSubmission2 submission = FRDomesticPaymentSubmission2.builder()
@@ -107,7 +110,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
     @Test
     public void testGetDomesticScheduledPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent2 consent = JMockData.mock(FRDomesticScheduledConsent2.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         FRDomesticScheduledPayment submission = savePaymentSubmission(consent);
@@ -125,7 +128,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
     @Test
     public void testCreateDomesticScheduledPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent2 consent = saveConsent();
         OBWriteDomesticScheduled2 submissionRequest = new OBWriteDomesticScheduled2()
                 .risk(consent.getRisk())
@@ -154,7 +157,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
     @Test
     public void testDuplicateScheduledPaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent2 consent = saveConsent();
         FRDomesticScheduledPayment submission = savePaymentSubmission(consent);
 
@@ -181,7 +184,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
     @Test
     public void testMissingConsentOnScheduledPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent2 consent = JMockData.mock(FRDomesticScheduledConsent2.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");

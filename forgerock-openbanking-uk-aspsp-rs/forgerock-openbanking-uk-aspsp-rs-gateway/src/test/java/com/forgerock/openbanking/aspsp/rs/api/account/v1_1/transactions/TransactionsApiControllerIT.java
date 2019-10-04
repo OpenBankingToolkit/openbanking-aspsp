@@ -12,8 +12,10 @@ import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.oidc.services.UserInfoService;
 import com.google.common.collect.ImmutableMap;
@@ -31,6 +33,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.account.*;
@@ -66,6 +69,8 @@ public class TransactionsApiControllerIT {
     private RSConfiguration rsConfiguration;
     @MockBean
     public AccountRequestStoreService accountRequestStore;
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
     @MockBean
     private UserInfoService userInfoService;
@@ -85,7 +90,7 @@ public class TransactionsApiControllerIT {
     public void getAccountTransactionShouldBeOk() throws Exception {
         // Given
         String jws = jws("accounts");
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
@@ -108,7 +113,7 @@ public class TransactionsApiControllerIT {
     public void getAccountTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
@@ -135,10 +140,13 @@ public class TransactionsApiControllerIT {
     }
 
     @Test
+    @WithMockUser(roles = "AISP")
     public void getTransactionShouldBeOk() throws Exception {
         // Given
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+
         String jws = jws("accounts");
-        //mockAuthentication(authenticator, "ROLE_AISP");
+
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
@@ -161,7 +169,7 @@ public class TransactionsApiControllerIT {
     public void getTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 OBExternalPermissions1Code.READTRANSACTIONSDETAIL,

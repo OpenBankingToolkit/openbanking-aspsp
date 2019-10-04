@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
+import org.springframework.web.client.RestTemplate;
 
 @EnableDiscoveryClient
 @SpringBootApplication
@@ -45,5 +46,9 @@ public class ForgerockOpenbankingRsStoreApplication{
             }
         };
     }
-
+    
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }

@@ -11,13 +11,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.UserProfileService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticPaymentConsentDetails;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.SinglePaymentConsentDetails;
+import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.core.services.ApplicationApiClientImpl;
+import com.forgerock.openbanking.model.Tpp;
+import com.github.jsonzou.jmockdata.JMockData;
+import com.github.jsonzou.jmockdata.TypeReference;
 import com.google.common.collect.ImmutableMap;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -34,10 +40,14 @@ import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.*;
 import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetup1;
 
+import java.util.List;
+import java.util.Optional;
+
 import static com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.JwtTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -71,10 +81,18 @@ public class RCSConsentDecisionApiControllerIT {
     @MockBean
     private DomesticPaymentService domesticPaymentService;
 
+    @MockBean
+    private AccountStoreService accountsService;
+    @MockBean
+    private TppStoreService tppStoreService;
+
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
         when(userProfileService.getProfile(any(), anyString(), anyString())).thenReturn(ImmutableMap.of("id", USER_ID));
+        when(accountsService.getAccountWithBalances(any())).thenReturn(JMockData.mock(new TypeReference<List<FRAccountWithBalance>>() {}));
+        given(tppStoreService.findById(any())).willReturn(Optional.of(Tpp.builder().clientId(PISP_ID).build()));
+
     }
 
     @Test
@@ -133,7 +151,6 @@ public class RCSConsentDecisionApiControllerIT {
 
         DomesticPaymentConsentDetails resp = response.getBody();
         assertThat(resp.getClientId()).isEqualTo(PISP_ID);
-        assertThat(resp.getPispName()).isEqualTo(PISP_NAME);
         assertThat(resp.getUsername()).isEqualTo(USER_ID);
         assertThat(resp.getIntentType()).isEqualTo(IntentType.PAYMENT_DOMESTIC_CONSENT);
         assertThat(resp.getDecisionAPIUri()).isEqualTo(EXPECTED_DECISION_API_URI);

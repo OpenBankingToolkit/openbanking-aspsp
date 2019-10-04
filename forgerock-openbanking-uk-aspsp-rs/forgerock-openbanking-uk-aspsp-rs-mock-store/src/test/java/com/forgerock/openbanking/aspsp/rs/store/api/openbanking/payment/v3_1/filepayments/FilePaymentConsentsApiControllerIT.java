@@ -15,6 +15,8 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatu
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFileType;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
@@ -65,7 +67,8 @@ public class FilePaymentConsentsApiControllerIT {
 
     @MockBean
     private TppRepository tppRepository;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
     @Before
@@ -76,7 +79,7 @@ public class FilePaymentConsentsApiControllerIT {
     @Test
     public void testGetFileConsent() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent2 consent = JMockData.mock(FRFileConsent2.class);
         consent.setStatus(ConsentStatusCode.AWAITINGUPLOAD);
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
@@ -103,7 +106,7 @@ public class FilePaymentConsentsApiControllerIT {
     @Test
     public void testGetFileConsentReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/file-payment-consents/12345")
@@ -118,7 +121,7 @@ public class FilePaymentConsentsApiControllerIT {
     @Test
     public void testCreateFileConsent() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         setupMockTpp(tppRepository);
         OBWriteFileConsent2 consentRequest = JMockData.mock(OBWriteFileConsent2.class);
         consentRequest.getData().getInitiation().fileHash("dslkjdslkfhsdlkfjlskdj");
@@ -156,7 +159,7 @@ public class FilePaymentConsentsApiControllerIT {
     public void testCreateFilePaymentConsentsFile() throws UnirestException {
         // Given
         String fileConsentId = UUID.randomUUID().toString();
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         setupMockTpp(tppRepository);
 
         String fileContent = utf8FileToString.apply("OBIEPaymentInitiation_3_0.json");
@@ -200,7 +203,7 @@ public class FilePaymentConsentsApiControllerIT {
         // Given
         String fileConsentId = UUID.randomUUID().toString();
         String fileContent = "<sample>test</sample>";
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent2 consent = JMockData.mock(FRFileConsent2.class);
         consent.setStatus(ConsentStatusCode.AWAITINGAUTHORISATION);
         consent.setId(fileConsentId);

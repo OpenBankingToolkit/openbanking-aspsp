@@ -16,6 +16,8 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatu
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -53,7 +55,8 @@ public class InternationalPaymentsApiControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
     @Before
@@ -64,7 +67,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testGetInternationalPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalConsent2 consent = saveConsent();
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
@@ -86,7 +89,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testGetMissingInternationalPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalConsent2 consent = saveConsent();
         OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
         FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
@@ -107,7 +110,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testGetInternationalPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalConsent2 consent = JMockData.mock(FRInternationalConsent2.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
@@ -125,7 +128,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testCreateInternationalPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalConsent2 consent = saveConsent();
         OBWriteInternational2 submissionRequest = new OBWriteInternational2()
                 .risk(consent.getRisk())
@@ -155,7 +158,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testDuplicatePaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalConsent2 consent = saveConsent();
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -182,7 +185,7 @@ public class InternationalPaymentsApiControllerIT {
     @Test
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalConsent2 consent = JMockData.mock(FRInternationalConsent2.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");

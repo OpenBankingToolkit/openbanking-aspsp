@@ -16,6 +16,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.Filter;
 
@@ -36,5 +37,10 @@ public class ForgerockOpenbankingRsApplication {
     @Bean
     public Filter formSanitisationFilter(ErrorHandler errorHandler, Tracer tracer) {
         return new FormValueSanitisationFilter(errorHandler, tracer);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

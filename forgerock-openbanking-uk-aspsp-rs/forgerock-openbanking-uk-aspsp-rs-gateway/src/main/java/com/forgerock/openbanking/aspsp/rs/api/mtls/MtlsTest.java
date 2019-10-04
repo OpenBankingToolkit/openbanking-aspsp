@@ -42,6 +42,7 @@ public class MtlsTest {
                     response = MtlsTestResponse.class),
     })
 
+
     @RequestMapping(
             value = "/open-banking/mtlsTest",
             produces = {"application/json; charset=utf-8"},

@@ -11,8 +11,10 @@ import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.AccountAccessConsen
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.constants.OIDCConstants;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.nimbusds.jwt.SignedJWT;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -57,6 +59,8 @@ public class AccountAccessConsentsApiControllerIT {
     private RsStoreGateway rsStoreGateway;
     @MockBean
     private AccountAccessConsentPermittedPermissionsFilter accountAccessConsentPermittedPermissionsFilter;
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
     @Before
     public void setUp() {
@@ -67,7 +71,7 @@ public class AccountAccessConsentsApiControllerIT {
     public void createAccountAccessConsent() throws Exception {
         // Given
         String jws = jws("accounts", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         OBReadConsentResponse1 readConsentResponse = new OBReadConsentResponse1()
                 .data(new OBReadConsentResponse1Data()
@@ -100,7 +104,7 @@ public class AccountAccessConsentsApiControllerIT {
 
         // Given
         String jws = jws("accounts", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
 
         OBReadConsentResponse1 readConsentResponse = new OBReadConsentResponse1();

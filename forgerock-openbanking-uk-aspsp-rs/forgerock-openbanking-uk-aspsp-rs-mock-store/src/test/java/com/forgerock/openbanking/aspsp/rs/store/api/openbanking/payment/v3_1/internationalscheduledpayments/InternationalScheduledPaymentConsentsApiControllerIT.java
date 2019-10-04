@@ -14,6 +14,8 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.Interna
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledConsent2;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -59,7 +61,8 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
 
     @MockBean
     private TppRepository tppRepository;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
     @Before
@@ -70,7 +73,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
     @Test
     public void testGetInternationalScheduledPaymentConsent() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent2 consent = JMockData.mock(FRInternationalScheduledConsent2.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         DateTime requestedExecutionDateTime = DateTime.now().withMillisOfSecond(0);
@@ -97,7 +100,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
     @Test
     public void testGetInternationalScheduledPaymentConsentReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent2 consent = JMockData.mock(FRInternationalScheduledConsent2.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
@@ -114,7 +117,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
     @Test
     public void testCreateInternationalScheduledPaymentConsent() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         PaymentTestHelper.setupMockTpp(tppRepository);
         OBWriteInternationalScheduledConsent2 consentRequest = JMockData.mock(OBWriteInternationalScheduledConsent2.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");

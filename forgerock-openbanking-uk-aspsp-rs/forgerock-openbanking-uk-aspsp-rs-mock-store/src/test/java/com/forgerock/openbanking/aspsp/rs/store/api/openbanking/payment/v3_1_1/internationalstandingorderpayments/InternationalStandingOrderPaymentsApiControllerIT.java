@@ -16,6 +16,8 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatu
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderPaymentSubmission3;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -54,8 +56,8 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
-
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
     @Before
     public void setUp() {
@@ -65,7 +67,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
     @Test
     public void testGetInternationalStandingOrderPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent3 consent = saveConsent();
         FRInternationalStandingOrderPaymentSubmission3 submission = savePaymentSubmission(consent);
 
@@ -86,7 +88,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
     @Test
     public void testGetMissingInternationalStandingOrderPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent3 consent = saveConsent();
         OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
         FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
@@ -107,7 +109,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
     @Test
     public void testGetInternationalStandingOrderPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent3 consent = JMockData.mock(FRInternationalStandingOrderConsent3.class);
         consent.setId(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT.generateIntentId());
         FRInternationalStandingOrderPaymentSubmission3 submission = savePaymentSubmission(consent);
@@ -125,7 +127,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
     @Test
     public void testCreateInternationalStandingOrderPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent3 consent = saveConsent();
         OBWriteInternationalStandingOrder3 submissionRequest = new OBWriteInternationalStandingOrder3()
                 .risk(consent.getRisk())
@@ -153,7 +155,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
     @Test
     public void testDuplicateStandingOrderPaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent3 consent = saveConsent();
         FRInternationalStandingOrderPaymentSubmission3 submission = savePaymentSubmission(consent);
 
@@ -180,7 +182,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
     @Test
     public void testMissingConsentOnStandingOrderPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent3 consent = JMockData.mock(FRInternationalStandingOrderConsent3.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         setupTestConsentInitiation(consent.getInitiation());

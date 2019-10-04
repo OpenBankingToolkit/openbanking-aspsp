@@ -13,6 +13,8 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.sched
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRScheduledPayment2;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -48,7 +50,8 @@ public class ScheduledPaymentApiControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
     @Before
     public void setUp() {
@@ -58,7 +61,7 @@ public class ScheduledPaymentApiControllerIT {
     @Test
     public void testInternalGetScheduledPayments() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         FRScheduledPayment2 payment = JMockData.mock(FRScheduledPayment2.class);
         payment.setStatus(ScheduledPaymentStatus.PENDING);
         payment.setCreated(new java.util.Date(0));

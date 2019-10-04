@@ -16,6 +16,8 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatu
 import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmation1;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -62,7 +64,8 @@ public class FundsConfirmationsApiControllerIT {
 
     @MockBean
     private FundsAvailabilityService fundsAvailabilityService;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
     @Before
@@ -73,7 +76,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testGetFundsConfirmation() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFundsConfirmationConsent1 consent = saveConsent();
         FRFundsConfirmation1 fundsConfirmation = saveFundsConfirmation(consent);
 
@@ -95,7 +98,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testGetMissing_ReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.0/cbpii/funds-confirmations/12345")
@@ -110,7 +113,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testGetFundsConfirmationWithMissingConsent_ReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFundsConfirmationConsent1 consent = JMockData.mock(FRFundsConfirmationConsent1.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         // Consent not saved in repo
@@ -129,7 +132,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testCreateFundsConfirmation() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFundsConfirmationConsent1 consent = saveConsent();
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
                 .data(new OBFundsConfirmationData1()
@@ -162,7 +165,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testDuplicateCreation_UpdateAndReturn() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFundsConfirmationConsent1 consent = saveConsent();
         FRFundsConfirmation1 frFundsConfirmation = saveFundsConfirmation(consent);
 
@@ -190,7 +193,7 @@ public class FundsConfirmationsApiControllerIT {
     @Test
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
                 .data(new OBFundsConfirmationData1()
                         .consentId(IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId())

@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -45,7 +47,8 @@ public class Accounts2ApiControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
     @Before
@@ -56,7 +59,7 @@ public class Accounts2ApiControllerIT {
     @Test
     public void testGetAnAccount() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         FRAccount3 account = JMockData.mock(FRAccount3.class);
         frAccountRepository.save(account);
 

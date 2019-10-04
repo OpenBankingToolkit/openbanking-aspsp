@@ -13,6 +13,8 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.payments.payment
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -58,7 +60,8 @@ public class PaymentsApiControllerIT {
 
     @MockBean
     private TppRepository tppRepository;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
     @Before
     public void setUp() {
@@ -68,7 +71,7 @@ public class PaymentsApiControllerIT {
     @Test
     public void shouldCreateSinglePaymentConsent() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         setupMockTpp(tppRepository);
         OBPaymentSetup1 consentRequest = JMockData.mock(OBPaymentSetup1.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
@@ -109,7 +112,7 @@ public class PaymentsApiControllerIT {
     @Test
     public void shouldGetSinglePaymentConsent() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRPaymentSetup1 consent = JMockData.mock(FRPaymentSetup1.class);
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
         repository.save(consent);
@@ -136,7 +139,7 @@ public class PaymentsApiControllerIT {
     @Test
     public void getSinglePaymentConsent_wrongConsentId_badRequest() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
 
         // When
         HttpResponse<OBPaymentSetupResponse1> response = Unirest.get("https://rs-store:" + port + "/open-banking/v1.1/payments/wrongId")

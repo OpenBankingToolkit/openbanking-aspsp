@@ -16,6 +16,8 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatu
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticPaymentSubmission2;
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -56,7 +58,8 @@ public class DomesticPaymentsApiControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
     @Before
@@ -67,7 +70,7 @@ public class DomesticPaymentsApiControllerIT {
     @Test
     public void testGetDomesticPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent2 consent = saveConsent();
         FRDomesticPaymentSubmission2 submission = savePaymentSubmission(consent, UUID.randomUUID().toString());
 
@@ -88,7 +91,7 @@ public class DomesticPaymentsApiControllerIT {
     @Test
     public void testGetMissingDomesticPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent2 consent = saveConsent();
         OBWriteDomestic2 submissionRequest = JMockData.mock(OBWriteDomestic2.class);
         FRDomesticPaymentSubmission2 submission = FRDomesticPaymentSubmission2.builder()
@@ -109,7 +112,7 @@ public class DomesticPaymentsApiControllerIT {
     @Test
     public void testGetDomesticPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         FRDomesticPaymentSubmission2 submission = savePaymentSubmission(consent, UUID.randomUUID().toString());
@@ -127,7 +130,7 @@ public class DomesticPaymentsApiControllerIT {
     @Test
     public void testCreateDomesticPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent2 consent = saveConsent();
         OBWriteDomestic2 submissionRequest = new OBWriteDomestic2()
                 .risk(consent.getRisk())
@@ -157,7 +160,7 @@ public class DomesticPaymentsApiControllerIT {
     @Test
     public void testDuplicatePaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent2 consent = saveConsent();
         FRDomesticPaymentSubmission2 submission = savePaymentSubmission(consent, UUID.randomUUID().toString());
 
@@ -185,7 +188,7 @@ public class DomesticPaymentsApiControllerIT {
     public void testDuplicatePaymentInitiation_validIdempotency_ShouldReturnCreated() throws Exception {
         // Given
         final String idempotencyKey = UUID.randomUUID().toString();
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent2 consent = saveConsent();
         FRDomesticPaymentSubmission2 submission = savePaymentSubmission(consent, idempotencyKey);
 
@@ -209,7 +212,7 @@ public class DomesticPaymentsApiControllerIT {
     @Test
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");

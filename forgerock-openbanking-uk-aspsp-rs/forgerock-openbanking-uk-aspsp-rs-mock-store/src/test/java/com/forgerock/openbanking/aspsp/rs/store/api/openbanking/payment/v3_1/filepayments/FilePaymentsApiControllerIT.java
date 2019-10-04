@@ -18,6 +18,8 @@ import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileCon
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFilePaymentSubmission2;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -60,7 +62,8 @@ public class FilePaymentsApiControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
     @MockBean
     private PaymentReportFile2Service paymentReportFile2Service;
@@ -73,7 +76,7 @@ public class FilePaymentsApiControllerIT {
     @Test
     public void testGetInternationalPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent2 consent = saveConsent();
         FRFilePaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -94,7 +97,7 @@ public class FilePaymentsApiControllerIT {
     @Test
     public void testGetMissingInternationalPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent2 consent = saveConsent();
         OBWriteFile2 submissionRequest = JMockData.mock(OBWriteFile2.class);
         FRFilePaymentSubmission2 submission = FRFilePaymentSubmission2.builder()
@@ -116,7 +119,7 @@ public class FilePaymentsApiControllerIT {
     @Test
     public void testGetInternationalPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent2 consent = JMockData.mock(FRFileConsent2.class);
         consent.setId(IntentType.PAYMENT_FILE_CONSENT.generateIntentId());
         FRFilePaymentSubmission2 submission = savePaymentSubmission(consent);
@@ -135,7 +138,7 @@ public class FilePaymentsApiControllerIT {
     @Test
     public void testCreateInternationalPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent2 consent = saveConsent();
         OBWriteFile2 submissionRequest = new OBWriteFile2()
                 .data(new OBWriteDataFile2()
@@ -164,7 +167,7 @@ public class FilePaymentsApiControllerIT {
     @Test
     public void testDuplicatePaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent2 consent = saveConsent();
         FRFilePaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -190,7 +193,7 @@ public class FilePaymentsApiControllerIT {
     @Test
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent2 consent = JMockData.mock(FRFileConsent2.class);
         consent.setId(IntentType.PAYMENT_FILE_CONSENT.generateIntentId());
         consent.getInitiation().setControlSum(new BigDecimal("1001.1"));
@@ -222,7 +225,7 @@ public class FilePaymentsApiControllerIT {
     @Test
     public void testMissingConsentOnGetFileReportShouldReturnNotFound() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
 
         // When
         HttpResponse response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/file-payments/123/report-file")
@@ -242,7 +245,7 @@ public class FilePaymentsApiControllerIT {
     @Test
     public void testReportNotReady_NotFound() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent2 consent = saveConsent(ConsentStatusCode.PENDING);
         when(paymentReportFile2Service.createPaymentReport(eq(consent))).thenThrow(
              new OBErrorResponseException(HttpStatus.NOT_FOUND,
@@ -268,7 +271,7 @@ public class FilePaymentsApiControllerIT {
     @Test
     public void testGetReportFileSuccess() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent2 consent = saveConsent();
         when(paymentReportFile2Service.createPaymentReport(eq(consent))).thenReturn("{\"Data\": {\"DomesticPayments\": []} }");
 

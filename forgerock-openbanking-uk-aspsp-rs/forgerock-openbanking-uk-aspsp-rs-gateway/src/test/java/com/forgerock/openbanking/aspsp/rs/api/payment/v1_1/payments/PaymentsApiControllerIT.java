@@ -12,8 +12,11 @@ import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.core.services.CryptoApiClientImpl;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.oidc.services.UserInfoService;
 import com.github.jsonzou.jmockdata.JMockData;
+import com.nimbusds.jwt.SignedJWT;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.JsonNode;
@@ -66,7 +69,8 @@ public class PaymentsApiControllerIT {
     private CryptoApiClientImpl cryptoApiClient;
     @MockBean
     private RsStoreGateway rsStoreGateway;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
     @Before
     public void setUp() {
@@ -77,8 +81,8 @@ public class PaymentsApiControllerIT {
     public void createSinglePaymentShouldReturnCreated() throws Exception {
         // Given
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
-        //mockAuthentication(authenticator, "ROLE_PISP");
-        //mockAccessTokenVerification(cryptoApiClient, jws);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(cryptoApiClient.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
         OBPaymentSetupResponse1 paymentSetupResponse = defaultPaymentResponse();
         OBPaymentSetup1 request = defaultPaymentSetupRequest(paymentSetupResponse);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(paymentSetupResponse));
@@ -101,7 +105,7 @@ public class PaymentsApiControllerIT {
     public void createPaymentShouldBeForbiddenWhenHavingAISPPermission() throws Exception {
         // Given
         String jws = jws("payments");
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         OBPaymentSetupResponse1 paymentSetupResponse = defaultPaymentResponse();
         OBPaymentSetup1 request = defaultPaymentSetupRequest(paymentSetupResponse);
 
@@ -121,7 +125,7 @@ public class PaymentsApiControllerIT {
     @Test
     public void getPaymentShouldBeForbiddenWhenHavingAISPPermission() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
 
         // When
         HttpResponse<JsonNode> response = Unirest.get("https://rs-api:" + port + "/open-banking/v2.0/payments/1")
@@ -137,8 +141,8 @@ public class PaymentsApiControllerIT {
     public void createSinglePayment_noAuthHeader_401() throws Exception {
         // Given
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
-        //mockAuthentication(authenticator, "ROLE_PISP");
-        //mockAccessTokenVerification(cryptoApiClient, jws);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(cryptoApiClient.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
         OBPaymentSetupResponse1 paymentSetupResponse = defaultPaymentResponse();
         OBPaymentSetup1 request = defaultPaymentSetupRequest(paymentSetupResponse);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(paymentSetupResponse));

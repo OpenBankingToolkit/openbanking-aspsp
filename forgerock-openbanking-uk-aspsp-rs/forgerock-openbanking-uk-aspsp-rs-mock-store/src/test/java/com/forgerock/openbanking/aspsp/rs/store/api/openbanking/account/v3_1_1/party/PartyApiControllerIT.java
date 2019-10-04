@@ -67,7 +67,7 @@ public class PartyApiControllerIT {
     @Test
     public void getAccountParties_returnTwo() {
         // Given
-        ////mockAuthentication(authenticator, "ROLE_AISP");
+        //springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
 
 
         // When
@@ -89,7 +89,7 @@ public class PartyApiControllerIT {
     @Test
     public void getAccountParty() {
         // Given
-       // //mockAuthentication(authenticator, "ROLE_AISP");
+       // springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
 
         // When
         HttpResponse<OBReadParty2> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1.1/aisp/accounts/"+accountParty.getAccountId()+"/party")
@@ -109,7 +109,7 @@ public class PartyApiControllerIT {
         // Given
         String accountId = UUID.randomUUID().toString();
         String username = UUID.randomUUID().toString();
-        ////mockAuthentication(authenticator, "ROLE_AISP");
+        //springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
 
         FRParty2 userParty = JMockData.mock(FRParty2.class);
         userParty.setUserId(username);

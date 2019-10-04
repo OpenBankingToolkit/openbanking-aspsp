@@ -14,6 +14,8 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.Domesti
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -57,7 +59,8 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
     @MockBean
@@ -71,7 +74,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticScheduledPaymentConsent() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent2 consent = JMockData.mock(FRDomesticScheduledConsent2.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         DateTime requestedExecutionDateTime = DateTime.now().withMillisOfSecond(0);
@@ -98,7 +101,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticScheduledPaymentConsentReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent2 consent = JMockData.mock(FRDomesticScheduledConsent2.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
@@ -115,7 +118,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
     @Test
     public void testCreateDomesticScheduledPaymentConsent() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         PaymentTestHelper.setupMockTpp(tppRepository);
         OBWriteDomesticScheduledConsent2 consentRequest = JMockData.mock(OBWriteDomesticScheduledConsent2.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");

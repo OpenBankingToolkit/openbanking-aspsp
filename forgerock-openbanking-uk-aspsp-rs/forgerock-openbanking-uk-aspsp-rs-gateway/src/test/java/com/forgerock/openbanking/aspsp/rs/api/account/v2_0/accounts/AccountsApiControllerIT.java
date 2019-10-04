@@ -12,8 +12,10 @@ import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.oidc.services.UserInfoService;
 import com.nimbusds.jwt.SignedJWT;
@@ -66,6 +68,8 @@ public class AccountsApiControllerIT {
     private CryptoApiClient cryptoApiClient;
     @MockBean
     private RsStoreGateway rsStoreGateway;
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
     @Before
     public void setUp() {
@@ -76,7 +80,7 @@ public class AccountsApiControllerIT {
     public void getAccountShouldReturnAccountInfo() throws Exception {
         // Given
         String jws = jws("accounts");
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Collections.singletonList(READACCOUNTSDETAIL));
         OBReadAccount2 obReadAccount2 = new OBReadAccount2();
@@ -95,7 +99,7 @@ public class AccountsApiControllerIT {
     @Test
     public void getAccountShouldBeForbiddenWhenNotAISP() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
 
         // When
         HttpResponse<JsonNode> response = Unirest.get("https://rs-api:" + port + "/open-banking/v2.0/accounts/100000123")
@@ -111,7 +115,7 @@ public class AccountsApiControllerIT {
     public void getAccountShouldBeForbiddenWhenNoReadAccountDetailsPermission() throws Exception {
         // Given
         String jws = jws("accounts");
-        //mockAuthentication(authenticator, "ROLE_AISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Collections.singletonList(READBALANCES));
 

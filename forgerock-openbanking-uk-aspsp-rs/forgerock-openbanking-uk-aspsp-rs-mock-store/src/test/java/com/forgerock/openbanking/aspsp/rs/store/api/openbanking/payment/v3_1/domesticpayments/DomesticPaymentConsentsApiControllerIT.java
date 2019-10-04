@@ -15,6 +15,8 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatu
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.oidc.services.OpenIdService;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
@@ -66,7 +68,8 @@ public class DomesticPaymentConsentsApiControllerIT {
 
     @MockBean
     private FundsAvailabilityService fundsAvailabilityService;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
     @MockBean
@@ -80,7 +83,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticPaymentConsent() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
@@ -105,7 +108,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticPaymentConsentFunds() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
@@ -129,7 +132,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     @Test
     public void testGetDomesticPaymentConsentReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
 
@@ -146,7 +149,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     @Test
     public void testCreateDomesticPaymentConsent() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         setupMockTpp(tppRepository);
         OBWriteDomesticConsent2 consentRequest = JMockData.mock(OBWriteDomesticConsent2.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
@@ -187,7 +190,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     public void testCreateDomesticPaymentConsent_exists_idempotencyKeyValid_noActionButReturn201() throws UnirestException {
         // Given
         final String idempotencyKey = UUID.randomUUID().toString();
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         setupMockTpp(tppRepository);
         OBWriteDomesticConsent2 consentRequest = JMockData.mock(OBWriteDomesticConsent2.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
@@ -229,7 +232,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     public void testCreateDomesticPaymentConsent_exists_idempotencyKeyExpired() throws UnirestException {
         // Given
         final String idempotencyKey = UUID.randomUUID().toString();
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         setupMockTpp(tppRepository);
         OBWriteDomesticConsent1 consentRequest = JMockData.mock(OBWriteDomesticConsent1.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");

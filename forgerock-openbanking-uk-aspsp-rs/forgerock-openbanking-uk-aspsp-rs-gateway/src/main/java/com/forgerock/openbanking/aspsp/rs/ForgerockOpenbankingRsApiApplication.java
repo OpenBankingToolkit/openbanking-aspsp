@@ -19,6 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.web.client.RestTemplate;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.Filter;
@@ -45,5 +46,10 @@ public class ForgerockOpenbankingRsApiApplication {
     @Bean
     public Filter formSanitisationFilter(ErrorHandler errorHandler, Tracer tracer) {
         return new FormValueSanitisationFilter(errorHandler, tracer);
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

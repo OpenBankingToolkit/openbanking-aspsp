@@ -16,6 +16,8 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatu
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledPaymentSubmission2;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -54,7 +56,8 @@ public class InternationalScheduledPaymentsApiControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
-
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
     @Before
@@ -65,7 +68,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     @Test
     public void testGetInternationalScheduledPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent2 consent = saveConsent();
         FRInternationalScheduledPaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -86,7 +89,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     @Test
     public void testGetMissingInternationalScheduledPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent2 consent = saveConsent();
         OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
         FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
@@ -107,7 +110,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     @Test
     public void testGetInternationalScheduledPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent2 consent = JMockData.mock(FRInternationalScheduledConsent2.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         FRInternationalScheduledPaymentSubmission2 submission = savePaymentSubmission(consent);
@@ -125,7 +128,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     @Test
     public void testCreateInternationalScheduledPaymentSubmission() throws UnirestException {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent2 consent = saveConsent();
         OBWriteInternationalScheduled2 submissionRequest = new OBWriteInternationalScheduled2()
                 .risk(consent.getRisk())
@@ -154,7 +157,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     @Test
     public void testDuplicateScheduledPaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent2 consent = saveConsent();
         FRInternationalScheduledPaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -181,7 +184,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     @Test
     public void testMissingConsentOnScheduledPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
-        //mockAuthentication(authenticator, "ROLE_PISP");
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent2 consent = JMockData.mock(FRInternationalScheduledConsent2.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");

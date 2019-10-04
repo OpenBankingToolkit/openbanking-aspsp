@@ -12,6 +12,8 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.FRPendingEventsReposi
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -54,6 +56,8 @@ public class AggregatedPollingApiControllerIT {
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
 
 
@@ -73,7 +77,7 @@ public class AggregatedPollingApiControllerIT {
         clientId = UUID.randomUUID().toString();
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
 
-        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
     }
 
     @Test
