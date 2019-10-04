@@ -1,0 +1,89 @@
+spring:
+  application:
+    name: @project.name@
+  cloud:
+    config:
+    fail-fast: true
+    retry.max-interval: 30000
+    retry.max-attempts: 30
+
+
+
+
+#Metrics configuration
+metrics:
+  port: 8444
+  endpoints:
+    root: https://metrics-services:${metrics.port}
+    endpoint-usage:
+      add-entries: ${metrics.endpoints.root}/api/kpi/endpoint-usage/add-entries
+    jwts-generation:
+      add-entries: ${metrics.endpoints.root}/api/kpi/jwts/jwts-generation/add-entries
+    jwts-validation:
+      add-entries: ${metrics.endpoints.root}/api/kpi/jwts/jwts-validation/add-entries
+
+
+#Swagger config
+#Swagger
+swagger:
+  license: "open-licence"
+  license-url: "https://www.openbanking.org.uk/open-licence"
+  terms-of-service-url: "https://backstage.forgerock.com/knowledge/openbanking/article/a45894685"
+  version: "v3.1.1"
+  contact:
+    name: "ForgeRock AS"
+    url: "https://${dns.hosts.root}"
+    email: "openbanking-support@forgerock.com"
+  title: "JWK Management Services APIs Specification"
+  description: "Swagger for JWK management services APIs Specification"
+
+
+## TO DELETE
+
+
+am:
+  trusted-header-certificate: ebJ8Qo7p9MpAIVenixCsNiDySmWEKb
+  port: 443
+  internal-port: 8443
+  hostname: as.aspsp.${dns.hosts.root}
+  matls-hostname: matls.as.aspsp.${dns.hosts.root}
+  root: https://${am.hostname}
+  authentication:
+    chain: urn:openbanking:psd2:sca
+  cookie:
+    name: iPlanetDirectoryPro
+  endpoint:
+    login: ${am.root}/login
+    logout: ${am.root}/logout
+    userprofile: ${am.root}/json/users?_action=idFromSession
+    users: ${am.root}/json/realms/root/realms/openbanking/users/
+    registration: ${am.root}/json/realms/root/realms/openbanking/selfservice/userRegistration?_action=submitRequirements
+  oidc:
+    endpoint:
+      accesstoken: ${am.internal.root}/oauth2/realms/root/realms/openbanking/access_token
+      authorization: ${am.internal.root}/oauth2/realms/root/realms/openbanking/authorize
+      userinfo: ${am.internal.root}/oauth2/realms/root/realms/openbanking/userinfo
+      registration: ${am.internal.root}/oauth2/realms/root/realms/openbanking/register
+    issuerid: ${am.root}/oauth2
+    audiences: https://${am.matls-hostname}/oauth2, ${am.root}/oauth2, https://${am.matls-hostname}/oauth2/access_token"
+    jwksuri: ${am.internal.root}/oauth2/realms/root/realms/openbanking/connect/jwk_uri
+  userprofile:
+    id: id
+  realm:
+    auth:
+      hostname: am.${dns.hosts.root}
+      oidc:
+        issuerid: https://${am.realm.auth.hostname}/oauth2/realms/root/realms/auth
+        jwk_uri: https://${am.realm.auth.hostname}/oauth2/realms/root/realms/auth/connect/jwk_uri
+        authorize: https://${am.realm.auth.hostname}/oauth2/realms/root/realms/auth/authorize
+  internal:
+    root: https://openam:443
+    oidc:
+      issuerid: ${am.internal.root}/oauth2/auth
+      endpoint:
+        accesstoken: ${am.internal.root}/oauth2/realms/root/realms/auth/access_token
+    endpoint:
+      oidc-client: ${am.internal.root}/json/realms/root/realms/openbanking/realm-config/agents/OAuth2Client
+      authentication: ${am.internal.root}/json/authenticate
+    credential:
+      amadmin: sy95jyiquqvjbbquq845gncysh13eax6 # TODO this is a default that shouldn't need to be here. All apps need it but may not use it.#obri
