@@ -18,8 +18,8 @@
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
-        <artifactId>forgerock-openbanking-uk-aspsp</artifactId>
+        <groupId>com.forgerock.openbanking.uk.aspsp.rs</groupId>
+        <artifactId>forgerock-openbanking-uk-aspsp-rs</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
@@ -27,4 +27,14 @@
         <module>forgerock-openbanking-uk-aspsp-rs-gateway-server</module>
         <module>forgerock-openbanking-uk-aspsp-rs-gateway-sample</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.forgerock.openbanking.uk.aspsp.rs</groupId>
+                <artifactId>forgerock-openbanking-uk-aspsp-rs-gateway-server</artifactId>
+                <version>${project.parent.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

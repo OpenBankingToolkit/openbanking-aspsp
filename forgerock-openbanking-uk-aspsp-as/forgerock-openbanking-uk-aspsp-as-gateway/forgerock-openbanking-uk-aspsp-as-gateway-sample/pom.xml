@@ -13,11 +13,11 @@
     <groupId>com.forgerock.openbanking.uk.aspsp.as</groupId>
     <artifactId>forgerock-openbanking-uk-aspsp-as-gateway-sample</artifactId>
     <packaging>jar</packaging>
-    <name>as-gateway</name>
+    <name>as-gateway-sample</name>
 
     <parent>
         <groupId>com.forgerock.openbanking.uk.aspsp.as</groupId>
-        <artifactId>forgerock-openbanking-uk-aspsp-as</artifactId>
+        <artifactId>forgerock-openbanking-uk-aspsp-as-gateway</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
@@ -27,7 +27,7 @@
             <artifactId>forgerock-openbanking-uk-aspsp-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
+            <groupId>com.forgerock.openbanking.uk.aspsp.as</groupId>
             <artifactId>forgerock-openbanking-uk-aspsp-as-gateway-server</artifactId>
         </dependency>
         <dependency>

@@ -21,7 +21,7 @@
 
     <parent>
         <groupId>com.forgerock.openbanking.uk.aspsp.rs</groupId>
-        <artifactId>forgerock-openbanking-uk-aspsp-rs</artifactId>
+        <artifactId>forgerock-openbanking-uk-aspsp-rs-rcs</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
@@ -29,6 +29,10 @@
         <dependency>
             <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
             <artifactId>forgerock-openbanking-uk-aspsp-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.openbanking.uk.aspsp.rs.rcs</groupId>
+            <artifactId>forgerock-openbanking-uk-aspsp-rs-rcs-server</artifactId>
         </dependency>
         <dependency>
             <groupId>com.forgerock.openbanking</groupId>

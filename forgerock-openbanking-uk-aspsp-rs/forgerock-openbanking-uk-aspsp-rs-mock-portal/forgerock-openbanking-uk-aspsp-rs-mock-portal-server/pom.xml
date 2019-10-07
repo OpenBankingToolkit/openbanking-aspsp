@@ -21,7 +21,7 @@
 
 	<parent>
 		<groupId>com.forgerock.openbanking.uk.aspsp.rs</groupId>
-		<artifactId>forgerock-openbanking-uk-aspsp-rs</artifactId>
+		<artifactId>forgerock-openbanking-uk-aspsp-rs-mock-portal</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
@@ -153,52 +153,4 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<executable>true</executable>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>build-info</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>pl.project13.maven</groupId>
-				<artifactId>git-commit-id-plugin</artifactId>
-			</plugin>
-			<plugin>
-				<groupId>com.spotify</groupId>
-				<artifactId>dockerfile-maven-plugin</artifactId>
-				<configuration>
-					<skipPush>false</skipPush>
-					<repository>r.cfcr.io/openbanking/obri/rs-ui</repository>
-					<buildArgs>
-						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
-					</buildArgs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>ru.yaal.maven</groupId>
-				<artifactId>write-text-files-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-		<resources>
-			<resource>
-				<directory>src/main/resources/unfiltered</directory>
-				<filtering>false</filtering>
-			</resource>
-			<resource>
-				<directory>src/main/resources/filtered</directory>
-				<filtering>true</filtering>
-			</resource>
-		</resources>
-	</build>
 </project>
