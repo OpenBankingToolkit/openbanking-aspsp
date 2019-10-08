@@ -32,14 +32,15 @@
 
     <properties>
         <ob-common.version>1.0.31</ob-common.version>
-        <spring-security-multi-auth-starter.version>0.0.15</spring-security-multi-auth-starter.version>
         <ob-auth.version>1.0.0</ob-auth.version>
-        <ob-jwkms.version>1.1.10</ob-jwkms.version>
+        <ob-jwkms.version>1.1.11</ob-jwkms.version>
         <analytics.version>1.1.6</analytics.version>
 
         <mockito.version>3.0.0</mockito.version>
         <asserts.version>3.13.2</asserts.version>
         <unirest-java.version>2.3.06</unirest-java.version>
+
+        <spring-security-multi-auth-starter.version>0.0.16</spring-security-multi-auth-starter.version>
 
     </properties>
 
@@ -63,7 +64,11 @@
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
-
+            <dependency>
+                <groupId>com.forgerock</groupId>
+                <artifactId>spring-security-multi-auth-starter</artifactId>
+                <version>${spring-security-multi-auth-starter.version}</version>
+            </dependency>
 
             <!-- OpenBanking -->
             <dependency>
@@ -75,6 +80,11 @@
                 <groupId>com.forgerock.openbanking</groupId>
                 <artifactId>forgerock-openbanking-am</artifactId>
                 <version>${ob-common.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock.openbanking.jwkms</groupId>
+                <artifactId>forgerock-openbanking-jwkms-embedded</artifactId>
+                <version>${ob-jwkms.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.forgerock.openbanking</groupId>
@@ -94,11 +104,6 @@
             <dependency>
                 <groupId>com.forgerock.openbanking</groupId>
                 <artifactId>forgerock-openbanking-ssl</artifactId>
-                <version>${ob-common.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.forgerock.openbanking</groupId>
-                <artifactId>forgerock-openbanking-upgrade</artifactId>
                 <version>${ob-common.version}</version>
             </dependency>
             <dependency>

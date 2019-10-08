@@ -11,12 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.cert.psd2.Psd2Role;
 import com.forgerock.openbanking.aspsp.as.service.SSAService;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
+import com.forgerock.openbanking.authentication.model.authentication.X509Authentication;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.SoftwareStatementRole;
 import com.forgerock.openbanking.model.Tpp;
-import com.forgerock.openbanking.model.UserContext;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,7 +86,8 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
             Principal principal
     ) throws OBErrorException {
 
-        UserContext currentUser = (UserContext) ((Authentication) principal).getPrincipal();
+        X509Authentication authentication = (X509Authentication) principal;
+        User currentUser = (User) authentication.getPrincipal();
         log.debug("User detail: username {} and authorities {}", currentUser.getUsername(), currentUser.getAuthorities());
         try {
             log.debug("Received a manual onboarding registration request {}", manualRegistrationRequest);
@@ -123,7 +124,7 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
             //Verify the SSA
             JSONObject ssaJwsJson = ssaClaims.toJSONObject();
 
-            Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims, oidcRegistrationRequest, currentUser);
+            Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims, oidcRegistrationRequest, authentication);
 
             log.debug("The SSA was verified successfully");
 

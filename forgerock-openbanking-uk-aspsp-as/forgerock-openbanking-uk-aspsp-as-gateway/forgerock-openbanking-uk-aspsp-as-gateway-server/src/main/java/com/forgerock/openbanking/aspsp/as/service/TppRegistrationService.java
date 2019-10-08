@@ -12,6 +12,7 @@ import com.forgerock.openbanking.analytics.model.entries.TppEntry;
 import com.forgerock.openbanking.analytics.services.TppEntriesKPIService;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
+import com.forgerock.openbanking.authentication.model.authentication.X509Authentication;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
@@ -20,7 +21,6 @@ import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.SoftwareStatementRole;
 import com.forgerock.openbanking.model.Tpp;
-import com.forgerock.openbanking.model.UserContext;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
@@ -60,6 +60,9 @@ public class TppRegistrationService {
 
 
     public String verifySSA(String ssaSerialised) {
+        if (ssaSerialised == null) {
+            return null;
+        }
         try {
             log.debug("Verify the SSA against OB directory");
             cryptoApiClient.validateJws(ssaSerialised, openBankingDirectoryConfiguration.getIssuerID(),
@@ -278,7 +281,7 @@ public class TppRegistrationService {
     public Set<SoftwareStatementRole> prepareRegistrationRequestWithSSA(
             JWTClaimsSet ssaClaims,
             OIDCRegistrationRequest oidcRegistrationRequest,
-            UserContext currentUser
+            X509Authentication currentUser
     ) throws ParseException {
         //Import information from the SSA into the registration request, as per the OAuth2 dynamic registration
         oidcRegistrationRequest.setJwks_uri(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_JWKS_ENDPOINT));
@@ -311,7 +314,7 @@ public class TppRegistrationService {
         OIDCConstants.TokenEndpointAuthMethods authMethods = OIDCConstants.TokenEndpointAuthMethods.fromType(oidcRegistrationRequest.getTokenEndpointAuthMethod());
 
         if (authMethods == TLS_CLIENT_AUTH) {
-            oidcRegistrationRequest.setTlsClientAuthSubjectDn(currentUser.getCertificatesChain()[0].getSubjectDN().toString());
+            oidcRegistrationRequest.setTlsClientAuthSubjectDn(currentUser.getCertificateChain()[0].getSubjectDN().toString());
         }
 
         oidcRegistrationRequest.setScopes(new ArrayList<>(scopes));

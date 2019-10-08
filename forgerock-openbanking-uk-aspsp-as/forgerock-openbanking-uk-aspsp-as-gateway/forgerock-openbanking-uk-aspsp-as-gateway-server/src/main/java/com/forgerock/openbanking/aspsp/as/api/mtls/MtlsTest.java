@@ -20,7 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.security.Principal;
-import java.util.Collection;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @Api(tags = "MtlsTest", description = "Test your MTLS setup")
@@ -28,7 +29,7 @@ public class MtlsTest {
 
     public static class MtlsTestResponse {
         public String issuerId;
-        public Collection<? extends GrantedAuthority> authorities;
+        public Set<String> authorities;
     }
 
     @ApiOperation(
@@ -56,7 +57,7 @@ public class MtlsTest {
 
         UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
         response.issuerId = currentUser.getUsername();
-        response.authorities = currentUser.getAuthorities();
+        response.authorities = currentUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toSet());
         return ResponseEntity.ok(response);
     }
 }

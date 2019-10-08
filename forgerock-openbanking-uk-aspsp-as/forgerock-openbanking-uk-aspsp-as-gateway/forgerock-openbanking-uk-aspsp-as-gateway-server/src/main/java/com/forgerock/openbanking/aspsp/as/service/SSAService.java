@@ -13,17 +13,18 @@ import com.forgerock.cert.exception.NoSuchRDNInField;
 import com.forgerock.cert.psd2.Psd2QcStatement;
 import com.forgerock.cert.psd2.Psd2Role;
 import com.forgerock.cert.psd2.RolesOfPsp;
+import com.forgerock.openbanking.authentication.model.authentication.PSD2Authentication;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.SoftwareStatementRole;
-import com.forgerock.openbanking.model.UserContext;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.security.cert.CertificateEncodingException;
@@ -36,19 +37,18 @@ public class SSAService {
     @Autowired
     private CryptoApiClient cryptoApiClient;
 
-    public String generateSSAForEIDAS(UserContext currentUser, JWK jwk, List<String> redirectUris) throws OBErrorException, NoSuchRDNInField, CertificateEncodingException {
+    public String generateSSAForEIDAS(Authentication currentUser, JWK jwk, List<String> redirectUris) throws OBErrorException, NoSuchRDNInField, CertificateEncodingException {
         // read the psd2info and convert it into an SSA
-        Psd2CertInfo certInfoFromQWAC = currentUser.getPsd2CertInfo();
-        if (certInfoFromQWAC == null) {
+        if (!(currentUser instanceof PSD2Authentication)) {
             log.error("Could not obtain PSD2 information from the user's eIDAS certificate");
             throw new OBErrorException(OBRIErrorType.PRINCIPAL_MISSING_PSD2_INFORMATION);
         }
-
+        PSD2Authentication psd2Authentication = (PSD2Authentication) currentUser;
         try {
-            Psd2QcStatement psd2QcStatement = certInfoFromQWAC.getPsd2QCStatement().get();
+            Psd2QcStatement psd2QcStatement = psd2Authentication.getPsd2CertInfo().getPsd2QCStatement().get();
             RolesOfPsp rolesPSD2 = psd2QcStatement.getRoles();
             List<Psd2Role> psd2Roles = rolesPSD2.getRolesOfPsp().stream().map(r -> r.getRole()).collect(Collectors.toList());
-            return generateSSAForEIDAS( certInfoFromQWAC.getApplicationId(), certInfoFromQWAC.getOrganizationId().get(), psd2Roles, jwk, redirectUris);
+            return generateSSAForEIDAS( psd2Authentication.getPsd2CertInfo().getApplicationId(), psd2Authentication.getPsd2CertInfo().getOrganizationId().get(), psd2Roles, jwk, redirectUris);
         } catch (InvalidPsd2EidasCertificate invalidPsd2EidasCertificate) {
             log.debug("Certificate received is not detected as a PSD2 certificates");
             throw new OBErrorException(OBRIErrorType.OBRI_REGISTRATION_NOT_PSD2);

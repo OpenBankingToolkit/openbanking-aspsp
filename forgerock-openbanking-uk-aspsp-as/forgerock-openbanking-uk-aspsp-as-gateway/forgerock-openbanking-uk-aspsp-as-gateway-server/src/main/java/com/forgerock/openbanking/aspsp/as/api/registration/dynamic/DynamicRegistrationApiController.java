@@ -16,6 +16,7 @@ import com.forgerock.cert.exception.NoSuchRDNInField;
 import com.forgerock.cert.utils.CertificateUtils;
 import com.forgerock.openbanking.aspsp.as.service.SSAService;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
+import com.forgerock.openbanking.authentication.model.authentication.X509Authentication;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.utils.extractor.TokenExtractor;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -23,7 +24,6 @@ import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.SoftwareStatementRole;
 import com.forgerock.openbanking.model.Tpp;
-import com.forgerock.openbanking.model.UserContext;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
@@ -37,11 +37,16 @@ import com.nimbusds.jwt.SignedJWT;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -160,7 +165,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
 
             Principal principal
     ) throws OBErrorResponseException, OBErrorException {
-        UserContext currentUser = (UserContext) ((Authentication) principal).getPrincipal();
+        X509Authentication currentUser = (X509Authentication) principal;
 
         Tpp tpp = getTpp(principal);
         verifyClientIDMatchTPP(tpp, clientId);
@@ -232,7 +237,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         log.debug("register TPP: request {}", registrationRequestJwtSerialised);
 
         try {
-            UserContext currentUser = (UserContext) ((Authentication) principal).getPrincipal();
+            X509Authentication authentication = (X509Authentication) principal;
+            User currentUser = (User) authentication.getPrincipal();
             log.debug("User detail: username {} and authorities {}", currentUser.getUsername(), currentUser.getAuthorities());
             if (currentUser.getAuthorities().contains(OBRIRole.ROLE_AISP)
                     || currentUser.getAuthorities().contains(OBRIRole.ROLE_PISP)
@@ -260,8 +266,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                             registrationRequestJson, OIDCRegistrationRequest.class);
 
                     String directoryId;
-                    if (ssaSerialised == null && currentUser.getUserType() == UserContext.UserType.EIDAS) {
-                        ssaSerialised = generateSSAForEIDAS(currentUser, registrationRequestJws, oidcRegistrationRequest);
+                    if (ssaSerialised == null && currentUser.getAuthorities().contains(OBRIRole.ROLE_EIDAS)) {
+                        ssaSerialised = generateSSAForEIDAS(authentication, registrationRequestJws, oidcRegistrationRequest);
                         directoryId = ORIGIN_ID_EIDAS;
                     } else {
                         directoryId = tppRegistrationService.verifySSA(ssaSerialised);
@@ -281,11 +287,11 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                     log.debug("SSA json payload {}", ssaJwsJson.toJSONString());
 
                     verifyRegistrationRequest(registrationRequestJwtSerialised,
-                            ssaSerialised, ssaClaims, oidcRegistrationRequest, currentUser.getUsername());
+                            ssaSerialised, ssaClaims, oidcRegistrationRequest, authentication.getCertificateChain());
 
-                    Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims, oidcRegistrationRequest, currentUser);
+                    Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims, oidcRegistrationRequest, authentication);
 
-                    Tpp tpp = tppRegistrationService.registerTpp(currentUser.getUsername(), registrationRequestJson, ssaClaims, ssaJwsJson, oidcRegistrationRequest, directoryId, types);
+                    Tpp tpp = tppRegistrationService.registerTpp(authentication.getCertificateChain()[0].getSubjectDN().toString(), registrationRequestJson, ssaClaims, ssaJwsJson, oidcRegistrationRequest, directoryId, types);
 
                     return ResponseEntity.status(HttpStatus.CREATED).body(tpp.getRegistrationResponse());
                 } catch (HttpClientErrorException e) {
@@ -310,7 +316,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         }
     }
 
-    private String generateSSAForEIDAS(UserContext currentUser, SignedJWT registrationRequestJws, OIDCRegistrationRequest oidcRegistrationRequest) throws OBErrorException, NoSuchRDNInField, CertificateEncodingException {
+    private String generateSSAForEIDAS(X509Authentication currentUser, SignedJWT registrationRequestJws, OIDCRegistrationRequest oidcRegistrationRequest) throws OBErrorException, NoSuchRDNInField, CertificateEncodingException {
         try {
             JWK jwk;
 
@@ -354,16 +360,42 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         }
     }
 
+    private void verifyRegistrationRequest(
+            String registrationRequestJwtSerialised,
+            String ssaSerialised, JWTClaimsSet ssaClaims,
+            OIDCRegistrationRequest oidcRegistrationRequest,
+            String subject
+    ) throws OBErrorException, ParseException {
+        X500Name x500name = new X500Name(subject);
+        RDN cnRDN = x500name.getRDNs(BCStyle.CN)[0];
+        verifyRegistrationRequest(registrationRequestJwtSerialised, ssaSerialised, ssaClaims, oidcRegistrationRequest, cnRDN);
+
+    }
 
     private void verifyRegistrationRequest(
             String registrationRequestJwtSerialised,
             String ssaSerialised, JWTClaimsSet ssaClaims,
             OIDCRegistrationRequest oidcRegistrationRequest,
-            String cn
+            X509Certificate[] chain
+    ) throws OBErrorException, ParseException, CertificateEncodingException {
+        //Verify request
+        X500Name x500name = new JcaX509CertificateHolder(chain[0]).getSubject();
+        RDN cnRDN = x500name.getRDNs(BCStyle.CN)[0];
+
+        verifyRegistrationRequest(registrationRequestJwtSerialised, ssaSerialised, ssaClaims, oidcRegistrationRequest, cnRDN);
+    }
+
+    private void verifyRegistrationRequest(
+            String registrationRequestJwtSerialised,
+            String ssaSerialised, JWTClaimsSet ssaClaims,
+            OIDCRegistrationRequest oidcRegistrationRequest,
+            RDN cnRDN
     ) throws OBErrorException, ParseException {
         //Verify request
 
+        String cn = IETFUtils.valueToString(cnRDN.getFirst().getValue());
         String softwareId = ssaClaims.getStringClaim(SSAClaims.SOFTWARE_ID);
+
         tppRegistrationService.verifySSASoftwareIDAgainstTransportCert(softwareId, cn);
 
         String softwareClientId = ssaClaims.getStringClaim(SSAClaims.SOFTWARE_CLIENT_ID);

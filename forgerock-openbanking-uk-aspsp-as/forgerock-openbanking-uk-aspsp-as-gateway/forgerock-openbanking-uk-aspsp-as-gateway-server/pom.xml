@@ -38,7 +38,10 @@
             <groupId>com.forgerock.openbanking</groupId>
             <artifactId>forgerock-openbanking-jwt</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.forgerock</groupId>
+            <artifactId>spring-security-multi-auth-starter</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -51,10 +54,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -98,10 +97,12 @@
         <dependency>
             <groupId>com.tunyk.currencyconverter</groupId>
             <artifactId>currency-converter-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.logstash.logback</groupId>
-            <artifactId>logstash-logback-encoder</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
