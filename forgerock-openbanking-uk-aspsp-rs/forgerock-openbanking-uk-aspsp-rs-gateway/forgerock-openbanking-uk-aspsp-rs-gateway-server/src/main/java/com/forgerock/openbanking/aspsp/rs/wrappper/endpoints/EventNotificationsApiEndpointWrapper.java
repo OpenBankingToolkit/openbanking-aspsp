@@ -57,7 +57,7 @@ public class EventNotificationsApiEndpointWrapper extends RSEndpointWrapper<Even
             }
             OIDCConstants.GrantType grantType = OIDCConstants.GrantType.fromType(grantTypeSerialised);
 
-            if (!expectedGrantTypes.contains(grantType)) {
+            if (!OIDCConstants.GrantType.REFRESH_TOKEN.equals(grantType) && !expectedGrantTypes.contains(grantType)) {
                 log.debug("The access token grant type {} doesn't match one of the expected grant types {}", grantType, expectedGrantTypes);
                 throw new OBErrorException(OBRIErrorType.ACCESS_TOKEN_INVALID_GRANT_TYPE,
                         grantType, expectedGrantTypes
