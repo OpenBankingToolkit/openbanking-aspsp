@@ -157,11 +157,14 @@ public class DiscoveryApiController implements DiscoveryApi {
     }
 
     private String switchToSCGWPort(String endpoint) {
-        if (endpoint.contains(":443")) {
-            return endpoint.replaceFirst(":443", ":" + scgwPort);
+        if (scgwPort.equals("443") ) {
+            return endpoint.replaceFirst(":443", "");
         }
         if (endpoint.contains(":" + scgwPort)) {
             return endpoint;
+        }
+        if (endpoint.contains(":443")) {
+            return endpoint.replaceFirst(":443", ":" + scgwPort);
         }
         return endpoint.replaceFirst(dnsHostRoot, dnsHostRoot + ":" + scgwPort);
     }
