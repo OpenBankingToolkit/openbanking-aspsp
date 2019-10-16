@@ -54,10 +54,11 @@ steps:
       - mvn -Dmaven.repo.local=/codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository -DdockerCompose.skip -Ddockerfile.skip -DskipITs verify
     environment: *global_env
 
+  #Docker build
   build-rs-store-server-docker-image:
     type: build
     title: "Build rs-store server service docker image"
-    stage: "clone"
+    stage: "build-docker-images"
     image_name: obri/rs-store
     working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-server
     build_arguments:
@@ -69,7 +70,7 @@ steps:
   build-rs-store-sample-docker-image:
     type: build
     title: "Build rs-store sample service docker image"
-    stage: "clone"
+    stage: "build-docker-images"
     image_name: obri/rs-store
     working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-sample
     build_arguments:
