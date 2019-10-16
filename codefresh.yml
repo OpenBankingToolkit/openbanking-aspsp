@@ -71,7 +71,9 @@ steps:
           - ${{CF_VOLUME}}:/codefresh/volume
         image: r.cfcr.io/openbanking/ob-release:latest
         environment: *global_env
-        command: mvn -Dmaven.repo.local=/codefresh/volume/$1/.m2/repository  -Dspring.data.mongodb.uri=mongodb://mongo:27017/test -Ddockerfile.skip -DdockerCompose.skip verify -f /codefresh/volume/ob-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
+        commands:
+          - ls; pwd;
+          - mvn -Dmaven.repo.local=/codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository  -Dspring.data.mongodb.uri=mongodb://mongo:27017/test -Ddockerfile.skip -DdockerCompose.skip verify -f /codefresh/volume/${{CF_REPO_NAME}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
         hostname: rs-api
 
   #Docker build
@@ -86,7 +88,6 @@ steps:
       - VERSION_FILE=target/VERSION
       - SERVICE_FILE=target/SERVICE
     tag: ${{TAG_VERSION}}
-
 
 
   # deploy jar stage
