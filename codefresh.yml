@@ -5,6 +5,7 @@ stages:
   - prepare
   - build
   - unit-test
+  - build-docker-images
   - deploy
 
 indicators:
@@ -52,6 +53,32 @@ steps:
     commands:
       - mvn -Dmaven.repo.local=/codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository -DdockerCompose.skip -Ddockerfile.skip -DskipITs verify
     environment: *global_env
+
+  build-rs-store-server-docker-image:
+    type: build
+    title: "Build rs-store server service docker image"
+    stage: "clone"
+    image_name: obri/rs-store
+    working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-server
+    build_arguments:
+      - JAR_FILE=target/forgerock-openbanking-*.jar
+      - VERSION_FILE=target/VERSION
+      - SERVICE_FILE=target/SERVICE
+    tag: ${{TAG_VERSION}}
+
+  build-rs-store-sample-docker-image:
+    type: build
+    title: "Build rs-store sample service docker image"
+    stage: "clone"
+    image_name: obri/rs-store
+    working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-sample
+    build_arguments:
+      - JAR_FILE=target/forgerock-openbanking-*.jar
+      - VERSION_FILE=target/VERSION
+      - SERVICE_FILE=target/SERVICE
+    tag: ${{TAG_VERSION}}
+
+
 
   # deploy jar stage
   deploy-master:
