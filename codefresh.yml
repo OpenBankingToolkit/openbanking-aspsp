@@ -56,11 +56,11 @@ steps:
     environment: *global_env
 
   #Run IT test
-  integration-test-rs-api:
+  integration-test-rs-gateway:
     type: composition
     stage: "integration-test"
-    title: "RS API integration tests"
-    description: "Start docker services via docker-compose and run rs-api integration tests"
+    title: "RS Gateway integration tests"
+    description: "Start docker services via docker-compose and run rs-gateway integration tests"
     composition: docker-compose.yml
     composition_variables:
       - TAG=:${{TAG_VERSION}}
@@ -75,12 +75,12 @@ steps:
         hostname: rs-api
 
   #Docker build
-  build-rs-store-sample-docker-image:
+  build-rs-gateway-sample-docker-image:
     type: build
-    title: "Build rs-store sample service docker image"
+    title: "Build rs-gateway sample service docker image"
     stage: "build-docker-images"
     image_name: obri/rs-store
-    working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-sample
+    working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-sample
     build_arguments:
       - JAR_FILE=target/forgerock-openbanking-*.jar
       - VERSION_FILE=target/VERSION
