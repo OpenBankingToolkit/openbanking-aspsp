@@ -58,6 +58,7 @@ steps:
     title: "deploy jars to private maven repo"
     stage: "deploy"
     image: r.cfcr.io/openbanking/ob-release:latest
+    working-directory: ${{main_clone}}
     commands:
       - git checkout $CF_BRANCH
       - git reset --hard origin/$CF_BRANCH
