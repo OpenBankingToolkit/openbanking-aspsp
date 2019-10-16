@@ -178,6 +178,7 @@ public class TppRegistrationService {
         String officialName = getOfficialTppName(ssaClaims, oidcRegistrationResponse);
 
         Tpp tpp = Tpp.builder()
+                .id(oidcRegistrationResponse.getClientId())
                 .created(new Date())
                 .certificateCn(cn)
                 .name(oidcRegistrationResponse.getClientName())

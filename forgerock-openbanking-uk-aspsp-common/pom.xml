@@ -98,6 +98,10 @@
             <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.forgerock.openbanking</groupId>
+            <artifactId>openbanking-sdk</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
