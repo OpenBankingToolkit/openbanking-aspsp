@@ -25,7 +25,7 @@ steps:
     type: git-clone
     repo: '${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}'
     revision: '${{CF_REVISION}}'
-    
+
   #Run IT test
   integration-test-rs-gateway:
     type: composition
@@ -35,7 +35,7 @@ steps:
     composition: docker-compose.yml
     composition_variables:
       - TAG=:${{TAG_VERSION}}
-    working_directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server
+    working_directory: ${{main_clone}}
     composition_candidates:
       rs-api-tests:
         volumes:
