@@ -119,9 +119,9 @@
     </dependencyManagement>
 
     <scm>
-        <connection>scm:git:https://github.com/ForgeCloud/ob-analytics.git</connection>
-        <developerConnection>scm:git:https://github.com/ForgeCloud/ob-analytics.git</developerConnection>
-        <url>https://github.com/ForgeCloud/ob-analytics.git</url>
+        <connection>scm:git:https://github.com/ForgeCloud/ob-aspsp.git</connection>
+        <developerConnection>scm:git:https://github.com/ForgeCloud/ob-aspsp.git</developerConnection>
+        <url>https://github.com/ForgeCloud/ob-aspsp.git</url>
         <tag>HEAD</tag>
     </scm>
 
