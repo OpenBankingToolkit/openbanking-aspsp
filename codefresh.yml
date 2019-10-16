@@ -32,10 +32,10 @@ steps:
     stage: "integration-test"
     title: "RS Gateway integration tests"
     description: "Start docker services via docker-compose and run rs-gateway integration tests"
+    working_directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server
     composition: docker-compose.yml
     composition_variables:
       - TAG=:${{TAG_VERSION}}
-    working_directory: ${{main_clone}}
     composition_candidates:
       rs-api-tests:
         volumes:
