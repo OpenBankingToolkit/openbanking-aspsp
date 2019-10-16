@@ -5,6 +5,7 @@ stages:
   - prepare
   - build
   - unit-test
+  - integration-test
   - build-docker-images
   - deploy
 
@@ -54,19 +55,26 @@ steps:
       - mvn -Dmaven.repo.local=/codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository -DdockerCompose.skip -Ddockerfile.skip -DskipITs verify
     environment: *global_env
 
-  #Docker build
-  build-rs-store-server-docker-image:
-    type: build
-    title: "Build rs-store server service docker image"
-    stage: "build-docker-images"
-    image_name: obri/rs-store
-    working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-server
-    build_arguments:
-      - JAR_FILE=target/forgerock-openbanking-*.jar
-      - VERSION_FILE=target/VERSION
-      - SERVICE_FILE=target/SERVICE
-    tag: ${{TAG_VERSION}}
+  #Run IT test
+  integration-test-rs-api:
+    type: composition
+    stage: "integration-test"
+    title: "RS API integration tests"
+    description: "Start docker services via docker-compose and run rs-api integration tests"
+    composition: docker-compose.yml
+    composition_variables:
+      - TAG=:${{TAG_VERSION}}
+    working_directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server
+    composition_candidates:
+      rs-api-tests:
+        volumes:
+          - ${{CF_VOLUME}}:/codefresh/volume
+        image: r.cfcr.io/openbanking/ob-release:latest
+        environment: *global_env
+        command: mvn -Dmaven.repo.local=/codefresh/volume/$1/.m2/repository  -Dspring.data.mongodb.uri=mongodb://mongo:27017/test -Ddockerfile.skip -DdockerCompose.skip verify -f /codefresh/volume/ob-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
+        hostname: rs-api
 
+  #Docker build
   build-rs-store-sample-docker-image:
     type: build
     title: "Build rs-store sample service docker image"
