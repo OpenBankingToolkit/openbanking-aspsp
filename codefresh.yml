@@ -18,7 +18,14 @@ indicators:
       - GITHUB_ACCESS_TOKEN=${{GITHUB_ACCESS_TOKEN}}
 
 steps:
-
+  #  Clone stage
+  main_clone:
+    title: Cloning main repository...
+    stage: "clone"
+    type: git-clone
+    repo: '${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}'
+    revision: '${{CF_REVISION}}'
+    
   #Run IT test
   integration-test-rs-gateway:
     type: composition
