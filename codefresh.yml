@@ -70,13 +70,43 @@ steps:
           - ${{CF_VOLUME}}:/codefresh/volume
         image: r.cfcr.io/openbanking/ob-release:latest
         environment: *global_env
-        command:  mvn -Dspring.cloud.config.uri=http://config.dev-ob.forgerock.financial:8888 -Dmaven.repo.local=/codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository  -Dspring.data.mongodb.uri=mongodb://mongo:27017/test -Ddockerfile.skip -DdockerCompose.skip verify -f /codefresh/volume/${{CF_REPO_NAME}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
+        command:  mvn -Dspring.cloud.config.uri=http://config.dev-ob.forgerock.financial:8888 -Dmaven.repo.local=/codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository -Dspring.data.mongodb.uri=mongodb://mongo:27017/test -Ddockerfile.skip -DdockerCompose.skip verify -f /codefresh/volume/${{CF_REPO_NAME}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
         hostname: rs-api
+  integration-test-rs-mock-store:
+    type: composition
+    stage: "integration-test"
+    title: "RS Store integration tests"
+    description: "Start docker services via docker-compose and run rs-store integration tests"
+    working_directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-server
+    composition: docker-compose.yml
+    composition_candidates:
+      rs-store-tests:
+        volumes:
+          - ${{CF_VOLUME}}:/codefresh/volume
+        image: r.cfcr.io/openbanking/ob-release:latest
+        environment: *global_env
+        command:  mvn -Dspring.cloud.config.uri=http://config.dev-ob.forgerock.financial:8888 -Dmaven.repo.local=/codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository -Dspring.data.mongodb.uri=mongodb://mongo:27017/test -Ddockerfile.skip -DdockerCompose.skip verify -f /codefresh/volume/${{CF_REPO_NAME}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-server/pom.xml
+        hostname: rs-store
+  integration-test-rs-rcs:
+    type: composition
+    stage: "integration-test"
+    title: "RS RCS integration tests"
+    description: "Start docker services via docker-compose and run rs-rcs integration tests"
+    working_directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-rcs/forgerock-openbanking-uk-aspsp-rs-rcs-server
+    composition: docker-compose.yml
+    composition_candidates:
+      rs-rcs-tests:
+        volumes:
+          - ${{CF_VOLUME}}:/codefresh/volume
+        image: r.cfcr.io/openbanking/ob-release:latest
+        environment: *global_env
+        command:  mvn -Dspring.cloud.config.uri=http://config.dev-ob.forgerock.financial:8888 -Dmaven.repo.local=/codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository -Dspring.data.mongodb.uri=mongodb://mongo:27017/test -Ddockerfile.skip -DdockerCompose.skip verify -f /codefresh/volume/${{CF_REPO_NAME}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-rcs/forgerock-openbanking-uk-aspsp-rs-rcs-server/pom.xml
+        hostname: rs-rcs
 
   #Docker build
   build-rs-gateway-sample-docker-image:
     type: build
-    title: "Build rs-gateway sample service docker image"
+    title: "Build RS gateway sample service docker image"
     stage: "build-docker-images"
     image_name: obri/rs-api-sample
     working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-sample
@@ -84,7 +114,26 @@ steps:
       - JAR_FILE=target/forgerock-openbanking-*.jar
       - VERSION_FILE=target/VERSION
       - SERVICE_FILE=target/SERVICE
-
+  build-rs-mock-store-sample-docker-image:
+    type: build
+    title: "Build RS mock store sample service docker image"
+    stage: "build-docker-images"
+    image_name: obri/rs-store-sample
+    working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-sample
+    build_arguments:
+      - JAR_FILE=target/forgerock-openbanking-*.jar
+      - VERSION_FILE=target/VERSION
+      - SERVICE_FILE=target/SERVICE
+  build-rs-rcs-sample-docker-image:
+    type: build
+    title: "Build RS RCS sample service docker image"
+    stage: "build-docker-images"
+    image_name: obri/rs-rcs-sample
+    working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-rcs/forgerock-openbanking-uk-aspsp-rs-rcs-sample
+    build_arguments:
+      - JAR_FILE=target/forgerock-openbanking-*.jar
+      - VERSION_FILE=target/VERSION
+      - SERVICE_FILE=target/SERVICE
 
   # deploy jar stage
   deploy-master:

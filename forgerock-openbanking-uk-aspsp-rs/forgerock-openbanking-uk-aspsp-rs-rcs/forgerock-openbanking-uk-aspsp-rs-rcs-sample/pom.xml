@@ -132,6 +132,10 @@
                     </buildArgs>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>ru.yaal.maven</groupId>
+                <artifactId>write-text-files-maven-plugin</artifactId>
+            </plugin>
         </plugins>
         <resources>
             <resource>
