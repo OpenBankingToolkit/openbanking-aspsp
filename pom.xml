@@ -70,11 +70,6 @@
                 <version>${ob-common.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.forgerock.openbanking.jwkms</groupId>
-                <artifactId>forgerock-openbanking-jwkms-embedded</artifactId>
-                <version>${ob-jwkms.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.forgerock.openbanking</groupId>
                 <artifactId>forgerock-openbanking-jwt</artifactId>
                 <version>${ob-common.version}</version>

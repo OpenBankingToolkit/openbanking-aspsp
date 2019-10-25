@@ -5,6 +5,7 @@ stages:
   - prepare
   - build
   - unit-test
+  - integration-test
   - build-docker-images
   - deploy
 
@@ -54,6 +55,36 @@ steps:
     commands:
       - mvn -Dmaven.repo.local=/codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository -DdockerCompose.skip -Ddockerfile.skip -DskipITs verify
     environment: *global_env
+
+  #Run IT test
+  integration-test-rs-gateway:
+    type: composition
+    stage: "integration-test"
+    title: "RS Gateway integration tests"
+    description: "Start docker services via docker-compose and run rs-gateway integration tests"
+    working_directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server
+    composition: docker-compose.yml
+    composition_candidates:
+      rs-api-tests:
+        volumes:
+          - ${{CF_VOLUME}}:/codefresh/volume
+        image: r.cfcr.io/openbanking/ob-release:latest
+        environment: *global_env
+        command:  mvn -Dspring.cloud.config.uri=http://config.dev-ob.forgerock.financial:8888 -Dmaven.repo.local=/codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository  -Dspring.data.mongodb.uri=mongodb://mongo:27017/test -Ddockerfile.skip -DdockerCompose.skip verify -f /codefresh/volume/${{CF_REPO_NAME}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
+        hostname: rs-api
+
+  #Docker build
+  build-rs-gateway-sample-docker-image:
+    type: build
+    title: "Build rs-gateway sample service docker image"
+    stage: "build-docker-images"
+    image_name: obri/rs-api-sample
+    working-directory: ${{main_clone}}/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-sample
+    build_arguments:
+      - JAR_FILE=target/forgerock-openbanking-*.jar
+      - VERSION_FILE=target/VERSION
+      - SERVICE_FILE=target/SERVICE
+
 
   # deploy jar stage
   deploy-master:

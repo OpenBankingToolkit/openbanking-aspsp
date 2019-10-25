@@ -145,7 +145,7 @@
                 <artifactId>dockerfile-maven-plugin</artifactId>
                  <configuration>
                     <skipPush>false</skipPush>
-                    <repository>r.cfcr.io/openbanking/obri/rs-store</repository>
+                    <repository>r.cfcr.io/openbanking/obri/rs-store-sample</repository>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>
@@ -154,14 +154,6 @@
             <plugin>
                 <groupId>ru.yaal.maven</groupId>
                 <artifactId>write-text-files-maven-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-failsafe-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>com.dkanejs.maven.plugins</groupId>
-                <artifactId>docker-compose-maven-plugin</artifactId>
             </plugin>
         </plugins>
         <resources>
