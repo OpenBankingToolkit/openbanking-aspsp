@@ -42,6 +42,8 @@
         <module>integration-test-support</module>
         <module>forgerock-openbanking-uk-aspsp-as</module>
         <module>forgerock-openbanking-uk-aspsp-rs</module>
+        <module>forgerock-openbanking-cdr-aspsp-rs</module>
+        <module>forgerock-openbanking-cdr-aspsp-as</module>
     </modules>
 
     <dependencyManagement>

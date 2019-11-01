@@ -1,0 +1,127 @@
+<!--
+
+    Copyright 2019 ForgeRock AS. All Rights Reserved
+
+    Use of this code requires a commercial software license with ForgeRock AS.
+    or with one of its affiliates. All use shall be exclusively subject
+    to such license between the licensee and ForgeRock AS.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.forgerock.openbanking.cdr.aspsp.as</groupId>
+    <artifactId>forgerock-openbanking-cdr-aspsp-as-gateway-server</artifactId>
+    <packaging>jar</packaging>
+    <name>as-gateway-server</name>
+
+    <parent>
+        <groupId>com.forgerock.openbanking.cdr.aspsp.as</groupId>
+        <artifactId>forgerock-openbanking-cdr-aspsp-as-gateway</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
+            <artifactId>forgerock-openbanking-uk-aspsp-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.openbanking</groupId>
+            <artifactId>forgerock-openbanking-model</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.openbanking</groupId>
+            <artifactId>forgerock-openbanking-am</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.openbanking</groupId>
+            <artifactId>forgerock-openbanking-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock</groupId>
+            <artifactId>spring-security-multi-auth-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-hateoas</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-spring</artifactId>
+        </dependency>
+        <!--SpringFox dependencies -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-joda</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.tunyk.currencyconverter</groupId>
+            <artifactId>currency-converter-api</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.jsonzou</groupId>
+            <artifactId>jmockdata</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
+            <artifactId>integration-test-support</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>
