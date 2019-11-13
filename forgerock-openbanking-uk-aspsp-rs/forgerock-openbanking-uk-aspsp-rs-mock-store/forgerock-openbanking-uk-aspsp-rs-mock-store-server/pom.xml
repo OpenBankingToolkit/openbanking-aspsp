@@ -21,7 +21,7 @@
     <parent>
         <groupId>com.forgerock.openbanking.uk.aspsp.rs</groupId>
         <artifactId>forgerock-openbanking-uk-aspsp-rs-mock-store</artifactId>
-        <version>1.0.2</version>
+        <version>1.0.3-SNAPSHOT</version>
     </parent>
 
     <dependencies>
