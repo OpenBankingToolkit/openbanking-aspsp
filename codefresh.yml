@@ -135,6 +135,20 @@ steps:
       - VERSION_FILE=target/VERSION
       - SERVICE_FILE=target/SERVICE
 
+  disable-include-administrator:
+    title: "temporarily disable include administrators"
+    stage: "deploy"
+    image: benjjefferies/branch-protection-bot
+    environment:
+      - ACCESS_TOKEN=${{GITHUB_ACCESS_TOKEN}}
+      - OWNER=${{CF_REPO_OWNER}}
+      - REPO=${{CF_REPO_NAME}}
+    when:
+      condition:
+        all:
+          noSkipCiInCommitMessage: 'includes(lower("${{CF_COMMIT_MESSAGE}}"), "[maven-release-plugin]") == false'
+          masterBranch: '"${{CF_BRANCH}}" == "master"'
+
   # deploy jar stage
   deploy-master:
     title: "deploy jars to private maven repo"
@@ -146,6 +160,20 @@ steps:
       - git reset --hard origin/$CF_BRANCH
       - release.sh /codefresh/volume/${{CF_BRANCH_TAG_NORMALIZED}}/.m2/repository
     environment: *global_env
+    when:
+      condition:
+        all:
+          noSkipCiInCommitMessage: 'includes(lower("${{CF_COMMIT_MESSAGE}}"), "[maven-release-plugin]") == false'
+          masterBranch: '"${{CF_BRANCH}}" == "master"'
+
+  enable-include-administrator:
+    title: "enable include administrators"
+    stage: "deploy"
+    image: benjjefferies/branch-protection-bot
+    environment:
+      - ACCESS_TOKEN=${{GITHUB_ACCESS_TOKEN}}
+      - OWNER=${{CF_REPO_OWNER}}
+      - REPO=${{CF_REPO_NAME}}
     when:
       condition:
         all:
