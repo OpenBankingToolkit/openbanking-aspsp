@@ -17,7 +17,7 @@
     <parent>
         <groupId>com.forgerock.openbanking.uk.aspsp.rs</groupId>
         <artifactId>forgerock-openbanking-uk-aspsp-rs-gateway</artifactId>
-        <version>1.0.5-SNAPSHOT</version>
+        <version>1.0.5</version>
     </parent>
 
     <dependencies>
