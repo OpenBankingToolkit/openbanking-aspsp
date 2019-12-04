@@ -143,7 +143,7 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
         try {
             //Verify access token
             log.info("Verify the access token {}", authorization);
-            accessToken = rsEndpointWrapperService.cryptoApiClient.verifyAccessToken(authorization);
+            accessToken = rsEndpointWrapperService.amResourceServerService.verifyAccessToken(authorization);
 
             String grantTypeSerialised = accessToken.getJWTClaimsSet().getStringClaim(OBConstants.OIDCClaim.GRANT_TYPE);
             if (grantTypeSerialised == null) {

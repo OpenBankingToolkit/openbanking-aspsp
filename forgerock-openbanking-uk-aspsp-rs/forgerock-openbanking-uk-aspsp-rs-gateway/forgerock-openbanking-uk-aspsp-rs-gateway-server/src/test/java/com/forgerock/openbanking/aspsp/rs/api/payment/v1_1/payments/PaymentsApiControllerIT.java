@@ -8,6 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v1_1.payments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.constants.OIDCConstants;
@@ -65,8 +66,8 @@ public class PaymentsApiControllerIT {
     private UserInfoService userInfoService;
 
 
-    @MockBean(name="cryptoApiClient")
-    private CryptoApiClientImpl cryptoApiClient;
+    @MockBean(name="amResourceServerService") // Required to avoid Spring auto-wiring exception
+    private AMResourceServerService amResourceServerService;
     @MockBean
     private RsStoreGateway rsStoreGateway;
     @Autowired
@@ -82,7 +83,7 @@ public class PaymentsApiControllerIT {
         // Given
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        given(cryptoApiClient.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
         OBPaymentSetupResponse1 paymentSetupResponse = defaultPaymentResponse();
         OBPaymentSetup1 request = defaultPaymentSetupRequest(paymentSetupResponse);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(paymentSetupResponse));
@@ -142,7 +143,7 @@ public class PaymentsApiControllerIT {
         // Given
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        given(cryptoApiClient.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
         OBPaymentSetupResponse1 paymentSetupResponse = defaultPaymentResponse();
         OBPaymentSetup1 request = defaultPaymentSetupRequest(paymentSetupResponse);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(paymentSetupResponse));

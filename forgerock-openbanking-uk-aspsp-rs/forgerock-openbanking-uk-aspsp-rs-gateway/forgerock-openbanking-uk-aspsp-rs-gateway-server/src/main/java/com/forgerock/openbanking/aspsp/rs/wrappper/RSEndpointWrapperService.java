@@ -10,6 +10,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper;
 import brave.Tracer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
+import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.BalanceTransferPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.MoneyTransferPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.PaymPaymentValidator;
@@ -34,6 +35,7 @@ public class RSEndpointWrapperService {
 
     public OBHeaderCheckerService obHeaderCheckerService;
     public CryptoApiClient cryptoApiClient;
+    public AMResourceServerService amResourceServerService;
     public AccessTokenService accessTokenService;
     public AccountRequestStoreService accountRequestStore;
     public RSConfiguration rsConfiguration;
@@ -63,6 +65,7 @@ public class RSEndpointWrapperService {
                                     TppStoreService tppStoreService,
                                     BalanceTransferPaymentValidator balanceTransferPaymentValidator,
                                     MoneyTransferPaymentValidator moneyTransferPaymentValidator,
+                                    AMResourceServerService amResourceServerService,
                                     PaymPaymentValidator paymPaymentValidator
     ) {
         this.obHeaderCheckerService = obHeaderCheckerService;
@@ -80,6 +83,7 @@ public class RSEndpointWrapperService {
         this.balanceTransferPaymentValidator = balanceTransferPaymentValidator;
         this.moneyTransferPaymentValidator = moneyTransferPaymentValidator;
         this.paymPaymentValidator = paymPaymentValidator;
+        this.amResourceServerService = amResourceServerService;
     }
 
     public AccountsAndTransactionsEndpointWrapper accountAndTransactionEndpoint() {

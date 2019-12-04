@@ -8,6 +8,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.account.v1_1.transactions;
 
 
+import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
@@ -76,8 +77,8 @@ public class TransactionsApiControllerIT {
     private UserInfoService userInfoService;
 
 
-    @MockBean(name = "cryptoApiClient") // Required to avoid Spring auto-wiring exception
-    private CryptoApiClient cryptoApiClient;
+    @MockBean(name="amResourceServerService") // Required to avoid Spring auto-wiring exception
+    private AMResourceServerService amResourceServerService;
     @MockBean
     private RsStoreGateway rsStoreGateway;
 
@@ -196,7 +197,7 @@ public class TransactionsApiControllerIT {
     }
 
     private void mockAccessTokenVerification(String jws) throws ParseException, InvalidTokenException, IOException {
-        given(cryptoApiClient.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
     }
 
     private void mockAccountPermissions(List<OBExternalPermissions1Code> permissions) {

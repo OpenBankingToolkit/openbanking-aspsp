@@ -24,7 +24,7 @@ public class RSEndpointWrapperTest {
     public void verifyIdempotencyKey_invalid() {
         // Given (stubbed endpoint wrapper)
         TestRSEndpointWrapper testRSEndpointWrapper = new TestRSEndpointWrapper(
-                new RSEndpointWrapperService(new OBHeaderCheckerService(null), null, null, null,null, null, null, true,null, null, null, null, null, null, null)
+                new RSEndpointWrapperService(new OBHeaderCheckerService(null), null, null, null,null, null, null, true,null, null, null, null, null, null, null, null)
         );
 
         // When (idempotency key is not valid)
@@ -41,7 +41,7 @@ public class RSEndpointWrapperTest {
     public void verifyIdempotencyKey_valid() throws Exception {
         // Given (stubbed endpoint wrapper)
         TestRSEndpointWrapper testRSEndpointWrapper = new TestRSEndpointWrapper(
-                new RSEndpointWrapperService(new OBHeaderCheckerService(null), null, null, null, null, null, null, true,null, null, null, null, null, null, null)
+                new RSEndpointWrapperService(new OBHeaderCheckerService(null), null, null, null, null, null, null, true,null, null, null, null, null, null, null, null)
         );
 
         // When (idempotency key is valid)

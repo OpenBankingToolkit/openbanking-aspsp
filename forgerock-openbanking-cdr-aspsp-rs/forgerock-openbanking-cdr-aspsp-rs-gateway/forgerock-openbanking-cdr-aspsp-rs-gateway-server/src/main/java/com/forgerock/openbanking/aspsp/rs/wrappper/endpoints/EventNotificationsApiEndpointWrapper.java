@@ -45,7 +45,7 @@ public class EventNotificationsApiEndpointWrapper extends RSEndpointWrapper<Even
         try {
             //Verify access token
             log.info("Verify the access token {}", authorization);
-            accessToken = rsEndpointWrapperService.cryptoApiClient.verifyAccessToken(authorization);
+            accessToken = rsEndpointWrapperService.amResourceServerService.verifyAccessToken(authorization);
             List<String> scopes = (List<String>) accessToken.getJWTClaimsSet().getClaim(OBConstants.OIDCClaim.SCOPE);
 
             String grantTypeSerialised = accessToken.getJWTClaimsSet().getStringClaim(OBConstants.OIDCClaim.GRANT_TYPE);

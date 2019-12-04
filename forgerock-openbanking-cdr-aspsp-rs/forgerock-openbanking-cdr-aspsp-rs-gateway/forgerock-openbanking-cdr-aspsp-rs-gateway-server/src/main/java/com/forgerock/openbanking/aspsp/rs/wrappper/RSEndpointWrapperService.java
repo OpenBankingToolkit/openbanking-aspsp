@@ -11,6 +11,7 @@ import brave.Tracer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
 
+import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.*;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.services.openbanking.OBHeaderCheckerService;
@@ -40,6 +41,7 @@ public class RSEndpointWrapperService {
     public String tan;
     public String financialId;
     public AMOpenBankingConfiguration amOpenBankingConfiguration;
+    public AMResourceServerService amResourceServerService;
     public TppStoreService tppStoreService;
     public boolean isDetachedSignatureEnable;
 
@@ -56,6 +58,7 @@ public class RSEndpointWrapperService {
                                     @Value("${rs.tan}") String tan,
                                     @Value("${rs.financial_id}") String financialId,
                                     AMOpenBankingConfiguration amOpenBankingConfiguration,
+                                    AMResourceServerService amResourceServerService,
                                     TppStoreService tppStoreService
     ) {
         this.obHeaderCheckerService = obHeaderCheckerService;
@@ -69,6 +72,7 @@ public class RSEndpointWrapperService {
         this.financialId = financialId;
         this.amOpenBankingConfiguration = amOpenBankingConfiguration;
         this.tppStoreService = tppStoreService;
+        this.amResourceServerService = amResourceServerService;
         this.isDetachedSignatureEnable = isDetachedSignatureEnable;
     }
 
