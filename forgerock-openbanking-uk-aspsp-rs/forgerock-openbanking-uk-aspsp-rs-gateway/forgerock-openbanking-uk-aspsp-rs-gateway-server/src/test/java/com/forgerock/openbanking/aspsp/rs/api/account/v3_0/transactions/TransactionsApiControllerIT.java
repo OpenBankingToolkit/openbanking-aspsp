@@ -84,6 +84,8 @@ public class TransactionsApiControllerIT {
     @MockBean
     private UserInfoService userInfoService;
 
+    @MockBean(name="cryptoApiClient") // Required to avoid Spring auto-wiring exception
+    private CryptoApiClient cryptoApiClient;
 
     @MockBean(name="amResourceServerService") // Required to avoid Spring auto-wiring exception
     private AMResourceServerService amResourceServerService;

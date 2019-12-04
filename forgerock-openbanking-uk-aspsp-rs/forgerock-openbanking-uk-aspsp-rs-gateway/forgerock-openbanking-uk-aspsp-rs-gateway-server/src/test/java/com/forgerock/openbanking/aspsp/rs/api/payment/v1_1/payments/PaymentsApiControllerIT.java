@@ -23,8 +23,8 @@ import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.constants.OIDCConstants;
-import com.forgerock.openbanking.core.services.CryptoApiClientImpl;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.oidc.services.UserInfoService;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -76,7 +76,8 @@ public class PaymentsApiControllerIT {
     @MockBean
     private UserInfoService userInfoService;
 
-
+    @MockBean(name="cryptoApiClient") // Required to avoid Spring auto-wiring exception
+    private CryptoApiClient cryptoApiClient;
     @MockBean(name="amResourceServerService") // Required to avoid Spring auto-wiring exception
     private AMResourceServerService amResourceServerService;
     @MockBean

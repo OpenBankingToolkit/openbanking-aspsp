@@ -64,7 +64,8 @@ public class AccountAccessConsentsApiControllerIT {
     private int port;
     @Autowired
     private RSConfiguration rsConfiguration;
-
+    @MockBean(name="cryptoApiClient") // Required to avoid Spring auto-wiring exception
+    private CryptoApiClient cryptoApiClient;
     @MockBean(name="amResourceServerService") // Required to avoid Spring auto-wiring exception
     private AMResourceServerService amResourceServerService;
     @MockBean
