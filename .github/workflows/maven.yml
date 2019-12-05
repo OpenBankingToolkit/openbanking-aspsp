@@ -36,6 +36,7 @@ jobs:
         access-token: ${{ secrets.ACCESS_TOKEN }}
         owner: forgecloud
         repo: ob-aspsp
+        enforce_admins: false
     - name: Release
       uses: qcastel/github-actions-maven-release@master
       with:
@@ -57,3 +58,4 @@ jobs:
         access-token: ${{ secrets.ACCESS_TOKEN }}
         owner: forgecloud
         repo: ob-aspsp
+        enforce_admins: true
