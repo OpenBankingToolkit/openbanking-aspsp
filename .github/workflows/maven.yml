@@ -34,7 +34,7 @@ jobs:
       if: always()
       with:
         access-token: ${{ secrets.ACCESS_TOKEN }}
-        owner: forgecloud
+        owner: OpenBankingToolkit
         repo: ob-aspsp
         enforce_admins: false
     - name: Release
@@ -56,6 +56,6 @@ jobs:
       if: always()
       with:
         access-token: ${{ secrets.ACCESS_TOKEN }}
-        owner: forgecloud
+        owner: OpenBankingToolkit
         repo: ob-aspsp
         enforce_admins: true

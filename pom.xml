@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
+    Copyright 2019 ForgeRock AS.
+
     Licensed to the Apache Software Foundation (ASF) under one
     or more contributor license agreements.  See the NOTICE file
     distributed with this work for additional information
@@ -127,9 +129,9 @@
     </dependencyManagement>
 
     <scm>
-        <connection>scm:git:https://github.com/ForgeCloud/ob-aspsp.git</connection>
-        <developerConnection>scm:git:https://github.com/ForgeCloud/ob-aspsp.git</developerConnection>
-        <url>https://github.com/ForgeCloud/ob-aspsp.git</url>
+        <connection>scm:git:https://github.com/OpenBankingToolkit/ob-aspsp.git</connection>
+        <developerConnection>scm:git:https://github.com/OpenBankingToolkit/ob-aspsp.git</developerConnection>
+        <url>https://github.com/OpenBankingToolkit/ob-aspsp.git</url>
         <tag>HEAD</tag>
     </scm>
 
