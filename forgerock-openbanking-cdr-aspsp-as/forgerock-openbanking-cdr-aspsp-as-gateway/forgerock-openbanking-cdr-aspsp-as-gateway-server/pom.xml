@@ -49,7 +49,7 @@
             <artifactId>forgerock-openbanking-jwt</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.forgerock</groupId>
+            <groupId>dev.openbanking4.spring.security</groupId>
             <artifactId>spring-security-multi-auth-starter</artifactId>
         </dependency>
 

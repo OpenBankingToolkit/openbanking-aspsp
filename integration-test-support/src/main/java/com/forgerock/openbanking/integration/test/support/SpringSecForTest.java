@@ -18,7 +18,7 @@
  */
 package com.forgerock.openbanking.integration.test.support;
 
-import com.forgerock.openbanking.authentication.configurers.MultiAuthenticationCollectorConfigurer;
+import dev.openbanking4.spring.security.multiauth.configurers.MultiAuthenticationCollectorConfigurer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

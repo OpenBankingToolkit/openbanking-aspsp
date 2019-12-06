@@ -19,14 +19,14 @@
 package com.forgerock.openbanking.aspsp.as;
 
 import brave.Tracer;
-import com.forgerock.openbanking.authentication.configurers.MultiAuthenticationCollectorConfigurer;
-import com.forgerock.openbanking.authentication.configurers.collectors.StaticUserCollector;
 import com.forgerock.openbanking.common.error.ErrorHandler;
 import com.forgerock.openbanking.common.services.security.FormValueSanitisationFilter;
 import com.forgerock.openbanking.common.services.security.JsonRequestSanitisiationFilter;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.ssl.config.SslConfiguration;
 import com.forgerock.openbanking.ssl.exceptions.SslConfigurationFailure;
+import dev.openbanking4.spring.security.multiauth.configurers.MultiAuthenticationCollectorConfigurer;
+import dev.openbanking4.spring.security.multiauth.configurers.collectors.StaticUserCollector;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

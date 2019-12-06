@@ -32,12 +32,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
+import java.security.cert.X509Certificate;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -60,11 +64,11 @@ public class UserAuthApiController {
     public ResponseEntity authenticate(
             @RequestParam(value = "username") String username,
             @RequestParam(value = "password") String password,
-            Principal principal
+            Authentication authentication
     ) throws OBErrorException {
         try {
-            return ResponseEntity.ok(sessionService.authenticate(username, password, (Authentication) principal,
-                    SessionCounterType.DIRECTORY, amGateway, amAccessTokenEndpoint));
+            return ResponseEntity.ok(sessionService.authenticate(username, password, authentication,
+                    SessionCounterType.DIRECTORY, amGateway, amAccessTokenEndpoint, new X509Certificate[0], (User) authentication.getPrincipal()));
         } catch (OIDCException e) {
             log.error("OIDC exception", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());

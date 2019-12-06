@@ -18,16 +18,16 @@
  */
 package com.forgerock.openbanking.integration.test.support;
 
-import com.forgerock.openbanking.authentication.configurers.AuthCollector;
-import com.forgerock.openbanking.authentication.model.authentication.PasswordLessUserNameAuthentication;
-import org.springframework.security.core.Authentication;
+import dev.openbanking4.spring.security.multiauth.configurers.AuthCollector;
+import dev.openbanking4.spring.security.multiauth.model.authentication.AuthenticationWithEditableAuthorities;
+import dev.openbanking4.spring.security.multiauth.model.authentication.PasswordLessUserNameAuthentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 
 public class MockAuthCollector implements AuthCollector {
-    private Authentication authentication;
+    private PasswordLessUserNameAuthentication authentication;
 
     public void mockAuthorities(GrantedAuthority ... authorities) {
         authentication = new PasswordLessUserNameAuthentication("test-tpp", Arrays.asList(authorities));
@@ -38,12 +38,28 @@ public class MockAuthCollector implements AuthCollector {
     }
 
     @Override
-    public Authentication collectAuthentication(HttpServletRequest request) {
+    public String collectorName() {
+        return "mock";
+    }
+
+    @Override
+    public AuthenticationWithEditableAuthorities collectAuthentication(HttpServletRequest request) {
         return authentication;
     }
 
     @Override
-    public Authentication collectAuthorisation(HttpServletRequest req, Authentication currentAuthentication) {
+    public AuthenticationWithEditableAuthorities collectAuthorisation(HttpServletRequest req, AuthenticationWithEditableAuthorities currentAuthentication) {
         return authentication;
     }
+
+    @Override
+    public boolean isSetupForAuthentication() {
+        return true;
+    }
+
+    @Override
+    public boolean isSetupForAuthorisation() {
+        return true;
+    }
+
 }
