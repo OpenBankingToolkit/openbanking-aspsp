@@ -1,0 +1,54 @@
+<mat-card *ngIf="response">
+  <forgerock-customer-logo></forgerock-customer-logo>
+
+  {{ loading | json }}
+
+  <form [formGroup]="form">
+    <h1 [translate]="'CONSENT.ACCOUNT.TITLE'" [translateParams]="{ merchantName: response.aispName }"></h1>
+    <div *ngIf="response.logo" class="merchant-logo">
+      <img src="{{ response.logo }}" onerror="this.style.display='none'" />
+    </div>
+    <div class="divider"></div>
+
+    <span [translate]="'CONSENT.ACCOUNT.CHECK_DETAILS'"></span>
+
+    <app-consent-box [items]="items"></app-consent-box>
+
+    <app-account-checkbox
+      [form]="form"
+      [accounts]="response.accounts"
+      [label]="'CONSENT.ACCOUNT.SELECT_ACCOUNT'"
+    ></app-account-checkbox>
+
+    <div class="review-permissions">
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> {{ 'CONSENT.ACCOUNT.REVIEW_DATA' | translate }} </mat-panel-title>
+          </mat-expansion-panel-header>
+          <pre class="review-permissions-content">
+            <app-account-permissions [permissions]="response.permissions"></app-account-permissions>
+          </pre>
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+
+    <div class="consent-expiration-date" *ngIf="response.expiredDate">
+      <span
+        class="title"
+        [translate]="'CONSENT.ACCOUNT.EXPIRE'"
+        [translateParams]="{ client: response.aispName }"
+      ></span>
+      {{ response.expiredDate | forgerockDateFormat: 'dddd Do MMMM, YYYY, HH:mm:ss' }}
+    </div>
+
+    <app-submit-box
+      [loading]="_loading"
+      [form]="form"
+      [proceedLabel]="'CONSENT.ACCOUNT.PROCEED'"
+      [cancelLabel]="'CONSENT.ACCOUNT.CANCEL'"
+      (accept)="submit(true)"
+      (deny)="submit(false)"
+    ></app-submit-box>
+  </form>
+</mat-card>

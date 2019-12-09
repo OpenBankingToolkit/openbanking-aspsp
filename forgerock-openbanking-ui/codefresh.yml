@@ -1,0 +1,155 @@
+version: '1.0'
+
+stages:
+  - prepare
+  - build
+  - unit-test
+  - docker-ui
+  - docker-push
+  - trigger-deploy
+
+steps:
+  main_clone:
+    type: git-clone
+    title: Git Clone OB UI
+    repo: ForgeCloud/ob-aspsp
+    revision: '${{CF_REVISION}}'
+    git: github-bot
+
+  #  Prepare stage
+  set-global-variables:
+    image: codefreshio/git-image:latest
+    stage: 'prepare'
+    title: 'prepare customers assets'
+    working-directory: ${{main_clone}}/forgerock-openbanking-ui
+    commands:
+      - git clone https://${{GITHUB_ACCESS_TOKEN}}@github.com/ForgeCloud/ob-customers.git customers
+      - cp -r ./customers/lloyds ./customers/hl ./customers/westpac ./customers/jpmorgan ./customers/citibank ./customers/suncorp themes/
+      - ls -la ./themes
+      - rm -fr customers
+
+  prepare-customers:
+    image: jess/jq
+    stage: 'prepare'
+    title: 'Set up global variables'
+    working-directory: ${{main_clone}}/forgerock-openbanking-ui
+    commands:
+      - 'export PROJECT_VERSION=$(jq -r ".project_version" package.json)'
+      - 'cf_export PROJECT_VERSION'
+      - cf_export BUILD_VERSION=${PROJECT_VERSION}-${CF_SHORT_REVISION}
+
+  # Build stage
+  install-npm-dependencies:
+    type: build
+    stage: 'build'
+    title: 'Build UI docker image, used for docker caching'
+    image_name: obri/build-ob-aspsp-ui
+    working-directory: ${{main_clone}}/forgerock-openbanking-ui
+    tag: 'latest'
+    build_arguments:
+      - OB_UI_LIBS_SSH_KEY=${{GITHUB_OB_UI_LIBS_SSH_KEY}}
+  push-npm-dependencies-image:
+    type: push
+    stage: 'build'
+    title: 'Push npm-dependencies-image to bintray'
+    candidate: ${{install-npm-dependencies}}
+
+  test-stage:
+    type: parallel
+    stage: 'unit-test'
+    steps:
+      # Unit-test stage
+      ui-unit-test:
+        image: ${{install-npm-dependencies}}
+        title: 'Run UI unit tests'
+        working-directory: /src/
+        commands:
+          - npm run test.ci
+
+      ui-linter:
+        image: ${{install-npm-dependencies}}
+        title: 'Run UI linter'
+        working-directory: /src/
+        commands:
+          - ./node_modules/@angular/cli/bin/ng lint
+
+  docker-builds:
+    type: parallel
+    stage: 'docker-ui'
+    steps:
+      build-bank-ui-docker-image:
+        type: build
+        title: 'Build bank ui docker image'
+        image_name: obri/bank-ui
+        working-directory: ${{main_clone}}/forgerock-openbanking-ui
+        build_arguments:
+          - BUILD_VERSION=${{BUILD_VERSION}}
+        dockerfile: projects/bank/docker/Dockerfile
+        tag: ${{CF_REVISION}}
+      build-register-ui-docker-image:
+        type: build
+        title: 'Build manual onboarding ui docker image'
+        image_name: obri/manual-onboarding
+        working-directory: ${{main_clone}}/forgerock-openbanking-ui
+        build_arguments:
+          - BUILD_VERSION=${{BUILD_VERSION}}
+        dockerfile: projects/manual-onboarding/docker/Dockerfile
+        tag: ${{CF_REVISION}}
+
+  # Docker-push stage
+  docker-push:
+    type: parallel
+    stage: 'docker-push'
+    steps:
+      push-bank-docker-image:
+        type: push
+        title: 'Push bank ui docker image to bintray'
+        candidate: ${{build-bank-ui-docker-image}}
+        tags:
+          - ${{BUILD_VERSION}}
+      push-register-ui-docker-image:
+        type: push
+        title: 'Push register docker image to bintray'
+        candidate: ${{build-register-ui-docker-image}}
+        tags:
+          - ${{BUILD_VERSION}}
+
+  clone-ob-deploy:
+    type: git-clone
+    stage: 'trigger-deploy'
+    title: 'Clone ob-deploy repo'
+    git: github-bot
+    repo: forgeCloud/ob-deploy
+    when:
+      branch:
+        only:
+          - master
+  update-release-json:
+    image: codefreshio/git-image:latest
+    stage: 'trigger-deploy'
+    title: 'Update release.json'
+    description: 'Update release.json file'
+    working_directory: ${{clone-ob-deploy}}
+    commands:
+      - apt update && apt install jq
+      - jq -M  '[ .[] | if ((.service == "bank-ui" or .service == "manual-onboarding") and (.helmReference  | contains("obri-helm-charts/ui-template"))) then .version |= "HEHE" else . end ]' client_releases/master-dev/releases.json > client_releases/master-dev/releases.json.tmp
+      - mv client_releases/master-dev/releases.json.tmp client_releases/master-dev/releases.json
+      - git config --global user.email "codefresh@codefresh.io"
+      - git config --global user.name "Codefresh"
+      - git add client_releases/master-dev/releases.json
+      - git commit --allow-empty -m "Bumping Bank & Register UI version ${{BUILD_VERSION}}"
+      - git push https://${{GITHUB_USERNAME}}:${{GITHUB_ACCESS_TOKEN}}@github.com/ForgeCloud/ob-deploy.git "master"
+    when:
+      branch:
+        only:
+          - master
+  trigger-ob-deploy-master:
+    title: 'Trigger deploy pipeline'
+    stage: 'trigger-deploy'
+    image: codefresh/cli
+    commands:
+      - codefresh run ForgeCloud/ob-deploy/ob-deploy-master-dev --branch ${{CF_BRANCH}} --detach -t "default"
+    when:
+      branch:
+        only:
+          - master

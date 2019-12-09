@@ -1,0 +1,34 @@
+<mat-card *ngIf="response">
+  <forgerock-customer-logo></forgerock-customer-logo>
+  <form [formGroup]="form">
+    <h1
+      [translate]="'CONSENT.FUNDS-CONFIRMATION.TITLE'"
+      [translateParams]="{ merchantName: response.merchantName }"
+    ></h1>
+    <div *ngIf="response.logo" class="merchant-logo">
+      <img src="{{ response.logo }}" onerror="this.style.display='none'" />
+    </div>
+    <div class="divider"></div>
+
+    <span [translate]="'CONSENT.FUNDS-CONFIRMATION.ACCOUNT'"></span>
+
+    <app-consent-box [items]="items"></app-consent-box>
+
+    <div fxLayout="row">
+      <p>{{ 'CONSENT.FUNDS-CONFIRMATION.CONFIRM_TEXT' | translate }}</p>
+    </div>
+    <div fxLayout="row">
+      <p>{{ 'CONSENT.FUNDS-CONFIRMATION.DISCLAIMER' | translate }}</p>
+    </div>
+    <div class="divider"></div>
+
+    <app-submit-box
+      [loading]="_loading"
+      [form]="form"
+      [proceedLabel]="'CONSENT.ACCOUNT.PROCEED'"
+      [cancelLabel]="'CONSENT.ACCOUNT.CANCEL'"
+      (accept)="submit(true)"
+      (deny)="submit(false)"
+    ></app-submit-box>
+  </form>
+</mat-card>

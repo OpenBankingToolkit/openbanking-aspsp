@@ -1,0 +1,18 @@
+<div
+  *ngIf="payload.fromTransaction || payload.toTransaction"
+  class="transaction-period-consent-box-item {{ cssClass }}"
+>
+  <span class="title">{{ 'CONSENT.ACCOUNT.TRANSACTION_PERIOD' | translate }}</span>
+  <div class="sub-row" fxLayout="row">
+    <div fxFlex>
+      <div *ngIf="payload.fromTransaction">
+        <span class="title">{{ 'CONSENT.ACCOUNT.START' | translate }}</span> <span fxFlex></span>
+        {{ payload.fromTransaction | forgerockDateFormat: 'Do MMMM, YYYY, HH:mm:ss' }}
+      </div>
+      <div *ngIf="payload.toTransaction">
+        <span class="title">{{ 'CONSENT.ACCOUNT.END' | translate }}</span> <span fxFlex></span>
+        {{ payload.toTransaction | forgerockDateFormat: 'Do MMMM, YYYY, HH:mm:ss' }}
+      </div>
+    </div>
+  </div>
+</div>

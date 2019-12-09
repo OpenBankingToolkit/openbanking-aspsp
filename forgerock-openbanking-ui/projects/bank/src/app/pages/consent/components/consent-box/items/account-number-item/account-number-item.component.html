@@ -1,0 +1,4 @@
+<div *ngIf="payload.account" class="account-number-consent-box-item {{ payload.cssClass }}">
+  <span class="title">{{ payload.label | translate }}</span> <span fxFlex></span>
+  {{ payload.account | AccountNumberFormat }}
+</div>

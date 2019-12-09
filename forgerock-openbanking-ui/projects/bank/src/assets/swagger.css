@@ -1,0 +1,3 @@
+/* Placeholder for custom css - add brand specific styling to: ../clients/{client}/assets/swagger.css
+   and then update the swagger-ui configuration value 'swagger.index.custom-css-url' for a specific profile: e.g. forgerock-openbanking-config/forgerock-openbanking-git-config/swagger/swagger-ui-lbg.yml
+*/

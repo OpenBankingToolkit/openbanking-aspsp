@@ -1,0 +1,30 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "importHelpers": true,
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es5",
+    "types": ["node"],
+    "typeRoots": ["node_modules/@types"],
+    "lib": ["es2018", "dom"],
+    "paths": {
+      "@tests": ["tests"],
+      "@tests/*": ["tests/*"],
+      "bank": ["projects/bank"],
+      "bank/*": ["projects/bank/*"],
+      "@utils": ["utils"],
+      "@utils/*": ["utils/*"],
+      "forgerock": ["projects/forgerock"],
+      "forgerock/*": ["projects/forgerock/*"],
+      "manual-onboarding": ["projects/manual-onboarding"],
+      "manual-onboarding/*": ["projects/manual-onboarding/*"]
+    }
+  }
+}

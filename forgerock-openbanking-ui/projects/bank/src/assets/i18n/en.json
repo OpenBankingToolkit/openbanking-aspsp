@@ -1,0 +1,271 @@
+{
+  "404": "Page not found",
+  "HELLO": "Hello",
+  "SIGNIN": "Sign in",
+  "SIGNUP": "Sign up",
+  "SIGNOUT": "Sign out",
+  "SIGNED_OUT": "You have been signed out",
+  "CREATE_ACCOUNT": "Create Account",
+  "GDPR": {
+    "TITLE": "Access denied",
+    "TEXT": "In order to use this application, you must comply with our cookie policy."
+  },
+  "REGISTER": {
+    "ALREADY_HAVE_ACCOUNT": "Alread have an account?",
+    "FORM_CONFIRM": "Your changes have not been saved yet. Are you sure you want to leave?",
+    "SUCCESS": "Your account has been successfully registered."
+  },
+  "NAV": {
+    "PROFILE": "Profile",
+    "SECURITY": "Security"
+  },
+  "PROFILE": {
+    "DETAILS": {
+      "TITLE": "Profile"
+    },
+    "PASSWORD": {
+      "TITLE": "Security"
+    },
+    "UPDATE_SUCCESS": "Your profile has been updated.",
+    "UPDATE_ERROR": "Could not save profile information",
+    "PASSWORD_UPDATE_SUCCESS": "Your password has been updated.",
+    "PASSWORD_UPDATE_ERROR": "Could not update password"
+  },
+  "CONSENT": {
+    "PAYMENT": {
+      "CHECK_DETAILS": "Please check the details below are correct.",
+      "PAYEE_NAME": "Payee name",
+      "ACCOUNT": "Account",
+      "PAYMENT_REFERENCE": "Payment ref.",
+      "AMOUNT": "Amount",
+      "ACCOUNT_PRE_SELECTED": "From account",
+      "SELECT_ACCOUNT": "Please select the account to pay from:",
+      "AVAILABLE": "Available",
+      "PROCEED_PAYMENT": "Press Proceed to make payment",
+      "PROCEED": "Proceed",
+      "CANCEL": "Cancel",
+      "CURRENCY": "Currency",
+      "CURRENCY_FROM": "From currency",
+      "CURRENCY_TO": "To currency",
+      "CHARGES": "Charges"
+    },
+    "ACCOUNT": {
+      "TITLE": "Confirm account sharing with {{merchantName}}",
+      "CHECK_DETAILS": "Please check the details below are correct.",
+      "SELECT_ACCOUNT": "Please select and confirm account(s) to share information:",
+      "CANCEL": "Cancel and return to {{client}}",
+      "APPLICATION": "Application requesting access",
+      "TRANSACTION_PERIOD": "Transactions period requested",
+      "EXPIRE": "{{client}} will access your information from your account(s) until: ",
+      "START": "Start",
+      "END": "End",
+      "CONNECT": "Connect {{client}}",
+      "PROCEED": "Proceed",
+      "CANCEL": "Cancel",
+      "ACCOUNTS": "Accounts",
+      "PROCEED_ACCOUNT": "Press Proceed to start sharing your account(s)",
+      "REVIEW_DATA": "Review the data you will be sharing",
+      "ACCESS.PERIOD": "The application has requested access to your transactions from {{from}} to {{to}}",
+
+      "PERMISSIONS": {
+        "TITLE": "Requested Permissions",
+        "ReadAccountsBasic": "View Account Basic",
+        "ReadAccountsDetail": "View Account Details",
+        "ReadBalances": "View Balances",
+        "ReadBeneficiariesBasic": "View Beneficiaries Basic",
+        "ReadBeneficiariesDetail": "View Beneficiaries Details",
+        "ReadDirectDebits": "View Direct Debits",
+        "ReadStandingOrdersBasic": "View Standing Orders Basic",
+        "ReadStandingOrdersDetail": "View Standing Orders Details",
+        "ReadTransactionsBasic": "View Transactions Basic",
+        "ReadTransactionsDetail": "View Transactions Details",
+        "ReadTransactionsCredits": "View Transactions Credits",
+        "ReadTransactionsDebits": "View Transactions Debits",
+        "ReadStatementsBasic": "View Statements Basic",
+        "ReadStatementsDetail": "View Statements Details",
+        "ReadProducts": "View Products",
+        "ReadOffers": "View Offers",
+        "ReadParty": "View Party",
+        "ReadPartyPSU": "View Party PSU",
+        "ReadScheduledPaymentsBasic": "View Scheduled Payments Basic",
+        "ReadScheduledPaymentsDetail": "View Scheduled Payments Details",
+        "ReadPAN": "View PAN"
+      }
+    },
+    "SINGLE-PAYMENT": {
+      "TITLE": "Confirm single payment to {{merchantName}}",
+      "PAY": "Pay",
+      "PAY_FROM": "Pay from",
+      "PAY_NOW": "Pay now",
+      "PAY_CONSENT": "By clicking 'Pay from' you consent to proceed with payment",
+      "CANCEL": "Cancel and return to {{client}}"
+    },
+    "DOMESTIC-PAYMENT": {
+      "TITLE": "Confirm domestic payment to {{merchantName}}",
+      "PAY": "Pay",
+      "PAY_FROM": "Pay from",
+      "ALLOW": "Allow",
+      "PAY_NOW": "Pay now",
+      "PAY_CONSENT": "By clicking 'Pay from' you consent to proceed with payment",
+      "CANCEL": "Cancel and return to {{client}}"
+    },
+    "DOMESTIC-SCHEDULE-PAYMENT": {
+      "TITLE": "Confirm domestic schedule payment to {{merchantName}}",
+      "PAY": "Pay",
+      "PAYMENT_DATE": "Payment date",
+      "ALLOW": "Allow",
+      "PAY_CONSENT": "By clicking 'Pay from' you consent to proceed with payment",
+      "CANCEL": "Cancel and return to {{client}}",
+      "REFERENCE": "Reference"
+    },
+    "DOMESTIC-STANDING-ORDER": {
+      "TITLE": "Confirm domestic standing order to {{merchantName}}",
+      "PAY": "Pay",
+      "PAY_FROM": "Pay from account: ",
+      "ALLOW": "Allow",
+      "PAY_CONSENT": "By clicking 'Pay from' you consent to proceed with payment",
+      "CANCEL": "Cancel and return to {{client}}",
+      "REFERENCE": "Reference",
+
+      "FIRST_PAYMENT": "First Payment",
+      "FIRST_PAYMENT_DATE": "Date",
+      "FIRST_PAYMENT_AMOUNT": "Amount",
+
+      "FINAL_PAYMENT": "Final Payment",
+      "FINAL_PAYMENT_DATE": "Date",
+      "FINAL_PAYMENT_AMOUNT": "Amount",
+
+      "RECURRING_PAYMENT": "Regular payment",
+      "RECURRING_PAYMENT_AMOUNT": "Amount",
+      "FREQ": "Frequency"
+    },
+    "INTERNATIONAL-PAYMENT": {
+      "TITLE": "Confirm international payment to {{merchantName}}",
+      "PAY": "Pay",
+      "PAY_FROM": "Pay from",
+      "ALLOW": "Allow",
+      "PAY_NOW": "Pay now",
+      "PAY_CONSENT": "By clicking 'Pay from' you consent to proceed with payment",
+      "CANCEL": "Cancel and return to {{client}}",
+      "AMOUNT_TO_PAY": "Amount to pay",
+      "EXCHANGE_RATE": "Exchange Rate",
+      "EXCHANGE_RATE_FROM": "Exchange from",
+      "EXCHANGE_RATE_TYPE": "Type",
+      "REFRESH_RATE_INFO": "This rate is valid for the next 5 minutes, if you navigate away from this page now the rate we’ve quoted you may change"
+    },
+    "INTERNATIONAL-SCHEDULE-PAYMENT": {
+      "TITLE": "Confirm international schedule payment to {{merchantName}}",
+      "PAY": "Pay",
+      "PAY_FROM": "Pay from",
+      "ALLOW": "Allow",
+      "PAY_NOW": "Pay now",
+      "PAY_CONSENT": "By clicking 'Pay from' you consent to proceed with payment",
+      "CANCEL": "Cancel and return to {{client}}",
+      "PAYMENT_DATE": "Payment date",
+      "EXCHANGE_RATE": "Exchange Rate",
+      "EXCHANGE_RATE_FROM": "Exchange from",
+      "EXCHANGE_RATE_TYPE": "Type",
+      "REFERENCE": "Reference",
+      "ON_PAYMENT_DATE": "on payment date"
+    },
+    "INTERNATIONAL-STANDING-ORDER": {
+      "TITLE": "Confirm international standing order to {{merchantName}}",
+      "PAY": "Pay",
+      "PAY_FROM": "Pay from account: ",
+      "ALLOW": "Allow",
+      "PAY_CONSENT": "By clicking 'Pay from' you consent to proceed with payment",
+      "CANCEL": "Cancel and return to {{client}}",
+      "REFERENCE": "Reference",
+      "FIRST_PAYMENT_DATE": "First Payment Date",
+      "FIRST_PAYMENT_AMOUNT": "First Payment Amount",
+      "FINAL_PAYMENT_DATE": "Final Payment Date",
+      "FINAL_PAYMENT_AMOUNT": "Final Payment Amount",
+      "RECURRING_PAYMENT_AMOUNT": "Regular payment amount",
+      "FREQ": "Payment frequency",
+      "CURRENCY_OF_TRANSFER": "Currency of transfer"
+    },
+    "FILE-PAYMENT": {
+      "TITLE": "Confirm bulk payments to {{merchantName}}",
+      "PAY_FROM": "Pay from",
+      "ALLOW": "Allow",
+      "NO_OF_PAYEES": "Number of payees",
+      "TOTAL_AMOUNT": "Total Amount",
+      "FILE_REFERENCE": "File Reference",
+      "PAYMENT_REFERENCE": "Payment Reference",
+      "PAYMENT_DATE": "Date to send",
+      "PAY_NOW": "Pay now",
+      "PAY_CONSENT": "By clicking 'Allow' you consent to proceed with the bulk payment",
+      "CANCEL": "Cancel and return to {{client}}"
+    },
+    "FUNDS-CONFIRMATION": {
+      "TITLE": "Funds Availability requested by {{merchantName}}",
+      "APPLICATION": "Application requesting access",
+      "ACCOUNT": "We have received a request from card issuer to provide a confirmation of sufficient funds from the following account.",
+      "ACCOUNT_TITLE": "Account",
+      "ACCOUNT_NAME": "Account name",
+      "ACCOUNT_ID": "Account identifier",
+      "EXPIRATION": "Expiration:",
+      "CONFIRM_TEXT": "Please confirm that you would like us to respond to future confirmation of funds requests from the card issuer.",
+      "DISCLAIMER": "Please note that the card issuer will never see your account balance. We will only provide a 'yes' or 'no' answer to the card issuer when you use your card.",
+      "ALLOW": "Confirm",
+      "CANCEL": "Cancel and return to {{client}}"
+    }
+  },
+  "STAGES": {
+    "DataStore1": {
+      "TITLE": "Sign in",
+      "DONT_HAVE_ACCOUNT": "New here?"
+    },
+    "AuthenticatorPushRegistration2": {
+      "TITLE": "Set up 2-step verification",
+      "SUBTITLE": "Secure your account by setting up 2-step authentication with your mobile device."
+    },
+    "AuthenticatorPushRegistration3": {
+      "TITLE": "Get the {{clientName}} app",
+      "SUBTITLE": "To continue you need to first install the {{clientName}} app.",
+      "SUBMIT": "Continue"
+    },
+    "AuthenticatorPushRegistration4": {
+      "TITLE": "Register a device",
+      "LOADING": "Waiting for you to scan"
+    },
+    "AuthenticatorPush3": {
+      "TITLE": "P2-step verification",
+      "SUBTITLE": "Open the {{clientName}} app on your mobile device and tap ‘authorise’ to continue.",
+      "LOADING": "Waiting for your mobile..."
+    },
+    "AuthenticatorPush4": {
+      "TITLE": "Push authentication - Recovery code",
+      "DONT_HAVE_CODE": "Don’t have a code?",
+      "CONTACT": "Contact your administrator"
+    }
+  },
+  "FREQUENCY": {
+    "EvryDay": "Every day",
+    "EvryWorkgDay": "Every working day",
+    "IntrvlWkDay": "Every {{weekNumber}} week, on the {{dayNumber}} day of the week.",
+    "WkInMnthDay": "Every month, on the {{weekNumber}} week of the month, and on the {{dayNumber}} day of the week.",
+    "IntrvlMnthDay": "Every {{monthNumber}} month, on the {{dayNumber}} day of the month.",
+    "IntrvlMnthDayFromEndMonth": "Every {{monthNumber}} month, on the {{dayNumber}} last day of the month.",
+    "QtrDay": {
+      "ENGLISH": "Paid on the 25th March, 24th June, 29th September and 25th December.",
+      "SCOTTISH": "Paid on the 2nd February, 15th May, 1st August and 11th November.",
+      "RECEIVED": "Paid on the 20th March, 19th June, 24th September and 20th December."
+    }
+  },
+  "BALANCE_TYPE": {
+    "ClosingAvailable": "Closing available",
+    "ClosingBooked": "Closing booked",
+    "ClosingCleared": "Closing cleared",
+    "Expected": "Closing expected",
+    "ForwardAvailable": "Forward available",
+    "Information": "Information",
+    "InterimAvailable": "Interim available",
+    "InterimBooked": "Interim booked",
+    "InterimCleared": "Interim cleared",
+    "OpeningAvailable": "Opening available",
+    "OpeningBooked": "Opening booked",
+    "OpeningCleared": "Opening cleared",
+    "PreviouslyClosedBooked": "Previously Closing Booked"
+  }
+}

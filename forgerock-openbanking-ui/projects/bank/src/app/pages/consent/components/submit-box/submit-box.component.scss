@@ -1,0 +1,11 @@
+:host {
+  ::ng-deep button[type='submit'] .mat-button-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    mat-spinner {
+      margin-right: 10px;
+    }
+  }
+}

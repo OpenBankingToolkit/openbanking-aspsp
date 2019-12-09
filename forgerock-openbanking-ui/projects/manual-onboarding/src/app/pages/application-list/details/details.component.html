@@ -1,0 +1,59 @@
+<div class="header mat-accent-bg p-24" fxLayout="column">
+  <mat-toolbar>
+    <span fxFlex></span>
+    <button mat-icon-button (click)="copy()" matTooltip="Copy response">
+      <mat-icon id="copy-detail" class="example-icon">file_copy</mat-icon>
+    </button>
+    <button mat-icon-button (click)="onClose()" matTooltip="Close">
+      <mat-icon id="close-detail" class="example-icon">close</mat-icon>
+    </button>
+  </mat-toolbar>
+  <span fxFlex></span>
+  <mat-list>
+    <mat-list-item>
+      <h4 mat-line>{{ selected?.manualRegistrationRequest?.applicationName }}</h4>
+    </mat-list-item>
+  </mat-list>
+</div>
+
+<div class="content p-24 mat-white-bg">
+  <div class="file-details">
+    <mat-list>
+      <mat-list-item class="wrap">
+        <h4 mat-line>Client ID</h4>
+        <p mat-line>{{ selected?.oidcRegistrationResponse?.client_id }}</p>
+      </mat-list-item>
+      <mat-list-item class="wrap">
+        <h4 mat-line>Client Secret</h4>
+        <p mat-line>{{ selected?.oidcRegistrationResponse?.client_secret }}</p>
+      </mat-list-item>
+      <mat-divider></mat-divider>
+      <ng-container *ngIf="selected?.manualRegistrationRequest?.applicationDescription as applicationDescription">
+        <h3 mat-subheader>applicationDescription</h3>
+        <mat-list-item class="wrap">
+          <p mat-line>{{ applicationDescription }}</p>
+        </mat-list-item>
+      </ng-container>
+      <ng-container *ngIf="selected?.manualRegistrationRequest?.redirectUris as redirectUris">
+        <h3 mat-subheader>redirectUris</h3>
+        <mat-list-item class="wrap">
+          <p mat-line *ngFor="let redirectUri of redirectUris">{{ redirectUri }}</p>
+        </mat-list-item>
+      </ng-container>
+      <ng-container
+        *ngIf="selected?.manualRegistrationRequest?.softwareStatementAssertion as softwareStatementAssertion"
+      >
+        <h3 mat-subheader>softwareStatementAssertion</h3>
+        <mat-list-item class="wrap" id="software-statement-assertion-detail">
+          <p mat-line>{{ softwareStatementAssertion }}</p>
+        </mat-list-item>
+      </ng-container>
+      <ng-container *ngIf="selected?.manualRegistrationRequest?.qsealPem as qsealPem">
+        <h3 mat-subheader>qsealPem</h3>
+        <mat-list-item class="wrap">
+          <p mat-line>{{ qsealPem }}</p>
+        </mat-list-item>
+      </ng-container>
+    </mat-list>
+  </div>
+</div>

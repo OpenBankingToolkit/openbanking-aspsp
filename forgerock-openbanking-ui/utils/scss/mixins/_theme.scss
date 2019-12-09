@@ -1,0 +1,20 @@
+@mixin forgerock-utils-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $accent: map-get($theme, accent);
+
+  .secondary-text {
+    color: mat-color($foreground, secondary-text);
+  }
+
+  a {
+    color: mat-color($accent);
+    text-decoration: none;
+
+    &:not(.mat-button):not(.mat-raised-button):not(.mat-icon-button) {
+      &:hover,
+      &:active {
+        text-decoration: underline;
+      }
+    }
+  }
+}

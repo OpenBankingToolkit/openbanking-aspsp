@@ -1,0 +1,138 @@
+@import 'mixins/breakpoints';
+
+@mixin bank-consent-dynamic-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+  app-consent-dynamic {
+    h1 {
+      text-align: center;
+    }
+    .mat-card {
+      min-width: 490px;
+      padding: 40px;
+      @include media-breakpoint-down('sm') {
+        min-width: auto;
+        padding: 24px;
+      }
+    }
+    .divider {
+      border-top-width: 1px;
+      border-top-style: solid;
+      border-top-color: mat-color($foreground, divider);
+      margin: 20px 0;
+    }
+    .title {
+      color: mat-color($foreground, secondary-text);
+      margin-bottom: 12px;
+    }
+    /deep/ .secondary-text {
+      color: mat-color($foreground, secondary-text);
+    }
+
+    .paymentButton {
+      margin: 3px;
+    }
+
+    .paymentButton > button {
+      width: 100%;
+    }
+
+    .consent-box.accounts {
+      padding: 0;
+    }
+
+    .accounts > label {
+      border-top: solid 1px mat-color($foreground, divider);
+      padding: 15px 15px;
+    }
+
+    .accounts > label:first-child {
+      border-top: none;
+    }
+
+    .accounts.consent-box {
+      margin: 0;
+      padding: 0;
+    }
+
+    .accounts > label:hover {
+      background-color: mat-color($background, hover);
+    }
+
+    .Aligner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    mat-radio-button > label {
+      height: 100%;
+    }
+
+    .sub-row {
+      padding: 10px 0;
+      margin-left: 15px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-top: solid 1px mat-color($foreground, divider);
+      border-bottom: solid 1px mat-color($foreground, divider);
+    }
+
+    .consent-box {
+      background-color: mat-color($background, background);
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 5px;
+    }
+
+    .review-permissions {
+      margin-bottom: 15px;
+    }
+
+    .review-permissions > mat-accordion:first-child > .mat-expansion-panel {
+      background-color: mat-color($background, background);
+    }
+
+    .review-permissions .mat-expansion-panel .mat-expansion-panel-body {
+      padding: 0;
+      margin: 15px;
+    }
+
+    .merchant-logo {
+      text-align: center;
+    }
+
+    .merchant-logo img {
+      max-width: 100px;
+      max-heigh: 100px;
+      margin: auto;
+      justify-content: center;
+    }
+    mat-radio-group {
+      display: inline-flex;
+      flex-direction: column;
+      width: 100%;
+      mat-radio-button {
+        height: 40px;
+      }
+    }
+    /deep/ .mat-radio-label {
+      width: 100%;
+    }
+    /deep/ .mat-radio-label-content {
+      flex: 1;
+    }
+    /deep/ .button-cancel {
+      min-height: 65px;
+      white-space: normal;
+    }
+
+    button {
+      margin-bottom: 15px;
+    }
+
+    .consent-expiration-date {
+      padding: 15px 5px;
+    }
+  }
+}

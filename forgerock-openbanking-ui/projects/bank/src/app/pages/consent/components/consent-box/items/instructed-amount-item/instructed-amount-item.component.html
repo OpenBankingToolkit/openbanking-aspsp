@@ -1,0 +1,3 @@
+<div *ngIf="payload.amount" class="instructed-amount-consent-box-item {{ cssClass }}">
+  <span class="title">{{ payload.label | translate }}</span> <span fxFlex></span> {{ payload.amount | AmountFormat }}
+</div>

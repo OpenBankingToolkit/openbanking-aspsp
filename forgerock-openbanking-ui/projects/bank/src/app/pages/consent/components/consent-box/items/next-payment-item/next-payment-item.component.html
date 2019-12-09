@@ -1,0 +1,19 @@
+<div *ngIf="payload.nextPaymentAmount" class="next-payment-consent-box-item {{ cssClass }}">
+  <span class="title">{{ payload.nextPaymentLabel | translate }}</span>
+  <div class="sub-row" fxLayout="row">
+    <div fxFlex>
+      <div>
+        <span class="title">{{ payload.nextPaymentAmountLabel | translate }}</span> <span fxFlex></span>
+        {{ payload.nextPaymentAmount | AmountFormat }}
+      </div>
+      <div *ngIf="payload.nextPaymentDate">
+        <span class="title">{{ payload.nextPaymentDateLabel | translate }}</span> <span fxFlex></span>
+        {{ payload.nextPaymentDate | date }}
+      </div>
+      <div>
+        <span class="title">{{ payload.frequencyLabel | translate }}</span> <span fxFlex></span>
+        {{ payload.frequency | FrequencyFormat }}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,34 @@
+@import '~@angular/material/theming';
+
+$typography: mat-typography-config(
+  $input: mat-typography-level(16px, 1.125, 400)
+) !default;
+
+// $is-dark: false !default;
+// $primary-palette: $mat-blue-grey !default;
+// $accent-palette: $mat-light-blue !default;
+// $warn-palette: $mat-red !default;
+// $foreground-palette: $mat-light-theme-foreground !default;
+// $background-palette: $mat-light-theme-background !default;
+
+$is-dark: true;
+$primary-palette: $mat-gray;
+$accent-palette: $mat-deep-orange;
+$warn-palette: $mat-red;
+$foreground-palette: (
+  base: white,
+  divider: $light-dividers,
+  dividers: $light-dividers,
+  disabled: $light-disabled-text,
+  disabled-button: rgba(white, 0.3),
+  disabled-text: $light-disabled-text,
+  hint-text: $light-disabled-text,
+  secondary-text: lighten($light-secondary-text, 30),
+  icon: white,
+  icons: white,
+  text: white,
+  slider-min: white,
+  slider-off: rgba(white, 0.3),
+  slider-off-active: rgba(white, 0.3)
+);
+$background-palette: $mat-dark-theme-background;
