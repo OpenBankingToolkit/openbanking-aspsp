@@ -19,7 +19,7 @@ RUN rm -rf /etc/nginx/conf.d
 COPY --from=build-ui /src/dist /usr/share/nginx
 COPY projects/bank/docker/nginx.conf /etc/nginx/conf.d/default.conf
 # Android, iOS specific files (only for forgerock customer)
-COPY projects/tpp/docker/.well-known /usr/share/nginx/html/.well-known
+COPY projects/bank/docker/.well-known /usr/share/nginx/html/.well-known
 COPY projects/bank/docker/start.sh /opt/start.sh
 
 CMD ["/opt/start.sh"]
