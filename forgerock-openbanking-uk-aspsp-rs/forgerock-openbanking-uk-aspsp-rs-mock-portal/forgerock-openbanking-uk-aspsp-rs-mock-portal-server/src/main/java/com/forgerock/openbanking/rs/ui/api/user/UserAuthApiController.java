@@ -70,7 +70,7 @@ public class UserAuthApiController {
     ) throws OBErrorException {
         try {
             return ResponseEntity.ok(sessionService.authenticate(username, password, authentication,
-                    SessionCounterType.DIRECTORY, amGateway, amAccessTokenEndpoint, new X509Certificate[0], (User) authentication.getPrincipal()));
+                    amGateway, amAccessTokenEndpoint, new X509Certificate[0], (User) authentication.getPrincipal()));
         } catch (OIDCException e) {
             log.error("OIDC exception", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
