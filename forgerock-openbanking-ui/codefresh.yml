@@ -132,7 +132,7 @@ steps:
     working_directory: ${{clone-ob-deploy}}
     commands:
       - apt update && apt install jq
-      - jq -M  '[ .[] | if ((.service == "bank-ui" or .service == "manual-onboarding") and (.helmReference  | contains("obri-helm-charts/ui-template"))) then .version |= "HEHE" else . end ]' client_releases/master-dev/releases.json > client_releases/master-dev/releases.json.tmp
+      - jq -M  '[ .[] | if ((.service == "bank-ui" or .service == "manual-onboarding") and (.helmReference  | contains("obri-helm-charts/ui-template"))) then .version |= "${{BUILD_VERSION}}" else . end ]' client_releases/master-dev/releases.json > client_releases/master-dev/releases.json.tmp
       - mv client_releases/master-dev/releases.json.tmp client_releases/master-dev/releases.json
       - git config --global user.email "codefresh@codefresh.io"
       - git config --global user.name "Codefresh"
