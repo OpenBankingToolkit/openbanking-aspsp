@@ -135,6 +135,14 @@
         <tag>HEAD</tag>
     </scm>
 
+    <distributionManagement>
+        <repository>
+            <id>bintray-openbankingtoolkit-OpenBankingToolkit</id>
+            <name>OpenBankingToolkit ASPSP</name>
+            <url>https://api.bintray.com/maven/openbanking-toolkit/OpenBankingToolKit/openbanking-aspsp/;publish=1</url>
+        </repository>
+    </distributionManagement>
+
     <repositories>
         <repository>
             <id>jcenter</id>
