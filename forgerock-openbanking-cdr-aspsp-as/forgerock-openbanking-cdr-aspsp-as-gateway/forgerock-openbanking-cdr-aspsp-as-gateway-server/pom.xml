@@ -30,7 +30,7 @@
     <parent>
         <groupId>com.forgerock.openbanking.aspsp</groupId>
         <artifactId>forgerock-openbanking-cdr-aspsp-as-gateway</artifactId>
-        <version>1.0.14</version>
+        <version>1.0.15-SNAPSHOT</version>
     </parent>
 
     <dependencies>
