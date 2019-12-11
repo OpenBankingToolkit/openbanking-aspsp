@@ -32,7 +32,7 @@
     <parent>
         <groupId>com.forgerock.openbanking.aspsp</groupId>
         <artifactId>forgerock-openbanking-cdr-aspsp-rs</artifactId>
-        <version>1.0.15-SNAPSHOT</version>
+        <version>1.0.15</version>
     </parent>
 
     <modules>
