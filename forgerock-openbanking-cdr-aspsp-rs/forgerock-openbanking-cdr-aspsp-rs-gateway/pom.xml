@@ -25,12 +25,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>ForgeRock OpenBanking Reference Implementation - cdr - ASPSP - RS - Gateway</name>
-    <groupId>com.forgerock.openbanking.cdr.aspsp.rs</groupId>
+    <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>forgerock-openbanking-cdr-aspsp-rs-gateway</artifactId>
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>com.forgerock.openbanking.cdr.aspsp.rs</groupId>
+        <groupId>com.forgerock.openbanking.aspsp</groupId>
         <artifactId>forgerock-openbanking-cdr-aspsp-rs</artifactId>
         <version>1.0.11-SNAPSHOT</version>
     </parent>
@@ -43,7 +43,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.forgerock.openbanking.cdr.aspsp.rs</groupId>
+                <groupId>com.forgerock.openbanking.aspsp</groupId>
                 <artifactId>forgerock-openbanking-cdr-aspsp-rs-gateway-server</artifactId>
                 <version>${project.parent.version}</version>
             </dependency>

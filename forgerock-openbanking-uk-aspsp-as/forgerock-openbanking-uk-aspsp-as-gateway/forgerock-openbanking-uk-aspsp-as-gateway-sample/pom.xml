@@ -22,20 +22,20 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.forgerock.openbanking.uk.aspsp.as</groupId>
+    <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>forgerock-openbanking-uk-aspsp-as-gateway-sample</artifactId>
     <packaging>jar</packaging>
     <name>as-gateway-sample</name>
 
     <parent>
-        <groupId>com.forgerock.openbanking.uk.aspsp.as</groupId>
+        <groupId>com.forgerock.openbanking.aspsp</groupId>
         <artifactId>forgerock-openbanking-uk-aspsp-as-gateway</artifactId>
         <version>1.0.11-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>com.forgerock.openbanking.uk.aspsp.as</groupId>
+            <groupId>com.forgerock.openbanking.aspsp</groupId>
             <artifactId>forgerock-openbanking-uk-aspsp-as-gateway-server</artifactId>
         </dependency>
         <dependency>

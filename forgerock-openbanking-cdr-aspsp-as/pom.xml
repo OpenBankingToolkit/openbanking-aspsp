@@ -25,13 +25,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>ForgeRock OpenBanking Reference Implementation - CDR - ASPSP - AS</name>
-    <groupId>com.forgerock.openbanking.cdr.aspsp.as</groupId>
+    <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>forgerock-openbanking-cdr-aspsp-as</artifactId>
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
-        <artifactId>forgerock-openbanking-uk-aspsp</artifactId>
+        <groupId>com.forgerock.openbanking.aspsp</groupId>
+        <artifactId>forgerock-openbanking-aspsp</artifactId>
         <version>1.0.11-SNAPSHOT</version>
     </parent>
 
