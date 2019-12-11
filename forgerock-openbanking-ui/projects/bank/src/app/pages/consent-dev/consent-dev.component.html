@@ -1,0 +1,4 @@
+<div *ngFor="let mock of mocks">
+  <h1>{{ mock.type }}</h1>
+  <app-consent-dynamic [response]="mock" [loading]="loading" (formSubmit)="onFormSubmit($event)"></app-consent-dynamic>
+</div>

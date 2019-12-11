@@ -1,0 +1,21 @@
+@import '_variables';
+@import 'mixins/cssvars';
+
+$cssVarsAndTheme: getCssVarsAndTheme(
+  $is-dark,
+  $primary-palette,
+  $accent-palette,
+  $warn-palette,
+  $foreground-palette,
+  $background-palette
+);
+
+itWillBeFetchByJS {
+  @each $varName, $varValue in map-get($cssVarsAndTheme, cssVars) {
+    @if (type_of($varValue) ==string) {
+      #{$varName}: $varValue; // to prevent quotes interpolation
+    } @else {
+      #{$varName}: #{$varValue};
+    }
+  }
+}

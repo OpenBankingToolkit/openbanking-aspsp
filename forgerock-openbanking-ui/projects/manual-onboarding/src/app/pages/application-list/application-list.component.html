@@ -1,0 +1,22 @@
+<mat-sidenav-container>
+  <mat-sidenav
+    #sidenav
+    mode="over"
+    position="end"
+    [opened]="selectedApplicationId !== null"
+    (closedStart)="onClose()"
+    fixedTopGap="0"
+    fixedBottomGap="0"
+    autoFocus="false"
+  >
+    <app-application-list-details-container></app-application-list-details-container>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <app-application-list-table-container></app-application-list-table-container>
+
+    <button mat-fab color="accent" (click)="addApplication()" aria-label="Add application" id="add-application-button">
+      <mat-icon>add</mat-icon>
+    </button>
+  </mat-sidenav-content>
+</mat-sidenav-container>

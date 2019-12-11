@@ -1,0 +1,7 @@
+<mat-progress-spinner *ngIf="!response && !error" mode="indeterminate" color="accent"></mat-progress-spinner>
+<app-consent-dynamic
+  *ngIf="response"
+  [loading]="loading"
+  [response]="response"
+  (formSubmit)="onFormSubmit($event)"
+></app-consent-dynamic>

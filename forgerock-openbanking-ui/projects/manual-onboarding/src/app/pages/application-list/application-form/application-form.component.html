@@ -1,0 +1,75 @@
+<h1 mat-dialog-title>{{ 'ADD_APPLICATION' | translate }}</h1>
+<div mat-dialog-content>
+  <form [formGroup]="formGroup">
+    <mat-form-field class="full-width">
+      <input matInput placeholder="Application Name" formControlName="applicationName" />
+      <mat-error
+        *ngIf="formGroup.controls.applicationName.hasError('minlength') && formGroup.controls.applicationName.touched"
+      >
+        Application Name must be at least 4 characters long
+      </mat-error>
+      <mat-error
+        *ngIf="formGroup.controls.applicationName.hasError('required') && formGroup.controls.applicationName.touched"
+      >
+        Application Name is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="full-width">
+      <textarea
+        matInput
+        rows="6"
+        placeholder="Application Description"
+        formControlName="applicationDescription"
+      ></textarea>
+    </mat-form-field>
+    <mat-form-field class="full-width">
+      <textarea
+        matInput
+        rows="4"
+        placeholder="redirect Uris (comma separated Uris)"
+        formControlName="redirectUris"
+      ></textarea>
+      <mat-error
+        *ngIf="formGroup.controls.redirectUris.hasError('required') && formGroup.controls.redirectUris.touched"
+      >
+        At least one redirect Uri is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="full-width" *ngIf="directoryId != 'EIDAS'">
+      <textarea
+        matInput
+        rows="8"
+        placeholder="Software Statement Assertion"
+        formControlName="softwareStatementAssertion"
+      ></textarea>
+      <mat-error
+        *ngIf="
+          formGroup.controls.softwareStatementAssertion.hasError('required') &&
+          formGroup.controls.softwareStatementAssertion.touched
+        "
+      >
+        SoftwareStatementAssertion is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <mat-form-field class="full-width" *ngIf="directoryId == 'EIDAS'">
+      <textarea matInput rows="8" placeholder="QSEAL Pem" formControlName="qsealPem"></textarea>
+      <mat-error *ngIf="formGroup.controls.qsealPem.hasError('required') && formGroup.controls.qsealPem.touched">
+        QSeal Pem is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+  </form>
+  <mat-progress-bar mode="indeterminate" [style.visibility]="isLoading ? 'visible' : 'hidden'"></mat-progress-bar>
+</div>
+<div mat-dialog-actions>
+  <span fxFlex></span>
+  <button mat-button mat-dialog-close id="add-application-cancel">{{ 'CANCEL' | translate }}</button>
+  <button
+    mat-button
+    color="accent"
+    [disabled]="formGroup.invalid || isLoading"
+    (click)="onSubmit()"
+    id="add-application-submit"
+  >
+    Ok
+  </button>
+</div>

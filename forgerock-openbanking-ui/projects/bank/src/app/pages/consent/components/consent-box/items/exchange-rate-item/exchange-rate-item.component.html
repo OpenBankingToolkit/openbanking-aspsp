@@ -1,0 +1,6 @@
+<div *ngIf="payload.rate" class="exchange-rate-consent-box-item {{ payload.cssClass }}">
+  <span class="title">{{ payload.label | translate }}</span> <span fxFlex></span> 1.0&nbsp;{{
+    payload.rate.UnitCurrency
+  }}
+  = {{ payload.rate.ExchangeRate }}&nbsp;{{ payload.currencyOfTransfer }}
+</div>

@@ -1,0 +1,23 @@
+export enum OBAccountPermissions {
+  ReadAccountsBasic,
+  ReadAccountsDetail,
+  ReadBalances,
+  ReadBeneficiariesBasic,
+  ReadBeneficiariesDetail,
+  ReadDirectDebits,
+  ReadStandingOrdersBasic,
+  ReadStandingOrdersDetail,
+  ReadTransactionsBasic,
+  ReadTransactionsDetail,
+  ReadTransactionsCredits,
+  ReadTransactionsDebits,
+  ReadStatementsBasic,
+  ReadStatementsDetail,
+  ReadProducts,
+  ReadOffers,
+  ReadParty,
+  ReadPartyPSU,
+  ReadScheduledPaymentsBasic,
+  ReadScheduledPaymentsDetail,
+  ReadPAN
+}
