@@ -24,7 +24,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.forgerock.openbanking.uk.aspsp.rs</groupId>
+    <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>forgerock-openbanking-uk-aspsp-rs-mock-store-sample</artifactId>
     <packaging>jar</packaging>
 
@@ -32,18 +32,18 @@
     <description>RS Mock store, where all your Open Banking data are stored</description>
 
     <parent>
-        <groupId>com.forgerock.openbanking.uk.aspsp.rs</groupId>
+        <groupId>com.forgerock.openbanking.aspsp</groupId>
         <artifactId>forgerock-openbanking-uk-aspsp-rs-mock-store</artifactId>
         <version>1.0.11-SNAPSHOT</version>
     </parent>
 
     <dependencies>
         <dependency>
-            <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
+            <groupId>com.forgerock.openbanking.aspsp</groupId>
             <artifactId>forgerock-openbanking-uk-aspsp-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.forgerock.openbanking.uk.aspsp.rs</groupId>
+            <groupId>com.forgerock.openbanking.aspsp</groupId>
             <artifactId>forgerock-openbanking-uk-aspsp-rs-mock-store-server</artifactId>
         </dependency>
 
@@ -116,7 +116,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
+            <groupId>com.forgerock.openbanking.aspsp</groupId>
             <artifactId>integration-test-support</artifactId>
             <scope>test</scope>
         </dependency>

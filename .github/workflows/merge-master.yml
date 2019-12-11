@@ -61,7 +61,7 @@ jobs:
           gpg-key-id: ${{ secrets.GITHUB_GPG_KEY_ID }}
           gpg-key: ${{ secrets.GITHUB_GPG_KEY }}
 
-          maven-args: "-Dmaven.javadoc.skip=true -Ddockerfile.skip -DskipITs -DdockerCompose.skip"
+          maven-args: "-Ddockerfile.skip -DskipITs -DdockerCompose.skip"
           maven-repo-server-id: bintray-openbankingtoolkit-OpenBankingToolkit
           maven-repo-server-username: openbankingtoolkit
           maven-repo-server-password: ${{ secrets.BINTRAY_API_KEY }}

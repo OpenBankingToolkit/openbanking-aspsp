@@ -22,13 +22,13 @@
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
+    <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>integration-test-support</artifactId>
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
-        <artifactId>forgerock-openbanking-uk-aspsp</artifactId>
+        <groupId>com.forgerock.openbanking.aspsp</groupId>
+        <artifactId>forgerock-openbanking-aspsp</artifactId>
         <version>1.0.11-SNAPSHOT</version>
     </parent>
 
@@ -45,7 +45,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.forgerock.openbanking.uk.aspsp</groupId>
+            <groupId>com.forgerock.openbanking.aspsp</groupId>
             <artifactId>forgerock-openbanking-uk-aspsp-common</artifactId>
         </dependency>
         <dependency>
