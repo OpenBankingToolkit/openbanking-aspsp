@@ -34,7 +34,7 @@
     <parent>
         <groupId>com.forgerock.openbanking.cdr.aspsp.rs</groupId>
         <artifactId>forgerock-openbanking-cdr-aspsp-rs</artifactId>
-        <version>1.0.10</version>
+        <version>1.0.11-SNAPSHOT</version>
     </parent>
 
     <dependencies>
