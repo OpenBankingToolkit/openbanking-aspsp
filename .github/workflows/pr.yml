@@ -25,7 +25,7 @@ jobs:
       run: |
         sudo bash -c 'echo "127.0.0.1   jwkms rs-api rs-store rs-rcs config.dev-ob.forgerock.financial" >> /etc/hosts'
         docker login r.cfcr.io -u fropenbanking -p ${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}
-        mvn -ntp verify -Dmaven.javadoc.skip=true -Ddockerfile.skip -DskipITs -DdockerCompose.skip
+        mvn -ntp verify
       env:
         FR_PRIVATE_REPO_USER: ${{ secrets.FR_PRIVATE_REPO_USER }}
         FR_PRIVATE_REPO_PASSWORD: ${{ secrets.FR_PRIVATE_REPO_PASSWORD }}
