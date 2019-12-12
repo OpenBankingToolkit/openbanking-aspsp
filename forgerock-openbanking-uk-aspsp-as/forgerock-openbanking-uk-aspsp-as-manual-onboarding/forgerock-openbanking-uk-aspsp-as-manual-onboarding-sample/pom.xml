@@ -34,7 +34,7 @@
 	<parent>
 		<groupId>com.forgerock.openbanking.aspsp</groupId>
 		<artifactId>forgerock-openbanking-uk-aspsp-as-manual-onboarding</artifactId>
-		<version>1.0.18</version>
+		<version>1.0.19-SNAPSHOT</version>
 	</parent>
 
 	<properties>
