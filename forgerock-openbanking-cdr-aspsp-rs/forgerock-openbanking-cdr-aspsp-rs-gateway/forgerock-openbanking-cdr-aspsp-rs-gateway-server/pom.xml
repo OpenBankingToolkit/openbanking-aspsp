@@ -29,8 +29,9 @@
 
     <parent>
         <groupId>com.forgerock.openbanking.aspsp</groupId>
-        <artifactId>forgerock-openbanking-cdr-aspsp-rs-gateway</artifactId>
+        <artifactId>forgerock-openbanking-aspsp</artifactId>
         <version>1.0.26-SNAPSHOT</version>
+        <relativePath>../../../</relativePath>
     </parent>
 
     <dependencies>
@@ -41,6 +42,7 @@
         <dependency>
             <groupId>com.forgerock.openbanking.aspsp</groupId>
             <artifactId>forgerock-openbanking-cdr-aspsp-rs-model</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.forgerock.openbanking</groupId>

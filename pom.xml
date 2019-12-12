@@ -33,7 +33,7 @@
     <parent>
         <groupId>com.forgerock.openbanking</groupId>
         <artifactId>forgerock-openbanking-starter-parent</artifactId>
-        <version>1.0.57</version>
+        <version>1.0.56</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -45,18 +45,36 @@
 
     <properties>
         <ob-common.version>1.0.52</ob-common.version>
-        <ob-auth.version>1.0.47</ob-auth.version>
+        <ob-auth.version>1.0.45</ob-auth.version>
         <ob-jwkms.version>1.1.38</ob-jwkms.version>
-        <ob-clients.version>1.0.7</ob-clients.version>
+        <ob-clients.version>1.0.5</ob-clients.version>
+        <spring-security-multi-auth-starter.version>2.1.5.0.0.52</spring-security-multi-auth-starter.version>
     </properties>
 
     <modules>
         <module>forgerock-openbanking-uk-aspsp-common</module>
         <module>integration-test-support</module>
-        <module>forgerock-openbanking-uk-aspsp-as</module>
-        <module>forgerock-openbanking-uk-aspsp-rs</module>
-        <module>forgerock-openbanking-cdr-aspsp-rs</module>
-        <module>forgerock-openbanking-cdr-aspsp-as</module>
+        <module>forgerock-openbanking-uk-aspsp-as/forgerock-openbanking-uk-aspsp-as-gateway/forgerock-openbanking-uk-aspsp-as-gateway-sample</module>
+        <module>forgerock-openbanking-uk-aspsp-as/forgerock-openbanking-uk-aspsp-as-gateway/forgerock-openbanking-uk-aspsp-as-gateway-server</module>
+        <module>forgerock-openbanking-uk-aspsp-as/forgerock-openbanking-uk-aspsp-as-manual-onboarding/forgerock-openbanking-uk-aspsp-as-manual-onboarding-sample</module>
+        <module>forgerock-openbanking-uk-aspsp-as/forgerock-openbanking-uk-aspsp-as-manual-onboarding/forgerock-openbanking-uk-aspsp-as-manual-onboarding-server</module>
+        <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server</module>
+        <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-sample</module>
+        <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-payment-simulator/forgerock-openbanking-uk-aspsp-rs-mock-payment-simulator-server</module>
+        <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-payment-simulator/forgerock-openbanking-uk-aspsp-rs-mock-payment-simulator-sample</module>
+        <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-portal/forgerock-openbanking-uk-aspsp-rs-mock-portal-server</module>
+        <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-portal/forgerock-openbanking-uk-aspsp-rs-mock-portal-sample</module>
+        <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-server</module>
+        <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-sample</module>
+        <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-rcs/forgerock-openbanking-uk-aspsp-rs-rcs-server</module>
+        <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-rcs/forgerock-openbanking-uk-aspsp-rs-rcs-sample</module>
+        <module>forgerock-openbanking-cdr-aspsp-rs/forgerock-openbanking-cdr-aspsp-rs-model</module>
+        <module>forgerock-openbanking-cdr-aspsp-rs/forgerock-openbanking-cdr-aspsp-rs-gateway/forgerock-openbanking-cdr-aspsp-rs-gateway-sample</module>
+        <module>forgerock-openbanking-cdr-aspsp-rs/forgerock-openbanking-cdr-aspsp-rs-gateway/forgerock-openbanking-cdr-aspsp-rs-gateway-server</module>
+        <module>forgerock-openbanking-cdr-aspsp-rs/forgerock-openbanking-cdr-aspsp-rs-mock-store/forgerock-openbanking-cdr-aspsp-rs-mock-store-sample</module>
+        <module>forgerock-openbanking-cdr-aspsp-rs/forgerock-openbanking-cdr-aspsp-rs-mock-store/forgerock-openbanking-cdr-aspsp-rs-mock-store-server</module>
+        <module>forgerock-openbanking-cdr-aspsp-as/forgerock-openbanking-cdr-aspsp-as-gateway/forgerock-openbanking-cdr-aspsp-as-gateway-server</module>
+        <module>forgerock-openbanking-cdr-aspsp-as/forgerock-openbanking-cdr-aspsp-as-gateway/forgerock-openbanking-cdr-aspsp-as-gateway-sample</module>
     </modules>
 
     <dependencyManagement>
@@ -72,6 +90,7 @@
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
+
             <!-- OpenBanking -->
             <dependency>
                 <groupId>com.forgerock.openbanking</groupId>
@@ -113,6 +132,11 @@
                 <artifactId>forgerock-openbanking-jwkms-embedded</artifactId>
                 <version>${ob-jwkms.version}</version>
             </dependency>
+            <dependency>
+                <groupId>dev.openbanking4.spring.security</groupId>
+                <artifactId>spring-security-multi-auth-starter</artifactId>
+                <version>${spring-security-multi-auth-starter.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.forgerock.openbanking.clients</groupId>
@@ -124,6 +148,7 @@
                 <artifactId>forgerock-openbanking-analytics-client</artifactId>
                 <version>${ob-clients.version}</version>
             </dependency>
+
         </dependencies>
     </dependencyManagement>
 

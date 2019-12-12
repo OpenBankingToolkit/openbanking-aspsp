@@ -29,14 +29,16 @@
 
     <parent>
         <groupId>com.forgerock.openbanking.aspsp</groupId>
-        <artifactId>forgerock-openbanking-uk-aspsp-as-gateway</artifactId>
+        <artifactId>forgerock-openbanking-aspsp</artifactId>
         <version>1.0.26-SNAPSHOT</version>
+        <relativePath>../../../</relativePath>
     </parent>
 
     <dependencies>
         <dependency>
             <groupId>com.forgerock.openbanking.aspsp</groupId>
             <artifactId>forgerock-openbanking-uk-aspsp-as-gateway-server</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
