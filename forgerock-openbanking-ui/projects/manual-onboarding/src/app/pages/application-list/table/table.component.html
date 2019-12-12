@@ -1,0 +1,41 @@
+<div class="filter-wrapper">
+  <mat-form-field>
+    <input matInput (keyup)="filterChange($event.target.value)" placeholder="Filter" />
+  </mat-form-field>
+</div>
+<mat-table [dataSource]="dataSource">
+  <ng-container matColumnDef="applicationName">
+    <mat-header-cell *matHeaderCellDef>Application Name</mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{ row.manualRegistrationRequest?.applicationName }}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="client_id">
+    <mat-header-cell *matHeaderCellDef>Client Id</mat-header-cell>
+    <mat-cell *matCellDef="let row"> {{ row.oidcRegistrationResponse?.client_id }}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="application_type">
+    <mat-header-cell *matHeaderCellDef fxHide fxShow.gt-md>Application Type</mat-header-cell>
+    <mat-cell *matCellDef="let row" fxHide fxShow.gt-md> {{ row.oidcRegistrationResponse?.application_type }}</mat-cell>
+  </ng-container>
+  <ng-container matColumnDef="redirectUris">
+    <mat-header-cell *matHeaderCellDef fxHide fxShow.gt-lg>Redirect Uris</mat-header-cell>
+    <mat-cell *matCellDef="let row" fxHide fxShow.gt-lg> {{ row.manualRegistrationRequest?.redirectUris }}</mat-cell>
+  </ng-container>
+
+  <ng-container matColumnDef="removeApp">
+    <mat-header-cell *matHeaderCellDef fxFlex="80px"></mat-header-cell>
+    <mat-cell *matCellDef="let row" fxFlex="80px">
+      <button mat-icon-button (click)="onRemove($event, row)" class="remove-application">
+        <mat-icon>remove_circle_outline</mat-icon>
+      </button></mat-cell
+    >
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row
+    *matRowDef="let row; columns: displayedColumns"
+    (click)="onSelect(row.id === selectedApplicationId, row)"
+    [ngClass]="{ 'row-selected': row.id === selectedApplicationId }"
+    matRipple
+  >
+  </mat-row>
+</mat-table>

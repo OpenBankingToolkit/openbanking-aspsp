@@ -1,0 +1,25 @@
+@import 'mixins/breakpoints';
+@import '_variables';
+
+@mixin forgerock-application-list-table-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  app-application-list-table {
+    padding-top: 30px;
+    display: block;
+    background-color: mat-color($background, card);
+    mat-form-field {
+      width: 100%;
+    }
+    .filter-wrapper {
+      margin: 0 20px;
+    }
+    mat-table {
+      .row-selected {
+        background-color: mat-color($background, hover);
+      }
+    }
+  }
+}

@@ -1,0 +1,297 @@
+@import '~@angular/material/theming';
+@import 'mixins/strings';
+
+@function mat-color($palette-primary, $hue: default, $opacity: null) {
+  @if type-of($hue) == number and $hue >= 0 and $hue <= 1 {
+    @return mat-color($palette-primary, default, $hue);
+  }
+
+  $color: map-get($palette-primary, $hue);
+  // @warn $palette-primary;
+  // @warn $color;
+  // @warn $hue;
+  // @if $color == null {
+  //   @return null;
+  // }
+
+  $opacity: if($opacity == null, opacity($color), $opacity);
+
+  @if type-of($opacity) == string {
+    $new-string: str-replace($color, ')', '-alpha, 1)');
+    @return rgba($color, $new-string);
+  }
+  @return rgba($color, $opacity);
+}
+
+@function hexToRGB($color) {
+  @return (red($color), green($color), blue($color));
+}
+
+@function preparePaletteToUseCSSVars($palette, $prefix) {
+  @return (variables: paletteToCSSVars($palette, $prefix), palette: paletteToPaletteCssVars($palette, $prefix));
+}
+
+@function paletteToCSSVars($palette, $prefix) {
+  $newMap: ();
+  @each $name, $color in $palette {
+    @if type-of($color) == map {
+      $newMap: map_merge($newMap, paletteToCSSVars($color, $prefix + '-' + $name));
+    } @else if alpha($color) < 1 {
+      $newMap: map_merge(
+        $newMap,
+        (#{$prefix + '-' + $name}: hexToRGB($color), #{$prefix + '-' + $name + '-alpha'}: alpha($color))
+      );
+    } @else {
+      $newMap: map_merge($newMap, (#{$prefix + '-' + $name}: hexToRGB($color)));
+    }
+  }
+  @return $newMap;
+}
+
+@function paletteToPaletteCssVars($palette, $prefix) {
+  $newMap: ();
+  @each $name, $color in $palette {
+    @if type-of($color) == map {
+      $newMap: map_merge(
+        $newMap,
+        (
+          $name: paletteToPaletteCssVars($color, $prefix + '-' + $name)
+        )
+      );
+    } @else {
+      $newMap: map_merge(
+        $newMap,
+        (
+          $name: var(#{$prefix + '-' + $name})
+        )
+      );
+    }
+  }
+  @return $newMap;
+}
+
+// Overwrite to be css vars compliant
+@mixin mat-sidenav-theme($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  // We use invert() here to have the darken the background color expected to be used. If the
+  // background is light, we use a dark backdrop. If the background is dark,
+  // we use a light backdrop.
+  $drawer-backdrop-color: mat-color($background, card, 0.6);
+  $drawer-background-color: mat-color($background, dialog);
+  $drawer-container-background-color: mat-color($background, background);
+  $drawer-push-background-color: mat-color($background, dialog);
+  $drawer-side-border: solid 1px mat-color($foreground, divider);
+
+  .mat-drawer-container {
+    background-color: $drawer-container-background-color;
+    color: mat-color($foreground, text);
+  }
+
+  .mat-drawer {
+    background-color: $drawer-background-color;
+    color: mat-color($foreground, text);
+
+    &.mat-drawer-push {
+      background-color: $drawer-push-background-color;
+    }
+
+    &:not(.mat-drawer-side) {
+      // The elevation of z-16 is noted in the design specifications.
+      // See https://material.io/design/components/navigation-drawer.html
+      @include _mat-theme-elevation(16, $theme);
+    }
+  }
+
+  .mat-drawer-side {
+    border-right: $drawer-side-border;
+
+    &.mat-drawer-end {
+      border-left: $drawer-side-border;
+      border-right: none;
+    }
+  }
+
+  [dir='rtl'] .mat-drawer-side {
+    border-left: $drawer-side-border;
+    border-right: none;
+
+    &.mat-drawer-end {
+      border-left: none;
+      border-right: $drawer-side-border;
+    }
+  }
+
+  .mat-drawer-backdrop.mat-drawer-shown {
+    background-color: $drawer-backdrop-color;
+  }
+}
+
+// Overwrite to be css vars compliant
+@mixin _mat-datepicker-color($palette) {
+  .mat-calendar-body-selected {
+    background-color: mat-color($palette);
+    color: mat-color($palette, default-contrast);
+  }
+
+  .mat-calendar-body-disabled > .mat-calendar-body-selected {
+    background-color: mat-color($palette);
+  }
+
+  .mat-calendar-body-today.mat-calendar-body-selected {
+    box-shadow: inset 0 0 0 $mat-datepicker-selected-today-box-shadow-width mat-color($palette, default-contrast);
+  }
+}
+
+@mixin mat-datepicker-theme($theme) {
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+
+  .mat-calendar-arrow {
+    border-top-color: mat-color($foreground, icon);
+  }
+
+  // The prev/next buttons need a bit more specificity to
+  // avoid being overwritten by the .mat-icon-button.
+  .mat-datepicker-toggle,
+  .mat-datepicker-content .mat-calendar-next-button,
+  .mat-datepicker-content .mat-calendar-previous-button {
+    color: mat-color($foreground, icon);
+  }
+
+  .mat-calendar-table-header {
+    color: mat-color($foreground, hint-text);
+  }
+
+  .mat-calendar-table-header-divider::after {
+    background: mat-color($foreground, divider);
+  }
+
+  .mat-calendar-body-label {
+    color: mat-color($foreground, secondary-text);
+  }
+
+  .mat-calendar-body-cell-content {
+    color: mat-color($foreground, text);
+    border-color: transparent;
+  }
+
+  .mat-calendar-body-disabled > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+    color: mat-color($foreground, disabled-text);
+  }
+
+  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover,
+  .cdk-keyboard-focused .mat-calendar-body-active,
+  .cdk-program-focused .mat-calendar-body-active {
+    & > .mat-calendar-body-cell-content:not(.mat-calendar-body-selected) {
+      background-color: mat-color($background, hover);
+    }
+  }
+
+  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    // Note: though it's not text, the border is a hint about the fact that this is today's date,
+    // so we use the hint color.
+    border-color: mat-color($foreground, hint-text);
+  }
+
+  .mat-calendar-body-disabled > .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: mat-color($foreground, hint-text);
+  }
+
+  @include _mat-datepicker-color(map-get($theme, primary));
+
+  .mat-datepicker-content {
+    @include _mat-theme-elevation(4, $theme);
+    background-color: mat-color($background, card);
+    color: mat-color($foreground, text);
+
+    &.mat-accent {
+      @include _mat-datepicker-color(map-get($theme, accent));
+    }
+
+    &.mat-warn {
+      @include _mat-datepicker-color(map-get($theme, warn));
+    }
+  }
+
+  .mat-datepicker-content-touch {
+    @include _mat-theme-elevation(0, $theme);
+  }
+
+  .mat-datepicker-toggle-active {
+    color: mat-color(map-get($theme, primary));
+
+    &.mat-accent {
+      color: mat-color(map-get($theme, accent));
+    }
+
+    &.mat-warn {
+      color: mat-color(map-get($theme, warn));
+    }
+  }
+}
+
+@mixin _mat-theme-elevation($zValue, $theme, $opacity: $mat-elevation-opacity) {
+  $foreground: map-get($theme, foreground);
+  $elevation-color: map-get($foreground, elevation);
+  $elevation-color-or-default: if($elevation-color == null, $mat-elevation-color, $elevation-color);
+  @include mat-elevation($zValue, $elevation-color-or-default, $opacity);
+}
+
+@function getTheme(
+  $is-dark,
+  $primary-palette,
+  $accent-palette,
+  $warn-palette,
+  $foreground-palette,
+  $background-palette
+) {
+  @return (
+    primary: mat-palette($primary-palette),
+    accent: mat-palette($accent-palette, 600, 400, 700),
+    warn: mat-palette($warn-palette),
+    is-dark: $is-dark,
+    test: $is-dark,
+    foreground: $foreground-palette,
+    background: $background-palette
+  );
+}
+
+@function getCssVarsAndTheme(
+  $is-dark,
+  $primary-palette,
+  $accent-palette,
+  $warn-palette,
+  $foreground-palette,
+  $background-palette
+) {
+  $primary-css-vars: preparePaletteToUseCSSVars($primary-palette, '--palette-primary') !default;
+  $accent-css-vars: preparePaletteToUseCSSVars($accent-palette, '--palette-accent') !default;
+  $warn-css-vars: preparePaletteToUseCSSVars($warn-palette, '--palette-warn') !default;
+  $foreground-css-vars: preparePaletteToUseCSSVars($foreground-palette, '--palette-foreground') !default;
+  $background-css-vars: preparePaletteToUseCSSVars($background-palette, '--palette-background') !default;
+
+  // Inject CSS vars in :root
+  $cssVars: ();
+  $cssVars: map_merge($cssVars, map-get($primary-css-vars, variables));
+  $cssVars: map_merge($cssVars, map-get($accent-css-vars, variables));
+  $cssVars: map_merge($cssVars, map-get($warn-css-vars, variables));
+  $cssVars: map_merge($cssVars, map-get($background-css-vars, variables));
+  $cssVars: map_merge($cssVars, map-get($foreground-css-vars, variables));
+
+  // Create palette with custom CSS props (var(--something))
+  $theme: (
+    primary: mat-palette(map-get($primary-css-vars, palette)),
+    accent: mat-palette(map-get($accent-css-vars, palette), 600, 400, 700),
+    warn: mat-palette(map-get($warn-css-vars, palette)),
+    is-dark: $is-dark,
+    foreground: map-get($foreground-css-vars, palette),
+    background: map-get($background-css-vars, palette)
+  );
+
+  @return (cssVars: $cssVars, theme: $theme);
+}

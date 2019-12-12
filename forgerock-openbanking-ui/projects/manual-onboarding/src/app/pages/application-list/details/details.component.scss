@@ -1,0 +1,57 @@
+@import 'mixins/breakpoints';
+@import '_variables';
+
+@mixin forgerock-application-list-details-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  app-application-list-details {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    height: 100%;
+
+    mat-toolbar,
+    .header {
+      background-color: mat-color($primary, 500) !important;
+      color: white !important;
+    }
+
+    .header {
+      flex: 0 1 auto;
+      height: 160px;
+      min-height: 160px;
+
+      .mat-list .mat-list-item {
+        color: white !important;
+      }
+
+      .title {
+        font-size: 1.7rem;
+        font-weight: bold;
+      }
+    }
+
+    .content {
+      flex: 1;
+      background-color: mat-color($background, card);
+
+      mat-list {
+        padding-bottom: 16px;
+      }
+    }
+
+    mat-list-item {
+      &.wrap {
+        height: auto !important;
+        padding: 10px 0 !important;
+
+        p {
+          white-space: normal !important;
+          word-break: break-all !important;
+        }
+      }
+    }
+  }
+}

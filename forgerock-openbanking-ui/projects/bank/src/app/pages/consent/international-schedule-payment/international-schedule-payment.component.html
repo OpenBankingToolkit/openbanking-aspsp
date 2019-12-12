@@ -1,0 +1,37 @@
+<mat-card *ngIf="response">
+  <forgerock-customer-logo></forgerock-customer-logo>
+  <form [formGroup]="form">
+    <h1
+      [translate]="'CONSENT.INTERNATIONAL-SCHEDULE-PAYMENT.TITLE'"
+      [translateParams]="{ merchantName: response.merchantName }"
+    ></h1>
+    <div *ngIf="response.logo" class="merchant-logo">
+      <img src="{{ response.logo }}" onerror="this.style.display='none'" />
+    </div>
+    <div class="divider"></div>
+
+    <span [translate]="'CONSENT.PAYMENT.CHECK_DETAILS'"></span>
+
+    <app-consent-box [items]="basicItems"></app-consent-box>
+
+    <div class="title">{{ 'CONSENT.INTERNATIONAL-PAYMENT.REFRESH_RATE_INFO' | translate }}</div>
+
+    <app-consent-box [items]="rateItems"></app-consent-box>
+
+    <app-account-selection
+      [form]="form"
+      [accounts]="response.accounts"
+      [label]="'CONSENT.PAYMENT.SELECT_ACCOUNT'"
+    ></app-account-selection>
+
+    <app-submit-box
+      [loading]="_loading"
+      [form]="form"
+      [label]="'CONSENT.PAYMENT.PROCEED_PAYMENT'"
+      [proceedLabel]="'CONSENT.ACCOUNT.PROCEED'"
+      [cancelLabel]="'CONSENT.ACCOUNT.CANCEL'"
+      (accept)="submit(true)"
+      (deny)="submit(false)"
+    ></app-submit-box>
+  </form>
+</mat-card>

@@ -1,0 +1,27 @@
+<div *ngIf="accounts">
+  <div class="title">{{ label | translate }}</div>
+
+  <mat-card-content>
+    <div class="consent-box accounts" [formGroup]="form">
+      <div class="accounts example-radio-group">
+        <label fxLayout="row" *ngFor="let account of accounts">
+          <div fxFlex>
+            <div class="account Aligner">
+              <div>
+                <div>{{ account.account?.Nickname }}</div>
+                <div class="secondary-text account-number" *ngIf="account.account?.Account">
+                  {{ (account.account?.Account)[0] | AccountNumberFormat }}
+                </div>
+              </div>
+
+              <span fxFlex></span>
+              <div class="Aligner">
+                <mat-checkbox fxFlex class="Aligner-item" [formControlName]="account.id"></mat-checkbox>
+              </div>
+            </div>
+          </div>
+        </label>
+      </div>
+    </div>
+  </mat-card-content>
+</div>

@@ -1,0 +1,22 @@
+<div class="submit-box">
+  <div *ngIf="label" class="title">{{ label | translate }}</div>
+
+  <div fxLayout="row">
+    <div fxFlex class="paymentButton">
+      <button mat-stroked-button (click)="deny.emit()">{{ cancelLabel | translate }}</button>
+    </div>
+    <div fxFlex class="paymentButton">
+      <button
+        mat-raised-button
+        mat-button
+        color="accent"
+        type="submit"
+        [disabled]="form.invalid || form.disabled"
+        (click)="accept.emit()"
+      >
+        <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
+        {{ proceedLabel | translate }}
+      </button>
+    </div>
+  </div>
+</div>

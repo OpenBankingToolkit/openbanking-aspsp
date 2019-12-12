@@ -1,0 +1,38 @@
+@import 'mixins/breakpoints';
+@import '_variables';
+
+@mixin forgerock-application-list-theme($theme) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+
+  app-application-list {
+    forgerock-customer-icon {
+      margin-right: 20px;
+    }
+    mat-sidenav-container {
+      height: 100%;
+    }
+
+    mat-sidenav {
+      @include media-breakpoint-down('md') {
+        width: 320px !important;
+      }
+      @include media-breakpoint-up('md') {
+        width: 33vw !important;
+      }
+      &.details-sidebar {
+        @include media-breakpoint('gt-md') {
+          z-index: 0;
+        }
+      }
+    }
+
+    button[mat-fab] {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+    }
+  }
+}

@@ -1,0 +1,12 @@
+@import '~@angular/material/theming';
+
+$typography: mat-typography-config(
+  $input: mat-typography-level(16px, 1.125, 400)
+) !default;
+
+$is-dark: false !default;
+$primary-palette: $mat-blue-grey !default;
+$accent-palette: $mat-light-blue !default;
+$warn-palette: $mat-red !default;
+$foreground-palette: $mat-light-theme-foreground !default;
+$background-palette: $mat-light-theme-background !default;

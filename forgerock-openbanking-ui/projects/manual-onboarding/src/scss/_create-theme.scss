@@ -1,0 +1,25 @@
+@import '_variables';
+@import 'all-theme';
+@import 'mixins/cssvars';
+
+$theme: getTheme($is-dark, $primary-palette, $accent-palette, $warn-palette, $foreground-palette, $background-palette);
+$primary: map-get($theme, primary);
+$accent: map-get($theme, accent);
+$warn: map-get($theme, warn);
+$background: map-get($theme, background);
+$foreground: map-get($theme, foreground);
+
+@include foregrock-material-theme($theme);
+@include angular-material-typography($typography);
+
+// CSS VARS
+$css-vars-use-native: true;
+$css-vars-debug-log: false;
+$cssVarsAndTheme: getCssVarsAndTheme(
+  $is-dark,
+  $primary-palette,
+  $accent-palette,
+  $warn-palette,
+  $foreground-palette,
+  $background-palette
+);

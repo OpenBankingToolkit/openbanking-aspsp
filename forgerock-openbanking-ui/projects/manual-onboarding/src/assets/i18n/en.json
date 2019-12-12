@@ -1,0 +1,17 @@
+{
+  "404": "Page not found",
+  "SIGNOUT": "Sign out",
+  "SESSION_LOST": "The session has ended",
+  "MANUAL_ONBOARDING": "Manual Onboarding",
+  "ADD_APPLICATION": "Add an Application",
+  "ADD_ERROR": "Could not add the application, please try again",
+  "REMOVE_CONFIRM": "Are you sure you want to remove \"{{app}}\" application?",
+  "REMOVE_ERROR": "Could not delete the application, please try again",
+  "GDPR": {
+    "TITLE": "Access denied",
+    "TEXT": "In order to use this application, you must comply with our cookie policy."
+  },
+  "NAV": {
+    "ONBOARDING": "Register"
+  }
+}

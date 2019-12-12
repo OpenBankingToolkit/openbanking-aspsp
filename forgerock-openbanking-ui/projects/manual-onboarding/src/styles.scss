@@ -1,0 +1,35 @@
+// We still cannot replace a sass file by another with the CLI
+// only way to apply clients variables is to include variables here
+// and point to the client styles.scss as style entry point
+// https://github.com/angular/angular-cli/issues/11451
+// @import "projects/auth/src/clients/hackathon/scss/variables";
+@import '_variables';
+@import '_core';
+
+forgerock-main-layout vertical-layout-1 {
+  content {
+    .outlet-wrapper {
+      padding: 0;
+    }
+  }
+  content,
+  content > layout-container,
+  content > layout-container > .outlet-wrapper {
+    height: 100%;
+  }
+}
+
+.responsive-padding {
+  @include media-breakpoint-up('md') {
+    padding: 30px;
+  }
+  @include media-breakpoint-down('md') {
+    padding: 20px;
+  }
+  @include media-breakpoint-down('sm') {
+    padding: 10px;
+  }
+  @include media-breakpoint-down('xs') {
+    padding: 10px;
+  }
+}
