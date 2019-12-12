@@ -30,7 +30,7 @@
     <parent>
         <groupId>com.forgerock.openbanking.aspsp</groupId>
         <artifactId>forgerock-openbanking-uk-aspsp-rs-gateway</artifactId>
-        <version>1.0.19-SNAPSHOT</version>
+        <version>1.0.19</version>
     </parent>
 
     <dependencies>
