@@ -127,29 +127,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.asciidoctor</groupId>
-				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>1.6.0</version>
-				<configuration>
-					<backend>html</backend>
-					<doctype>book</doctype>
-					<attributes>
-						<snippets>${snippetsDirectory}</snippets>
-					</attributes>
-					<sourceDirectory>src/main/asciidocs</sourceDirectory>
-					<outputDirectory>${project.build.outputDirectory}/templates</outputDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<id>generate-docs</id>
-						<phase>generate-resources</phase>
-						<goals>
-							<goal>process-asciidoc</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
