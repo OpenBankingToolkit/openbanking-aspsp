@@ -69,7 +69,7 @@ public class UserAuthApiController {
             Authentication authentication
     ) throws OBErrorException {
         try {
-            return ResponseEntity.ok(sessionService.authenticate(username, password, authentication,
+            return ResponseEntity.ok(sessionService.authenticate(username, password, authentication, SessionCounterType.BANK,
                     amGateway, amAccessTokenEndpoint, new X509Certificate[0], (User) authentication.getPrincipal()));
         } catch (OIDCException e) {
             log.error("OIDC exception", e);
