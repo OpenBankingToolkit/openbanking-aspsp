@@ -33,7 +33,7 @@
     <parent>
         <groupId>com.forgerock.openbanking</groupId>
         <artifactId>forgerock-openbanking-starter-parent</artifactId>
-        <version>1.0.56</version>
+        <version>1.0.57</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -72,7 +72,6 @@
                 <version>${project.version}</version>
                 <scope>test</scope>
             </dependency>
-
             <!-- OpenBanking -->
             <dependency>
                 <groupId>com.forgerock.openbanking</groupId>
@@ -107,7 +106,7 @@
             <dependency>
                 <groupId>com.forgerock.openbanking</groupId>
                 <artifactId>forgerock-openbanking-auth</artifactId>
-                <version>${ob-auth.version}</version>
+                <version>1.0.48-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>com.forgerock.openbanking.jwkms</groupId>
