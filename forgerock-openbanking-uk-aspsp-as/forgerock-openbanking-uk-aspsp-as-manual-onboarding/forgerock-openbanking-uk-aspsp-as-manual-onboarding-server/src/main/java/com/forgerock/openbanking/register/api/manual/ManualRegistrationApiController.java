@@ -26,7 +26,6 @@ import com.forgerock.openbanking.common.services.aspsp.ManualOnboardingService;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import com.forgerock.openbanking.model.UserContext;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
@@ -34,6 +33,7 @@ import com.forgerock.openbanking.register.model.ManualRegUser;
 import com.forgerock.openbanking.register.service.ManualRegistrationApplicationService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import dev.openbanking4.spring.security.multiauth.model.authentication.JwtAuthentication;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +42,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -72,9 +73,8 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
 
             Principal principal
     ) throws OBErrorResponseException, OBErrorException {
-
-        UserContext currentUser = (UserContext) ((Authentication) principal).getPrincipal();
-        ManualRegUser manualRegUser = fromUserContext(currentUser);
+        JwtAuthentication jwtAuthentication = (JwtAuthentication) principal;
+        ManualRegUser manualRegUser = fromAuthentication(jwtAuthentication);
         try {
             String softwareClientId;
             if (!"EIDAS".equals(manualRegUser.getDirectoryID())) {
@@ -109,13 +109,13 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
                 }
             }
             OIDCRegistrationResponse oidcRegistrationResponse = manualOnboardingService.registerApplication(
-                    currentUser,
+                    jwtAuthentication,
                     aspspManualOnboardingEndpoint,
                     manualRegistrationRequest);
 
             //Register the manual on-boarding application wrapper around it
             ManualRegistrationApplication application = ManualRegistrationApplication.builder()
-                    .userId(currentUser.getUsername())
+                    .userId(((UserDetails)jwtAuthentication.getPrincipal()).getUsername())
                     .manualRegistrationRequest(manualRegistrationRequest)
                     .description(manualRegistrationRequest.getApplicationDescription())
                     .softwareClientId(softwareClientId)
@@ -137,7 +137,7 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        UserContext currentUser = (UserContext) ((Authentication) principal).getPrincipal();
+        UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
         ManualRegistrationApplication application = verifyApplicationOwner(applicationId, currentUser);
         manualOnboardingService.unregisterApplication(currentUser.getUsername(), aspspManualOnboardingEndpoint, application.getOidcRegistrationResponse().getClientId());
         manualRegistrationApplicationService.deleteApplication(application);
@@ -152,7 +152,7 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        UserContext currentUser = (UserContext) ((Authentication) principal).getPrincipal();
+        UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
         ManualRegistrationApplication application = verifyApplicationOwner(applicationId, currentUser);
         return ResponseEntity.ok(application);
     }
@@ -161,11 +161,11 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
     public ResponseEntity<Collection<ManualRegistrationApplication>> getApplications(
             Principal principal
     ) {
-        UserContext currentUser = (UserContext) ((Authentication) principal).getPrincipal();
+        UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
         return ResponseEntity.ok(manualRegistrationApplicationService.getAllApplications(currentUser.getUsername()));
     }
 
-    private ManualRegistrationApplication verifyApplicationOwner(String applicationId, UserContext currentUser) throws OBErrorResponseException {
+    private ManualRegistrationApplication verifyApplicationOwner(String applicationId, UserDetails currentUser) throws OBErrorResponseException {
         Optional<ManualRegistrationApplication> isApplication = manualRegistrationApplicationService.findById(applicationId);
         if (!isApplication.isPresent()) {
             throw new OBErrorResponseException(
@@ -183,17 +183,17 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
         return application;
     }
 
-    public ManualRegUser fromUserContext(UserContext userContext) {
+    public ManualRegUser fromAuthentication(JwtAuthentication jwtAuthentication) {
         ManualRegUser user = new ManualRegUser();
-        user.setId(userContext.getUsername().toLowerCase());
-        user.setAuthorities(userContext.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+        user.setId(((UserDetails)jwtAuthentication.getPrincipal()).getUsername().toLowerCase());
+        user.setAuthorities(jwtAuthentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
         try {
-            String directoryID = userContext.getSessionClaims().getStringClaim("directoryID");
+            String directoryID = jwtAuthentication.getJwtClaimsSet().getStringClaim("directoryID");
             user.setDirectoryID(directoryID);
             if ("EIDAS".equals(directoryID)) {
-                user.setAppId(userContext.getSessionClaims().getStringClaim("app_id"));
-                user.setOrganisationId(userContext.getSessionClaims().getStringClaim("org_id"));
-                user.setPsd2Roles(userContext.getSessionClaims().getStringClaim("psd2_roles"));
+                user.setAppId(jwtAuthentication.getJwtClaimsSet().getStringClaim("app_id"));
+                user.setOrganisationId(jwtAuthentication.getJwtClaimsSet().getStringClaim("org_id"));
+                user.setPsd2Roles(jwtAuthentication.getJwtClaimsSet().getStringClaim("psd2_roles"));
             }
         } catch (ParseException e) {
             log.error("Couldn't read claims from user context", e);

@@ -21,13 +21,14 @@
 package com.forgerock.openbanking.common.services.aspsp;
 
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
-import com.forgerock.openbanking.model.UserContext;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
+import dev.openbanking4.spring.security.multiauth.model.authentication.JwtAuthentication;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -42,17 +43,17 @@ public class ManualOnboardingService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public OIDCRegistrationResponse registerApplication(UserContext currentUser, String aspspManualOnboardingEndpoint, ManualRegistrationRequest manualRegistrationRequest) {
+    public OIDCRegistrationResponse registerApplication(JwtAuthentication authentication, String aspspManualOnboardingEndpoint, ManualRegistrationRequest manualRegistrationRequest) {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.set("userId", currentUser.getUsername());
+        httpHeaders.set("userId", ((UserDetails)authentication.getPrincipal()).getUsername());
 
         try {
-            String directoryID = currentUser.getSessionClaims().getStringClaim("directoryID");
+            String directoryID = authentication.getJwtClaimsSet().getStringClaim("directoryID");
             httpHeaders.set("directoryID", directoryID);
             if (directoryID == "EIDAS") {
-                manualRegistrationRequest.setAppId(currentUser.getSessionClaims().getStringClaim("app_id"));
-                manualRegistrationRequest.setOrganisationId(currentUser.getSessionClaims().getStringClaim("org_id"));
-                manualRegistrationRequest.setPsd2Roles(currentUser.getSessionClaims().getStringClaim("psd2_roles"));
+                manualRegistrationRequest.setAppId(authentication.getJwtClaimsSet().getStringClaim("app_id"));
+                manualRegistrationRequest.setOrganisationId(authentication.getJwtClaimsSet().getStringClaim("org_id"));
+                manualRegistrationRequest.setPsd2Roles(authentication.getJwtClaimsSet().getStringClaim("psd2_roles"));
             }
         } catch (ParseException e) {
             log.error("Couldn't read claims from user context", e);
