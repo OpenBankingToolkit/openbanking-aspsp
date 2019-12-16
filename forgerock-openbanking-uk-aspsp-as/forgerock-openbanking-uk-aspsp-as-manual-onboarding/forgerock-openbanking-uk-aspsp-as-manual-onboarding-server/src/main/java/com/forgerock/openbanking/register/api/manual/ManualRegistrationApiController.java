@@ -26,7 +26,6 @@ import com.forgerock.openbanking.common.services.aspsp.ManualOnboardingService;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import com.forgerock.openbanking.jwt.cookie.auth.JwtUser;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
