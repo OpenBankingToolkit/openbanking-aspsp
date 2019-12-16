@@ -27,7 +27,7 @@
     <name>ForgeRock OpenBanking Reference Implementation - ASPSP</name>
     <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>forgerock-openbanking-aspsp</artifactId>
-    <version>1.0.22</version>
+    <version>1.0.23-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -132,7 +132,7 @@
         <connection>scm:git:https://github.com/OpenBankingToolkit/openbanking-aspsp.git</connection>
         <developerConnection>scm:git:https://github.com/OpenBankingToolkit/openbanking-aspsp.git</developerConnection>
         <url>https://github.com/OpenBankingToolkit/openbanking-aspsp.git</url>
-        <tag>forgerock-openbanking-aspsp-1.0.22</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
