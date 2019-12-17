@@ -33,8 +33,9 @@
 
     <parent>
         <groupId>com.forgerock.openbanking.aspsp</groupId>
-        <artifactId>forgerock-openbanking-cdr-aspsp-rs-mock-store</artifactId>
+        <artifactId>forgerock-openbanking-aspsp</artifactId>
         <version>1.0.26-SNAPSHOT</version>
+        <relativePath>../../../</relativePath>
     </parent>
 
     <dependencies>
@@ -45,6 +46,7 @@
         <dependency>
             <groupId>com.forgerock.openbanking.aspsp</groupId>
             <artifactId>forgerock-openbanking-cdr-aspsp-rs-mock-store-server</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
