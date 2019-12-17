@@ -14,10 +14,10 @@ import { ApiService } from 'manual-onboarding/src/app/services/api.service';
 import { IState } from 'manual-onboarding/src/models';
 import rootReducer from 'manual-onboarding/src/store';
 import { RootEffects } from 'manual-onboarding/src/store/effects';
-import { ForgerockConfigService } from 'ob-ui-libs/services/forgerock-config';
-import { ForgerockSharedModule } from 'ob-ui-libs/shared';
+import { ForgerockConfigService } from '@forgerock/openbanking-ngx-common/services/forgerock-config';
+import { ForgerockSharedModule } from '@forgerock/openbanking-ngx-common/shared';
 import { AppRoutingModule } from './app-routing.module';
-import { ForgerockOIDCModule } from 'ob-ui-libs/oidc';
+import { ForgerockOIDCModule } from '@forgerock/openbanking-ngx-common/oidc';
 
 export function createTranslateLoader(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');

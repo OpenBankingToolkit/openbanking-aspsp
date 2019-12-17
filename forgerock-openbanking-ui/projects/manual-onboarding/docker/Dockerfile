@@ -1,5 +1,13 @@
 # Stage 1 - the build process
-FROM r.cfcr.io/openbanking/obri/build-ob-aspsp-ui as build-ui
+FROM node:10 as build-ui
+
+WORKDIR /src
+ADD package.json package-lock.json /src/
+
+RUN NG_CLI_ANALYTICS=ci npm ci
+
+ADD . /src
+
 RUN npm run build.manual-onboarding.themes
 
 # Stage 2 - the production environment

@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import { ConsentComponent } from './consent.component';
-import { ForgerockSimpleLayoutModule } from 'ob-ui-libs/layouts/simple';
+import { ForgerockSimpleLayoutModule } from '@forgerock/openbanking-ngx-common/layouts/simple';
 
 const routes: Routes = [
   {

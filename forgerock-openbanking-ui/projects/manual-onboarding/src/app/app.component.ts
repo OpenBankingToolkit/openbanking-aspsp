@@ -3,9 +3,9 @@ import { DOCUMENT } from '@angular/common';
 import { Platform } from '@angular/cdk/platform';
 import { TranslateService } from '@ngx-translate/core';
 
-import { ForgerockConfigService } from 'ob-ui-libs/services/forgerock-config';
-import { ForgerockSplashscreenService } from 'ob-ui-libs/services/forgerock-splashscreen';
-import { ForgerockGDPRService } from 'ob-ui-libs/gdpr';
+import { ForgerockConfigService } from '@forgerock/openbanking-ngx-common/services/forgerock-config';
+import { ForgerockSplashscreenService } from '@forgerock/openbanking-ngx-common/services/forgerock-splashscreen';
+import { ForgerockGDPRService } from '@forgerock/openbanking-ngx-common/gdpr';
 
 @Component({
   selector: 'app-root',

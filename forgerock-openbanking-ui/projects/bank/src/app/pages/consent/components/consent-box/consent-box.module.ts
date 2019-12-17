@@ -4,7 +4,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { TranslateModule } from '@ngx-translate/core';
 import { RouterModule } from '@angular/router';
 
-import { ForgerockCustomerLogoModule } from 'ob-ui-libs/components/forgerock-customer-logo';
+import { ForgerockCustomerLogoModule } from '@forgerock/openbanking-ngx-common/components/forgerock-customer-logo';
 import { ConsentBoxComponent } from './consent-box.component';
 import { StringItemComponent } from './items/string-item/string-item.component';
 import { DateItemComponent } from './items/date-item/date-item.component';
@@ -18,7 +18,7 @@ import { RateAmountItemComponent } from './items/rate-amount-item/rate-amount-it
 import { DynamicItemComponent } from './items/dynamic-item/dynamic-item.component';
 import { TransactionsPeriodItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/transactions-period-item/transactions-period-item.component';
 import { BankPipesModule } from 'bank/src/app/pipes/pipes.module';
-import { ForgerockPipesModule } from 'ob-ui-libs/pipes';
+import { ForgerockPipesModule } from '@forgerock/openbanking-ngx-common/pipes';
 
 @NgModule({
   imports: [

@@ -8,7 +8,11 @@ import {
   UnselectApplicationAction
 } from 'manual-onboarding/src/store/reducers/applications';
 import { IApiPostRegisterBody, IState } from 'manual-onboarding/src/models';
-import { ForgerockOIDCLogoutRequestAction, selectOIDCConnected, selectOIDCUserId } from 'ob-ui-libs/oidc';
+import {
+  ForgerockOIDCLogoutRequestAction,
+  selectOIDCConnected,
+  selectOIDCUserId
+} from '@forgerock/openbanking-ngx-common/oidc';
 
 @Component({
   selector: 'app-application-list-container',

@@ -1,16 +1,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { ForgerockSimpleLayoutModule } from 'ob-ui-libs/layouts/simple';
-import { SimpleLayoutComponent } from 'ob-ui-libs/layouts/simple';
-import { ForgerockGDPRService } from 'ob-ui-libs/gdpr';
-import { ForegerockGDPRConsentGuard } from 'ob-ui-libs/gdpr';
-import { ForgerockMainLayoutComponent } from 'ob-ui-libs/layouts/main-layout';
-import { ForgerockMainLayoutModule } from 'ob-ui-libs/layouts/main-layout';
-import { IForgerockMainLayoutConfig, IForgerockMainLayoutNavigations } from 'ob-ui-libs/layouts/main-layout';
+import { ForgerockSimpleLayoutModule } from '@forgerock/openbanking-ngx-common/layouts/simple';
+import { SimpleLayoutComponent } from '@forgerock/openbanking-ngx-common/layouts/simple';
+import { ForgerockGDPRService } from '@forgerock/openbanking-ngx-common/gdpr';
+import { ForegerockGDPRConsentGuard } from '@forgerock/openbanking-ngx-common/gdpr';
+import { ForgerockMainLayoutComponent } from '@forgerock/openbanking-ngx-common/layouts/main-layout';
+import { ForgerockMainLayoutModule } from '@forgerock/openbanking-ngx-common/layouts/main-layout';
+import {
+  IForgerockMainLayoutConfig,
+  IForgerockMainLayoutNavigations
+} from '@forgerock/openbanking-ngx-common/layouts/main-layout';
 import { RegisterToolbarMenuContainer } from './components/register-toolbar-menu/register-toolbar-menu.container';
 import { RegisterToolbarMenuComponentModule } from './components/register-toolbar-menu/register-toolbar-menu.module';
-import { ForgerockAuthRedirectOIDCComponent, IsOIDCConnectedGuard } from 'ob-ui-libs/oidc';
+import { ForgerockAuthRedirectOIDCComponent, IsOIDCConnectedGuard } from '@forgerock/openbanking-ngx-common/oidc';
 
 const routes: Routes = [
   {

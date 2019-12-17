@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { LloydsPsuComponent } from './lloyds-psu.component';
-import { ForgerockSharedModule } from 'ob-ui-libs/shared';
+import { ForgerockSharedModule } from '@forgerock/openbanking-ngx-common/shared';
 import { LloydsPsuRoutingModule } from './lloyds-psu-routing.module';
 
 @NgModule({

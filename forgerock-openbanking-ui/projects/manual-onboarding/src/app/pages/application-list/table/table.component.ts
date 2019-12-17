@@ -13,7 +13,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
 
 import { IApplication } from 'manual-onboarding/src/models';
-import { ForgerockConfirmDialogComponent } from 'ob-ui-libs/components/forgerock-confirm-dialog';
+import { ForgerockConfirmDialogComponent } from '@forgerock/openbanking-ngx-common/components/forgerock-confirm-dialog';
 
 @Component({
   selector: 'app-application-list-table',

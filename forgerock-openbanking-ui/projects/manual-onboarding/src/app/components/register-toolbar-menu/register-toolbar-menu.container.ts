@@ -3,8 +3,8 @@ import { Observable } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 
 import { IState } from 'manual-onboarding/src/models';
-import { ForgerockOIDCLogoutRequestAction } from 'ob-ui-libs/oidc';
-import { selectOIDCConnected } from 'ob-ui-libs/oidc';
+import { ForgerockOIDCLogoutRequestAction } from '@forgerock/openbanking-ngx-common/oidc';
+import { selectOIDCConnected } from '@forgerock/openbanking-ngx-common/oidc';
 
 @Component({
   // tslint:disable-next-line

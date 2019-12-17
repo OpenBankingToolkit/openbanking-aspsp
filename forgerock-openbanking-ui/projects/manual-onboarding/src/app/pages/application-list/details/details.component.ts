@@ -2,7 +2,7 @@ import { Component, Input, Output, OnInit, EventEmitter } from '@angular/core';
 import { ClipboardService } from 'ngx-clipboard';
 
 import { IApplication } from 'manual-onboarding/src/models';
-import { ForgerockMessagesService } from 'ob-ui-libs/services/forgerock-messages';
+import { ForgerockMessagesService } from '@forgerock/openbanking-ngx-common/services/forgerock-messages';
 
 @Component({
   selector: 'app-application-list-details',

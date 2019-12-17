@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { RegisterApplicationRequestAction, selectors } from 'manual-onboarding/src/store/reducers/applications';
 import { IApiPostRegisterBody, IState } from 'manual-onboarding/src/models';
-import { selectOIDCDirectoryId } from 'ob-ui-libs/oidc';
+import { selectOIDCDirectoryId } from '@forgerock/openbanking-ngx-common/oidc';
 
 @Component({
   selector: 'app-application-list-application-form-container',

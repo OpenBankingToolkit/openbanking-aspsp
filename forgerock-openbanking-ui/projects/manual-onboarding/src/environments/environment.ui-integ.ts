@@ -1,7 +1,7 @@
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { environment as defaultEnv } from './environment.dev.default';
-import { IForgerockMainLayoutNavigation } from 'ob-ui-libs/layouts/main-layout';
+import { IForgerockMainLayoutNavigation } from '@forgerock/openbanking-ngx-common/layouts/main-layout';
 
 const mainNav: IForgerockMainLayoutNavigation[] = [
   {
