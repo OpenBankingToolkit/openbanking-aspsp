@@ -100,6 +100,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: "forgeCloud/ob-deploy"
+          token: ${{ secrets.ACCESS_TOKEN }}
       - run: |
           jq -M  '[ .[] | if ((.service == "bank-ui" or .service == "manual-onboarding") and (.helmReference  | contains("obri-helm-charts/ui-template"))) then .version |= "${{ steps.version.outputs.BUILD_VERSION }}" else . end ]' client_releases/master-dev/releases.json > client_releases/master-dev/releases.json.tmp
           mv client_releases/master-dev/releases.json.tmp client_releases/master-dev/releases.json
