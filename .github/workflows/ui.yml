@@ -50,7 +50,7 @@ jobs:
         run: cp -R ./customers/* themes/
       - uses: whoan/docker-build-with-cache-action@v2
         with:
-          username: ${{ secrets.CODEFRESH_DOCKER_REGISTRY_USERNAME }}
+          username: fropenbanking
           password: "${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}"
           registry: r.cfcr.io
           image_name: obri/bank-ui
@@ -78,7 +78,7 @@ jobs:
         run: cp -R ./customers/* themes/
       - uses: whoan/docker-build-with-cache-action@v2
         with:
-          username: ${{ secrets.CODEFRESH_DOCKER_REGISTRY_USERNAME }}
+          username: fropenbanking
           password: "${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}"
           registry: r.cfcr.io
           image_name: obri/manual-onboarding
