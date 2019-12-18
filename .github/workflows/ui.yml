@@ -3,6 +3,7 @@ name: Build-UI
 on:
   push:
     paths:
+      - ".github/workflows/ui.yml"
       - "forgerock-openbanking-ui/**"
 
 env:
