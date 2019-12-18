@@ -57,7 +57,7 @@ jobs:
           image_tag: ${{ steps.version.outputs.BUILD_VERSION }}
           context: ./forgerock-openbanking-ui
           dockerfile: projects/bank/docker/Dockerfile
-          push_image_and_stages: true
+          push_image_and_stages: ${{ github.ref === 'master' }}
   build_manual_onboarding:
     runs-on: ubuntu-latest
     needs: prepare
@@ -85,9 +85,10 @@ jobs:
           image_tag: ${{ steps.version.outputs.BUILD_VERSION }}
           context: ./forgerock-openbanking-ui
           dockerfile: projects/manual-onboarding/docker/Dockerfile
-          push_image_and_stages: true
+          push_image_and_stages: ${{ github.ref === 'master' }}
   update_ob_deploy:
     runs-on: ubuntu-latest
+    if: github.ref == 'master'
     needs: [build_manual_onboarding, build_bank_ui]
     steps:
       - name: Checkout Repo
