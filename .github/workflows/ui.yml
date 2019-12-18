@@ -101,11 +101,15 @@ jobs:
         with:
           repository: "forgeCloud/ob-deploy"
           token: ${{ secrets.ACCESS_TOKEN }}
-      - run: |
+      - name: Commit ob-deploy version update
+        run: |
           jq -M  '[ .[] | if ((.service == "bank-ui" or .service == "manual-onboarding") and (.helmReference  | contains("obri-helm-charts/ui-template"))) then .version |= "${{ steps.version.outputs.BUILD_VERSION }}" else . end ]' client_releases/master-dev/releases.json > client_releases/master-dev/releases.json.tmp
           mv client_releases/master-dev/releases.json.tmp client_releases/master-dev/releases.json
           git config --global user.email "codefresh@codefresh.io"
           git config --global user.name "Codefresh"
           git add client_releases/master-dev/releases.json
           git commit --allow-empty -m "Bumping Bank & Register UI version ${{ steps.version.outputs.BUILD_VERSION }}"
-          git push "https://$GITHUB_ACCESS_TOKEN@github.com/ForgeCloud/ob-deploy.git" "master"
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.ACCESS_TOKEN }}
