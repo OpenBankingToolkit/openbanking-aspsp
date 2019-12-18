@@ -118,12 +118,14 @@ jobs:
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           enforce_admins: false
-          repo: "forgeCloud/ob-deploy"
+          owner: forgeCloud
+          repo: ob-deploy
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.ACCESS_TOKEN }}
           directory: ./ob-deploy
+          repository: "forgeCloud/ob-deploy"
           branch: master
       - name: Enable "include administrators" branch protection
         uses: benjefferies/branch-protection-bot@master
@@ -131,4 +133,5 @@ jobs:
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           enforce_admins: true
-          repo: "forgeCloud/ob-deploy"
+          owner: forgeCloud
+          repo: ob-deploy
