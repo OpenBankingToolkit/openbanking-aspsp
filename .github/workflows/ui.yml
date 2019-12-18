@@ -110,9 +110,21 @@ jobs:
           git config --global user.name "Codefresh"
           git add client_releases/master-dev/releases.json
           git commit --allow-empty -m "Bumping Bank & Register UI version ${{ steps.version.outputs.BUILD_VERSION }}"
+      - name: Temporarily disable "include administrators" branch protection
+        uses: benjefferies/branch-protection-bot@master
+        if: always()
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          enforce_admins: false
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.ACCESS_TOKEN }}
           repository: "forgeCloud/ob-deploy"
           branch: master
+      - name: Enable "include administrators" branch protection
+        uses: benjefferies/branch-protection-bot@master
+        if: always()
+        with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          enforce_admins: true
