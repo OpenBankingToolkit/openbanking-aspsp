@@ -30,65 +30,65 @@ jobs:
         with:
           name: customers
           path: forgerock-openbanking-ui/customers
-  # build_bank_ui:
-  #   runs-on: ubuntu-latest
-  #   needs: prepare
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@v2
-  #     - working-directory: ./forgerock-openbanking-ui
-  #       id: version
-  #       run: |
-  #         export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
-  #         echo "::set-output name=BUILD_VERSION::$BUILD_VERSION"
-  #     - name: Download Artifact
-  #       uses: actions/download-artifact@master
-  #       with:
-  #         name: customers
-  #         path: forgerock-openbanking-ui/customers
-  #     - working-directory: ./forgerock-openbanking-ui
-  #       run: cp -R ./customers/* themes/
-  #     - uses: whoan/docker-build-with-cache-action@v2
-  #       with:
-  #         username: ${{ secrets.CODEFRESH_DOCKER_REGISTRY_USERNAME }}
-  #         password: "${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}"
-  #         registry: r.cfcr.io
-  #         image_name: obri/bank-ui
-  #         image_tag: ${{ steps.version.outputs.BUILD_VERSION }}
-  #         context: ./forgerock-openbanking-ui
-  #         dockerfile: projects/bank/docker/Dockerfile
-  #         push_image_and_stages: false
-  # build_manual_onboarding:
-  #   runs-on: ubuntu-latest
-  #   needs: prepare
-  #   steps:
-  #     - name: Checkout Repo
-  #       uses: actions/checkout@v2
-  #     - working-directory: ./forgerock-openbanking-ui
-  #       id: version
-  #       run: |
-  #         export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
-  #         echo "::set-output name=BUILD_VERSION::$BUILD_VERSION"
-  #     - name: Download Artifact
-  #       uses: actions/download-artifact@master
-  #       with:
-  #         name: customers
-  #         path: forgerock-openbanking-ui/customers
-  #     - working-directory: ./forgerock-openbanking-ui
-  #       run: cp -R ./customers/* themes/
-  #     - uses: whoan/docker-build-with-cache-action@v2
-  #       with:
-  #         username: ${{ secrets.CODEFRESH_DOCKER_REGISTRY_USERNAME }}
-  #         password: "${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}"
-  #         registry: r.cfcr.io
-  #         image_name: obri/manual-onboarding
-  #         image_tag: ${{ steps.version.outputs.BUILD_VERSION }}
-  #         context: ./forgerock-openbanking-ui
-  #         dockerfile: projects/manual-onboarding/docker/Dockerfile
-  #         push_image_and_stages: false
+  build_bank_ui:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - working-directory: ./forgerock-openbanking-ui
+        id: version
+        run: |
+          export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
+          echo "::set-output name=BUILD_VERSION::$BUILD_VERSION"
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: customers
+          path: forgerock-openbanking-ui/customers
+      - working-directory: ./forgerock-openbanking-ui
+        run: cp -R ./customers/* themes/
+      - uses: whoan/docker-build-with-cache-action@v2
+        with:
+          username: ${{ secrets.CODEFRESH_DOCKER_REGISTRY_USERNAME }}
+          password: "${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}"
+          registry: r.cfcr.io
+          image_name: obri/bank-ui
+          image_tag: ${{ steps.version.outputs.BUILD_VERSION }}
+          context: ./forgerock-openbanking-ui
+          dockerfile: projects/bank/docker/Dockerfile
+          push_image_and_stages: false
+  build_manual_onboarding:
+    runs-on: ubuntu-latest
+    needs: prepare
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+      - working-directory: ./forgerock-openbanking-ui
+        id: version
+        run: |
+          export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
+          echo "::set-output name=BUILD_VERSION::$BUILD_VERSION"
+      - name: Download Artifact
+        uses: actions/download-artifact@master
+        with:
+          name: customers
+          path: forgerock-openbanking-ui/customers
+      - working-directory: ./forgerock-openbanking-ui
+        run: cp -R ./customers/* themes/
+      - uses: whoan/docker-build-with-cache-action@v2
+        with:
+          username: ${{ secrets.CODEFRESH_DOCKER_REGISTRY_USERNAME }}
+          password: "${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}"
+          registry: r.cfcr.io
+          image_name: obri/manual-onboarding
+          image_tag: ${{ steps.version.outputs.BUILD_VERSION }}
+          context: ./forgerock-openbanking-ui
+          dockerfile: projects/manual-onboarding/docker/Dockerfile
+          push_image_and_stages: false
   update_ob_deploy:
     runs-on: ubuntu-latest
-    # needs: [build_manual_onboarding, build_bank_ui]
+    needs: [build_manual_onboarding, build_bank_ui]
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
