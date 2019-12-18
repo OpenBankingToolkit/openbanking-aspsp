@@ -92,19 +92,19 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - working-directory: ./forgerock-openbanking-ui
+        with:
+          repository: "forgeCloud/ob-deploy"
+          token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          path: current
+      - working-directory: ./current/forgerock-openbanking-ui
         id: version
         run: |
           export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
           echo "::set-output name=BUILD_VERSION::$BUILD_VERSION"
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-        with:
-          repository: "forgeCloud/ob-deploy"
-          token: ${{ secrets.ACCESS_TOKEN }}
-          path: ob-deploy
       - name: Commit ob-deploy version update
-        working-directory: ./ob-deploy
         run: |
           jq -M  '[ .[] | if ((.service == "bank-ui" or .service == "manual-onboarding") and (.helmReference  | contains("obri-helm-charts/ui-template"))) then .version |= "${{ steps.version.outputs.BUILD_VERSION }}" else . end ]' client_releases/master-dev/releases.json > client_releases/master-dev/releases.json.tmp
           mv client_releases/master-dev/releases.json.tmp client_releases/master-dev/releases.json
@@ -118,12 +118,10 @@ jobs:
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           enforce_admins: false
-          repo: "forgeCloud/ob-deploy"
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.ACCESS_TOKEN }}
-          directory: ./ob-deploy
           branch: master
       - name: Enable "include administrators" branch protection
         uses: benjefferies/branch-protection-bot@master
@@ -131,4 +129,3 @@ jobs:
         with:
           access-token: ${{ secrets.ACCESS_TOKEN }}
           enforce_admins: true
-          repo: "forgeCloud/ob-deploy"
