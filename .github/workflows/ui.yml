@@ -57,7 +57,10 @@ jobs:
           echo "Building docker image r.cfcr.io/openbanking/obri/bank-ui:${BUILD_VERSION}"
           docker login r.cfcr.io -u fropenbanking -p ${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}
           docker build -f projects/bank/docker/Dockerfile -t r.cfcr.io/openbanking/obri/bank-ui:$BUILD_VERSION .
-          docker push r.cfcr.io/openbanking/obri/bank-ui:$BUILD_VERSION
+      - name: Push bank docker image
+        # if: github.ref == 'master'
+        working-directory: ./forgerock-openbanking-ui
+        run: docker push r.cfcr.io/openbanking/obri/bank-ui:$BUILD_VERSION
       # - uses: whoan/docker-build-with-cache-action@v2
       #   with:
       #     username: fropenbanking
