@@ -50,24 +50,24 @@ jobs:
           path: forgerock-openbanking-ui/customers
       # - working-directory: ./forgerock-openbanking-ui
       #   run: cp -R ./customers/* themes/
-      - name: Build bank docker image
-        working-directory: ./forgerock-openbanking-ui
-        run: |
-          export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
-          echo "Building docker image r.cfcr.io/openbanking/obri/auth:${BUILD_VERSION}"
-          docker login r.cfcr.io -u fropenbanking -p ${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}
-          docker build -f projects/bank/docker/Dockerfile -t r.cfcr.io/openbanking/obri/auth:$BUILD_VERSION .
-          docker push r.cfcr.io/openbanking/obri/auth:$BUILD_VERSION
-      # - uses: whoan/docker-build-with-cache-action@v2
-      #   with:
-      #     username: fropenbanking
-      #     password: "${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}"
-      #     registry: r.cfcr.io
-      #     image_name: obri/bank-ui
-      #     image_tag: ${{ steps.version.outputs.BUILD_VERSION }}
-      #     context: ./forgerock-openbanking-ui
-      #     dockerfile: projects/bank/docker/Dockerfile
-      #     push_image_and_stages: true
+      # - name: Build bank docker image
+      #   working-directory: ./forgerock-openbanking-ui
+      #   run: |
+      #     export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
+      #     echo "Building docker image r.cfcr.io/openbanking/obri/bank-ui:${BUILD_VERSION}"
+      #     docker login r.cfcr.io -u fropenbanking -p ${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}
+      #     docker build -f projects/bank/docker/Dockerfile -t r.cfcr.io/openbanking/obri/bank-ui:$BUILD_VERSION .
+      #     docker push r.cfcr.io/openbanking/obri/bank-ui:$BUILD_VERSION
+      - uses: whoan/docker-build-with-cache-action@v2
+        with:
+          username: fropenbanking
+          password: "${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}"
+          registry: r.cfcr.io
+          image_name: obri/bank-ui
+          image_tag: ${{ steps.version.outputs.BUILD_VERSION }}
+          context: ./forgerock-openbanking-ui
+          dockerfile: projects/bank/docker/Dockerfile
+          push_image_and_stages: true
   # build_manual_onboarding:
   #   name: Build Register App
   #   runs-on: ubuntu-latest
