@@ -20,7 +20,7 @@ import {
   UnregisterApplicationErrorAction
 } from 'manual-onboarding/src/store/reducers/applications';
 import { ApiService } from 'manual-onboarding/src/app/services/api.service';
-import { ForgerockMessagesService } from 'ob-ui-libs/services/forgerock-messages';
+import { ForgerockMessagesService } from '@forgerock/openbanking-ngx-common/services/forgerock-messages';
 import { IApplication } from 'manual-onboarding/src/models';
 
 @Injectable()

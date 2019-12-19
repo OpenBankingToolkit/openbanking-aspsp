@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 
-import { ForgerockAuthRedirectOIDCService } from 'ob-ui-libs/oidc';
+import { ForgerockAuthRedirectOIDCService } from '@forgerock/openbanking-ngx-common/oidc';
 
 @Component({
   selector: 'app-session-lost',

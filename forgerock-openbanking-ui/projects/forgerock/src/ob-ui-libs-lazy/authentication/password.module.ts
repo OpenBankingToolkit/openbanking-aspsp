@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { ForgerockAuthPasswordModule } from 'ob-ui-libs/authentication';
+import { ForgerockAuthPasswordModule } from '@forgerock/openbanking-ngx-common/authentication';
 
 @NgModule({
   imports: [ForgerockAuthPasswordModule]

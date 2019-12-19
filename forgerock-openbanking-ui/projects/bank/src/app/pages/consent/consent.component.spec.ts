@@ -8,8 +8,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import rootReducer from 'bank/src/store';
 import { MatSharedModule } from 'bank/src/app/mat-shared.module';
 import { TranslateSharedModule } from 'bank/src/app/translate-shared.module';
-import { ForgerockSharedModule } from 'ob-ui-libs/shared';
-import { ForgerockCustomerLogoModule } from 'ob-ui-libs/components/forgerock-customer-logo';
+import { ForgerockSharedModule } from '@forgerock/openbanking-ngx-common/shared';
+import { ForgerockCustomerLogoModule } from '@forgerock/openbanking-ngx-common/components/forgerock-customer-logo';
 
 import { ConsentComponent } from './consent.component';
 import { DynamicComponent } from './dynamic/dynamic.component';
@@ -20,7 +20,7 @@ import { AccountSelectionComponentModule } from './components/account-selection/
 import { AccountCheckboxModule } from './components/account-checkbox/account-checkbox.module';
 
 import { ApiService } from 'bank/src/app/services/api.service';
-import { ForgerockMainLayoutSharedModule } from 'ob-ui-libs/layouts/main-layout';
+import { ForgerockMainLayoutSharedModule } from '@forgerock/openbanking-ngx-common/layouts/main-layout';
 
 describe('app:bank ConsentComponent', () => {
   let component: ConsentComponent;

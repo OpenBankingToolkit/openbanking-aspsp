@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { ForgerockDevInfoModule } from 'ob-ui-libs/components/forgerock-dev-info';
+import { ForgerockDevInfoModule } from '@forgerock/openbanking-ngx-common/components/forgerock-dev-info';
 
 @NgModule({
   imports: [ForgerockDevInfoModule]

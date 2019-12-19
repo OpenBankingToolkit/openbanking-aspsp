@@ -11,10 +11,10 @@ import { environment } from 'bank/src/environments/environment';
 import rootReducer from 'bank/src/store';
 
 import { AppRoutingModule } from './app-routing.module';
-import { ForgerockConfigService } from 'ob-ui-libs/services/forgerock-config';
-import { ForgerockConfigModule } from 'ob-ui-libs/services/forgerock-config';
-import { ForgerockAuthenticationModule } from 'ob-ui-libs/authentication';
-import { ForgerockSharedModule } from 'ob-ui-libs/shared';
+import { ForgerockConfigService } from '@forgerock/openbanking-ngx-common/services/forgerock-config';
+import { ForgerockConfigModule } from '@forgerock/openbanking-ngx-common/services/forgerock-config';
+import { ForgerockAuthenticationModule } from '@forgerock/openbanking-ngx-common/authentication';
+import { ForgerockSharedModule } from '@forgerock/openbanking-ngx-common/shared';
 
 export const REDUCER_TOKEN = new InjectionToken<ActionReducerMap<{}>>('Registered Reducers');
 

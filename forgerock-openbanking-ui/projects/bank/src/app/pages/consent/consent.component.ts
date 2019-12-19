@@ -7,7 +7,7 @@ import _get from 'lodash-es/get';
 
 import { ApiService } from 'bank/src/app/services/api.service';
 import { ApiResponses } from 'bank/src/app/types/api';
-import { ForgerockMessagesService } from 'ob-ui-libs/services/forgerock-messages';
+import { ForgerockMessagesService } from '@forgerock/openbanking-ngx-common/services/forgerock-messages';
 import { IConsentEventEmitter } from '../../types/consentItem';
 
 @Component({

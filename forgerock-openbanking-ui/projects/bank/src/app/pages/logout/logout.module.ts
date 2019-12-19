@@ -4,7 +4,7 @@ import { TranslateModule } from '@ngx-translate/core';
 
 import { LogoutRoutingModule } from './logout-routing.module';
 import { LogoutComponent } from './logout.component';
-import { ForgerockCustomerLogoModule } from 'ob-ui-libs/components/forgerock-customer-logo';
+import { ForgerockCustomerLogoModule } from '@forgerock/openbanking-ngx-common/components/forgerock-customer-logo';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 

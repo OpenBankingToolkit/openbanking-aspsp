@@ -3,11 +3,11 @@
 // OVERWRITES SOME OF THE MAT COMPONENT MIXINS TO SUPPORT CSS VARS
 @import 'mixins/theme';
 @import 'mixins/cssvars';
-@import '~ob-ui-libs/layouts/main.scss';
-@import '~ob-ui-libs/components/main.scss';
+@import '~@forgerock/openbanking-ngx-common/layouts/main.scss';
+@import '~@forgerock/openbanking-ngx-common/components/main.scss';
 @import 'projects/bank/src/app/pages/consent/dynamic/dynamic.component';
 @import 'projects/bank/src/app/pages/consent/permissions/permissions.component';
-@import '~ob-ui-libs/gdpr/main.scss';
+@import '~@forgerock/openbanking-ngx-common/gdpr/main.scss';
 
 @mixin foregrock-material-theme($theme) {
   @include mat-core-theme($theme);

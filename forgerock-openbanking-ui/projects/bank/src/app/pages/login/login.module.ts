@@ -2,7 +2,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 
-import { ForgerockAuthLoginModule, ForgerockAuthLoginComponent } from 'ob-ui-libs/authentication';
+import {
+  ForgerockAuthLoginModule,
+  ForgerockAuthLoginComponent
+} from '@forgerock/openbanking-ngx-common/authentication';
 
 const routes: Routes = [
   {

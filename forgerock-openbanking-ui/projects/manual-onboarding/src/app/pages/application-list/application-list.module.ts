@@ -28,8 +28,8 @@ import { ApplicationListContainerComponent } from './application-list.container'
 import { ApplicationListDetailsContainerComponent } from './details/details.container';
 import { ApplicationListFormComponent } from './application-form/application-form.component';
 import { ApplicationListFormContainerComponent } from './application-form/application-form.container';
-import { ForgerockCustomerIconModule } from 'ob-ui-libs/components/forgerock-customer-icon';
-import { ForgerockConfirmDialogModule } from 'ob-ui-libs/components/forgerock-confirm-dialog';
+import { ForgerockCustomerIconModule } from '@forgerock/openbanking-ngx-common/components/forgerock-customer-icon';
+import { ForgerockConfirmDialogModule } from '@forgerock/openbanking-ngx-common/components/forgerock-confirm-dialog';
 
 @NgModule({
   imports: [
