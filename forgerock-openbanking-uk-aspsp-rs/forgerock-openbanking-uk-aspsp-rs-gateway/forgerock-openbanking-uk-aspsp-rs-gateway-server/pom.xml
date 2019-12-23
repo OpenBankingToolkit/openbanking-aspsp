@@ -144,7 +144,12 @@
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>com.forgerock.openbanking.clients</groupId>
+            <artifactId>forgerock-openbanking-analytics-webclient</artifactId>
+            <version>1.0.13</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.github.jsonzou</groupId>
             <artifactId>jmockdata</artifactId>

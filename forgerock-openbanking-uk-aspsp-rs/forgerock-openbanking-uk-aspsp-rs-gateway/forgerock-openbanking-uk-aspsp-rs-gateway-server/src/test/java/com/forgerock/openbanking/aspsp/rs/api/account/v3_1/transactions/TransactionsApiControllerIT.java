@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.api.account.v3_1.transactions;
 
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.analytics.services.MetricService;
+import com.forgerock.openbanking.analytics.webclient.services.WebClientMetricService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
@@ -82,7 +83,7 @@ public class TransactionsApiControllerIT {
     @Autowired
     private RSConfiguration rsConfiguration;
     @Autowired
-    private MetricService metricService;
+    private WebClientMetricService metricService;
     @MockBean
     public AccountRequestStoreService accountRequestStore;
 
