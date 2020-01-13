@@ -6,6 +6,5 @@ module.exports = {
   cookieDomain: '.DOMAIN',
   authorizationServer: 'https://as.aspsp.DOMAIN',
   authenticationServer: 'https://am.DOMAIN',
-  remoteConsentServer: 'https://rcs.aspsp.DOMAIN',
-  enableCustomization: 'ENABLE_CUSTOMIZATION'
+  remoteConsentServer: 'https://rcs.aspsp.DOMAIN'
 };

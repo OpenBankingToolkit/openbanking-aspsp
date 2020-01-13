@@ -6,6 +6,5 @@ module.exports = {
   cookieDomain: '.DOMAIN',
   apiUrl: 'https://as.aspsp.DOMAIN',
   authEndpoint: 'https://am.DOMAIN',
-  registerBackend: 'https://service.register.DOMAIN',
-  enableCustomization: 'ENABLE_CUSTOMIZATION'
+  registerBackend: 'https://service.register.DOMAIN'
 };
