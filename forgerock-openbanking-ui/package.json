@@ -12,7 +12,7 @@
     "lint": "ng lint",
     "=================BANK APP=================": "",
     "bundleSize.bank": "openbanking-ui-cli appSize --theme forgerock --project bank",
-    "serve.auth": "ng serve bank",
+    "serve.bank": "ng serve bank",
     "report.bank": "npm run build.bank.forgerock && webpack-bundle-analyzer dist/forgerock/stats.json",
     "build.bank.forgerock": "ng build --project=bank --prod --configuration=forgerock --output-path dist/forgerock --statsJson --extra-webpack-config webpack.extra.js",
     "build.bank.themes": "openbanking-ui-cli buildThemes --project bank",
