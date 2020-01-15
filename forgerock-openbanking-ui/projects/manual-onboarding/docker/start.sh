@@ -13,7 +13,9 @@ fi
 
 cp -r /usr/share/nginx/${TEMPLATE}/* /usr/share/nginx/html
 sed -i "s/BUILD_VERSION/${BUILD_VERSION}/g" /usr/share/nginx/html/deployment-settings.json
-sed -i "s/DOMAIN/${DOMAIN}/g" /usr/share/nginx/html/deployment-settings.json
 sed -i "s/TEMPLATE/${TEMPLATE}/g" /usr/share/nginx/html/deployment-settings.json
-sed -i "s/ENABLE_CUSTOMIZATION/${ENABLE_CUSTOMIZATION}/g" /usr/share/nginx/html/deployment-settings.json
+sed -i "s@AUTHORIZATION_URL@${AUTHORIZATION_URL}@g" /usr/share/nginx/html/deployment-settings.json
+sed -i "s@AUTHENTICATION_URL@${AUTHENTICATION_URL}@g" /usr/share/nginx/html/deployment-settings.json
+sed -i "s@REGISTER_BACKEND_URL@${REGISTER_BACKEND_URL}@g" /usr/share/nginx/html/deployment-settings.json
+sed -i "s/DOMAIN/${DOMAIN}/g" /usr/share/nginx/html/deployment-settings.json
 nginx -g 'daemon off;'

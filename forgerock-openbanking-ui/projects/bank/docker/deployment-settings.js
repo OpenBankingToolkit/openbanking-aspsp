@@ -4,7 +4,7 @@ module.exports = {
     template: 'TEMPLATE'
   },
   cookieDomain: '.DOMAIN',
-  authorizationServer: 'https://as.aspsp.DOMAIN',
-  authenticationServer: 'https://am.DOMAIN',
-  remoteConsentServer: 'https://rcs.aspsp.DOMAIN'
+  authorizationServer: 'AUTHORIZATION_URL',
+  authenticationServer: 'AUTHENTICATION_URL',
+  remoteConsentServer: 'REMOVE_CONSENT_URL'
 };
