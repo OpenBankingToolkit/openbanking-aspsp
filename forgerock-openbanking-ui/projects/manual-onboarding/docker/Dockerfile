@@ -17,9 +17,12 @@ EXPOSE 80
 
 ARG BUILD_VERSION
 ENV BUILD_VERSION ${BUILD_VERSION}
-ENV DOMAIN ""
+
 ENV TEMPLATE "forgerock"
-ENV ENABLE_CUSTOMIZATION "false"
+ENV DOMAIN ""
+ENV AUTHORIZATION_URL "https://as.aspsp.DOMAIN"
+ENV AUTHENTICATION_URL "https://am.DOMAIN"
+ENV REGISTER_BACKEND_URL "https://service.register.DOMAIN"
 
 RUN rm -rf /etc/nginx/conf.d
 COPY --from=build-ui /src/dist /usr/share/nginx

@@ -4,7 +4,7 @@ module.exports = {
     template: 'TEMPLATE'
   },
   cookieDomain: '.DOMAIN',
-  apiUrl: 'https://as.aspsp.DOMAIN',
-  authEndpoint: 'https://am.DOMAIN',
-  registerBackend: 'https://service.register.DOMAIN'
+  apiUrl: 'AUTHORIZATION_URL',
+  authEndpoint: 'AUTHENTICATION_URL',
+  registerBackend: 'REGISTER_BACKEND_URL'
 };
