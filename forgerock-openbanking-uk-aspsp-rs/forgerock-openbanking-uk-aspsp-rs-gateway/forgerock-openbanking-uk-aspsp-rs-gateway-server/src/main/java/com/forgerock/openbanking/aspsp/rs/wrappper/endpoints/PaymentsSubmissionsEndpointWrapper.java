@@ -65,7 +65,8 @@ public class PaymentsSubmissionsEndpointWrapper extends RSEndpointWrapper<Paymen
         verifyAccessToken(Arrays.asList(OpenBankingConstants.Scope.PAYMENTS),
                 Arrays.asList(
                         OIDCConstants.GrantType.AUTHORIZATION_CODE,
-                        OIDCConstants.GrantType.HEADLESS_AUTH
+                        OIDCConstants.GrantType.HEADLESS_AUTH,
+                        OIDCConstants.GrantType.CLIENT_CREDENTIAL
                 )
         );
 
