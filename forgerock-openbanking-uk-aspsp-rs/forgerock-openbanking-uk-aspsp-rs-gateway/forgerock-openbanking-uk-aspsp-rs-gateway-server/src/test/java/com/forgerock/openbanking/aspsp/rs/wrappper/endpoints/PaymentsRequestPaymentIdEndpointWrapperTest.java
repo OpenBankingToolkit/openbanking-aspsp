@@ -1,6 +1,6 @@
 /**
  * Copyright 2019 ForgeRock AS.
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -8,9 +8,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -23,49 +23,62 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRDomesticConsent1;
+import com.forgerock.openbanking.common.services.openbanking.OBHeaderCheckerService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.error.ErrorCode;
+import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.jwt.SignedJWT;
 import dev.openbanking4.spring.security.multiauth.model.authentication.PasswordLessUserNameAuthentication;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.UUID;
 
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class PaymentsRequestPaymentIdEndpointWrapperTest {
+
     private static PaymentsRequestPaymentIdEndpointWrapper wrapper;
 
-    @MockBean(name = "cryptoApiClient")
+    @Mock(name = "cryptoApiClient")
     private CryptoApiClient cryptoApiClient;
 
-    @MockBean(name = "amOpenBankingConfiguration")
+    @Mock(name = "amOpenBankingConfiguration")
     private AMOpenBankingConfiguration amOpenBankingConfiguration;
 
-    @MockBean(name = "amResourceServerService")
-    private RSEndpointWrapperService rsEndpointWrapperService;
+    @Mock(name = "amResourceServerService")
+    private AMResourceServerService amResourceServerService;
+
+    @Mock(name = "rsConfiguration")
+    RSConfiguration rsConfiguration;
+
+    @Mock(name = "obHeaderCheckerService")
+    OBHeaderCheckerService obHeaderCheckerService;
 
     @Before
     public void setup() {
         // setting required objects to the perform test
-        ReflectionTestUtils.setField(amOpenBankingConfiguration, "audiences", Arrays.asList("https://am.dev-ob.forgerock.financial:443/oauth2/auth"));
-        AMResourceServerService amService = new AMResourceServerService();
-        ReflectionTestUtils.setField(amService, "cryptoApiClient", cryptoApiClient);
-        ReflectionTestUtils.setField(amService, "amOpenBankingConfiguration", amOpenBankingConfiguration);
-        ReflectionTestUtils.setField(rsEndpointWrapperService, "amResourceServerService", amService);
+        UUID uuid = UUID.randomUUID();
+
+        RSEndpointWrapperService rsEndpointWrapperService = new RSEndpointWrapperService(obHeaderCheckerService, cryptoApiClient,
+                null, null, rsConfiguration, null,
+                null, false, null, rsConfiguration.financialId, amOpenBankingConfiguration, null,
+                null, null, amResourceServerService, null);
 
         wrapper = new PaymentsRequestPaymentIdEndpointWrapper(rsEndpointWrapperService) {
             @Override
@@ -73,6 +86,8 @@ public class PaymentsRequestPaymentIdEndpointWrapperTest {
                 return super.run(main);
             }
         };
+
+        wrapper.xFapiFinancialId(uuid.toString());
         wrapper.principal(new PasswordLessUserNameAuthentication("test-tpp", Collections.EMPTY_LIST));
     }
 
@@ -85,6 +100,8 @@ public class PaymentsRequestPaymentIdEndpointWrapperTest {
 
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
         wrapper.authorization("Bearer " + jws);
+        when(amResourceServerService.verifyAccessToken("Bearer " + jws)).thenReturn((SignedJWT) JWTParser.parse(jws));
+
         // then
         assertThatCode(() -> {
             wrapper.payment(payment).verifyAccessToken(Arrays.asList("payments"
@@ -104,6 +121,7 @@ public class PaymentsRequestPaymentIdEndpointWrapperTest {
 
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
         wrapper.authorization("Bearer " + jws);
+        when(amResourceServerService.verifyAccessToken("Bearer " + jws)).thenReturn((SignedJWT) JWTParser.parse(jws));
 
         // then
         assertThatCode(() -> {
@@ -120,6 +138,7 @@ public class PaymentsRequestPaymentIdEndpointWrapperTest {
 
         String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
         wrapper.authorization("Bearer " + jws);
+        when(amResourceServerService.verifyAccessToken("Bearer " + jws)).thenReturn((SignedJWT) JWTParser.parse(jws));
 
         // then
         // When

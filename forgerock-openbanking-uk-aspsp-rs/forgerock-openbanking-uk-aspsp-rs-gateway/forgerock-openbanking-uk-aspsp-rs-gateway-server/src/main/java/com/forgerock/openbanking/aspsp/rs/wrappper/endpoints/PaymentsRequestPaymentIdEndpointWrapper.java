@@ -25,23 +25,13 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentCon
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
-import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
-import com.forgerock.openbanking.model.error.OBRIErrorType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.OBConstants;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.Arrays;
-import java.util.List;
-
-import static com.forgerock.openbanking.model.error.OBRIErrorType.SERVER_ERROR;
-
+g
 public class PaymentsRequestPaymentIdEndpointWrapper extends RSEndpointWrapper<PaymentsRequestPaymentIdEndpointWrapper, PaymentsRequestPaymentIdEndpointWrapper.PaymentRestEndpointContent> {
 
-    private static final Logger log = LoggerFactory.getLogger(PaymentsRequestPaymentIdEndpointWrapper.class);
     private FRPaymentConsent payment;
 
     public PaymentsRequestPaymentIdEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
@@ -64,14 +54,11 @@ public class PaymentsRequestPaymentIdEndpointWrapper extends RSEndpointWrapper<P
 
     @Override
     protected void applyFilters() throws OBErrorException {
-        //super.applyFilters();
-
         verifyAccessToken(Arrays.asList(OpenBankingConstants.Scope.PAYMENTS),
                 Arrays.asList(
                         OIDCConstants.GrantType.CLIENT_CREDENTIAL
                 )
         );
-
         verifyMatlsFromAccessToken();
     }
 
