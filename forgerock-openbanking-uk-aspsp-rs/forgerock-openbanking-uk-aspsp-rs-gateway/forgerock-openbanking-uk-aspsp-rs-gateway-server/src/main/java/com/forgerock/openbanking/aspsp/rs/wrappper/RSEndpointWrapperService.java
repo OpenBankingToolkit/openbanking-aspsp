@@ -131,6 +131,11 @@ public class RSEndpointWrapperService {
         return new PaymentsSubmissionsEndpointWrapper(this);
     }
 
+    public PaymentsRequestPaymentIdEndpointWrapper paymentsRequestPaymentIdEndpoint() {
+        return new PaymentsRequestPaymentIdEndpointWrapper(this);
+    }
+
+
     public EventNotificationsApiEndpointWrapper eventNotificationEndpoint() {
         return new EventNotificationsApiEndpointWrapper(this);
     }
