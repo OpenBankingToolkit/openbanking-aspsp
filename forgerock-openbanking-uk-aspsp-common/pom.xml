@@ -30,7 +30,7 @@
     <parent>
         <groupId>com.forgerock.openbanking.aspsp</groupId>
         <artifactId>forgerock-openbanking-aspsp</artifactId>
-        <version>1.0.40-SNAPSHOT</version>
+        <version>1.0.41-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -93,10 +93,6 @@
         <dependency>
             <groupId>io.zipkin.brave</groupId>
             <artifactId>brave</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.forgerock</groupId>
-            <artifactId>forgerock-eidas-psd2-cert-sdk</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>

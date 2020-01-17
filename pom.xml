@@ -27,7 +27,7 @@
     <name>ForgeRock OpenBanking Reference Implementation - ASPSP</name>
     <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>forgerock-openbanking-aspsp</artifactId>
-    <version>1.0.40-SNAPSHOT</version>
+    <version>1.0.41-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
