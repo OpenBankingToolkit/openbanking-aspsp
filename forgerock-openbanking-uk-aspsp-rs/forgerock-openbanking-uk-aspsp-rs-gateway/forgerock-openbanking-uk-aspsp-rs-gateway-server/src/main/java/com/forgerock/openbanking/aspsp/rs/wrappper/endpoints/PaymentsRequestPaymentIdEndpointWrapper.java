@@ -25,11 +25,10 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentCon
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
-g
+
 public class PaymentsRequestPaymentIdEndpointWrapper extends RSEndpointWrapper<PaymentsRequestPaymentIdEndpointWrapper, PaymentsRequestPaymentIdEndpointWrapper.PaymentRestEndpointContent> {
 
     private FRPaymentConsent payment;
