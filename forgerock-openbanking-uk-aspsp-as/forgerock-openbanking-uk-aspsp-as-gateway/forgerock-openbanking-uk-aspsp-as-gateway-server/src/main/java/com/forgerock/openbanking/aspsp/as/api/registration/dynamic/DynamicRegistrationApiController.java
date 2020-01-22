@@ -78,6 +78,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.forgerock.openbanking.common.utils.X509CertificateHelper.getCn;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.RegistrationTppRequestClaims;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.SSAClaims;
 
@@ -304,7 +305,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
 
                     Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims, oidcRegistrationRequest, authentication);
 
-                    Tpp tpp = tppRegistrationService.registerTpp(authentication.getCertificateChain()[0].getSubjectDN().toString(), registrationRequestJson, ssaClaims, ssaJwsJson, oidcRegistrationRequest, directoryId, types);
+                    Tpp tpp = tppRegistrationService.registerTpp(getCn(authentication.getCertificateChain()[0]), registrationRequestJson, ssaClaims, ssaJwsJson, oidcRegistrationRequest, directoryId, types);
 
                     return ResponseEntity.status(HttpStatus.CREATED).body(tpp.getRegistrationResponse());
                 } catch (HttpClientErrorException e) {
