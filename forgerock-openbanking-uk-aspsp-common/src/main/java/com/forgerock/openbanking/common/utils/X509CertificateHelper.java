@@ -18,3 +18,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package com.forgerock.openbanking.common.utils;
+
+import org.bouncycastle.asn1.x500.RDN;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.BCStyle;
+import org.bouncycastle.asn1.x500.style.IETFUtils;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
+
+import java.security.cert.CertificateEncodingException;
+import java.security.cert.X509Certificate;
+
+public class X509CertificateHelper {
+
+    public static String getCn(X509Certificate x509Certificate) {
+        try {
+            X500Name x500name = new JcaX509CertificateHolder(x509Certificate).getSubject();
+            RDN cn = x500name.getRDNs(BCStyle.CN)[0];
+            return IETFUtils.valueToString(cn.getFirst().getValue());
+        } catch (CertificateEncodingException e) {
+            return null;
+        }
+    }
+
+}
