@@ -1,3 +1,6 @@
-<div *ngIf="payload.date" class="date-consent-box-item {{ payload.cssClass }}">
-  <span class="title">{{ payload.label | translate }}</span> <span fxFlex></span> {{ payload.date | date }}
-</div>
+<app-key-value-item
+  *ngIf="payload.date"
+  [key]="payload.label | translate"
+  [value]="payload.date | date"
+  [cssClass]="payload.cssClass"
+></app-key-value-item>

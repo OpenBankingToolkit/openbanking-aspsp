@@ -28,11 +28,13 @@ module.exports = {
         Currency: 'GBP',
         AccountType: 'Personal',
         AccountSubType: 'CurrentAccount',
-        Nickname: 'UK Bills',
+        Nickname:
+          'UK Bills loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong',
         Account: [
           {
             SchemeName: 'SortCodeAccountNumber',
-            Identification: '75608343829678',
+            Identification:
+              '75608343829678 loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong',
             Name: 'demo',
             SecondaryIdentification: '69310297'
           }
@@ -122,7 +124,8 @@ module.exports = {
   username: 'demo',
   logo: 'https://www.getpostman.com/img/logos/postman/header-treatment.svg',
   clientId: 'f8081961-ceb4-428f-a3e0-dac115c8c36e',
-  aispName: 'quentin - postman',
+  aispName:
+    'quentin - loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong postman',
   expiredDate: '2020-02-10T17:48:45+00:00',
   intentType: 'ACCOUNT_ACCESS_CONSENT',
   decisionAPIUri: '/api/rcs/consent/decision/'

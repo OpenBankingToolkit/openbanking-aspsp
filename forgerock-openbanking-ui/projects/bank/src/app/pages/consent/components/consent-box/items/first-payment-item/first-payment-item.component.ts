@@ -3,8 +3,7 @@ import { OBActiveOrHistoricCurrencyAndAmount } from 'bank/src/app/types/ob';
 
 @Component({
   selector: 'app-first-payment-item',
-  templateUrl: './first-payment-item.component.html',
-  styleUrls: ['./first-payment-item.component.scss']
+  templateUrl: './first-payment-item.component.html'
 })
 export class FirstPaymentItemComponent implements OnInit {
   firstPaymentLabel: string;

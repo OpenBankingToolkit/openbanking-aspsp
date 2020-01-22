@@ -4,6 +4,7 @@
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
   app-consent-dynamic {
+    word-break: break-word;
     h1 {
       text-align: center;
     }
@@ -23,7 +24,12 @@
     }
     .title {
       color: mat-color($foreground, secondary-text);
-      margin-bottom: 12px;
+      margin-bottom: 0.9em;
+    }
+    app-consent-box {
+      .title {
+        margin: 0 0.9em 0 0;
+      }
     }
     /deep/ .secondary-text {
       color: mat-color($foreground, secondary-text);
@@ -70,12 +76,15 @@
     }
 
     .sub-row {
-      padding: 10px 0;
-      margin-left: 15px;
-      margin-top: 10px;
-      margin-bottom: 10px;
+      padding: 0.7em 0;
+      margin-left: 0.7em;
+      margin-top: 0.7em;
+      margin-bottom: 0.7em;
       border-top: solid 1px mat-color($foreground, divider);
       border-bottom: solid 1px mat-color($foreground, divider);
+      app-key-value-item:last-child {
+        margin-bottom: 0;
+      }
     }
 
     .consent-box {

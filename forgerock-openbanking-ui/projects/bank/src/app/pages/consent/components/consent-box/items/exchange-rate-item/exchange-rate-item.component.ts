@@ -3,16 +3,16 @@ import { Rate } from 'bank/src/app/types/api';
 
 @Component({
   selector: 'app-exchange-rate-item',
-  templateUrl: './exchange-rate-item.component.html',
-  styleUrls: ['./exchange-rate-item.component.scss']
+  templateUrl: './exchange-rate-item.component.html'
 })
 export class ExchangeRateItemComponent implements OnInit {
-  label: string;
-  rate: Rate;
-  currencyOfTransfer: string;
-  cssClass: string;
-
-  payload: any;
+  payload: {
+    label: string;
+    rate: Rate;
+    value: string;
+    currencyOfTransfer: string;
+    cssClass: string;
+  };
 
   constructor() {}
 

@@ -63,7 +63,8 @@ module.exports = {
   username: 'demo',
   logo: 'https://www.getpostman.com/img/logos/postman/header-treatment.svg',
   clientId: '7df9d21f-e2d1-42c3-b5ac-0cee2a0858ca',
-  merchantName: 'demo - Postman',
+  merchantName:
+    'demo - loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong postman',
   currencyOfTransfer: 'EUR',
   paymentReference: 'Rent',
   intentType: 'PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT',

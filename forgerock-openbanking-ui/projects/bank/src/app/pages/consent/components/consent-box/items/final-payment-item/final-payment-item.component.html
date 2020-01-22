@@ -1,15 +1,13 @@
 <div *ngIf="payload.finalPaymentAmount" class="final-payment-consent-box-item {{ cssClass }}">
   <span class="title">{{ payload.finalPaymentLabel | translate }}</span>
-  <div class="sub-row" fxLayout="row">
-    <div fxFlex>
-      <div>
-        <span class="title">{{ payload.finalPaymentAmountLabel | translate }}</span> <span fxFlex></span>
-        {{ payload.finalPaymentAmount | AmountFormat }}
-      </div>
-      <div>
-        <span class="title">{{ payload.finalPaymentDateLabel | translate }}</span> <span fxFlex></span>
-        {{ payload.finalPaymentDate | date }}
-      </div>
-    </div>
+  <div class="sub-row" fxLayout="column">
+    <app-key-value-item
+      [key]="payload.finalPaymentAmountLabel | translate"
+      [value]="payload.finalPaymentAmount | AmountFormat"
+    ></app-key-value-item>
+    <app-key-value-item
+      [key]="payload.finalPaymentDateLabel | translate"
+      [value]="payload.finalPaymentDate | date"
+    ></app-key-value-item>
   </div>
 </div>

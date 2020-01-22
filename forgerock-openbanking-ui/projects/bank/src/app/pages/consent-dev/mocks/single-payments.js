@@ -108,7 +108,8 @@ module.exports = {
   logo: 'https://www.getpostman.com/img/logos/postman/header-treatment.svg',
   clientId: 'f8081961-ceb4-428f-a3e0-dac115c8c36e',
   merchantName: 'demo',
-  pispName: 'quentin - postman',
+  pispName:
+    'quentin - loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong postman',
   paymentReference: 'FRESCO-101',
   intentType: 'PAYMENT_SINGLE_REQUEST',
   decisionAPIUri: '/api/rcs/consent/decision/'

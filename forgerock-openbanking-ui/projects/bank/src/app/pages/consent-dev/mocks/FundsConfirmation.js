@@ -38,7 +38,8 @@ module.exports = {
   username: 'demo',
   logo: 'https://www.getpostman.com/img/logos/postman/header-treatment.svg',
   clientId: '7df9d21f-e2d1-42c3-b5ac-0cee2a0858ca',
-  merchantName: 'demo - Postman',
+  merchantName:
+    'demo - loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong postman',
   expirationDateTime: '2019-05-02T01:00:00+01:00',
   intentType: 'FUNDS_CONFIRMATION_CONSENT',
   decisionAPIUri: '/api/rcs/consent/decision/'

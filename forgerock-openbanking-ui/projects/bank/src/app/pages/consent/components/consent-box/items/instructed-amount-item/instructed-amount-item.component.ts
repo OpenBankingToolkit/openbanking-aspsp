@@ -3,8 +3,7 @@ import { OBActiveOrHistoricCurrencyAndAmount } from 'bank/src/app/types/ob';
 
 @Component({
   selector: 'app-instructed-amount-item',
-  templateUrl: './instructed-amount-item.component.html',
-  styleUrls: ['./instructed-amount-item.component.scss']
+  templateUrl: './instructed-amount-item.component.html'
 })
 export class InstructedAmountItemComponent implements OnInit {
   label: string;

@@ -1,12 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 
 @Component({
   selector: 'app-string-item',
-  templateUrl: './string-item.component.html',
-  styleUrls: ['./string-item.component.scss']
+  template: `
+    <app-key-value-item
+      *ngIf="payload.value"
+      [key]="payload.label | translate"
+      [value]="payload.value"
+      [cssClass]="payload.cssClass"
+    ></app-key-value-item>
+  `
 })
 export class StringItemComponent implements OnInit {
-  payload: any;
+  @Input() payload: {
+    label?: string;
+    cssClass?: string;
+    value?: string;
+  } = {};
 
   constructor() {}
 
