@@ -29,7 +29,7 @@
     <parent>
         <groupId>com.forgerock.openbanking.aspsp</groupId>
         <artifactId>forgerock-openbanking-aspsp</artifactId>
-        <version>1.0.49-SNAPSHOT</version>
+        <version>1.0.49</version>
     </parent>
 
     <repositories>
