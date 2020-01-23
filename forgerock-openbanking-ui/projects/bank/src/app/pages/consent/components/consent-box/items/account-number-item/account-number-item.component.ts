@@ -3,8 +3,7 @@ import { OBCashAccount3 } from 'bank/src/app/types/ob';
 
 @Component({
   selector: 'app-account-number-item',
-  templateUrl: './account-number-item.component.html',
-  styleUrls: ['./account-number-item.component.scss']
+  templateUrl: './account-number-item.component.html'
 })
 export class AccountNumberItemComponent implements OnInit {
   account: OBCashAccount3;

@@ -3,8 +3,7 @@ import { OBActiveOrHistoricCurrencyAndAmount } from 'bank/src/app/types/ob';
 
 @Component({
   selector: 'app-final-payment-item',
-  templateUrl: './final-payment-item.component.html',
-  styleUrls: ['./final-payment-item.component.scss']
+  templateUrl: './final-payment-item.component.html'
 })
 export class FinalPaymentItemComponent implements OnInit {
   finalPaymentLabel: string;

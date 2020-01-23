@@ -1,0 +1,13 @@
+:host {
+  display: block;
+  margin-bottom: 0.9em;
+  div {
+    display: flex;
+    flex-direction: row;
+    span {
+      &.title {
+        min-width: 30%;
+      }
+    }
+  }
+}

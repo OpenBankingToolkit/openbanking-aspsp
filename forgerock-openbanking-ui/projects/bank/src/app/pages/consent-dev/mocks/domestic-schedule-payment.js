@@ -52,7 +52,8 @@ module.exports = {
   username: 'demo',
   logo: 'https://www.getpostman.com/img/logos/postman/header-treatment.svg',
   clientId: '7df9d21f-e2d1-42c3-b5ac-0cee2a0858ca',
-  merchantName: 'demo - Postman',
+  merchantName:
+    'demo - loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong postman',
   paymentReference: 'DSR-037',
   intentType: 'PAYMENT_DOMESTIC_SCHEDULED_CONSENT',
   decisionAPIUri: '/api/rcs/consent/decision/'

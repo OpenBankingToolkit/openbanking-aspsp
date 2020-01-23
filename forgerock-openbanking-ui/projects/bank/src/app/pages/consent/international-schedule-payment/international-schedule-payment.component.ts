@@ -85,6 +85,12 @@ export class InternationalSchedulePaymentComponent implements OnInit {
       type: ItemType.EXCHANGE_RATE,
       payload: {
         label: 'CONSENT.INTERNATIONAL-PAYMENT.EXCHANGE_RATE',
+        value:
+          this.response.rate && this.response.currencyOfTransfer
+            ? `1.0 ${this.response.rate.UnitCurrency} = ${this.response.rate.ExchangeRate} ${
+                this.response.currencyOfTransfer
+              }`
+            : '',
         rate: this.response.rate,
         currencyOfTransfer: this.response.currencyOfTransfer,
         cssClass: 'international-schedule-payment-rate'
