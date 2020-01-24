@@ -190,4 +190,46 @@
             <url>https://dl.bintray.com/openbanking-toolkit/OpenBankingToolKit</url>
         </repository>
     </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>se.bjurr.gitchangelog</groupId>
+                <artifactId>git-changelog-maven-plugin</artifactId>
+                <version>1.61</version>
+                <executions>
+                    <execution>
+                        <id>changelog</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>git-changelog</goal>
+                        </goals>
+                        <inherited>false</inherited>
+                        <configuration>
+                            <noIssueName>test</noIssueName>
+                            <templateContent>
+                                <![CDATA[
+# Git Changelog Maven plugin changelog
+Changelog of Git Changelog Maven plugin.
+{{#tags}}
+## {{name}}
+ {{#issues}}
+  {{#hasLink}}
+### {{name}} [{{issue}}]({{link}}) {{title}}
+  {{/hasLink}}
+  {{#commits}}
+[{{hash}}](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/{{hash}}) {{authorName}} *{{commitTime}}*
+{{{message}}}
+  {{/commits}}
+ {{/issues}}
+{{/tags}}
+]]>
+                            </templateContent>
+                            <file>CHANGELOG.md</file>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

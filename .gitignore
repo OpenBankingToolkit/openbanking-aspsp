@@ -22,3 +22,4 @@ secrets.yml
 requirements.lock
 !forgerock-openbanking-sample/forgerock-openbanking-sample-tpp/src/main/resources/keystore/*
 workspace.xml
+.okhttpcache/
