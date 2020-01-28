@@ -17,7 +17,7 @@ import { ExchangeRateItemComponent } from './items/exchange-rate-item/exchange-r
 import { RateAmountItemComponent } from './items/rate-amount-item/rate-amount-item.component';
 import { KeyValueItemComponent } from './items/key-value/key-value.component';
 import { DynamicItemComponent } from './items/dynamic-item/dynamic-item.component';
-import { TransactionsPeriodItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/transactions-period-item/transactions-period-item.component';
+import { TransactionsPeriodItemComponent } from 'bank/src/app/components/consent-box/items/transactions-period-item/transactions-period-item.component';
 import { BankPipesModule } from 'bank/src/app/pipes/pipes.module';
 import { ForgerockPipesModule } from '@forgerock/openbanking-ngx-common/pipes';
 

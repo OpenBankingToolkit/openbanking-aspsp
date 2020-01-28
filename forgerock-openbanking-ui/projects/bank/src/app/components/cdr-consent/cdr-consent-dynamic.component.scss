@@ -1,19 +1,19 @@
 @import 'mixins/breakpoints';
 
-@mixin bank-consent-dynamic-theme($theme) {
+@mixin bank-cdr-consent-dynamic-theme($theme) {
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
-  app-consent-dynamic {
+  app-cdr-consent-dynamic {
     word-break: break-word;
     h1 {
       text-align: center;
     }
     .mat-card {
       min-width: 490px;
-      padding: 40px;
+      padding: 30px;
       @include media-breakpoint-down('sm') {
         min-width: auto;
-        padding: 24px;
+        padding: 16px;
       }
     }
     .divider {
@@ -142,6 +142,17 @@
 
     .consent-expiration-date {
       padding: 15px 5px;
+    }
+
+    .mat-card-actions {
+      margin-bottom: -8px;
+      margin-left: 0;
+      margin-right: 0;
+      height: 70px !important;
+
+      button:last-child {
+        margin-right: 0;
+      }
     }
   }
 }

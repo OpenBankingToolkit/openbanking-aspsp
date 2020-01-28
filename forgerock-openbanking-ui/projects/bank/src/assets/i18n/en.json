@@ -6,6 +6,10 @@
   "SIGNOUT": "Sign out",
   "SIGNED_OUT": "You have been signed out",
   "CREATE_ACCOUNT": "Create Account",
+  "CONFIRM": "Confirm",
+  "BACK": "Back",
+  "CANCEL": "Cancel",
+  "CONTINUE": "Continue",
   "GDPR": {
     "TITLE": "Access denied",
     "TEXT": "In order to use this application, you must comply with our cookie policy."
@@ -31,6 +35,18 @@
     "PASSWORD_UPDATE_SUCCESS": "Your password has been updated.",
     "PASSWORD_UPDATE_ERROR": "Could not update password"
   },
+  "CDR": {
+    "ACCREDITED_RECIPIENT": "Accredited Consumer Data Right Recipient",
+    "RECIPIENT_ID": "CDR Recipient ID: {{id}}",
+    "CONFIRM": "Please confirm that you agree to share the following data with <b>{{merchantName}}.</b>",
+    "I_CONFIRM": "I Confirm"
+  },
+  "CDRCONSENT": {
+    "ACCOUNT": {
+      "TITLE": "Select account to share",
+      "ACCOUNT_REQUEST": "<b>{{merchantName}}</b> is requesting data from your accounts."
+    }
+  },
   "CONSENT": {
     "PAYMENT": {
       "CHECK_DETAILS": "Please check the details below are correct.",
@@ -52,7 +68,7 @@
     "ACCOUNT": {
       "TITLE": "Confirm account sharing with {{merchantName}}",
       "CHECK_DETAILS": "Please check the details below are correct.",
-      "SELECT_ACCOUNT": "Please select and confirm account(s) to share information:",
+      "SELECT_ACCOUNT": "Please select the accounts you would like to share data from.",
       "CANCEL": "Cancel and return to {{client}}",
       "APPLICATION": "Application requesting access",
       "TRANSACTION_PERIOD": "Transactions period requested",

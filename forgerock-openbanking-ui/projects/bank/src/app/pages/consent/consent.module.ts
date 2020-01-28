@@ -9,7 +9,6 @@ import { ConsentComponent } from './consent.component';
 import { SinglePaymentComponent } from './single-payment/single-payment.component';
 import { AccountComponent } from './account/account.component';
 import { DynamicComponent } from './dynamic/dynamic.component';
-import { PermissionsComponent } from './permissions/permissions.component';
 import { DomesticPaymentComponent } from 'bank/src/app/pages/consent/domestic-payment/domestic-payment.component';
 import { DomesticSchedulePaymentComponent } from 'bank/src/app/pages/consent/domestic-schedule-payment/domestic-schedule-payment.component';
 import { DomesticStandingOrderComponent } from 'bank/src/app/pages/consent/domestic-standing-order/domestic-standing-order.component';
@@ -20,10 +19,11 @@ import { FilePaymentComponent } from 'bank/src/app/pages/consent/file-payment/fi
 import { InternationalSchedulePaymentComponent } from 'bank/src/app/pages/consent/international-schedule-payment/international-schedule-payment.component';
 import { InternationalStandingOrderComponent } from 'bank/src/app/pages/consent/international-standing-order/international-standing-order.component';
 import { ForgerockCustomerLogoModule } from '@forgerock/openbanking-ngx-common/components/forgerock-customer-logo';
-import { ConsentBoxComponentModule } from './components/consent-box/consent-box.module';
-import { SubmitBoxComponentModule } from './components/submit-box/submit-box.module';
-import { AccountSelectionComponentModule } from './components/account-selection/account-selection.module';
-import { AccountCheckboxModule } from './components/account-checkbox/account-checkbox.module';
+import { ConsentBoxComponentModule } from '../../components/consent-box/consent-box.module';
+import { SubmitBoxComponentModule } from '../../components/submit-box/submit-box.module';
+import { AccountSelectionComponentModule } from '../../components/account-selection/account-selection.module';
+import { AccountCheckboxModule } from '../../components/account-checkbox/account-checkbox.module';
+import { PermissionsModule } from '../../components/permissions/permissions.module';
 
 @NgModule({
   imports: [
@@ -36,7 +36,8 @@ import { AccountCheckboxModule } from './components/account-checkbox/account-che
     ConsentBoxComponentModule,
     SubmitBoxComponentModule,
     AccountSelectionComponentModule,
-    AccountCheckboxModule
+    AccountCheckboxModule,
+    PermissionsModule
   ],
   declarations: [
     ConsentComponent,
@@ -50,8 +51,7 @@ import { AccountCheckboxModule } from './components/account-checkbox/account-che
     InternationalStandingOrderComponent,
     FundsConfirmationComponent,
     FilePaymentComponent,
-    DynamicComponent,
-    PermissionsComponent
+    DynamicComponent
   ],
   entryComponents: [
     SinglePaymentComponent,
@@ -77,8 +77,7 @@ import { AccountCheckboxModule } from './components/account-checkbox/account-che
     InternationalStandingOrderComponent,
     FundsConfirmationComponent,
     FilePaymentComponent,
-    DynamicComponent,
-    PermissionsComponent
+    DynamicComponent
   ]
 })
 export class ConsentModule {}

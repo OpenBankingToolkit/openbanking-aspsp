@@ -69,7 +69,7 @@ export const routes: Routes = [
         path: 'login',
         canActivate: [IsConnectedPublicGuard],
         canLoad: [ForgerockCustomerCanAccessGuard],
-        loadChildren: 'bank/src/app/pages/login/login.module#LoginModule',
+        loadChildren: () => import('bank/src/app/pages/login/login.module').then(m => m.LoginModule),
         data: {
           private: true
         }
@@ -78,22 +78,29 @@ export const routes: Routes = [
         path: 'register',
         canActivate: [IsConnectedPublicGuard],
         canLoad: [ForgerockCustomerCanAccessGuard],
-        loadChildren: 'bank/src/app/pages/register/register.module#RegisterModule'
+        loadChildren: () => import('bank/src/app/pages/register/register.module').then(m => m.RegisterModule)
       },
       {
         path: 'consent',
         canActivate: [IsConnectedPrivateGuard],
-        loadChildren: 'bank/src/app/pages/consent/consent.module#ConsentModule'
+        loadChildren: () => import('bank/src/app/pages/consent/consent.module').then(m => m.ConsentModule)
       },
       {
         path: 'logged-out',
-        loadChildren: 'bank/src/app/pages/logout/logout.module#LogoutModule'
+        loadChildren: () => import('bank/src/app/pages/logout/logout.module').then(m => m.LogoutModule)
       },
       {
         path: 'dev/consent',
         canLoad: [ForgerockCustomerCanAccessGuard],
-        loadChildren: 'bank/src/app/pages/consent-dev/consent-dev.module#ConsentDevModule'
+        loadChildren: () => import('bank/src/app/pages/consent-dev/consent-dev.module').then(m => m.ConsentDevModule)
       },
+      {
+        path: 'dev/cdr-consent',
+        canLoad: [ForgerockCustomerCanAccessGuard],
+        loadChildren: () =>
+          import('bank/src/app/pages/dev-cdr-authorise/dev-cdr-authorise.module').then(m => m.DevCDRAuthoriseModule)
+      },
+
       {
         path: 'oauth2/authorize',
         loadChildren: () =>

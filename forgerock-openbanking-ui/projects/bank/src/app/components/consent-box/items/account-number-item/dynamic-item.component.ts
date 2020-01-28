@@ -9,16 +9,16 @@ import {
 } from '@angular/core';
 import { throwError } from 'rxjs';
 import { Item, ItemType } from 'bank/src/app/types/consentItem';
-import { StringItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/string-item/string-item.component';
-import { RateAmountItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/rate-amount-item/rate-amount-item.component';
-import { NextPaymentItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/next-payment-item/next-payment-item.component';
-import { InstructedAmountItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/instructed-amount-item/instructed-amount-item.component';
-import { FirstPaymentItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/first-payment-item/first-payment-item.component';
-import { FinalPaymentItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/final-payment-item/final-payment-item.component';
-import { ExchangeRateItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/exchange-rate-item/exchange-rate-item.component';
-import { DateItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/date-item/date-item.component';
-import { AccountNumberItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/account-number-item/account-number-item.component';
-import { TransactionsPeriodItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/transactions-period-item/transactions-period-item.component';
+import { StringItemComponent } from 'bank/src/app/components/consent-box/items/string-item/string-item.component';
+import { RateAmountItemComponent } from 'bank/src/app/components/consent-box/items/rate-amount-item/rate-amount-item.component';
+import { NextPaymentItemComponent } from 'bank/src/app/components/consent-box/items/next-payment-item/next-payment-item.component';
+import { InstructedAmountItemComponent } from 'bank/src/app/components/consent-box/items/instructed-amount-item/instructed-amount-item.component';
+import { FirstPaymentItemComponent } from 'bank/src/app/components/consent-box/items/first-payment-item/first-payment-item.component';
+import { FinalPaymentItemComponent } from 'bank/src/app/components/consent-box/items/final-payment-item/final-payment-item.component';
+import { ExchangeRateItemComponent } from 'bank/src/app/components/consent-box/items/exchange-rate-item/exchange-rate-item.component';
+import { DateItemComponent } from 'bank/src/app/components/consent-box/items/date-item/date-item.component';
+import { AccountNumberItemComponent } from 'bank/src/app/components/consent-box/items/account-number-item/account-number-item.component';
+import { TransactionsPeriodItemComponent } from 'bank/src/app/components/consent-box/items/transactions-period-item/transactions-period-item.component';
 
 @Component({
   selector: 'app-dynamic-item',

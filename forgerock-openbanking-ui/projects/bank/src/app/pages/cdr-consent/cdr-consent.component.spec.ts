@@ -14,10 +14,10 @@ import { ForgerockCustomerLogoModule } from '@forgerock/openbanking-ngx-common/c
 import { ConsentComponent } from './consent.component';
 import { DynamicComponent } from './dynamic/dynamic.component';
 
-import { ConsentBoxComponentModule } from '../../components/consent-box/consent-box.module';
-import { SubmitBoxComponentModule } from '../../components/submit-box/submit-box.module';
-import { AccountSelectionComponentModule } from '../../components/account-selection/account-selection.module';
-import { AccountCheckboxModule } from '../../components/account-checkbox/account-checkbox.module';
+import { ConsentBoxComponentModule } from './components/consent-box/consent-box.module';
+import { SubmitBoxComponentModule } from './components/submit-box/submit-box.module';
+import { AccountSelectionComponentModule } from './components/account-selection/account-selection.module';
+import { AccountCheckboxModule } from './components/account-checkbox/account-checkbox.module';
 
 import { ApiService } from 'bank/src/app/services/api.service';
 import { ForgerockMainLayoutSharedModule } from '@forgerock/openbanking-ngx-common/layouts/main-layout';

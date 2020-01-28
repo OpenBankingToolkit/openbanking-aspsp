@@ -1,8 +1,6 @@
 <mat-card *ngIf="response">
   <forgerock-customer-logo></forgerock-customer-logo>
 
-  {{ loading | json }}
-
   <form [formGroup]="form">
     <h1 [translate]="'CONSENT.ACCOUNT.TITLE'" [translateParams]="{ merchantName: response.aispName }"></h1>
     <div *ngIf="response.logo" class="merchant-logo">
@@ -20,18 +18,7 @@
       [label]="'CONSENT.ACCOUNT.SELECT_ACCOUNT'"
     ></app-account-checkbox>
 
-    <div class="review-permissions">
-      <mat-accordion>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title> {{ 'CONSENT.ACCOUNT.REVIEW_DATA' | translate }} </mat-panel-title>
-          </mat-expansion-panel-header>
-          <pre class="review-permissions-content">
-            <app-account-permissions [permissions]="response.permissions"></app-account-permissions>
-          </pre>
-        </mat-expansion-panel>
-      </mat-accordion>
-    </div>
+    <app-account-permissions [permissions]="response.permissions"></app-account-permissions>
 
     <div class="consent-expiration-date" *ngIf="response.expiredDate">
       <span

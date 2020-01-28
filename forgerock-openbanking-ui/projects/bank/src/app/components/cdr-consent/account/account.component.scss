@@ -1,0 +1,11 @@
+:host {
+  mat-checkbox {
+    height: 35px;
+    /deep/ .mat-checkbox-layout {
+      width: 100%;
+    }
+    /deep/ .mat-checkbox-label {
+      flex: 1;
+    }
+  }
+}

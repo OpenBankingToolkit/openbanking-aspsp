@@ -5,8 +5,9 @@
 @import 'mixins/cssvars';
 @import '~@forgerock/openbanking-ngx-common/layouts/main.scss';
 @import '~@forgerock/openbanking-ngx-common/components/main.scss';
+@import 'projects/bank/src/app/components/cdr-consent/cdr-consent-dynamic.component';
+@import 'projects/bank/src/app/components/permissions/permissions.component';
 @import 'projects/bank/src/app/pages/consent/dynamic/dynamic.component';
-@import 'projects/bank/src/app/pages/consent/permissions/permissions.component';
 @import '~@forgerock/openbanking-ngx-common/gdpr/main.scss';
 
 @mixin foregrock-material-theme($theme) {
@@ -52,5 +53,6 @@
   @include forgerock-gdpr-theme($theme);
   @include forgerock-alert-component-theme($theme);
   @include bank-consent-dynamic-theme($theme);
+  @include bank-cdr-consent-dynamic-theme($theme);
   @include bank-consent-permission-theme($theme);
 }

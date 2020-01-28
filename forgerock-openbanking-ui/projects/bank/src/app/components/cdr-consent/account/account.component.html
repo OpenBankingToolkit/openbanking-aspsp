@@ -1,0 +1,83 @@
+<mat-card *ngIf="response">
+  <app-consent-steps #steps (stepChange)="step = $event">
+    <div *ngIf="step === 0">
+      <mat-card-content>
+        <forgerock-customer-logo></forgerock-customer-logo>
+
+        <form [formGroup]="form">
+          <h1 [translate]="'CDRCONSENT.ACCOUNT.TITLE'" [translateParams]="{ merchantName: response.aispName }"></h1>
+          <app-cdr-data-recipient-info
+            [name]="response.aispName"
+            [img]="response.logo"
+            [id]="response.clientId"
+            [requestDate]=""
+          ></app-cdr-data-recipient-info>
+          <div class="divider"></div>
+
+          <p [innerHTML]="'CDRCONSENT.ACCOUNT.ACCOUNT_REQUEST' | translate: { merchantName: response.aispName }"></p>
+
+          <!-- <app-consent-box [items]="items"></app-consent-box> -->
+          <app-account-checkbox
+            [form]="form"
+            [accounts]="response.accounts"
+            [label]="'CONSENT.ACCOUNT.SELECT_ACCOUNT'"
+          ></app-account-checkbox>
+
+          <!-- 
+   
+
+    <div class="consent-expiration-date" *ngIf="response.expiredDate">
+      <span
+        class="title"
+        [translate]="'CONSENT.ACCOUNT.EXPIRE'"
+        [translateParams]="{ client: response.aispName }"
+      ></span>
+      {{ response.expiredDate | forgerockDateFormat: 'dddd Do MMMM, YYYY, HH:mm:ss' }}
+    </div>
+
+    <app-submit-box
+      [loading]="_loading"
+      [form]="form"
+      [proceedLabel]="'CONSENT.ACCOUNT.PROCEED'"
+      [cancelLabel]="'CONSENT.ACCOUNT.CANCEL'"
+      (accept)="submit(true)"
+      (deny)="submit(false)"
+    ></app-submit-box> -->
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions fxFill fxLayout="row" fxLayoutAlign="center stretch">
+        <button mat-stroked-button (click)="submit(false)" fxFlex="50">{{ 'CANCEL' | translate }}</button>
+        <button
+          mat-raised-button
+          mat-button
+          color="accent"
+          fxFlex="50"
+          (click)="steps.next()"
+          [disabled]="form.invalid || form.disabled"
+        >
+          {{ 'CONTINUE' | translate }}
+        </button>
+      </mat-card-actions>
+    </div>
+    <div *ngIf="step === 1">
+      <button mat-button (click)="steps.previous()">
+        <mat-icon>arrow_back_ios</mat-icon> {{ 'BACK' | translate }}
+      </button>
+      <forgerock-customer-logo></forgerock-customer-logo>
+      <h1 [translate]="'CONFIRM'"></h1>
+      <p [innerHTML]="'CDR.CONFIRM' | translate: { merchantName: response.aispName }"></p>
+
+      <app-account-permissions [permissions]="response.permissions"></app-account-permissions>
+      <app-sharing-period></app-sharing-period>
+      <hr />
+
+      <mat-card-actions fxFill fxLayout="row" fxLayoutAlign="center stretch">
+        <button mat-stroked-button (click)="submit(false)" fxFlex="50">{{ 'CANCEL' | translate }}</button>
+        <button mat-raised-button mat-button color="accent" fxFlex="50" (click)="submit(true)">
+          {{ 'CDR.I_CONFIRM' | translate }}
+        </button>
+      </mat-card-actions>
+    </div>
+  </app-consent-steps>
+</mat-card>
