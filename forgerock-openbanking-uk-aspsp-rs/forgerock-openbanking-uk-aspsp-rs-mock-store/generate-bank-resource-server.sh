@@ -30,6 +30,7 @@ if [[ -z ${output_dir+x} || -z ${language+x} || -z ${library+x} || -z ${config+x
 fi
 
 generate ${output_dir} ${base_path}/internal.json ${language} ${library} "--model-package com.forgerock.rs.store.models.internal --api-package=com.forgerock.rs.store.apis.internal ${config}"
+generate ${output_dir} ${base_path}/internal-account-payments.json ${language} ${library} "--model-package com.forgerock.rs.store.models.internal --api-package=com.forgerock.rs.store.apis.internal ${config}"
 generate ${output_dir} ${base_path}/openbanking-v1.1.json ${language} ${library} "--model-package com.forgerock.rs.store.models.v1_0 --api-package=com.forgerock.rs.store.apis.v1_0 ${config}"
 generate ${output_dir} ${base_path}/openbanking-v2.0.json ${language} ${library} "--model-package com.forgerock.rs.store.models.v2_0 --api-package=com.forgerock.rs.store.apis.v2_0 ${config}"
 generate ${output_dir} ${base_path}/openbanking-v3.0.json ${language} ${library} "--model-package com.forgerock.rs.store.models.v3_0 --api-package=com.forgerock.rs.store.apis.v3_0 ${config}"
