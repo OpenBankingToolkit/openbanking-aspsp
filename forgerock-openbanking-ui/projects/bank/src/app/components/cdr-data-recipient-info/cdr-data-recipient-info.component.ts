@@ -5,8 +5,8 @@ import { FRAccountWithBalance } from 'bank/src/app/types/api';
   selector: 'app-cdr-data-recipient-info',
   template: `
     <div class="consent-box">
-      <div fxLayout="row" fxLayoutAlign="center stretch">
-        <div fxFlex="60" fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center center">
+      <div fxLayout="column" fxLayout.gt-sm="row" fxLayoutAlign="center stretch">
+        <div fxFlex="60" fxLayout="row" fxLayoutAlign="center center">
           <img class="logo" [src]="img" />
           <div>
             <b>{{ name }}</b>
@@ -21,14 +21,14 @@ import { FRAccountWithBalance } from 'bank/src/app/types/api';
       </div>
 
       <hr />
-      {{ requestDate }}
+      <div class="request-date">{{ 'CDR.REQUEST_DATE' | translate: { date: requestDate } }}</div>
     </div>
   `,
   styles: [
     `
       img.logo {
         max-width: 70px;
-        margin-right: 0.5em;
+        margin: 0 0.5em;
       }
       mat-icon.check {
         color: green;
@@ -36,6 +36,10 @@ import { FRAccountWithBalance } from 'bank/src/app/types/api';
         width: 45px;
         margin-right: 0.16em;
         height: 100%;
+      }
+      .request-date {
+        text-align: center;
+        font-weight: bold;
       }
     `
   ]

@@ -8,38 +8,50 @@ import { MatSharedModule } from 'bank/src/app/mat-shared.module';
 import { TranslateSharedModule } from 'bank/src/app/translate-shared.module';
 import { ForgerockSharedModule } from '@forgerock/openbanking-ngx-common/shared';
 import { ForgerockCustomerLogoModule } from '@forgerock/openbanking-ngx-common/components/forgerock-customer-logo';
-import { PermissionsComponent } from '../permissions/permissions.component';
 
-import { ConsentBoxComponentModule } from '../components/consent-box/consent-box.module';
-import { SubmitBoxComponentModule } from '../components/submit-box/submit-box.module';
-import { AccountCheckboxModule } from '../components/account-checkbox/account-checkbox.module';
+import { ConsentBoxComponentModule } from '../../consent-box/consent-box.module';
+import { SubmitBoxComponentModule } from '../../submit-box/submit-box.module';
+import { AccountCheckboxModule } from '../../account-checkbox/account-checkbox.module';
 
-import { AccountComponent } from './account.component';
+import { CDRAccountComponent } from './account.component';
+import { CDRDataRecipientInfoComponentModule } from '../../cdr-data-recipient-info/cdr-data-recipient-info.module';
+import { SharingPeriodModule } from '../../sharing-period/sharing-period.module';
+import { ConsentStepsModule } from '../../consent-steps/consent-steps.module';
+import { AccountSelectedModule } from '../../account-selected/account-selected.module';
+import { CdrConsentPermissionsModule } from '../../cdr-consent-permissions/cdr-consent-permissions.module';
+import { ForgerockPipesModule } from '@forgerock/openbanking-ngx-common/pipes';
 
-describe('app:bank AccountComponent', () => {
-  let component: AccountComponent;
-  let fixture: ComponentFixture<AccountComponent>;
+describe('app:bank CDRAccountComponent', () => {
+  let component: CDRAccountComponent;
+  let fixture: ComponentFixture<CDRAccountComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [AccountComponent, PermissionsComponent],
+      declarations: [CDRAccountComponent],
       imports: [
         CommonModule,
         MatSharedModule,
-        TranslateSharedModule,
         ForgerockCustomerLogoModule,
         ForgerockSharedModule,
         StoreModule.forRoot(rootReducer),
         TranslateModule.forRoot(),
-        SubmitBoxComponentModule,
-        ConsentBoxComponentModule,
-        AccountCheckboxModule
+        CommonModule,
+        MatSharedModule,
+        ForgerockSharedModule,
+        ForgerockCustomerLogoModule,
+        CDRDataRecipientInfoComponentModule,
+        AccountCheckboxModule,
+        SharingPeriodModule,
+        ConsentStepsModule,
+        AccountSelectedModule,
+        CdrConsentPermissionsModule,
+        ForgerockPipesModule
       ]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AccountComponent);
+    fixture = TestBed.createComponent(CDRAccountComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

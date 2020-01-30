@@ -11,7 +11,7 @@ import { ForgerockMessagesService } from '@forgerock/openbanking-ngx-common/serv
 import { IConsentEventEmitter } from '../../types/consentItem';
 
 @Component({
-  selector: 'app-consent',
+  selector: 'app-cdr-consent',
   template: `
     <mat-progress-spinner *ngIf="!response && !error" mode="indeterminate" color="accent"></mat-progress-spinner>
     <app-cdr-consent-dynamic
@@ -35,7 +35,7 @@ import { IConsentEventEmitter } from '../../types/consentItem';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ConsentComponent implements OnInit {
+export class CDRConsentComponent implements OnInit {
   loading: boolean;
   error: Error;
   response: ApiResponses.ConsentDetailsResponse;

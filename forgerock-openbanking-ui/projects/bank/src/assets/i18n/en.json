@@ -38,13 +38,31 @@
   "CDR": {
     "ACCREDITED_RECIPIENT": "Accredited Consumer Data Right Recipient",
     "RECIPIENT_ID": "CDR Recipient ID: {{id}}",
-    "CONFIRM": "Please confirm that you agree to share the following data with <b>{{merchantName}}.</b>",
-    "I_CONFIRM": "I Confirm"
-  },
-  "CDRCONSENT": {
+    "SHARING_PERIOD": {
+      "PERIOD": "From {{from}} to {{to}}",
+      "TITLE": "Sharing period",
+      "HOW_OFTEN": "How often your data will be shared",
+      "HOW_OFTEN_ANSWER": "Your data will be shared on an on-going basis during this period"
+    },
+    "CONFIRM_DATA_SHARING_WITH_MERCHANT_TOP": "Please confirm that you agree to share the following data with <b>{{merchantName}}.</b>",
+    "CONFIRM_DATA_SHARING_WITH_MERCHANT_BOTTOM": "Do you confirm that we can share your data with <b>{{merchantName}}.</b>?",
+    "I_CONFIRM": "I Confirm",
+    "REQUEST_DATE": "Request made on: {{date}}",
     "ACCOUNT": {
       "TITLE": "Select account to share",
-      "ACCOUNT_REQUEST": "<b>{{merchantName}}</b> is requesting data from your accounts."
+      "SELECT_ACCOUNT": "Accounts available to share",
+      "ACCOUNT_REQUEST": "<b>{{merchantName}}</b> is requesting data from your accounts.",
+      "SELECTED_ACCOUNTS": "Selected account(s)",
+      "PERMISSIONS": {
+        "TITLE": "Data requested",
+        "bank:accounts.basic:read": "<h3>Basic Bank Account Data</h3><p>This scope would allow for the third party to access basic information of the customer’s accounts.</p><ul><li>Includes simple account information including balance.</li><li>Does not include account identifiers, product information or transaction data.</li></ul>",
+        "bank:accounts.detail:read": "<h3>Detailed Bank Account Data</h3><p>This scope would allow for the third party to access detailed information of the customer’s accounts. This scope is effectively additional authorisation to the Basic Bank Account Data scope. Granting this authorisation only makes sense if the Bank Account Data scope is also authorised.</p><ul><li>Includes basic account information plus account identifiers and product information.</li><li>Does not include transaction data.</li></ul>",
+        "bank:transactions:read": "<h3>Bank Transaction Data</h3><p>This scope would allow the third party to access transaction data for accounts. This scope is effectively additional authorisation to the Basic Bank Account Data scope. Granting this authorisation only makes sense if the Basic Bank Account Data scope is also authorised.</p><ul><li>Includes all account transaction data.</li></ul>",
+        "bank:payees:read": "<h3>Bank Payee Data</h3><p>This scope allows access to payee information stored by the customer.</p><ul><li>Includes payee information such as billers, international beneficiaries and domestic payees.</li></ul>",
+        "bank:regular_payments:read": "<h3>Bank Regular Payments</h3><p>The scope would allow the third party to access regular payments. Includes Direct Debits and Scheduled Payments.</p>",
+        "common:customer.basic:read": "<h3>Basic Customer Data</h3><p>The scope would allow the third party to access personally identifiable information about the customer. For retail customers this would be information about the customer themselves. For business customers it would imply the name of specific user but also information about the business.</p><ul><li>Includes name and occupation for individuals or name, business numbers and industry code for organisations.</li></ul>",
+        "common:customer.detail:read": "<h3>Detailed Customer Data</h3><p>The scope would allow the third party to access more detailed information about the customer. Includes the data available with the Basic Customer Data scope plus contact details.</p><ul><li>Includes basic data plus phone, email and address information.</li></ul>"
+      }
     }
   },
   "CONSENT": {
@@ -69,7 +87,6 @@
       "TITLE": "Confirm account sharing with {{merchantName}}",
       "CHECK_DETAILS": "Please check the details below are correct.",
       "SELECT_ACCOUNT": "Please select the accounts you would like to share data from.",
-      "CANCEL": "Cancel and return to {{client}}",
       "APPLICATION": "Application requesting access",
       "TRANSACTION_PERIOD": "Transactions period requested",
       "EXPIRE": "{{client}} will access your information from your account(s) until: ",

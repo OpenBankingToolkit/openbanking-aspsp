@@ -5,44 +5,19 @@
         <forgerock-customer-logo></forgerock-customer-logo>
 
         <form [formGroup]="form">
-          <h1 [translate]="'CDRCONSENT.ACCOUNT.TITLE'" [translateParams]="{ merchantName: response.aispName }"></h1>
+          <h1 [translate]="'CDR.ACCOUNT.TITLE'" [translateParams]="{ merchantName: response.aispName }"></h1>
           <app-cdr-data-recipient-info
             [name]="response.aispName"
             [img]="response.logo"
             [id]="response.clientId"
-            [requestDate]=""
+            [requestDate]="response.requestDate | forgerockDateFormat: 'Do MMM, YYYY'"
           ></app-cdr-data-recipient-info>
           <div class="divider"></div>
 
-          <p [innerHTML]="'CDRCONSENT.ACCOUNT.ACCOUNT_REQUEST' | translate: { merchantName: response.aispName }"></p>
+          <p [innerHTML]="'CDR.ACCOUNT.ACCOUNT_REQUEST' | translate: { merchantName: response.aispName }"></p>
+          <h2 [translate]="'CDR.ACCOUNT.SELECT_ACCOUNT'"></h2>
 
-          <!-- <app-consent-box [items]="items"></app-consent-box> -->
-          <app-account-checkbox
-            [form]="form"
-            [accounts]="response.accounts"
-            [label]="'CONSENT.ACCOUNT.SELECT_ACCOUNT'"
-          ></app-account-checkbox>
-
-          <!-- 
-   
-
-    <div class="consent-expiration-date" *ngIf="response.expiredDate">
-      <span
-        class="title"
-        [translate]="'CONSENT.ACCOUNT.EXPIRE'"
-        [translateParams]="{ client: response.aispName }"
-      ></span>
-      {{ response.expiredDate | forgerockDateFormat: 'dddd Do MMMM, YYYY, HH:mm:ss' }}
-    </div>
-
-    <app-submit-box
-      [loading]="_loading"
-      [form]="form"
-      [proceedLabel]="'CONSENT.ACCOUNT.PROCEED'"
-      [cancelLabel]="'CONSENT.ACCOUNT.CANCEL'"
-      (accept)="submit(true)"
-      (deny)="submit(false)"
-    ></app-submit-box> -->
+          <app-account-checkbox [form]="form" [accounts]="response.accounts"></app-account-checkbox>
         </form>
       </mat-card-content>
 
@@ -66,12 +41,18 @@
       </button>
       <forgerock-customer-logo></forgerock-customer-logo>
       <h1 [translate]="'CONFIRM'"></h1>
-      <p [innerHTML]="'CDR.CONFIRM' | translate: { merchantName: response.aispName }"></p>
+      <p
+        [innerHTML]="'CDR.CONFIRM_DATA_SHARING_WITH_MERCHANT_TOP' | translate: { merchantName: response.aispName }"
+      ></p>
 
-      <app-account-permissions [permissions]="response.permissions"></app-account-permissions>
-      <app-sharing-period></app-sharing-period>
-      <hr />
+      <app-account-selected [selected]="form.value" [accounts]="response.accounts"></app-account-selected>
 
+      <app-cdr-consent-permissions [permissions]="response.permissions"></app-cdr-consent-permissions>
+      <app-sharing-period [from]="response.fromTransaction" [to]="response.toTransaction"></app-sharing-period>
+
+      <h3
+        [innerHTML]="'CDR.CONFIRM_DATA_SHARING_WITH_MERCHANT_BOTTOM' | translate: { merchantName: response.aispName }"
+      ></h3>
       <mat-card-actions fxFill fxLayout="row" fxLayoutAlign="center stretch">
         <button mat-stroked-button (click)="submit(false)" fxFlex="50">{{ 'CANCEL' | translate }}</button>
         <button mat-raised-button mat-button color="accent" fxFlex="50" (click)="submit(true)">

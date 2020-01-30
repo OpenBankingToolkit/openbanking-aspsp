@@ -1,8 +1,16 @@
 @import 'mixins/breakpoints';
 
+@mixin card-inner-box($background) {
+  background-color: mat-color($background, background);
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 5px;
+}
+
 @mixin bank-cdr-consent-dynamic-theme($theme) {
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
+
   app-cdr-consent-dynamic {
     word-break: break-word;
     h1 {
@@ -65,33 +73,40 @@
       background-color: mat-color($background, hover);
     }
 
+    app-sharing-period {
+      > div {
+        @include card-inner-box($background);
+        h3 {
+          margin-bottom: 5px;
+        }
+        p {
+          color: mat-color($foreground, secondary-text);
+        }
+      }
+    }
+
+    app-cdr-consent-permissions {
+      & > div {
+        @include card-inner-box($background);
+        & > div {
+          border-top: solid 1px mat-color($foreground, divider);
+          padding-top: 16px;
+          &:first-child {
+            border-top: 0;
+            padding-top: 0;
+          }
+        }
+      }
+    }
+
     .Aligner {
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    mat-radio-button > label {
-      height: 100%;
-    }
-
-    .sub-row {
-      padding: 0.7em 0;
-      margin-left: 0.7em;
-      margin-top: 0.7em;
-      margin-bottom: 0.7em;
-      border-top: solid 1px mat-color($foreground, divider);
-      border-bottom: solid 1px mat-color($foreground, divider);
-      app-key-value-item:last-child {
-        margin-bottom: 0;
-      }
-    }
-
     .consent-box {
-      background-color: mat-color($background, background);
-      padding: 15px;
-      margin: 15px 0;
-      border-radius: 5px;
+      @include card-inner-box($background);
     }
 
     .review-permissions {
@@ -105,43 +120,6 @@
     .review-permissions .mat-expansion-panel .mat-expansion-panel-body {
       padding: 0;
       margin: 15px;
-    }
-
-    .merchant-logo {
-      text-align: center;
-    }
-
-    .merchant-logo img {
-      max-width: 100px;
-      max-height: 100px;
-      margin: auto;
-      justify-content: center;
-    }
-    mat-radio-group {
-      display: inline-flex;
-      flex-direction: column;
-      width: 100%;
-      mat-radio-button {
-        height: 40px;
-      }
-    }
-    /deep/ .mat-radio-label {
-      width: 100%;
-    }
-    /deep/ .mat-radio-label-content {
-      flex: 1;
-    }
-    /deep/ .button-cancel {
-      min-height: 65px;
-      white-space: normal;
-    }
-
-    button {
-      margin-bottom: 15px;
-    }
-
-    .consent-expiration-date {
-      padding: 15px 5px;
     }
 
     .mat-card-actions {

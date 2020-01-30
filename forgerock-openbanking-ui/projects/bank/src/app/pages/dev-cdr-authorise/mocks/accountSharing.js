@@ -1,21 +1,13 @@
 module.exports = {
   type: 'AccountsConsentDetails',
   permissions: [
-    'ReadAccountsDetail',
-    'ReadBalances',
-    'ReadBeneficiariesDetail',
-    'ReadDirectDebits',
-    'ReadProducts',
-    'ReadStandingOrdersDetail',
-    'ReadTransactionsCredits',
-    'ReadTransactionsDebits',
-    'ReadTransactionsDetail',
-    'ReadOffers',
-    'ReadPAN',
-    'ReadParty',
-    'ReadPartyPSU',
-    'ReadScheduledPaymentsDetail',
-    'ReadStatementsDetail'
+    'bank:accounts.basic:read',
+    'bank:accounts.detail:read',
+    'bank:transactions:read',
+    'bank:payees:read',
+    'bank:regular_payments:read',
+    'common:customer.basic:read',
+    'common:customer.detail:read'
   ],
   fromTransaction: '2017-02-10T17:48:45+00:00',
   toTransaction: '2020-02-10T17:48:45+00:00',
@@ -28,13 +20,11 @@ module.exports = {
         Currency: 'GBP',
         AccountType: 'Personal',
         AccountSubType: 'CurrentAccount',
-        Nickname:
-          'UK Bills loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong',
+        Nickname: 'UK Bills long',
         Account: [
           {
             SchemeName: 'SortCodeAccountNumber',
-            Identification:
-              '75608343829678 loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong',
+            Identification: '75608343829678 long',
             Name: 'demo',
             SecondaryIdentification: '69310297'
           }
@@ -124,9 +114,9 @@ module.exports = {
   username: 'demo',
   logo: 'https://www.getpostman.com/img/logos/postman/header-treatment.svg',
   clientId: 'f8081961-ceb4-428f-a3e0-dac115c8c36e',
-  aispName:
-    'quentin - loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong postman',
+  aispName: 'quentin - long postman',
   expiredDate: '2020-02-10T17:48:45+00:00',
+  requestDate: '2020-02-10T17:48:45+00:00',
   intentType: 'ACCOUNT_ACCESS_CONSENT',
   decisionAPIUri: '/api/rcs/consent/decision/'
 };

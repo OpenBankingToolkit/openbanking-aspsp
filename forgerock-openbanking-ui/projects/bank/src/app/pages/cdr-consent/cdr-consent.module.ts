@@ -8,4 +8,4 @@ import { CDRConsentModule } from 'bank/src/app/components/cdr-consent/cdr-consen
 @NgModule({
   imports: [CommonModule, CDRConsentRoutingModule, CDRConsentModule]
 })
-export class ConsentPageModule {}
+export class CDRConsentPageModule {}

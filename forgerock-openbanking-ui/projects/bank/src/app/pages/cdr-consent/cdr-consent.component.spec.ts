@@ -6,53 +6,39 @@ import { TranslateModule } from '@ngx-translate/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import rootReducer from 'bank/src/store';
-import { MatSharedModule } from 'bank/src/app/mat-shared.module';
-import { TranslateSharedModule } from 'bank/src/app/translate-shared.module';
-import { ForgerockSharedModule } from '@forgerock/openbanking-ngx-common/shared';
-import { ForgerockCustomerLogoModule } from '@forgerock/openbanking-ngx-common/components/forgerock-customer-logo';
 
-import { ConsentComponent } from './consent.component';
-import { DynamicComponent } from './dynamic/dynamic.component';
-
-import { ConsentBoxComponentModule } from './components/consent-box/consent-box.module';
-import { SubmitBoxComponentModule } from './components/submit-box/submit-box.module';
-import { AccountSelectionComponentModule } from './components/account-selection/account-selection.module';
-import { AccountCheckboxModule } from './components/account-checkbox/account-checkbox.module';
+import { CDRConsentComponent } from './cdr-consent.component';
 
 import { ApiService } from 'bank/src/app/services/api.service';
 import { ForgerockMainLayoutSharedModule } from '@forgerock/openbanking-ngx-common/layouts/main-layout';
+import { CDRConsentModule } from '../../components/cdr-consent/cdr-consent.module';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-describe('app:bank ConsentComponent', () => {
-  let component: ConsentComponent;
-  let fixture: ComponentFixture<ConsentComponent>;
+describe('app:bank CDRConsentComponent', () => {
+  let component: CDRConsentComponent;
+  let fixture: ComponentFixture<CDRConsentComponent>;
   let apiService: ApiService;
   let postConsentDecisionSpy;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ConsentComponent, DynamicComponent],
+      declarations: [CDRConsentComponent],
       imports: [
+        CommonModule,
         ForgerockMainLayoutSharedModule,
         RouterTestingModule.withRoutes([]),
-        CommonModule,
-        MatSharedModule,
-        TranslateSharedModule,
-        ForgerockCustomerLogoModule,
-        ForgerockSharedModule,
         StoreModule.forRoot(rootReducer),
         TranslateModule.forRoot(),
         HttpClientTestingModule,
-        ConsentBoxComponentModule,
-        SubmitBoxComponentModule,
-        AccountSelectionComponentModule,
-        AccountCheckboxModule
+        MatProgressSpinnerModule,
+        CDRConsentModule
       ],
       providers: [ApiService]
     }).compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ConsentComponent);
+    fixture = TestBed.createComponent(CDRConsentComponent);
     component = fixture.componentInstance;
     apiService = fixture.debugElement.injector.get(ApiService);
     postConsentDecisionSpy = spyOn(apiService, 'postConsentDecision').and.callThrough();

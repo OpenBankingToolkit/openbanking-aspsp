@@ -1,6 +1,9 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SharingPeriodComponent } from './sharing-period.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { CommonModule } from '@angular/common';
+import { ForgerockPipesModule } from '@forgerock/openbanking-ngx-common/pipes';
 
 describe('SharingPeriodComponent', () => {
   let component: SharingPeriodComponent;
@@ -8,7 +11,8 @@ describe('SharingPeriodComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [SharingPeriodComponent]
+      declarations: [SharingPeriodComponent],
+      imports: [CommonModule, TranslateModule.forRoot(), ForgerockPipesModule]
     }).compileComponents();
   }));
 
