@@ -29,12 +29,15 @@ public enum PaymentFileType {
 
     // Note: This enum is also used for 3.1.1 and 3.1.2 in OB spec
     UK_OBIE_PAYMENT_INITIATION_V3_1("UK.OBIE.PaymentInitiation.3.1", MediaType.APPLICATION_JSON),
-    UK_OBIE_PAIN_001("UK.OBIE.pain.001.001.08", MediaType.TEXT_XML);
+    UK_OBIE_PAIN_001("UK.OBIE.pain.001.001.08", MediaType.TEXT_XML),
+    // Note: specific types for csv files
+    UK_LBG_FPS_BATCH_V10("UK.LBG.O4B.BATCH.FPS", MediaType.valueOf("text/csv")),
+    UK_LBG_BACS_BULK_V10("UK.LBG.O4B.BULK.BACS", MediaType.valueOf("text/csv"));
 
     private final String fileType;
     private final MediaType contentType;
 
-    private PaymentFileType(String fileType, MediaType contentType) {
+    PaymentFileType(String fileType, MediaType contentType) {
         this.fileType = fileType;
         this.contentType = contentType;
     }
