@@ -25,6 +25,8 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events.EventSubscriptionsRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.event.FREventSubscription1;
+import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -49,6 +51,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.reactive.server.SecurityMockServerConfigurers.mockAuthentication;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -68,10 +71,11 @@ public class EventSubscriptionApiControllerIT {
     @Autowired
     private RSConfiguration rsConfiguration;
 
-
-
     @MockBean
     private TppRepository tppRepository;
+
+    @Autowired
+    private SpringSecForTest springSecForTest;
 
     private String clientId;
 
@@ -91,7 +95,7 @@ public class EventSubscriptionApiControllerIT {
     public void createEventSubscription() {
         // Given
         String url = "http://callback"+UUID.randomUUID().toString();
-        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         OBEventSubscription1 obEventSubscription1 = new OBEventSubscription1()
                 .data(new OBEventSubscription1Data()
                         .callbackUrl(url)
@@ -119,7 +123,7 @@ public class EventSubscriptionApiControllerIT {
     @Test
     public void createCallbackUrls_urlAlreadyExistsForTpp_conflict() throws Exception {
         // Given
-        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         String id = UUID.randomUUID().toString();
         eventSubscriptionsRepository.save(FREventSubscription1.builder()
                 .tppId(tpp.getId())
@@ -150,7 +154,7 @@ public class EventSubscriptionApiControllerIT {
     @Test
     public void readEventSubscription() {
         // Given
-        //mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         eventSubscriptionsRepository.save(FREventSubscription1.builder()
                 .tppId(tpp.getId())
                 .obEventSubscription1(new OBEventSubscription1()
@@ -173,7 +177,7 @@ public class EventSubscriptionApiControllerIT {
     @Test
     public void updateEventSubscription() {
         // Given
-        //mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         String eventSubsId = UUID.randomUUID().toString();
         OBEventSubscriptionResponse1 obEventSubscription1 = new OBEventSubscriptionResponse1()
                 .data(new OBEventSubscriptionResponse1Data()
@@ -212,7 +216,7 @@ public class EventSubscriptionApiControllerIT {
     @Test
     public void updateEventSubscription_olderVersion() {
         // Given
-        //mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         String eventSubsId = UUID.randomUUID().toString();
         OBEventSubscriptionResponse1 obEventSubscription1 = new OBEventSubscriptionResponse1()
                 .data(new OBEventSubscriptionResponse1Data()
@@ -246,7 +250,7 @@ public class EventSubscriptionApiControllerIT {
     @Test
     public void updateEventSubscription_notFound() {
         // Given
-        //mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         String eventSubsId = UUID.randomUUID().toString();
         OBEventSubscriptionResponse1 obEventSubscription1 = new OBEventSubscriptionResponse1()
                 .data(new OBEventSubscriptionResponse1Data()
@@ -272,7 +276,7 @@ public class EventSubscriptionApiControllerIT {
     @Test
     public void deleteEventSubscription() {
         // Given
-        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         String eventSubsId = UUID.randomUUID().toString();
         FREventSubscription1 frEventSubscription1 = FREventSubscription1.builder()
                 .obEventSubscription1(new OBEventSubscription1().data(new OBEventSubscription1Data()))
@@ -298,7 +302,7 @@ public class EventSubscriptionApiControllerIT {
     @Test
     public void deleteEventSubscription_notFound() {
         // Given
-        //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         String eventSubsId = UUID.randomUUID().toString();
 
         // When
