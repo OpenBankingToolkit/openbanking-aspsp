@@ -1,5 +1,42 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
+## forgerock-openbanking-aspsp-1.0.60
+[09cfa5aadb9361f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/09cfa5aadb9361f) dependabot-preview[bot] *2020-02-06 12:20:59*
+Bump ob-clients.version from 1.0.23 to 1.0.25
+
+Bumps `ob-clients.version` from 1.0.23 to 1.0.25.
+
+Updates `forgerock-openbanking-jwkms-client` from 1.0.23 to 1.0.25
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.23...forgerock-openbanking-reference-implementation-clients-1.0.25)
+
+Updates `forgerock-openbanking-analytics-client` from 1.0.23 to 1.0.25
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.23...forgerock-openbanking-reference-implementation-clients-1.0.25)
+
+Updates `forgerock-openbanking-analytics-webclient` from 1.0.23 to 1.0.25
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.23...forgerock-openbanking-reference-implementation-clients-1.0.25)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[09871233a433a2f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/09871233a433a2f) dependabot-preview[bot] *2020-02-06 12:06:12*
+Bump forgerock-openbanking-jwkms-embedded from 1.1.50 to 1.1.54
+
+Bumps [forgerock-openbanking-jwkms-embedded](https://github.com/OpenBankingToolkit/openbanking-jwkms) from 1.1.50 to 1.1.54.
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-jwkms/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-jwkms/compare/forgerock-openbanking-reference-implementation-jwkms-1.1.50...forgerock-openbanking-reference-implementation-jwkms-1.1.54)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[f593d86c6727204](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f593d86c6727204) JamieB *2020-02-06 12:08:59*
+Use the openbanking-uk-datamodel rather than openbanking-sdk
+
+See https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/5
+## forgerock-openbanking-aspsp-1.0.59
+[41db5b5db2eb595](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/41db5b5db2eb595) JamieB *2020-02-05 17:10:56*
+Use latest version of openbanking-commons
+
+Which uses the openbanking-uk-datamodel binaries rather than
+openbanking-sdk. See https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/5
 ## forgerock-openbanking-aspsp-1.0.58
 ### GitHub [#121](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/121) empty
 [9c3b8306da73022](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9c3b8306da73022) Jorge Sanchez Perez *2020-02-05 16:32:09*
