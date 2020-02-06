@@ -115,8 +115,8 @@
             <artifactId>logstash-logback-encoder</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.forgerock.openbanking</groupId>
-            <artifactId>openbanking-sdk</artifactId>
+            <groupId>com.forgerock.openbanking.uk</groupId>
+            <artifactId>openbanking-uk-datamodel</artifactId>
         </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
