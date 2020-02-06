@@ -56,7 +56,7 @@ import static org.mockito.BDDMockito.given;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Slf4j
 public class AggregatedPollingApiControllerIT {
-    private static final String RESOURCE_URI = "/open-banking/v3.1.2/event";
+    private static final String RESOURCE_URI = "/open-banking/v3.1.2/events";
     private static final String BASE_URL = "https://rs-store:";
 
     @LocalServerPort

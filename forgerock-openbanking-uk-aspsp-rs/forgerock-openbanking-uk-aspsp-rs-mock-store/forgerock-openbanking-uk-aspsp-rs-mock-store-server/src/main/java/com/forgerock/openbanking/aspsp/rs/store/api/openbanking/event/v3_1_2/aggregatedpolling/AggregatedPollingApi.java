@@ -45,7 +45,7 @@ import java.security.Principal;
         obGroupName = OBGroupName.EVENT,
         obReference = OBReference.EVENTS
 )
-@RequestMapping(value = "/open-banking/v3.1.2/event")
+@RequestMapping(value = "/open-banking/v3.1.2/events")
 public interface AggregatedPollingApi {
 
     @ApiOperation(value = "Poll events", nickname = "pollEvents", notes = "", response = OBEventPollingResponse1.class, authorizations = {
