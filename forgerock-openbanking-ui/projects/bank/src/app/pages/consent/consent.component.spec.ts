@@ -20,7 +20,6 @@ import { AccountSelectionComponentModule } from './components/account-selection/
 import { AccountCheckboxModule } from './components/account-checkbox/account-checkbox.module';
 
 import { ApiService } from 'bank/src/app/services/api.service';
-import { ForgerockMainLayoutSharedModule } from '@forgerock/openbanking-ngx-common/layouts/main-layout';
 
 describe('app:bank ConsentComponent', () => {
   let component: ConsentComponent;
@@ -32,7 +31,7 @@ describe('app:bank ConsentComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ConsentComponent, DynamicComponent],
       imports: [
-        ForgerockMainLayoutSharedModule,
+        ForgerockSharedModule,
         RouterTestingModule.withRoutes([]),
         CommonModule,
         MatSharedModule,
