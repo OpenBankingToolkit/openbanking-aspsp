@@ -1,6 +1,6 @@
 {
   "name": "ob-aspsp-forgerock-openbanking-ui",
-  "project_version": "madness",
+  "project_version": ".3.1.2-queen-rc3",
   "version": "1.0.0",
   "scripts": {
     "ng": "ng",
