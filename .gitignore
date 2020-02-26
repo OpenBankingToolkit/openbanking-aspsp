@@ -11,6 +11,11 @@ node/
 *.tgz
 .DS_Store
 **/.DS_Store
+.setting
+.project
+.classpath
+release.properties
+*.releaseBackup
 
 # ForgeRock #
 #############
