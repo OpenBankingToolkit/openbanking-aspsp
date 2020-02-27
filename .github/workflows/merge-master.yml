@@ -66,8 +66,8 @@ jobs:
           maven-repo-server-username: openbankingtoolkit
           maven-repo-server-password: ${{ secrets.BINTRAY_API_KEY }}
 
-          git-release-bot-name: "openbankbot"
-          git-release-bot-email: "openbankbot@forgerock.com"
+          git-release-bot-name: "fropenbanking"
+          git-release-bot-email: "obst@forgerock.com"
 
           access-token: ${{ secrets.ACCESS_TOKEN }}
 
