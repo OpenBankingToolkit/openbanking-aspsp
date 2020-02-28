@@ -26,5 +26,8 @@
       "manual-onboarding": ["projects/manual-onboarding"],
       "manual-onboarding/*": ["projects/manual-onboarding/*"]
     }
+  },
+  "angularCompilerOptions": {
+    "enableIvy": true
   }
 }
