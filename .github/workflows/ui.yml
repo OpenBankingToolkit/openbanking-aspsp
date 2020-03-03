@@ -7,7 +7,7 @@ on:
       - "forgerock-openbanking-ui/**"
 
 env:
-  GITHUB_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  GITHUB_ACCESS_TOKEN: ${{ secrets.FORGECLOUD_ACCESS_TOKEN }}
   GITHUB_SHA: ${{ github.sha }}
 
 jobs:
