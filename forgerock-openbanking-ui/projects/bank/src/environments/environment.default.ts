@@ -23,8 +23,7 @@ export const environment = {
     disablePasswordForm: false
   },
   routeDenyList: [],
-  devModules: [],
-  enableCustomization: 'false'
+  devModules: []
 };
 
 /*
