@@ -9,7 +9,6 @@ import { environment as defaultEnv } from './environment.default';
 export const environment = {
   ...defaultEnv,
   production: false,
-  enableCustomization: 'true',
   devModules: [
     StoreDevtoolsModule.instrument({
       maxAge: 25,

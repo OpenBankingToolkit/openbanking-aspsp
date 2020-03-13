@@ -11,7 +11,7 @@
     "TEXT": "In order to use this application, you must comply with our cookie policy."
   },
   "REGISTER": {
-    "ALREADY_HAVE_ACCOUNT": "Alread have an account?",
+    "ALREADY_HAVE_ACCOUNT": "Already have an account?",
     "FORM_CONFIRM": "Your changes have not been saved yet. Are you sure you want to leave?",
     "SUCCESS": "Your account has been successfully registered."
   },

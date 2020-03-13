@@ -15,8 +15,12 @@ export const environment = {
     logoWidth: 230,
     logoHeight: '100%'
   },
-  devModules: [],
-  enableCustomization: 'true'
+  featureFlags: {
+    disableProfileForm: false,
+    disablePasswordForm: false,
+    disableRegistration: false
+  },
+  devModules: []
 };
 
 /*
