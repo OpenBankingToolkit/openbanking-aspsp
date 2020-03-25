@@ -211,6 +211,7 @@
       "CANCEL": "Cancel and return to {{client}}"
     }
   },
+  "DONT_HAVE_ACCOUNT": "New here?",
   "STAGES": {
     "DataStore1": {
       "TITLE": "Sign in",
