@@ -77,7 +77,7 @@ jobs:
           path: forgerock-openbanking-ui/customers
       - working-directory: ./forgerock-openbanking-ui
         run: cp -R ./customers/* themes/
-      - name: Build bank docker image
+      - name: Build register docker image
         working-directory: ./forgerock-openbanking-ui
         run: |
           export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
