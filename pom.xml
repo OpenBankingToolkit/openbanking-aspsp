@@ -169,6 +169,16 @@
 
     <repositories>
         <repository>
+            <id>maven.forgerock.org-community</id>
+            <name>maven.forgerock.org-releases</name>
+            <url>https://maven.forgerock.org:443/repo/community</url>
+        </repository>
+        <repository>
+            <id>maven.forgerock.org-community-snapshots</id>
+            <name>maven.forgerock.org-snapshots</name>
+            <url>https://maven.forgerock.org:443/repo/community</url>
+        </repository>
+        <repository>
             <id>central</id>
             <name>Central Repository</name>
             <url>https://repo.maven.apache.org/maven2</url>
