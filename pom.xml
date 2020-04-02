@@ -161,10 +161,15 @@
 
     <distributionManagement>
         <repository>
-            <id>bintray-openbankingtoolkit-OpenBankingToolkit</id>
-            <name>OpenBankingToolkit ASPSP</name>
-            <url>https://api.bintray.com/maven/openbanking-toolkit/OpenBankingToolKit/openbanking-aspsp/;publish=1</url>
+            <id>maven.forgerock.org-community</id>
+            <name>maven.forgerock.org-releases</name>
+            <url>https://maven.forgerock.org:443/repo/community</url>
         </repository>
+        <snapshotRepository>
+            <id>maven.forgerock.org-community-snapshots</id>
+            <name>maven.forgerock.org-snapshots</name>
+            <url>https://maven.forgerock.org:443/repo/community</url>
+        </snapshotRepository>
     </distributionManagement>
 
     <repositories>
