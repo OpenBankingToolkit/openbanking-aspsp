@@ -8,76 +8,26 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    name: Check Master Integrity
     steps:
-      - uses: actions/checkout@v1
+      - name: Checkout code
+        uses: actions/checkout@v1
 
-      - name: Check Copyright
-        uses: qcastel/github-actions-maven-cmd@master
-        with:
-          maven-args: "license:check"
-
-      - name: Set up JDK 1.11
+      - name: Set up java environment
         uses: actions/setup-java@v1
+        with: # running setup-java
+          java-version: '11'
+          architecture: x64
+
+      - name: Cache Maven packages
+        uses: actions/cache@v1
         with:
-          java-version: 1.11
-      - name: Set up maven
-        run: curl https://raw.githubusercontent.com/ForgeCloud/ob-release/master/src/settings.xml > $M2_HOME/conf/settings.xml
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
 
-      - name: Build and Test
-        run: |
-          sudo bash -c 'echo "127.0.0.1   jwkms rs-api rs-store rs-rcs config.dev-ob.forgerock.financial" >> /etc/hosts'
-          docker login r.cfcr.io -u fropenbanking -p ${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}
-          mvn -ntp verify
-        env:
-          FR_PRIVATE_REPO_USER: ${{ secrets.FR_PRIVATE_REPO_USER }}
-          FR_PRIVATE_REPO_PASSWORD: ${{ secrets.FR_PRIVATE_REPO_PASSWORD }}
-
-      - name: Create Package
-        uses: benjefferies/create-bintray-package@master
-        with:
-          bintray-user: openbankingtoolkit
-          bintray-token: ${{ secrets.BINTRAY_API_KEY }}
-
-          owner: openbanking-toolkit
-          repo: OpenBankingToolKit
-
-          package-name: openbanking-aspsp
-          package-description: Crypto service used in Open Banking
-          package-url: https://github.com/OpenBankingToolkit/openbanking-aspsp
-          package-license: Apache-2.0
-
-      - name: Temporarily disable "include administrators" branch protection
-        uses: benjefferies/branch-protection-bot@master
-        if: always()
-        with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-          enforce_admins: false
-
-      - name: Release
-        uses: qcastel/github-actions-maven-release@master
-        with:
-          gpg-enabled: "true"
-          gpg-key-id: ${{ secrets.GITHUB_GPG_KEY_ID }}
-          gpg-key: ${{ secrets.GITHUB_GPG_KEY }}
-
-          maven-args: "-Dmaven.javadoc.skip=true -Ddockerfile.skip -DskipITs -DdockerCompose.skip"
-          maven-repo-server-id: bintray-openbankingtoolkit-OpenBankingToolkit
-          maven-repo-server-username: openbankingtoolkit
-          maven-repo-server-password: ${{ secrets.BINTRAY_API_KEY }}
-
-          git-release-bot-name: "fropenbanking"
-          git-release-bot-email: "obst@forgerock.com"
-
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-
-      - name: Enable "include administrators" branch protection
-        uses: benjefferies/branch-protection-bot@master
-        if: always()
-        with:
-          access-token: ${{ secrets.ACCESS_TOKEN }}
-          enforce_admins: true
+      - name: Build project with Maven # build the project
+        run: mvn -B clean verify --file pom.xml # this command executes each default lifecycle phase in order (validate, compile, test, package, etc), before executing verify.
 
       - uses: codecov/codecov-action@v1
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_ACCESS_TOKEN }}

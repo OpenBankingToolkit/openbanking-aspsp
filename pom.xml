@@ -153,8 +153,8 @@
     </dependencyManagement>
 
     <scm>
-        <connection>scm:git:https://github.com/OpenBankingToolkit/openbanking-aspsp.git</connection>
-        <developerConnection>scm:git:https://github.com/OpenBankingToolkit/openbanking-aspsp.git</developerConnection>
+        <connection>scm:git:git@github.com:OpenBankingToolkit/openbanking-aspsp.git</connection>
+        <developerConnection>scm:git:git@github.com:OpenBankingToolkit/openbanking-aspsp.git</developerConnection>
         <url>https://github.com/OpenBankingToolkit/openbanking-aspsp.git</url>
         <tag>HEAD</tag>
     </scm>
