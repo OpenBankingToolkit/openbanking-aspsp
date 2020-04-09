@@ -25,8 +25,13 @@ jobs:
         run: mvn license:check
 
       - name: Build and Test
-        run: mvn clean verify
+        run: |
+          docker-compose -f /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/docker-compose.yml up -d --no-color
+          docker ps -a
 
+        # run: mvn clean verify
+        # run: mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
+        # mvn clean install -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip -U
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
