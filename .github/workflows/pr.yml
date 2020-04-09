@@ -26,9 +26,14 @@ jobs:
 
       - name: Build and Test
         run: |
-          mvn -B install
-          mvn verify --file /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
+          mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
+          docker-compose -f /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/docker-compose.yml up -d --no-color
+          docker ps -a
+          curl http://localhost:18888/external/actuator/health
+          curl http://localhost:8888/external/actuator/health
 
+        # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
+        # mvn verify --file /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
         #docker ps -a
         #  -f /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/docker-compose.yml up -d --no-color
         # run: mvn clean verify
