@@ -26,7 +26,8 @@ jobs:
 
       - name: Build and Test
         run: |
-          mvn clean verify --file /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
+          mvn -B install
+          mvn verify --file /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
 
         #docker ps -a
         #  -f /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/docker-compose.yml up -d --no-color
