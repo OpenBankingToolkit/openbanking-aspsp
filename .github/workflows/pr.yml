@@ -19,7 +19,7 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
       - name: Docker login
-        run: docker login r.cfcr.io --username ${{ secrets.CODEFRESH_DOCKER_REGISTRY_USER_NAME }} --password ${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}
+        run: docker login r.cfcr.io --username fropenbanking --password ${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}
 
       - name: Check Copyright
         run: mvn license:check
