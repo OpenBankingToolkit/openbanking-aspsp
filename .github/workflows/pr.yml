@@ -60,6 +60,10 @@ jobs:
         if: always()
         run: |
           curl http://config-rs-api:18888/rs-api/.*
+      - name: host 4.1 Test
+        if: always()
+        run: |
+          curl http://config-rs-api:8888/rs-api/.*
       - name: host 5 Test
         if: always()
         run: |
