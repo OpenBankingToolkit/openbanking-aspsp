@@ -26,28 +26,18 @@ jobs:
 
       - name: Build and Test
         run: |
-          mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
+          docker --version
           docker-compose -f /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/docker-compose.yml up -d --no-color
           docker ps -a
           docker network ls
           echo "***********************   1         *******************************"
           echo "*******************************************************************"
-          curl http://config-rs-api:18888/rs-api/.*
-          echo "***************************   2    ****************************************"
-          echo "*******************************************************************"
-          curl http://localhost:18888/rs-api/.*
-          echo "*******************************   3    ************************************"
-          echo "*******************************************************************"
-          curl http://localhost:8888/rs-api/.*
-          echo "**********************************    4    *********************************"
-          echo "*******************************************************************"
+          curl http://host.docker.internal:18888/rs-api/.*
           curl http://127.0.0.1:18888/rs-api/.*
-          echo "****************************   5    ***************************************"
-          echo "*******************************************************************"
-          curl http://127.0.0.1:8888/rs-api/.*
-          echo "*******************************   6    ************************************"
-          echo "*******************************************************************"
-
+          curl http://localhost:18888/rs-api/.*
+          curl http://config:18888/rs-api/.*
+          curl http://config-rs-api:18888/rs-api/.*
+        # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         # mvn verify --file /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
         #docker ps -a
