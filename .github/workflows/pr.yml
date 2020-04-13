@@ -48,14 +48,22 @@ jobs:
         if: always()
         run: |
           curl http://host.docker.internal:18888/rs-api/.*
+      - name: host 1.1 Test
+        if: always()
+        run: |
+          curl http://host.docker.internal:8888/rs-api/.*
       - name: host 2 Test
         if: always()
         run: |
-          curl http://127.0.0.1:18888/rs-api/.*
+          curl http://127.0.0.1:8888/rs-api/.*
       - name: host 3 Test
         if: always()
         run: |
           curl http://config:18888/rs-api/.*
+      - name: host 3.1 Test
+        if: always()
+        run: |
+          curl http://config:8888/rs-api/.*
       - name: host 4 Test
         if: always()
         run: |
@@ -67,11 +75,11 @@ jobs:
       - name: host 5 Test
         if: always()
         run: |
-          curl http://localhost:18888/rs-api/.*
+          curl http://localhost:8888/rs-api/.*
       - name: host 5 Test
         if: always()
         run: |
-          curl http://0.0.0.0:18888/rs-api/.*
+          curl http://0.0.0.0:8888/rs-api/.*
 
       - uses: codecov/codecov-action@v1
         with:
