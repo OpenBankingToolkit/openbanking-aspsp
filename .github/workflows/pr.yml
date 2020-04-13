@@ -30,13 +30,7 @@ jobs:
           docker-compose -f /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/docker-compose.yml up -d --no-color
           docker ps -a
           docker network ls
-          echo "***********************   1         *******************************"
-          echo "*******************************************************************"
-          curl http://host.docker.internal:18888/rs-api/.*
-          curl http://127.0.0.1:18888/rs-api/.*
-          curl http://localhost:18888/rs-api/.*
-          curl http://config:18888/rs-api/.*
-          curl http://config-rs-api:18888/rs-api/.*
+          docker network inspect bridge
         # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         # mvn verify --file /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
@@ -45,6 +39,31 @@ jobs:
         # run: mvn clean verify
         # run: mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         # mvn clean install -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip -U
+      - name: host 1 Test
+        if: always()
+        run: |
+          curl http://host.docker.internal:18888/rs-api/.*
+      - name: host 2 Test
+        if: always()
+        run: |
+          curl http://127.0.0.1:18888/rs-api/.*
+      - name: host 3 Test
+        if: always()
+        run: |
+          curl http://config:18888/rs-api/.*
+      - name: host 4 Test
+        if: always()
+        run: |
+          curl http://config-rs-api:18888/rs-api/.*
+      - name: host 5 Test
+        if: always()
+        run: |
+          curl http://localhost:18888/rs-api/.*
+      - name: host 5 Test
+        if: always()
+        run: |
+          curl http://0.0.0.0:18888/rs-api/.*
+
       - uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
