@@ -30,7 +30,7 @@ jobs:
           docker-compose -f /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/docker-compose.yml up -d --no-color
           docker ps -a
           docker network ls
-          docker network inspect bridge
+          docker network inspect forgerock-openbanking-uk-aspsp-rs-gateway-server_default
         # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         # mvn verify --file /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
@@ -39,6 +39,11 @@ jobs:
         # run: mvn clean verify
         # run: mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         # mvn clean install -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip -U
+      - name: set hosts
+        run: |
+          sudo echo "127.0.0.1  config.dev-ob.forgerock.financial mongo config config-rs-api mongo-rs-api" | sudo tee -a /etc/hosts
+          sudo echo "127.0.0.1  host.docker.internal" | sudo tee -a /etc/hosts
+          sudo cat /etc/hosts
       - name: host 1 Test
         if: always()
         run: |
