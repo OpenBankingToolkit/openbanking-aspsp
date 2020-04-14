@@ -75,7 +75,7 @@ jobs:
       - name: host 5 Test
         if: always()
         run: |
-          curl http://localhost:8888/rs-api/.*
+          curl http://localhost:18888/rs-api/.*
       - name: host 5 Test
         if: always()
         run: |
