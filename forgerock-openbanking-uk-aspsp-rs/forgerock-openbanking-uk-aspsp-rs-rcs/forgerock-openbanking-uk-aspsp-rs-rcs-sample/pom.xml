@@ -127,7 +127,7 @@
                 <artifactId>dockerfile-maven-plugin</artifactId>
                  <configuration>
                     <skipPush>false</skipPush>
-                    <repository>eu.gcr.io/openbanking/obri/rs-rcs-sample</repository>
+                    <repository>eu.gcr.io/openbanking-214714/obri/rs-rcs-sample</repository>
                     <buildArgs>
                         <JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
                     </buildArgs>
