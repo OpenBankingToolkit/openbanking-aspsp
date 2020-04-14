@@ -7,14 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Check PR integrity
 
-    services:
-      config-rs-api:
-        image: r.cfcr.io/openbanking/obri/config
-        ports:
-          - "18888:8888"
-
     steps:
       - uses: actions/checkout@v2
+
       - uses: actions/setup-java@v1
         with:
           java-version: "11"
@@ -25,73 +20,13 @@ jobs:
         with:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
-      - name: Docker login
-        run: docker login r.cfcr.io --username fropenbanking --password ${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}
 
       - name: Check Copyright
         run: mvn license:check
 
-      - name: Build and Test
+      - name: Build
         run: |
-          docker --version
-          docker ps -a
-          docker network ls
-          docker network inspect bridge
-
-        # docker-compose -f /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/docker-compose.yml up -d --no-color
-        # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
-        # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
-        # mvn verify --file /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
-        #docker ps -a
-        #  -f /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/docker-compose.yml up -d --no-color
-        # run: mvn clean verify
-        # run: mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
-        # mvn clean install -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip -U
-      - name: set hosts
-        run: |
-          sudo echo "127.0.0.1  config.dev-ob.forgerock.financial mongo config config-rs-api mongo-rs-api" | sudo tee -a /etc/hosts
-          sudo echo "127.0.0.1  host.docker.internal" | sudo tee -a /etc/hosts
-          sudo cat /etc/hosts
-      - name: host 0 test
-        if: always()
-        run: |
-          curl http://config.dev-ob.forgerock.financial:18888/rs-api/.*
-      - name: host 1 Test
-        if: always()
-        run: |
-          curl http://host.docker.internal:18888/rs-api/.*
-      - name: host 1.1 Test
-        if: always()
-        run: |
-          curl http://host.docker.internal:8888/rs-api/.*
-      - name: host 2 Test
-        if: always()
-        run: |
-          curl http://127.0.0.1:8888/rs-api/.*
-      - name: host 3 Test
-        if: always()
-        run: |
-          curl http://config:18888/rs-api/.*
-      - name: host 3.1 Test
-        if: always()
-        run: |
-          curl http://config:8888/rs-api/.*
-      - name: host 4 Test
-        if: always()
-        run: |
-          curl http://config-rs-api:18888/rs-api/.*
-      - name: host 4.1 Test
-        if: always()
-        run: |
-          curl http://config-rs-api:8888/rs-api/.*
-      - name: host 5 Test
-        if: always()
-        run: |
-          curl http://localhost:18888/rs-api/.*
-      - name: host 5 Test
-        if: always()
-        run: |
-          curl http://0.0.0.0:8888/rs-api/.*
+          mvn -B build --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
 
       - uses: codecov/codecov-action@v1
         with:

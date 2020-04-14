@@ -8,9 +8,6 @@ services:
     environment:
       - spring_profiles_active=native,console-logging
     networks:
-      bridge:
-        aliases:
-          - config.dev-ob.forgerock.financial
       default:
         aliases:
           - config.dev-ob.forgerock.financial
@@ -20,9 +17,6 @@ services:
     ports:
       - "57019:27017"
     networks:
-      bridge:
-        aliases:
-          - mongo
       default:
         aliases:
           - mongo
