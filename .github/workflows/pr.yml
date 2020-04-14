@@ -12,8 +12,6 @@ jobs:
         image: r.cfcr.io/openbanking/obri/config
         ports:
           - "18888:8888"
-        environment:
-          - spring_profiles_active=native,console-logging
         networks:
           default:
             aliases:
