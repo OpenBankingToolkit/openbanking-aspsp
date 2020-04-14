@@ -12,10 +12,6 @@ jobs:
         image: r.cfcr.io/openbanking/obri/config
         ports:
           - "18888:8888"
-        networks:
-          default:
-            aliases:
-              - config.dev-ob.forgerock.financial
 
     steps:
       - uses: actions/checkout@v2
