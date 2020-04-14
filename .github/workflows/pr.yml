@@ -31,6 +31,7 @@ jobs:
           docker ps -a
           docker network ls
           docker network inspect forgerock-openbanking-uk-aspsp-rs-gateway-server_default
+          docker network inspect bridge
         # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         # mvn -B install --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         # mvn verify --file /home/runner/work/openbanking-aspsp/openbanking-aspsp/forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-gateway/forgerock-openbanking-uk-aspsp-rs-gateway-server/pom.xml
