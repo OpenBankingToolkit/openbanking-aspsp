@@ -54,10 +54,10 @@ jobs:
         working-directory: ./forgerock-openbanking-ui
         run: |
           export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
-          echo "Building docker image r.cfcr.io/openbanking/obri/bank-ui:${BUILD_VERSION}"
-          docker login r.cfcr.io -u fropenbanking -p ${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}
-          docker build -f projects/bank/docker/Dockerfile -t r.cfcr.io/openbanking/obri/bank-ui:$BUILD_VERSION .
-          docker push r.cfcr.io/openbanking/obri/bank-ui:$BUILD_VERSION
+          echo "Building docker image eu.gcr.io/openbanking-214714/obri/bank-ui:${BUILD_VERSION}"
+          echo "${{ secrets.GCR_JSON_KEY_BASE64 }}" | base64 -d | docker login eu.gcr.io -u _json_key --password-stdin
+          docker build -f projects/bank/docker/Dockerfile -t eu.gcr.io/openbanking-214714/obri/bank-ui:$BUILD_VERSION .
+          docker push eu.gcr.io/openbanking-214714/obri/bank-ui:$BUILD_VERSION
   build_manual_onboarding:
     name: Build Register App
     runs-on: ubuntu-latest
@@ -81,10 +81,10 @@ jobs:
         working-directory: ./forgerock-openbanking-ui
         run: |
           export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
-          echo "Building docker image r.cfcr.io/openbanking/obri/manual-onboarding:${BUILD_VERSION}"
-          docker login r.cfcr.io -u fropenbanking -p ${{ secrets.CODEFRESH_DOCKER_REGISTRY_API_KEY }}
-          docker build -f projects/manual-onboarding/docker/Dockerfile -t r.cfcr.io/openbanking/obri/manual-onboarding:$BUILD_VERSION .
-          docker push r.cfcr.io/openbanking/obri/manual-onboarding:$BUILD_VERSION
+          echo "Building docker image eu.gcr.io/openbanking-214714/obri/manual-onboarding:${BUILD_VERSION}"
+          echo "${{ secrets.GCR_JSON_KEY_BASE64 }}" | base64 -d | docker login eu.gcr.io -u _json_key --password-stdin
+          docker build -f projects/manual-onboarding/docker/Dockerfile -t eu.gcr.io/openbanking-214714/obri/manual-onboarding:$BUILD_VERSION .
+          docker push eu.gcr.io/openbanking-214714/obri/manual-onboarding:$BUILD_VERSION
   update_ob_deploy:
     name: Update ob-deploy
     runs-on: ubuntu-latest

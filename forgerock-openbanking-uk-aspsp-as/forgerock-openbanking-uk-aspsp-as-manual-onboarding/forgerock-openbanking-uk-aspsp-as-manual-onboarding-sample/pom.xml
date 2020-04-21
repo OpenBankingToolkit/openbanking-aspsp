@@ -34,7 +34,7 @@
 	<parent>
 		<groupId>com.forgerock.openbanking.aspsp</groupId>
 		<artifactId>forgerock-openbanking-aspsp</artifactId>
-		<version>1.0.78-SNAPSHOT</version>
+		<version>1.0.79-SNAPSHOT</version>
 		<relativePath>../../../</relativePath>
 	</parent>
 
@@ -151,7 +151,7 @@
 				<artifactId>dockerfile-maven-plugin</artifactId>
 				<configuration>
 					<skipPush>false</skipPush>
-					<repository>r.cfcr.io/openbanking/obri/register-sample</repository>
+					<repository>eu.gcr.io/openbanking-214714/obri/register-sample</repository>
 					<buildArgs>
 						<JAR_FILE>target/${project.build.finalName}.jar</JAR_FILE>
 					</buildArgs>
