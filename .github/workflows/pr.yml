@@ -24,7 +24,7 @@ jobs:
     - name: Build and Test
       run: |
         sudo bash -c 'echo "127.0.0.1   jwkms rs-api rs-store rs-rcs config.dev-ob.forgerock.financial" >> /etc/hosts'
-        echo "${{ secrets.GCR_JSON_KEY }}" | docker login eu.gcr.io -u _json_key --password-stdin
+        echo "${{ secrets.GCR_JSON_KEY_BASE64 }}" | base64 -d | docker login eu.gcr.io -u _json_key --password-stdin
         mvn -ntp verify
       env:
         FR_PRIVATE_REPO_USER: ${{ secrets.FR_PRIVATE_REPO_USER }}

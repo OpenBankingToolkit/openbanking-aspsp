@@ -55,7 +55,7 @@ jobs:
         run: |
           export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
           echo "Building docker image eu.gcr.io/openbanking-214714/obri/bank-ui:${BUILD_VERSION}"
-          echo "${{ secrets.GCR_JSON_KEY }}" | docker login eu.gcr.io -u _json_key --password-stdin
+          echo "${{ secrets.GCR_JSON_KEY_BASE64 }}" | base64 -d | docker login eu.gcr.io -u _json_key --password-stdin
           docker build -f projects/bank/docker/Dockerfile -t eu.gcr.io/openbanking-214714/obri/bank-ui:$BUILD_VERSION .
           docker push eu.gcr.io/openbanking-214714/obri/bank-ui:$BUILD_VERSION
   build_manual_onboarding:
@@ -82,7 +82,7 @@ jobs:
         run: |
           export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
           echo "Building docker image eu.gcr.io/openbanking-214714/obri/manual-onboarding:${BUILD_VERSION}"
-          echo "${{ secrets.GCR_JSON_KEY }}" | docker login eu.gcr.io -u _json_key --password-stdin
+          echo "${{ secrets.GCR_JSON_KEY_BASE64 }}" | base64 -d | docker login eu.gcr.io -u _json_key --password-stdin
           docker build -f projects/manual-onboarding/docker/Dockerfile -t eu.gcr.io/openbanking-214714/obri/manual-onboarding:$BUILD_VERSION .
           docker push eu.gcr.io/openbanking-214714/obri/manual-onboarding:$BUILD_VERSION
   update_ob_deploy:
