@@ -1,4 +1,4 @@
-version: '2'
+version: "2"
 services:
  config-rs-api:
   container_name: config-rs-api

@@ -1,35 +1,33 @@
 name: pull-request
 
 on: [pull_request]
-    
+
 jobs:
   build:
     runs-on: ubuntu-latest
+    name: Check PR integrity
 
     steps:
-    - uses: actions/checkout@v1
-      
-    - name: Check Copyright	
-      uses: qcastel/github-actions-maven-cmd@master
-      with:
-        maven-args: "license:check"
+      - uses: actions/checkout@v2
 
-    - name: Set up JDK 1.11
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.11
-    - name: Set up maven
-      run: curl https://raw.githubusercontent.com/ForgeCloud/ob-release/master/src/settings.xml > $M2_HOME/conf/settings.xml
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "11"
+          architecture: x64
 
-    - name: Build and Test
-      run: |
-        sudo bash -c 'echo "127.0.0.1   jwkms rs-api rs-store rs-rcs config.dev-ob.forgerock.financial" >> /etc/hosts'
-        echo "${{ secrets.GCR_JSON_KEY_BASE64 }}" | base64 -d | docker login eu.gcr.io -u _json_key --password-stdin
-        mvn -ntp verify
-      env:
-        FR_PRIVATE_REPO_USER: ${{ secrets.FR_PRIVATE_REPO_USER }}
-        FR_PRIVATE_REPO_PASSWORD: ${{ secrets.FR_PRIVATE_REPO_PASSWORD }}
+      - name: Cache Maven packages
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
 
-    - uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Check Copyright
+        run: mvn license:check
+
+      - name: Build
+        run: |
+          mvn -B clean package --file pom.xml -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
+
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_ACCESS_TOKEN }}
