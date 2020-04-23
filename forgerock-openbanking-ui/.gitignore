@@ -27,5 +27,8 @@ schematics/
 # Intelij
 /*.iml
 
+# docker compose
+docker-compose.override.yml
+
 # build specific
 angular.save.json

@@ -1,0 +1,6 @@
+version: '3.7'
+services:
+  manual-onboarding:
+    environment:
+      DOMAIN: ui-integ.forgerock.financial
+      TEMPLATE: hl
