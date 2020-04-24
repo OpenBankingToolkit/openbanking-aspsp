@@ -14,7 +14,7 @@ jobs:
       - name: Set up forgerock maven repository
         uses: actions/setup-java@v1
         with: # running setup-java and overwrites the settings.xml
-          java-version: '11'
+          java-version: "11"
           architecture: x64
           server-id: maven.forgerock.org-community # Value of the distributionManagement/repository/id field of the pom.xml
           server-username: MAVEN_USERNAME # env variable for username in deploy
@@ -24,14 +24,14 @@ jobs:
         if: contains(github.ref, 'SNAPSHOT')
         uses: actions/setup-java@v1
         with: # running setup-java and overwrites the settings.xml
-          java-version: '11'
+          java-version: "11"
           architecture: x64
           server-id: maven.forgerock.org-community-snapshots # Value of the distributionManagement/repository/id field of the pom.xml
           server-username: MAVEN_USERNAME # env variable for username in deploy
           server-password: MAVEN_CENTRAL_TOKEN # env variable for token in deploy
 
       - name: Release package
-        run:  mvn -B deploy
+        run: mvn -B deploy -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip
         env:
           MAVEN_USERNAME: ${{ secrets.FR_ARTIFACTORY_USER }}
           MAVEN_CENTRAL_TOKEN: ${{ secrets.FR_ARTIFACTORY_TOKEN }}

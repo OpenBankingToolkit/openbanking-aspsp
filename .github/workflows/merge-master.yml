@@ -16,7 +16,7 @@ jobs:
       - name: Set up java environment
         uses: actions/setup-java@v1
         with: # running setup-java
-          java-version: '11'
+          java-version: "11"
           architecture: x64
 
       - name: Cache Maven packages
@@ -26,7 +26,7 @@ jobs:
           key: ${{ runner.os }}-maven2-${{ hashFiles('**/pom.xml') }}
 
       - name: Build project with Maven # build the project
-        run: mvn -B clean verify --file pom.xml # this command executes each default lifecycle phase in order (validate, compile, test, package, etc), before executing verify.
+        run: mvn -B clean verify -DskipTests -DskipITs -DdockerCompose.skip -Ddockerfile.skip --file pom.xml # this command executes each default lifecycle phase in order (validate, compile, test, package, etc), before executing verify.
 
       - uses: codecov/codecov-action@v1
         with:
