@@ -7,12 +7,12 @@
     <app-key-value-item
       *ngIf="payload.fromTransaction"
       [key]="'CONSENT.ACCOUNT.START' | translate"
-      [value]="payload.fromTransaction | forgerockDateFormat: 'Do MMMM, YYYY, HH:mm:ss'"
+      [value]="payload.fromTransaction | forgerockDateFormat: 'do MMMM, yyyy, HH:mm:ss'"
     ></app-key-value-item>
     <app-key-value-item
       *ngIf="payload.toTransaction"
       [key]="'CONSENT.ACCOUNT.END' | translate"
-      [value]="payload.toTransaction | forgerockDateFormat: 'Do MMMM, YYYY, HH:mm:ss'"
+      [value]="payload.toTransaction | forgerockDateFormat: 'do MMMM, yyyy, HH:mm:ss'"
     ></app-key-value-item>
   </div>
 </div>

@@ -39,7 +39,7 @@
         [translate]="'CONSENT.ACCOUNT.EXPIRE'"
         [translateParams]="{ client: response.aispName }"
       ></span>
-      {{ response.expiredDate | forgerockDateFormat: 'dddd Do MMMM, YYYY, HH:mm:ss' }}
+      {{ response.expiredDate | forgerockDateFormat: 'dddd do MMMM, yyyy, HH:mm:ss' }}
     </div>
 
     <app-submit-box
