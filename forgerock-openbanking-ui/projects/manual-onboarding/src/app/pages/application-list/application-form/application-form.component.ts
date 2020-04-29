@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { validateMultipleUrls } from '@utils/forms';
+import { validateMultipleUrls } from '@forgerock/openbanking-ngx-common/utils';
 
 export interface DialogData {
   animal: string;
