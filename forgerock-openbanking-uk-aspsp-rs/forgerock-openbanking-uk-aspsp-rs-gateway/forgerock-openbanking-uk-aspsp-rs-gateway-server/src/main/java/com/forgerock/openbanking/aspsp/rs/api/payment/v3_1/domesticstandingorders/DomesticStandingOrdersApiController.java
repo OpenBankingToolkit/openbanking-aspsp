@@ -199,7 +199,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
             Principal principal
     ) throws OBErrorResponseException {
-        return rsEndpointWrapperService.paymentSubmissionEndpoint()
+        return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiFinancialId)
                 .principal(principal)

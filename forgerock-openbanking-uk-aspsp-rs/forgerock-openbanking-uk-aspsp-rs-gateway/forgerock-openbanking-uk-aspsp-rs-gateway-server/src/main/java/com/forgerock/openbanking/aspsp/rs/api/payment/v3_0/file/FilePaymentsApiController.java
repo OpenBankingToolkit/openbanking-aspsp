@@ -160,7 +160,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        return rsEndpointWrapperService.paymentSubmissionEndpoint()
+        return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiFinancialId)
                 .principal(principal)
@@ -200,7 +200,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        return rsEndpointWrapperService.paymentSubmissionEndpoint()
+        return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiFinancialId)
                 .principal(principal)
