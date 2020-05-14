@@ -38,6 +38,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse2;
 
@@ -156,12 +157,13 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
             Principal principal
     ) throws OBErrorResponseException {
-        return rsEndpointWrapperService.paymentSubmissionEndpoint()
+        return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiFinancialId)
                 .principal(principal)
                 .execute(
                         (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             return rsStoreGateway.toRsStore(request, new HttpHeaders(), OBWriteInternationalResponse2.class);
                         }
                 );
