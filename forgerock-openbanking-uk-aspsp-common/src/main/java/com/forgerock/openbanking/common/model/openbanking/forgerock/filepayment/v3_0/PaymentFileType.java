@@ -27,7 +27,7 @@ import java.util.Arrays;
 public enum PaymentFileType {
     UK_OBIE_PAYMENT_INITIATION_V3_0("UK.OBIE.PaymentInitiation.3.0", MediaType.APPLICATION_JSON),
 
-    // Note: This enum is also used for 3.1.1 and 3.1.2 in OB spec
+    // Note: This enum is also used in v3.1.1 onwards in the OB spec
     UK_OBIE_PAYMENT_INITIATION_V3_1("UK.OBIE.PaymentInitiation.3.1", MediaType.APPLICATION_JSON),
     UK_OBIE_PAIN_001("UK.OBIE.pain.001.001.08", MediaType.TEXT_XML),
     // Note: specific types for csv files
