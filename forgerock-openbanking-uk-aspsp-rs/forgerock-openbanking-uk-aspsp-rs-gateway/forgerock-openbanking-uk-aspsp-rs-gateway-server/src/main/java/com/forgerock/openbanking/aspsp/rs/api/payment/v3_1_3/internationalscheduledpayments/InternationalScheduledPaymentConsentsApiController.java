@@ -44,10 +44,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse4;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -121,8 +118,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                 )
                 .execute(
                         (String tppId) -> {
-                            // TODO #216 - implement me
-                            exchangeRateVerifier.verify(null);//obWriteInternationalScheduledConsent4Param.getData().getInitiation().getExchangeRateInformation());
+                            exchangeRateVerifier.verify(toOBExchangeRate1(obWriteInternationalScheduledConsent4Param.getData().getInitiation().getExchangeRateInformation()));
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
@@ -214,6 +210,15 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteFundsConfirmationResponse1.class);
                         }
                 );
+    }
+
+    // TODO #216 - move into a new converter within the uk-datamodel repo
+    private OBExchangeRate1 toOBExchangeRate1(OBWriteInternational3DataInitiationExchangeRateInformation exchangeRateInformation) {
+        return (new OBExchangeRate1())
+                .unitCurrency(exchangeRateInformation.getUnitCurrency())
+                .exchangeRate(exchangeRateInformation.getExchangeRate())
+                .rateType(OBExchangeRateType2Code.fromValue(exchangeRateInformation.getRateType().getValue()))
+                .contractIdentification(exchangeRateInformation.getContractIdentification());
     }
 
 }
