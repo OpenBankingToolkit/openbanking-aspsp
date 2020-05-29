@@ -48,6 +48,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
@@ -204,65 +205,6 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteFundsConfirmationResponse1.class);
                         }
                 );
-    }
-
-    // TODO #216 - move the following into new converters within the uk-datamodel repo
-    private OBWriteDomesticConsent2 toOBWriteDomesticConsent2(OBWriteDomesticConsent3 obWriteDomesticConsent3Param) {
-        return (new OBWriteDomesticConsent2())
-                .data((new OBWriteDataDomesticConsent2())
-                        .authorisation(toOBAuthorisation1(obWriteDomesticConsent3Param.getData().getAuthorisation()))
-                        .initiation(toOBDomestic2(obWriteDomesticConsent3Param.getData().getInitiation())))
-                .risk(obWriteDomesticConsent3Param.getRisk());
-    }
-
-    private OBAuthorisation1 toOBAuthorisation1(OBWriteDomesticConsent3DataAuthorisation authorisation) {
-        return (new OBAuthorisation1())
-                .authorisationType(toOBExternalAuthorisation1Code(authorisation.getAuthorisationType()))
-                .completionDateTime(authorisation.getCompletionDateTime());
-    }
-
-    private OBExternalAuthorisation1Code toOBExternalAuthorisation1Code(OBWriteDomesticConsent3DataAuthorisation.AuthorisationTypeEnum authorisationType) {
-        return OBExternalAuthorisation1Code.valueOf(authorisationType.getValue());
-    }
-
-    private OBDomestic2 toOBDomestic2(OBWriteDomestic2DataInitiation initiation) {
-        return new OBDomestic2()
-                .creditorAccount(toOBCashAccount3(initiation.getCreditorAccount()))
-                .creditorPostalAddress(initiation.getCreditorPostalAddress())
-                .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
-                .endToEndIdentification(initiation.getEndToEndIdentification())
-                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
-                .instructionIdentification(initiation.getInstructionIdentification())
-                .localInstrument(initiation.getLocalInstrument())
-                .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()));
-    }
-
-    private OBRemittanceInformation1 toOBRemittanceInformation1(OBWriteDomestic2DataInitiationRemittanceInformation remittanceInformation) {
-        return (new OBRemittanceInformation1())
-                .unstructured(remittanceInformation.getUnstructured())
-                .reference(remittanceInformation.getReference());
-    }
-
-    private OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(OBWriteDomestic2DataInitiationInstructedAmount instructedAmount) {
-        return (new OBActiveOrHistoricCurrencyAndAmount())
-                .currency(instructedAmount.getCurrency())
-                .amount(instructedAmount.getAmount());
-    }
-
-    private OBCashAccount3 toOBCashAccount3(OBWriteDomestic2DataInitiationDebtorAccount debtorAccount) {
-        return (new OBCashAccount3())
-                .schemeName(debtorAccount.getSchemeName())
-                .identification(debtorAccount.getIdentification())
-                .name(debtorAccount.getName())
-                .secondaryIdentification(debtorAccount.getSecondaryIdentification());
-    }
-
-    private OBCashAccount3 toOBCashAccount3(OBWriteDomestic2DataInitiationCreditorAccount creditorAccount) {
-        return (new OBCashAccount3())
-                .schemeName(creditorAccount.getSchemeName())
-                .identification(creditorAccount.getIdentification())
-                .name(creditorAccount.getName())
-                .secondaryIdentification(creditorAccount.getSecondaryIdentification());
     }
 
 }

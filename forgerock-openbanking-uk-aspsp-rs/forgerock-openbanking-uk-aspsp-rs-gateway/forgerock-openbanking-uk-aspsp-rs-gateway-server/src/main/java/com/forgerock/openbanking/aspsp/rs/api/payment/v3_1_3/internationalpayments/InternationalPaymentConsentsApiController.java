@@ -50,6 +50,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBExchangeRateConverter.toOBExchangeRate1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -207,15 +208,6 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteFundsConfirmationResponse1.class);
                         }
                 );
-    }
-
-    // TODO #216 - move into a new converter within the uk-datamodel repo
-    private OBExchangeRate1 toOBExchangeRate1(OBWriteInternational3DataInitiationExchangeRateInformation exchangeRateInformation) {
-        return (new OBExchangeRate1())
-                .unitCurrency(exchangeRateInformation.getUnitCurrency())
-                .exchangeRate(exchangeRateInformation.getExchangeRate())
-                .rateType(OBExchangeRateType2Code.fromValue(exchangeRateInformation.getRateType().getValue()))
-                .contractIdentification(exchangeRateInformation.getContractIdentification());
     }
 
 }

@@ -26,14 +26,19 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticpayments;
 
 
+import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticConsent2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
+import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.model.Tpp;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -52,6 +57,10 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticConverter.toOBWriteDomestic2DataInitiation;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
+import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
@@ -114,39 +123,37 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteDomesticConsent3Param);
 
-        // TODO #216 - implement me
-        return new ResponseEntity<OBWriteDomesticConsentResponse3>(HttpStatus.NOT_IMPLEMENTED);
+        Tpp tpp = tppRepository.findByClientId(clientId);
+        log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
 
-//        Tpp tpp = tppRepository.findByClientId(clientId);
-//        log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-//
-//        Optional<FRDomesticConsent2> consentByIdempotencyKey = domesticConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
-//        if (consentByIdempotencyKey.isPresent()) {
-//            validateIdempotencyRequest(xIdempotencyKey, obWriteDomesticConsent3Param, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticConsent());
-//            log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
-//            return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
-//        }
-//        log.debug("No consent with matching idempotency key has been found. Creating new consent.");
-//
-//        FRDomesticConsent2 domesticConsent = FRDomesticConsent2.builder()
-//                .id(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
-//                .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-//                .domesticConsent(obWriteDomesticConsent3Param)
-//                .pispId(tpp.getId())
-//                .pispName(tpp.getOfficialName())
-//                .statusUpdate(DateTime.now())
-//                .idempotencyKey(xIdempotencyKey)
-//                .obVersion(VersionPathExtractor.getVersionFromPath(request))
-//                .build();
-//        log.debug("Saving consent: {}", domesticConsent);
-//        consentMetricService.sendConsentActivity(new ConsentStatusEntry(domesticConsent.getId(), domesticConsent.getStatus().name()));
-//        domesticConsent = domesticConsentRepository.save(domesticConsent);
-//        log.info("Created consent id: {}", domesticConsent.getId());
-//        return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(domesticConsent));
+        Optional<FRDomesticConsent2> consentByIdempotencyKey = domesticConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        OBWriteDomesticConsent2 obWriteDomesticConsent2Param = toOBWriteDomesticConsent2(obWriteDomesticConsent3Param);
+        if (consentByIdempotencyKey.isPresent()) {
+            validateIdempotencyRequest(xIdempotencyKey, obWriteDomesticConsent2Param, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticConsent());
+            log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
+        }
+        log.debug("No consent with matching idempotency key has been found. Creating new consent.");
+
+        FRDomesticConsent2 domesticConsent = FRDomesticConsent2.builder()
+                .id(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
+                .status(ConsentStatusCode.AWAITINGAUTHORISATION)
+                .domesticConsent(obWriteDomesticConsent2Param)
+                .pispId(tpp.getId())
+                .pispName(tpp.getOfficialName())
+                .statusUpdate(DateTime.now())
+                .idempotencyKey(xIdempotencyKey)
+                .obVersion(VersionPathExtractor.getVersionFromPath(request))
+                .build();
+        log.debug("Saving consent: {}", domesticConsent);
+        consentMetricService.sendConsentActivity(new ConsentStatusEntry(domesticConsent.getId(), domesticConsent.getStatus().name()));
+        domesticConsent = domesticConsentRepository.save(domesticConsent);
+        log.info("Created consent id: {}", domesticConsent.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(domesticConsent));
     }
 
     @Override
-    public ResponseEntity<OBWriteDomesticConsentResponse3> getDomesticPaymentConsentsConsentId(
+    public ResponseEntity getDomesticPaymentConsentsConsentId(
             @ApiParam(value = "ConsentId", required = true)
             @PathVariable("ConsentId") String consentId,
 
@@ -170,16 +177,13 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
             Principal principal
     ) throws OBErrorResponseException {
-        // TODO #216 - implement me
-        return new ResponseEntity<OBWriteDomesticConsentResponse3>(HttpStatus.NOT_IMPLEMENTED);
+        Optional<FRDomesticConsent2> isDomesticConsent = domesticConsentRepository.findById(consentId);
+        if (!isDomesticConsent.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic consent '" + consentId + "' can't be found");
+        }
+        FRDomesticConsent2 domesticConsent = isDomesticConsent.get();
 
-//        Optional<FRDomesticConsent2> isDomesticConsent = domesticConsentRepository.findById(consentId);
-//        if (!isDomesticConsent.isPresent()) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic consent '" + consentId + "' can't be found");
-//        }
-//        FRDomesticConsent2 domesticConsent = isDomesticConsent.get();
-//
-//        return ResponseEntity.ok(packageResponse(domesticConsent));
+        return ResponseEntity.ok(packageResponse(domesticConsent));
     }
 
     @Override
@@ -232,6 +236,21 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                         .meta(new Meta())
                 );
 
+    }
+
+    private OBWriteDomesticConsentResponse3 packageResponse(FRDomesticConsent2 domesticConsent) {
+        return new OBWriteDomesticConsentResponse3()
+                .data(new OBWriteDomesticConsentResponse3Data()
+                        .initiation(toOBWriteDomestic2DataInitiation(domesticConsent.getInitiation()))
+                        .status(domesticConsent.getStatus().toOBWriteDomesticConsentResponse3DataStatus())
+                        .creationDateTime(domesticConsent.getCreated())
+                        .statusUpdateDateTime(domesticConsent.getStatusUpdate())
+                        .consentId(domesticConsent.getId())
+                        .authorisation(toOBWriteDomesticConsent3DataAuthorisation(domesticConsent.getDomesticConsent().getData().getAuthorisation()))
+                )
+                .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> discovery.getV_3_1().getGetDomesticPaymentConsent()))
+                .risk(domesticConsent.getRisk())
+                .meta(new Meta());
     }
 
 }

@@ -21,10 +21,7 @@
 package com.forgerock.openbanking.common.model.openbanking.forgerock;
 
 import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.payment.OBExternalConsentStatus1Code;
-import uk.org.openbanking.datamodel.payment.OBExternalConsentStatus2Code;
-import uk.org.openbanking.datamodel.payment.OBExternalStatus1Code;
-import uk.org.openbanking.datamodel.payment.OBTransactionIndividualStatus1Code;
+import uk.org.openbanking.datamodel.payment.*;
 
 public enum ConsentStatusCode {
 
@@ -38,8 +35,7 @@ public enum ConsentStatusCode {
     ACCEPTEDTECHNICALVALIDATION("AcceptedTechnicalValidation"),
     PENDING("Pending"),
     REVOKED("Revoked"),
-    AWAITINGUPLOAD("AwaitingUpload")
-    ;
+    AWAITINGUPLOAD("AwaitingUpload");
 
     private final String value;
 
@@ -48,7 +44,7 @@ public enum ConsentStatusCode {
     }
 
     public static ConsentStatusCode fromValue(String value) {
-        for(ConsentStatusCode consentStatusCode: ConsentStatusCode.values()) {
+        for (ConsentStatusCode consentStatusCode : ConsentStatusCode.values()) {
             if (consentStatusCode.value.equals(value)) {
                 return consentStatusCode;
             }
@@ -108,8 +104,71 @@ public enum ConsentStatusCode {
         }
     }
 
+    public OBWriteDomesticConsentResponse3Data.StatusEnum toOBWriteDomesticConsentResponse3DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case CONSUMED:
+                return OBWriteDomesticConsentResponse3Data.StatusEnum.CONSUMED;
+            case ACCEPTEDCUSTOMERPROFILE:
+            case ACCEPTEDTECHNICALVALIDATION:
+            case AUTHORISED:
+                return OBWriteDomesticConsentResponse3Data.StatusEnum.AUTHORISED;
+            case AWAITINGAUTHORISATION:
+                return OBWriteDomesticConsentResponse3Data.StatusEnum.AWAITINGAUTHORISATION;
+            default:
+                return OBWriteDomesticConsentResponse3Data.StatusEnum.REJECTED;
+        }
+    }
+
+    public OBWriteDomesticScheduledConsentResponse3Data.StatusEnum toOBWriteDomesticScheduledConsentResponse3DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case CONSUMED:
+                return OBWriteDomesticScheduledConsentResponse3Data.StatusEnum.CONSUMED;
+            case ACCEPTEDCUSTOMERPROFILE:
+            case ACCEPTEDTECHNICALVALIDATION:
+            case AUTHORISED:
+                return OBWriteDomesticScheduledConsentResponse3Data.StatusEnum.AUTHORISED;
+            case AWAITINGAUTHORISATION:
+                return OBWriteDomesticScheduledConsentResponse3Data.StatusEnum.AWAITINGAUTHORISATION;
+            default:
+                return OBWriteDomesticScheduledConsentResponse3Data.StatusEnum.REJECTED;
+        }
+    }
+
+    public OBWriteDomesticResponse3Data.StatusEnum toOBWriteDomesticResponse3DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+            case ACCEPTEDCUSTOMERPROFILE:
+            case ACCEPTEDTECHNICALVALIDATION:
+                return OBWriteDomesticResponse3Data.StatusEnum.ACCEPTEDSETTLEMENTCOMPLETED;
+            case ACCEPTEDSETTLEMENTINPROCESS:
+                return OBWriteDomesticResponse3Data.StatusEnum.ACCEPTEDSETTLEMENTINPROCESS;
+            case REJECTED:
+            case REVOKED:
+                return OBWriteDomesticResponse3Data.StatusEnum.REJECTED;
+            default:
+                return OBWriteDomesticResponse3Data.StatusEnum.PENDING;
+        }
+    }
+
+    public OBWriteDomesticScheduledResponse3Data.StatusEnum toOBWriteDomesticScheduledResponse3DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+                return OBWriteDomesticScheduledResponse3Data.StatusEnum.INITIATIONCOMPLETED;
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case PENDING:
+                return OBWriteDomesticScheduledResponse3Data.StatusEnum.INITIATIONPENDING;
+            case REVOKED:
+                return OBWriteDomesticScheduledResponse3Data.StatusEnum.CANCELLED;
+            default:
+                return OBWriteDomesticScheduledResponse3Data.StatusEnum.INITIATIONFAILED;
+        }
+    }
+
     public OBExternalRequestStatus1Code toOBExternalRequestStatus1Code() {
         return OBExternalRequestStatus1Code.valueOf(name());
     }
-
 }
