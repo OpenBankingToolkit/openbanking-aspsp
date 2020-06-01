@@ -219,6 +219,40 @@ public enum ConsentStatusCode {
         }
     }
 
+    public OBWriteInternationalConsentResponse4Data.StatusEnum toOBWriteInternationalConsentResponse4DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case CONSUMED:
+                return OBWriteInternationalConsentResponse4Data.StatusEnum.CONSUMED;
+            case ACCEPTEDCUSTOMERPROFILE:
+            case ACCEPTEDTECHNICALVALIDATION:
+            case AUTHORISED:
+                return OBWriteInternationalConsentResponse4Data.StatusEnum.AUTHORISED;
+            case AWAITINGAUTHORISATION:
+                return OBWriteInternationalConsentResponse4Data.StatusEnum.AWAITINGAUTHORISATION;
+            default:
+                return OBWriteInternationalConsentResponse4Data.StatusEnum.REJECTED;
+        }
+    }
+
+    public OBWriteInternationalResponse4Data.StatusEnum toOBWriteInternationalResponse4DataStatus() {
+        switch (this) {
+            // TODO #216 - check these values are correct
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+            case ACCEPTEDCUSTOMERPROFILE:
+            case ACCEPTEDTECHNICALVALIDATION:
+                return OBWriteInternationalResponse4Data.StatusEnum.ACCEPTEDSETTLEMENTCOMPLETED;
+            case ACCEPTEDSETTLEMENTINPROCESS:
+                return OBWriteInternationalResponse4Data.StatusEnum.ACCEPTEDSETTLEMENTINPROCESS;
+            case REJECTED:
+            case REVOKED:
+                return OBWriteInternationalResponse4Data.StatusEnum.REJECTED;
+            default:
+                return OBWriteInternationalResponse4Data.StatusEnum.PENDING;
+        }
+    }
+
     public OBExternalRequestStatus1Code toOBExternalRequestStatus1Code() {
         return OBExternalRequestStatus1Code.valueOf(name());
     }

@@ -20,9 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment;
 
-import uk.org.openbanking.datamodel.payment.OBExchangeRate1;
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
+import uk.org.openbanking.datamodel.payment.*;
 
 public class OBExchangeRateConverter {
 
@@ -33,4 +31,22 @@ public class OBExchangeRateConverter {
                 .rateType(OBExchangeRateType2Code.fromValue(exchangeRateInformation.getRateType().getValue()))
                 .contractIdentification(exchangeRateInformation.getContractIdentification());
     }
+
+    public static OBWriteInternationalConsentResponse4DataExchangeRateInformation toOBWriteInternationalConsentResponse4DataExchangeRateInformation(OBExchangeRate2 calculatedExchangeRate) {
+        return (new OBWriteInternationalConsentResponse4DataExchangeRateInformation())
+                .unitCurrency(calculatedExchangeRate.getUnitCurrency())
+                .exchangeRate(calculatedExchangeRate.getExchangeRate())
+                .rateType(OBWriteInternationalConsentResponse4DataExchangeRateInformation.RateTypeEnum.valueOf(calculatedExchangeRate.getRateType().name()))
+                .contractIdentification(calculatedExchangeRate.getContractIdentification())
+                .expirationDateTime(calculatedExchangeRate.getExpirationDateTime());
+    }
+
+    public static OBWriteInternational3DataInitiationExchangeRateInformation toOBWriteInternational3DataInitiationExchangeRateInformation(OBExchangeRate1 exchangeRateInformation) {
+        return (new OBWriteInternational3DataInitiationExchangeRateInformation())
+                .unitCurrency(exchangeRateInformation.getUnitCurrency())
+                .exchangeRate(exchangeRateInformation.getExchangeRate())
+                .rateType(OBWriteInternational3DataInitiationExchangeRateInformation.RateTypeEnum.valueOf(exchangeRateInformation.getRateType().name()))
+                .contractIdentification(exchangeRateInformation.getContractIdentification());
+    }
+
 }
