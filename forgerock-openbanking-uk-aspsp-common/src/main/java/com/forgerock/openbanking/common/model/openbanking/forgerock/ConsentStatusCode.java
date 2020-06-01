@@ -70,6 +70,24 @@ public enum ConsentStatusCode {
         }
     }
 
+    public OBWriteDomesticStandingOrderConsentResponse4Data.StatusEnum toOBWriteDomesticStandingOrderConsentResponse4DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case CONSUMED:
+                return OBWriteDomesticStandingOrderConsentResponse4Data.StatusEnum.CONSUMED;
+            case ACCEPTEDCUSTOMERPROFILE:
+            case ACCEPTEDTECHNICALVALIDATION:
+            case AUTHORISED:
+                return OBWriteDomesticStandingOrderConsentResponse4Data.StatusEnum.AUTHORISED;
+            case AWAITINGAUTHORISATION:
+                return OBWriteDomesticStandingOrderConsentResponse4Data.StatusEnum.AWAITINGAUTHORISATION;
+            default:
+                return OBWriteDomesticStandingOrderConsentResponse4Data.StatusEnum.REJECTED;
+
+        }
+    }
+
     public OBTransactionIndividualStatus1Code toOBTransactionIndividualStatus1Code() {
         return OBTransactionIndividualStatus1Code.valueOf(name());
     }
@@ -140,6 +158,7 @@ public enum ConsentStatusCode {
 
     public OBWriteDomesticResponse3Data.StatusEnum toOBWriteDomesticResponse3DataStatus() {
         switch (this) {
+            // TODO #216 - check these values are correct
             case ACCEPTEDSETTLEMENTCOMPLETED:
             case ACCEPTEDCUSTOMERPROFILE:
             case ACCEPTEDTECHNICALVALIDATION:
@@ -168,7 +187,22 @@ public enum ConsentStatusCode {
         }
     }
 
+    public OBWriteDomesticStandingOrderResponse4Data.StatusEnum toOBWriteDomesticStandingOrderResponse4DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+                return OBWriteDomesticStandingOrderResponse4Data.StatusEnum.INITIATIONCOMPLETED;
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case PENDING:
+                return OBWriteDomesticStandingOrderResponse4Data.StatusEnum.INITIATIONPENDING;
+            case REVOKED:
+                return OBWriteDomesticStandingOrderResponse4Data.StatusEnum.CANCELLED;
+            default:
+                return OBWriteDomesticStandingOrderResponse4Data.StatusEnum.INITIATIONFAILED;
+        }
+    }
+
     public OBExternalRequestStatus1Code toOBExternalRequestStatus1Code() {
         return OBExternalRequestStatus1Code.valueOf(name());
     }
+
 }

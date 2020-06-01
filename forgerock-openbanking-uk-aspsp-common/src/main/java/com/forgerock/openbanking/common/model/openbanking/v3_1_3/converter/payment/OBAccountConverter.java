@@ -21,8 +21,7 @@
 package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment;
 
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationCreditorAccount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationDebtorAccount;
+import uk.org.openbanking.datamodel.payment.*;
 
 public class OBAccountConverter {
 
@@ -50,11 +49,43 @@ public class OBAccountConverter {
                 .secondaryIdentification(debtorAccount.getSecondaryIdentification());
     }
 
-    public static OBWriteDomestic2DataInitiationCreditorAccount toOBWriteDomestic2DataInitiationCreditorAccount(OBCashAccount3 debtorAccount) {
+    public static OBWriteDomestic2DataInitiationCreditorAccount toOBWriteDomestic2DataInitiationCreditorAccount(OBCashAccount3 creditorAccount) {
         return (new OBWriteDomestic2DataInitiationCreditorAccount())
+                .schemeName(creditorAccount.getSchemeName())
+                .identification(creditorAccount.getIdentification())
+                .name(creditorAccount.getName())
+                .secondaryIdentification(creditorAccount.getSecondaryIdentification());
+    }
+
+    public static OBWriteDomesticStandingOrder3DataInitiationDebtorAccount toOBWriteDomesticStandingOrder3DataInitiationDebtorAccount(OBCashAccountDebtor4 debtorAccount) {
+        return (new OBWriteDomesticStandingOrder3DataInitiationDebtorAccount())
                 .schemeName(debtorAccount.getSchemeName())
                 .identification(debtorAccount.getIdentification())
                 .name(debtorAccount.getName())
                 .secondaryIdentification(debtorAccount.getSecondaryIdentification());
+    }
+
+    public static OBWriteDomesticStandingOrder3DataInitiationCreditorAccount toOBWriteDomesticStandingOrder3DataInitiationCreditorAccount(OBCashAccountCreditor3 creditorAccount) {
+        return (new OBWriteDomesticStandingOrder3DataInitiationCreditorAccount())
+                .schemeName(creditorAccount.getSchemeName())
+                .identification(creditorAccount.getIdentification())
+                .name(creditorAccount.getName())
+                .secondaryIdentification(creditorAccount.getSecondaryIdentification());
+    }
+
+    public static OBCashAccountDebtor4 toOBCashAccountDebtor4(OBWriteDomesticStandingOrder3DataInitiationDebtorAccount debtorAccount) {
+        return (new OBCashAccountDebtor4())
+                .schemeName(debtorAccount.getSchemeName())
+                .identification(debtorAccount.getIdentification())
+                .name(debtorAccount.getName())
+                .secondaryIdentification(debtorAccount.getSecondaryIdentification());
+    }
+
+    public static OBCashAccountCreditor3 toOBCashAccountCreditor3(OBWriteDomesticStandingOrder3DataInitiationCreditorAccount creditorAccount) {
+        return (new OBCashAccountCreditor3())
+                .schemeName(creditorAccount.getSchemeName())
+                .identification(creditorAccount.getIdentification())
+                .name(creditorAccount.getName())
+                .secondaryIdentification(creditorAccount.getSecondaryIdentification());
     }
 }

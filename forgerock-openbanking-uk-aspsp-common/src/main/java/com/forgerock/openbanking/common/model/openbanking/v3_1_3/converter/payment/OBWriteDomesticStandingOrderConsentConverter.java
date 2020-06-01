@@ -23,21 +23,20 @@ package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.paym
 import uk.org.openbanking.datamodel.payment.*;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled2;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder3;
 
-public class OBWriteDomesticScheduledConsentConverter {
+public class OBWriteDomesticStandingOrderConsentConverter {
 
-    public static OBWriteDomesticScheduledConsent2 toOBWriteDomesticScheduledConsent2(OBWriteDomesticScheduledConsent3 obWriteDomesticScheduledConsent3) {
-        return (new OBWriteDomesticScheduledConsent2())
-                .data(toOBWriteDataDomesticScheduledConsent2(obWriteDomesticScheduledConsent3.getData()))
-                .risk(obWriteDomesticScheduledConsent3.getRisk());
+    public static OBWriteDomesticStandingOrderConsent3 toOBWriteDomesticStandingOrderConsent3(OBWriteDomesticStandingOrderConsent4 obWriteDomesticStandingOrderConsent4) {
+        return (new OBWriteDomesticStandingOrderConsent3())
+                .data(toOBWriteDataDomesticStandingOrderConsent3(obWriteDomesticStandingOrderConsent4.getData()))
+                .risk(obWriteDomesticStandingOrderConsent4.getRisk());
     }
 
-    public static OBWriteDataDomesticScheduledConsent2 toOBWriteDataDomesticScheduledConsent2(OBWriteDomesticScheduledConsent3Data data) {
-        return (new OBWriteDataDomesticScheduledConsent2())
-                .permission(OBExternalPermissions2Code.fromValue(data.getPermission().getValue()))
-                .initiation(toOBDomesticScheduled2(data.getInitiation()))
+    public static OBWriteDataDomesticStandingOrderConsent3 toOBWriteDataDomesticStandingOrderConsent3(OBWriteDomesticStandingOrderConsent4Data data) {
+        return (new OBWriteDataDomesticStandingOrderConsent3())
+                .permission(OBExternalPermissions2Code.valueOf(data.getPermission().name()))
+                .initiation(toOBDomesticStandingOrder3(data.getInitiation()))
                 .authorisation(toOBAuthorisation1(data.getAuthorisation()));
-        //.scASupportData(data.getScASupportData()); TODO #216 - doesn't exit in old version - not sure if this is a problem?
     }
 }
