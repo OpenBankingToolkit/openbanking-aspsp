@@ -201,6 +201,24 @@ public enum ConsentStatusCode {
         }
     }
 
+    public OBWriteFileConsentResponse3Data.StatusEnum toOBWriteFileConsentResponse3DataStatus() {
+        switch (this) {
+            case AWAITINGUPLOAD:
+                return OBWriteFileConsentResponse3Data.StatusEnum.AWAITINGUPLOAD;
+            case AWAITINGAUTHORISATION:
+                return OBWriteFileConsentResponse3Data.StatusEnum.AWAITINGAUTHORISATION;
+            case AUTHORISED:
+                return OBWriteFileConsentResponse3Data.StatusEnum.AUTHORISED;
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case CONSUMED:
+                return OBWriteFileConsentResponse3Data.StatusEnum.CONSUMED;
+            default:
+                return OBWriteFileConsentResponse3Data.StatusEnum.REJECTED;
+
+        }
+    }
+
     public OBExternalRequestStatus1Code toOBExternalRequestStatus1Code() {
         return OBExternalRequestStatus1Code.valueOf(name());
     }
