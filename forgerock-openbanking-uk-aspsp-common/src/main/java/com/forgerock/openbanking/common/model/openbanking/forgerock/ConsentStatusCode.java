@@ -253,6 +253,68 @@ public enum ConsentStatusCode {
         }
     }
 
+    public OBWriteInternationalScheduledConsentResponse4Data.StatusEnum toOBWriteInternationalScheduledConsentResponse4DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case CONSUMED:
+                return OBWriteInternationalScheduledConsentResponse4Data.StatusEnum.CONSUMED;
+            case ACCEPTEDCUSTOMERPROFILE:
+            case ACCEPTEDTECHNICALVALIDATION:
+            case AUTHORISED:
+                return OBWriteInternationalScheduledConsentResponse4Data.StatusEnum.AUTHORISED;
+            case AWAITINGAUTHORISATION:
+                return OBWriteInternationalScheduledConsentResponse4Data.StatusEnum.AWAITINGAUTHORISATION;
+            default:
+                return OBWriteInternationalScheduledConsentResponse4Data.StatusEnum.REJECTED;
+        }
+    }
+
+    public OBWriteInternationalScheduledResponse4Data.StatusEnum toOBWriteInternationalScheduledResponse4DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+                return OBWriteInternationalScheduledResponse4Data.StatusEnum.INITIATIONCOMPLETED;
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case PENDING:
+                return OBWriteInternationalScheduledResponse4Data.StatusEnum.INITIATIONPENDING;
+            case REVOKED:
+                return OBWriteInternationalScheduledResponse4Data.StatusEnum.CANCELLED;
+            default:
+                return OBWriteInternationalScheduledResponse4Data.StatusEnum.INITIATIONFAILED;
+        }
+    }
+
+    public OBWriteInternationalStandingOrderConsentResponse5Data.StatusEnum toOBWriteInternationalStandingOrderConsentResponse5DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case CONSUMED:
+                return OBWriteInternationalStandingOrderConsentResponse5Data.StatusEnum.CONSUMED;
+            case ACCEPTEDCUSTOMERPROFILE:
+            case ACCEPTEDTECHNICALVALIDATION:
+            case AUTHORISED:
+                return OBWriteInternationalStandingOrderConsentResponse5Data.StatusEnum.AUTHORISED;
+            case AWAITINGAUTHORISATION:
+                return OBWriteInternationalStandingOrderConsentResponse5Data.StatusEnum.AWAITINGAUTHORISATION;
+            default:
+                return OBWriteInternationalStandingOrderConsentResponse5Data.StatusEnum.REJECTED;
+        }
+    }
+
+    public OBWriteInternationalStandingOrderResponse5Data.StatusEnum toOBWriteInternationalStandingOrderResponse5DataStatus() {
+        switch (this) {
+            case ACCEPTEDSETTLEMENTCOMPLETED:
+                return OBWriteInternationalStandingOrderResponse5Data.StatusEnum.INITIATIONCOMPLETED;
+            case ACCEPTEDSETTLEMENTINPROCESS:
+            case PENDING:
+                return OBWriteInternationalStandingOrderResponse5Data.StatusEnum.INITIATIONPENDING;
+            case REVOKED:
+                return OBWriteInternationalStandingOrderResponse5Data.StatusEnum.CANCELLED;
+            default:
+                return OBWriteInternationalStandingOrderResponse5Data.StatusEnum.INITIATIONFAILED;
+        }
+    }
+
     public OBExternalRequestStatus1Code toOBExternalRequestStatus1Code() {
         return OBExternalRequestStatus1Code.valueOf(name());
     }

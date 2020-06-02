@@ -36,6 +36,18 @@ public class OBAmountConverter {
                 .amount(amount.getAmount());
     }
 
+    public static OBWriteDomestic2DataInitiationInstructedAmount toOBWriteDomestic2DataInitiationInstructedAmount(OBDomestic2InstructedAmount amount) {
+        return (new OBWriteDomestic2DataInitiationInstructedAmount())
+                .currency(amount.getCurrency())
+                .amount(amount.getAmount());
+    }
+
+    public static OBDomestic2InstructedAmount toOBDomestic2InstructedAmount(OBWriteDomestic2DataInitiationInstructedAmount amount) {
+        return (new OBDomestic2InstructedAmount())
+                .currency(amount.getCurrency())
+                .amount(amount.getAmount());
+    }
+
     public static OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount toOBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount(OBDomesticStandingOrder3FirstPaymentAmount amount) {
         return (new OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount())
                 .currency(amount.getCurrency())

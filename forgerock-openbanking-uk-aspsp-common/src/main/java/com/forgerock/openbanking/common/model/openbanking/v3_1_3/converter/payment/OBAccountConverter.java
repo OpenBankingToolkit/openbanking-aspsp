@@ -73,6 +73,15 @@ public class OBAccountConverter {
                 .secondaryIdentification(creditorAccount.getSecondaryIdentification());
     }
 
+    public static OBWriteInternationalStandingOrder4DataInitiationCreditorAccount toOBWriteInternationalStandingOrder4DataInitiationCreditorAccount(OBCashAccountCreditor3 creditorAccount) {
+        return (new OBWriteInternationalStandingOrder4DataInitiationCreditorAccount())
+                .schemeName(creditorAccount.getSchemeName())
+                .identification(creditorAccount.getIdentification())
+                .name(creditorAccount.getName())
+                .secondaryIdentification(creditorAccount.getSecondaryIdentification());
+
+    }
+
     public static OBCashAccountDebtor4 toOBCashAccountDebtor4(OBWriteDomesticStandingOrder3DataInitiationDebtorAccount debtorAccount) {
         return (new OBCashAccountDebtor4())
                 .schemeName(debtorAccount.getSchemeName())
@@ -82,6 +91,14 @@ public class OBAccountConverter {
     }
 
     public static OBCashAccountCreditor3 toOBCashAccountCreditor3(OBWriteDomesticStandingOrder3DataInitiationCreditorAccount creditorAccount) {
+        return (new OBCashAccountCreditor3())
+                .schemeName(creditorAccount.getSchemeName())
+                .identification(creditorAccount.getIdentification())
+                .name(creditorAccount.getName())
+                .secondaryIdentification(creditorAccount.getSecondaryIdentification());
+    }
+
+    public static OBCashAccountCreditor3 toOBCashAccountCreditor3(OBWriteInternationalStandingOrder4DataInitiationCreditorAccount creditorAccount) {
         return (new OBCashAccountCreditor3())
                 .schemeName(creditorAccount.getSchemeName())
                 .identification(creditorAccount.getIdentification())

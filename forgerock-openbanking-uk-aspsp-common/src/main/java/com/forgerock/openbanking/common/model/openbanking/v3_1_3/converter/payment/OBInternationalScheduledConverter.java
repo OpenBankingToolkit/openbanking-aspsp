@@ -31,16 +31,17 @@ import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converte
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBRemittanceInformationConverter.toOBRemittanceInformation1;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBRemittanceInformationConverter.toOBWriteDomestic2DataInitiationRemittanceInformation;
 
-public class OBInternationalConverter {
+public class OBInternationalScheduledConverter {
 
-    public static OBInternational2 toOBInternational2(OBWriteInternational3DataInitiation initiation) {
-        return (new OBInternational2())
+    public static OBInternationalScheduled2 toOBInternationalScheduled2(OBWriteInternationalScheduled3DataInitiation initiation) {
+        return (new OBInternationalScheduled2())
                 .instructionIdentification(initiation.getInstructionIdentification())
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(initiation.getLocalInstrument())
                 .instructionPriority(OBPriority2Code.valueOf(initiation.getInstructionPriority().name()))
                 .purpose(initiation.getPurpose())
                 .chargeBearer(initiation.getChargeBearer())
+                .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
                 .exchangeRateInformation(toOBExchangeRate1(initiation.getExchangeRateInformation()))
@@ -52,17 +53,20 @@ public class OBInternationalConverter {
                 .supplementaryData(initiation.getSupplementaryData());
     }
 
-    public static OBWriteInternational3DataInitiation toOBWriteInternational3DataInitiation(OBInternational2 initiation) {
-        return (new OBWriteInternational3DataInitiation())
+    public static OBWriteInternationalScheduled3DataInitiation toOBWriteInternationalScheduled3DataInitiation(OBInternationalScheduled2 initiation) {
+        return (new OBWriteInternationalScheduled3DataInitiation())
                 .instructionIdentification(initiation.getInstructionIdentification())
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(initiation.getLocalInstrument())
-                .instructionPriority(OBWriteInternational3DataInitiation.InstructionPriorityEnum.valueOf(initiation.getInstructionPriority().name()))
+                .instructionPriority(OBWriteInternationalScheduled3DataInitiation.InstructionPriorityEnum.valueOf(initiation.getInstructionPriority().name()))
                 .purpose(initiation.getPurpose())
-                //.extendedPurpose(initiation.getExtendedPurpose()) // TODO #216 populate the extended purpose
+                // TODO #216 - populate extendedPurpose
+                //.extendedPurpose(initiation.getExtendedPurpose())
                 .chargeBearer(initiation.getChargeBearer())
+                .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
-                //.destinationCountryCode(initiation.getDestinationCountryCode()) // TODO #216 populate the country code
+                // TODO #216 - populate destinationCountry
+                //.destinationCountryCode(initiation.getDestinationCountryCode())
                 .instructedAmount(toOBWriteDomestic2DataInitiationInstructedAmount(initiation.getInstructedAmount()))
                 .exchangeRateInformation(toOBWriteInternational3DataInitiationExchangeRateInformation(initiation.getExchangeRateInformation()))
                 .debtorAccount(toOBWriteDomestic2DataInitiationDebtorAccount(initiation.getDebtorAccount()))
@@ -73,16 +77,15 @@ public class OBInternationalConverter {
                 .supplementaryData(initiation.getSupplementaryData());
     }
 
-    public static OBWriteInternational2 toOBWriteInternational2(OBWriteInternational3 obWriteInternational3) {
-        return (new OBWriteInternational2())
-                .data(toOBWriteDataInternational2(obWriteInternational3.getData()))
-                .risk(obWriteInternational3.getRisk());
+    public static OBWriteInternationalScheduled2 toOBWriteInternationalScheduled2(OBWriteInternationalScheduled3 obWriteInternationalScheduled3Param) {
+        return (new OBWriteInternationalScheduled2())
+                .data(toOBWriteDataInternationalScheduled2(obWriteInternationalScheduled3Param.getData()))
+                .risk(obWriteInternationalScheduled3Param.getRisk());
     }
 
-    public static OBWriteDataInternational2 toOBWriteDataInternational2(OBWriteInternational3Data data) {
-        return (new OBWriteDataInternational2())
+    public static OBWriteDataInternationalScheduled2 toOBWriteDataInternationalScheduled2(OBWriteInternationalScheduled3Data data) {
+        return (new OBWriteDataInternationalScheduled2())
                 .consentId(data.getConsentId())
-                .initiation(toOBInternational2(data.getInitiation()));
+                .initiation(toOBInternationalScheduled2(data.getInitiation()));
     }
-
 }
