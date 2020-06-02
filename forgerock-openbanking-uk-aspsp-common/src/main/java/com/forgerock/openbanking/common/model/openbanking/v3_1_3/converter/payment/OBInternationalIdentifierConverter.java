@@ -22,50 +22,46 @@ package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.paym
 
 import uk.org.openbanking.datamodel.payment.*;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConverterHelper.copyField;
+
 public class OBInternationalIdentifierConverter {
 
     public static OBBranchAndFinancialInstitutionIdentification3 toOBBranchAndFinancialInstitutionIdentification3(OBWriteInternational3DataInitiationCreditorAgent creditorAgent) {
-        return (new OBBranchAndFinancialInstitutionIdentification3())
-                .schemeName(creditorAgent.getSchemeName())
-                .identification(creditorAgent.getIdentification())
-                .name(creditorAgent.getName())
-                .postalAddress(creditorAgent.getPostalAddress());
+        return toAgentIdentifier(new OBBranchAndFinancialInstitutionIdentification3(), creditorAgent);
     }
 
     public static OBBranchAndFinancialInstitutionIdentification6 toOBBranchAndFinancialInstitutionIdentification6(OBWriteInternationalStandingOrder4DataInitiationCreditorAgent creditorAgent) {
-        return (new OBBranchAndFinancialInstitutionIdentification6())
-                .schemeName(creditorAgent.getSchemeName())
-                .identification(creditorAgent.getIdentification())
-                .name(creditorAgent.getName())
-                .postalAddress(creditorAgent.getPostalAddress());
-    }
-
-    public static OBPartyIdentification43 toOBPartyIdentification43(OBWriteInternational3DataInitiationCreditor creditor) {
-        return (new OBPartyIdentification43())
-                .name(creditor.getName())
-                .postalAddress(creditor.getPostalAddress());
+        return toAgentIdentifier(new OBBranchAndFinancialInstitutionIdentification6(), creditorAgent);
     }
 
     public static OBWriteInternational3DataInitiationCreditorAgent toOBWriteInternational3DataInitiationCreditorAgent(OBBranchAndFinancialInstitutionIdentification3 creditorAgent) {
-        return (new OBWriteInternational3DataInitiationCreditorAgent())
-                .schemeName(creditorAgent.getSchemeName())
-                .identification(creditorAgent.getIdentification())
-                .name(creditorAgent.getName())
-                .postalAddress(creditorAgent.getPostalAddress());
+        return toAgentIdentifier(new OBWriteInternational3DataInitiationCreditorAgent(), creditorAgent);
     }
 
     public static OBWriteInternationalStandingOrder4DataInitiationCreditorAgent toOBWriteInternationalStandingOrder4DataInitiationCreditorAgent(OBBranchAndFinancialInstitutionIdentification6 creditorAgent) {
-        return (new OBWriteInternationalStandingOrder4DataInitiationCreditorAgent())
-                .schemeName(creditorAgent.getSchemeName())
-                .identification(creditorAgent.getIdentification())
-                .name(creditorAgent.getName())
-                .postalAddress(creditorAgent.getPostalAddress());
+        return toAgentIdentifier(new OBWriteInternationalStandingOrder4DataInitiationCreditorAgent(), creditorAgent);
     }
 
     public static OBWriteInternational3DataInitiationCreditor toOBWriteInternational3DataInitiationCreditor(OBPartyIdentification43 creditor) {
-        return (new OBWriteInternational3DataInitiationCreditor())
-                .name(creditor.getName())
-                .postalAddress(creditor.getPostalAddress());
+        return toCreditorIdentifier(new OBWriteInternational3DataInitiationCreditor(), creditor);
+    }
+
+    public static OBPartyIdentification43 toOBPartyIdentification43(OBWriteInternational3DataInitiationCreditor creditor) {
+        return toCreditorIdentifier(new OBPartyIdentification43(), creditor);
+    }
+
+    private static <T, U> T toAgentIdentifier(T newAgent, U originalAgent) {
+        copyField(newAgent, originalAgent, "schemeName");
+        copyField(newAgent, originalAgent, "identification");
+        copyField(newAgent, originalAgent, "name");
+        copyField(newAgent, originalAgent, "postalAddress");
+        return newAgent;
+    }
+
+    private static <T, U> T toCreditorIdentifier(T newCreditor, U originalCreditor) {
+        copyField(newCreditor, originalCreditor, "name");
+        copyField(newCreditor, originalCreditor, "postalAddress");
+        return newCreditor;
     }
 
 }

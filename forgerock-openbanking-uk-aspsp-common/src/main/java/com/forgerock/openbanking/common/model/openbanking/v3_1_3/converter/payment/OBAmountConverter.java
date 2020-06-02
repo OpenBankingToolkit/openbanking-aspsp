@@ -22,65 +22,55 @@ package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.paym
 
 import uk.org.openbanking.datamodel.payment.*;
 
+import java.lang.reflect.Field;
+
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConverterHelper.copyField;
+
 public class OBAmountConverter {
 
     public static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(OBWriteDomestic2DataInitiationInstructedAmount amount) {
-        return (new OBActiveOrHistoricCurrencyAndAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+        return toAmount(new OBActiveOrHistoricCurrencyAndAmount(), amount);
     }
 
     public static OBWriteDomestic2DataInitiationInstructedAmount toOBWriteDomestic2DataInitiationInstructedAmount(OBActiveOrHistoricCurrencyAndAmount amount) {
-        return (new OBWriteDomestic2DataInitiationInstructedAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+        return toAmount(new OBWriteDomestic2DataInitiationInstructedAmount(), amount);
     }
 
     public static OBWriteDomestic2DataInitiationInstructedAmount toOBWriteDomestic2DataInitiationInstructedAmount(OBDomestic2InstructedAmount amount) {
-        return (new OBWriteDomestic2DataInitiationInstructedAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+        return toAmount(new OBWriteDomestic2DataInitiationInstructedAmount(), amount);
     }
 
     public static OBDomestic2InstructedAmount toOBDomestic2InstructedAmount(OBWriteDomestic2DataInitiationInstructedAmount amount) {
-        return (new OBDomestic2InstructedAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+        return toAmount(new OBDomestic2InstructedAmount(), amount);
     }
 
     public static OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount toOBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount(OBDomesticStandingOrder3FirstPaymentAmount amount) {
-        return (new OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+        return toAmount(new OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount(), amount);
     }
 
     public static OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount toOBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount(OBDomesticStandingOrder3RecurringPaymentAmount amount) {
-        return (new OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+        return toAmount(new OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount(), amount);
     }
 
     public static OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount toOBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount(OBDomesticStandingOrder3FinalPaymentAmount amount) {
-        return (new OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+        return toAmount(new OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount(), amount);
     }
 
     public static OBDomesticStandingOrder3FirstPaymentAmount toOBDomesticStandingOrder3FirstPaymentAmount(OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount amount) {
-        return (new OBDomesticStandingOrder3FirstPaymentAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+        return toAmount(new OBDomesticStandingOrder3FirstPaymentAmount(), amount);
     }
 
     public static OBDomesticStandingOrder3RecurringPaymentAmount toOBDomesticStandingOrder3RecurringPaymentAmount(OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount amount) {
-        return (new OBDomesticStandingOrder3RecurringPaymentAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+        return toAmount(new OBDomesticStandingOrder3RecurringPaymentAmount(), amount);
     }
 
     public static OBDomesticStandingOrder3FinalPaymentAmount toOBDomesticStandingOrder3FinalPaymentAmount(OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount amount) {
-        return (new OBDomesticStandingOrder3FinalPaymentAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+        return toAmount(new OBDomesticStandingOrder3FinalPaymentAmount(), amount);
+    }
+
+    private static <T, U> T toAmount(T newAmount, U originalAmount) {
+        copyField(newAmount, originalAmount, "currency");
+        copyField(newAmount, originalAmount, "amount");
+        return newAmount;
     }
 }
