@@ -244,11 +244,12 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                         .initiation(toOBWriteDomestic2DataInitiation(domesticConsent.getInitiation()))
                         .status(domesticConsent.getStatus().toOBWriteDomesticConsentResponse3DataStatus())
                         .creationDateTime(domesticConsent.getCreated())
+                        // TODO #216 - refactor status conversion
                         .statusUpdateDateTime(domesticConsent.getStatusUpdate())
                         .consentId(domesticConsent.getId())
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(domesticConsent.getDomesticConsent().getData().getAuthorisation()))
                 )
-                .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> discovery.getV_3_1().getGetDomesticPaymentConsent()))
+                .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> discovery.getV_3_1_3().getGetDomesticPaymentConsent()))
                 .risk(domesticConsent.getRisk())
                 .meta(new Meta());
     }

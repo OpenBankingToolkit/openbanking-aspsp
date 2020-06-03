@@ -323,7 +323,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                         .initiation(toOBWriteFile2DataInitiation(fileConsent.getInitiation()))
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(fileConsent.getWriteFileConsent().getData().getAuthorisation()))
                 )
-                .links(resourceLinkService.toSelfLink(fileConsent, discovery -> discovery.getV_3_1().getGetFilePaymentConsent()))
+                .links(resourceLinkService.toSelfLink(fileConsent, discovery -> discovery.getV_3_1_3().getGetFilePaymentConsent()))
                 .meta(new Meta());
     }
 

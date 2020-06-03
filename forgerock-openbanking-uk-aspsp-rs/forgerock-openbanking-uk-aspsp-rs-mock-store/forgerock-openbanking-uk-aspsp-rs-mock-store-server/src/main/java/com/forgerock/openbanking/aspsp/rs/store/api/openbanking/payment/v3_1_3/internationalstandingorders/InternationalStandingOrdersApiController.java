@@ -208,7 +208,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                         .statusUpdateDateTime(frInternationalStandingOrderConsent2.getStatusUpdate())
                         .status(frInternationalStandingOrderConsent2.getStatus().toOBWriteInternationalStandingOrderResponse5DataStatus())
                         .consentId(frInternationalStandingOrderConsent2.getId()))
-                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1().getGetInternationalStandingOrder()))
+                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetInternationalStandingOrder()))
                 .meta(new Meta());
     }
 

@@ -255,7 +255,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                 .statusUpdateDateTime(DateTime.now())
                 .status(frFileConsent.getStatus().toOBExternalStatusCode1())
                 .consentId(frFileConsent.getId()))
-                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1().getGetFilePayment()))
+                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetFilePayment()))
                 .meta(new Meta());
     }
 

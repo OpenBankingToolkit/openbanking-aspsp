@@ -241,7 +241,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                         .authorisation(internationalScheduledConsent.getInternationalScheduledConsent().getData().getAuthorisation())
                 )
                 .risk(internationalScheduledConsent.getRisk())
-                .links(resourceLinkService.toSelfLink(internationalScheduledConsent, discovery -> discovery.getV_3_1().getGetInternationalScheduledPaymentConsent()))
+                .links(resourceLinkService.toSelfLink(internationalScheduledConsent, discovery -> discovery.getV_3_1_3().getGetInternationalScheduledPaymentConsent()))
                 .meta(new Meta());
     }
 

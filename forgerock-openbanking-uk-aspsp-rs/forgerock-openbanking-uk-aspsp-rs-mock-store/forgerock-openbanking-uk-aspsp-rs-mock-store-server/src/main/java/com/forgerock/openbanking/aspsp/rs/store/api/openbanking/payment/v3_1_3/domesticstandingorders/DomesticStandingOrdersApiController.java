@@ -207,7 +207,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .statusUpdateDateTime(frDomesticStandingOrderConsent3.getStatusUpdate())
                 .status(frDomesticStandingOrderConsent3.getStatus().toOBWriteDomesticStandingOrderResponse4DataStatus())
                 .consentId(frDomesticStandingOrderConsent3.getId()))
-                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_1().getGetDomesticStandingOrder()))
+                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetDomesticStandingOrder()))
                 .meta(new Meta());
     }
 

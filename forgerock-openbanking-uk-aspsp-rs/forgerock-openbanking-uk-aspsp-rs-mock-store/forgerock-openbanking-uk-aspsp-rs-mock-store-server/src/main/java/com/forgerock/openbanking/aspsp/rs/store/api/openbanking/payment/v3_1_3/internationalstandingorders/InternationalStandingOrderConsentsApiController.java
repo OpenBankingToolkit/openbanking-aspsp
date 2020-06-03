@@ -186,7 +186,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
                         .permission(PermissionEnum.valueOf(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getPermission().name()))
                         .authorisation(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getAuthorisation())
                 ).risk(internationalStandingOrderConsent.getRisk())
-                .links(resourceLinkService.toSelfLink(internationalStandingOrderConsent, discovery -> discovery.getV_3_1().getGetInternationalStandingOrderConsent()))
+                .links(resourceLinkService.toSelfLink(internationalStandingOrderConsent, discovery -> discovery.getV_3_1_3().getGetInternationalStandingOrderConsent()))
                 .meta(new Meta());
     }
 

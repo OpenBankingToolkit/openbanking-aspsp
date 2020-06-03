@@ -238,7 +238,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                         .authorisation(internationalConsent.getInternationalConsent().getData().getAuthorisation())
                 )
                 .risk(internationalConsent.getRisk())
-                .links(resourceLinkService.toSelfLink(internationalConsent, discovery -> discovery.getV_3_1().getGetInternationalPaymentConsent()))
+                .links(resourceLinkService.toSelfLink(internationalConsent, discovery -> discovery.getV_3_1_3().getGetInternationalPaymentConsent()))
                 .meta(new Meta());
     }
 

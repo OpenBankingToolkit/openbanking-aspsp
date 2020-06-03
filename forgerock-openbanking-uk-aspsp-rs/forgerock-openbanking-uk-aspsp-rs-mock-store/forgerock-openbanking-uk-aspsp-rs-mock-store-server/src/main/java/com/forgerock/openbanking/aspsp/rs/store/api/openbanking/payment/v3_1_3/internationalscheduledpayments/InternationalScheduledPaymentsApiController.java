@@ -207,7 +207,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                                 .status(frInternationalScheduledConsent.getStatus().toOBWriteInternationalScheduledResponse4DataStatus())
                                 .exchangeRateInformation(frInternationalScheduledConsent.getCalculatedExchangeRate())
                                 .expectedExecutionDateTime(frInternationalScheduledConsent.getInitiation().getRequestedExecutionDateTime()))
-                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1().getGetInternationalScheduledPayment()))
+                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetInternationalScheduledPayment()))
                 .meta(new Meta());
     }
 }

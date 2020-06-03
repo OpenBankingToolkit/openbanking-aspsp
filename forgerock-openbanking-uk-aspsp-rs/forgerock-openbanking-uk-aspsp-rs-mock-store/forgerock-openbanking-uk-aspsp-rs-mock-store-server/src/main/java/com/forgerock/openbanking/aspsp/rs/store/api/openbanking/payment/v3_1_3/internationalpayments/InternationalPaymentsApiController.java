@@ -207,7 +207,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .status(frInternationalConsent.getStatus().toOBWriteInternationalResponse4DataStatus())
                         .consentId(frInternationalConsent.getId())
                         .exchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate()))
-                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1().getGetInternationalPayment()))
+                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetInternationalPayment()))
                 .meta(new Meta());
     }
 

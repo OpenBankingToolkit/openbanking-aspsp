@@ -205,9 +205,10 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                 .initiation(toOBWriteDomestic2DataInitiation(frPaymentSubmission.getDomesticPayment().getData().getInitiation()))
                 .creationDateTime(frDomesticConsent2.getCreated())
                 .statusUpdateDateTime(frDomesticConsent2.getStatusUpdate())
+                // TODO #216 - refactor status conversion
                 .status(frDomesticConsent2.getStatus().toOBWriteDomesticResponse3DataStatus())
                 .consentId(frDomesticConsent2.getId()))
-                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1().getGetDomesticPayment()))
+                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetDomesticPayment()))
                 .meta(new Meta())
                 ;
     }
