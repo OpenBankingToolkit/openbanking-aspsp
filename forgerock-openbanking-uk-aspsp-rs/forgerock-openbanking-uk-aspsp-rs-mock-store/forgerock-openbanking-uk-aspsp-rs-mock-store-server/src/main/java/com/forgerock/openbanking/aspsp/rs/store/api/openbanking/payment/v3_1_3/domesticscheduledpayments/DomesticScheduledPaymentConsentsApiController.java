@@ -58,6 +58,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticScheduledConsentResponse3DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -180,8 +181,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
         return new OBWriteDomesticScheduledConsentResponse3()
                 .data(new OBWriteDomesticScheduledConsentResponse3Data()
                         .initiation(domesticScheduledConsent.getInitiation())
-                        // TODO #216 - refactor status conversion
-                        .status(domesticScheduledConsent.getStatus().toOBWriteDomesticScheduledConsentResponse3DataStatus())
+                        .status(toOBWriteDomesticScheduledConsentResponse3DataStatus(domesticScheduledConsent.getStatus()))
                         .creationDateTime(domesticScheduledConsent.getCreated())
                         .statusUpdateDateTime(domesticScheduledConsent.getStatusUpdate())
                         .consentId(domesticScheduledConsent.getId())

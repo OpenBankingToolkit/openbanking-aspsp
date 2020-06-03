@@ -57,6 +57,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticResponse3DataStatus;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -205,8 +206,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                 .initiation(toOBWriteDomestic2DataInitiation(frPaymentSubmission.getDomesticPayment().getData().getInitiation()))
                 .creationDateTime(frDomesticConsent2.getCreated())
                 .statusUpdateDateTime(frDomesticConsent2.getStatusUpdate())
-                // TODO #216 - refactor status conversion
-                .status(frDomesticConsent2.getStatus().toOBWriteDomesticResponse3DataStatus())
+                .status(toOBWriteDomesticResponse3DataStatus(frDomesticConsent2.getStatus()))
                 .consentId(frDomesticConsent2.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetDomesticPayment()))
                 .meta(new Meta())

@@ -58,6 +58,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticStandingOrderConsentResponse4DataStatus;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent3;
@@ -182,7 +183,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
         return new OBWriteDomesticStandingOrderConsentResponse4()
                 .data(new OBWriteDomesticStandingOrderConsentResponse4Data()
                         .initiation(toOBWriteDomesticStandingOrder3DataInitiation(domesticStandingOrderConsent.getInitiation()))
-                        .status(domesticStandingOrderConsent.getStatus().toOBWriteDomesticStandingOrderConsentResponse4DataStatus())
+                        .status(toOBWriteDomesticStandingOrderConsentResponse4DataStatus(domesticStandingOrderConsent.getStatus()))
                         .creationDateTime(domesticStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(domesticStandingOrderConsent.getStatusUpdate())
                         .consentId(domesticStandingOrderConsent.getId())

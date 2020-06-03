@@ -57,6 +57,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticConsentResponse3DataStatus;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
@@ -242,9 +243,8 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         return new OBWriteDomesticConsentResponse3()
                 .data(new OBWriteDomesticConsentResponse3Data()
                         .initiation(toOBWriteDomestic2DataInitiation(domesticConsent.getInitiation()))
-                        .status(domesticConsent.getStatus().toOBWriteDomesticConsentResponse3DataStatus())
+                        .status(toOBWriteDomesticConsentResponse3DataStatus(domesticConsent.getStatus()))
                         .creationDateTime(domesticConsent.getCreated())
-                        // TODO #216 - refactor status conversion
                         .statusUpdateDateTime(domesticConsent.getStatusUpdate())
                         .consentId(domesticConsent.getId())
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(domesticConsent.getDomesticConsent().getData().getAuthorisation()))

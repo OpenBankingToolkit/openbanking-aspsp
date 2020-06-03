@@ -57,6 +57,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalStandingOrderResponse5DataStatus;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -206,7 +207,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                         .initiation(frPaymentSubmission.getInternationalStandingOrder().getData().getInitiation())
                         .creationDateTime(frInternationalStandingOrderConsent2.getCreated())
                         .statusUpdateDateTime(frInternationalStandingOrderConsent2.getStatusUpdate())
-                        .status(frInternationalStandingOrderConsent2.getStatus().toOBWriteInternationalStandingOrderResponse5DataStatus())
+                        .status(toOBWriteInternationalStandingOrderResponse5DataStatus(frInternationalStandingOrderConsent2.getStatus()))
                         .consentId(frInternationalStandingOrderConsent2.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetInternationalStandingOrder()))
                 .meta(new Meta());

@@ -21,7 +21,10 @@
 package com.forgerock.openbanking.common.model.openbanking.forgerock;
 
 import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBExternalConsentStatus1Code;
+import uk.org.openbanking.datamodel.payment.OBExternalConsentStatus2Code;
+import uk.org.openbanking.datamodel.payment.OBExternalStatus1Code;
+import uk.org.openbanking.datamodel.payment.OBTransactionIndividualStatus1Code;
 
 public enum ConsentStatusCode {
 
@@ -70,24 +73,6 @@ public enum ConsentStatusCode {
         }
     }
 
-    public OBWriteDomesticStandingOrderConsentResponse4Data.StatusEnum toOBWriteDomesticStandingOrderConsentResponse4DataStatus() {
-        switch (this) {
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case CONSUMED:
-                return OBWriteDomesticStandingOrderConsentResponse4Data.StatusEnum.CONSUMED;
-            case ACCEPTEDCUSTOMERPROFILE:
-            case ACCEPTEDTECHNICALVALIDATION:
-            case AUTHORISED:
-                return OBWriteDomesticStandingOrderConsentResponse4Data.StatusEnum.AUTHORISED;
-            case AWAITINGAUTHORISATION:
-                return OBWriteDomesticStandingOrderConsentResponse4Data.StatusEnum.AWAITINGAUTHORISATION;
-            default:
-                return OBWriteDomesticStandingOrderConsentResponse4Data.StatusEnum.REJECTED;
-
-        }
-    }
-
     public OBTransactionIndividualStatus1Code toOBTransactionIndividualStatus1Code() {
         return OBTransactionIndividualStatus1Code.valueOf(name());
     }
@@ -119,199 +104,6 @@ public enum ConsentStatusCode {
             default:
                 return OBExternalConsentStatus2Code.REJECTED;
 
-        }
-    }
-
-    public OBWriteDomesticConsentResponse3Data.StatusEnum toOBWriteDomesticConsentResponse3DataStatus() {
-        switch (this) {
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case CONSUMED:
-                return OBWriteDomesticConsentResponse3Data.StatusEnum.CONSUMED;
-            case ACCEPTEDCUSTOMERPROFILE:
-            case ACCEPTEDTECHNICALVALIDATION:
-            case AUTHORISED:
-                return OBWriteDomesticConsentResponse3Data.StatusEnum.AUTHORISED;
-            case AWAITINGAUTHORISATION:
-                return OBWriteDomesticConsentResponse3Data.StatusEnum.AWAITINGAUTHORISATION;
-            default:
-                return OBWriteDomesticConsentResponse3Data.StatusEnum.REJECTED;
-        }
-    }
-
-    public OBWriteDomesticScheduledConsentResponse3Data.StatusEnum toOBWriteDomesticScheduledConsentResponse3DataStatus() {
-        switch (this) {
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case CONSUMED:
-                return OBWriteDomesticScheduledConsentResponse3Data.StatusEnum.CONSUMED;
-            case ACCEPTEDCUSTOMERPROFILE:
-            case ACCEPTEDTECHNICALVALIDATION:
-            case AUTHORISED:
-                return OBWriteDomesticScheduledConsentResponse3Data.StatusEnum.AUTHORISED;
-            case AWAITINGAUTHORISATION:
-                return OBWriteDomesticScheduledConsentResponse3Data.StatusEnum.AWAITINGAUTHORISATION;
-            default:
-                return OBWriteDomesticScheduledConsentResponse3Data.StatusEnum.REJECTED;
-        }
-    }
-
-    public OBWriteDomesticResponse3Data.StatusEnum toOBWriteDomesticResponse3DataStatus() {
-        switch (this) {
-            // TODO #216 - check these values are correct
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-            case ACCEPTEDCUSTOMERPROFILE:
-            case ACCEPTEDTECHNICALVALIDATION:
-                return OBWriteDomesticResponse3Data.StatusEnum.ACCEPTEDSETTLEMENTCOMPLETED;
-            case ACCEPTEDSETTLEMENTINPROCESS:
-                return OBWriteDomesticResponse3Data.StatusEnum.ACCEPTEDSETTLEMENTINPROCESS;
-            case REJECTED:
-            case REVOKED:
-                return OBWriteDomesticResponse3Data.StatusEnum.REJECTED;
-            default:
-                return OBWriteDomesticResponse3Data.StatusEnum.PENDING;
-        }
-    }
-
-    public OBWriteDomesticScheduledResponse3Data.StatusEnum toOBWriteDomesticScheduledResponse3DataStatus() {
-        switch (this) {
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-                return OBWriteDomesticScheduledResponse3Data.StatusEnum.INITIATIONCOMPLETED;
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case PENDING:
-                return OBWriteDomesticScheduledResponse3Data.StatusEnum.INITIATIONPENDING;
-            case REVOKED:
-                return OBWriteDomesticScheduledResponse3Data.StatusEnum.CANCELLED;
-            default:
-                return OBWriteDomesticScheduledResponse3Data.StatusEnum.INITIATIONFAILED;
-        }
-    }
-
-    public OBWriteDomesticStandingOrderResponse4Data.StatusEnum toOBWriteDomesticStandingOrderResponse4DataStatus() {
-        switch (this) {
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-                return OBWriteDomesticStandingOrderResponse4Data.StatusEnum.INITIATIONCOMPLETED;
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case PENDING:
-                return OBWriteDomesticStandingOrderResponse4Data.StatusEnum.INITIATIONPENDING;
-            case REVOKED:
-                return OBWriteDomesticStandingOrderResponse4Data.StatusEnum.CANCELLED;
-            default:
-                return OBWriteDomesticStandingOrderResponse4Data.StatusEnum.INITIATIONFAILED;
-        }
-    }
-
-    public OBWriteFileConsentResponse3Data.StatusEnum toOBWriteFileConsentResponse3DataStatus() {
-        switch (this) {
-            case AWAITINGUPLOAD:
-                return OBWriteFileConsentResponse3Data.StatusEnum.AWAITINGUPLOAD;
-            case AWAITINGAUTHORISATION:
-                return OBWriteFileConsentResponse3Data.StatusEnum.AWAITINGAUTHORISATION;
-            case AUTHORISED:
-                return OBWriteFileConsentResponse3Data.StatusEnum.AUTHORISED;
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case CONSUMED:
-                return OBWriteFileConsentResponse3Data.StatusEnum.CONSUMED;
-            default:
-                return OBWriteFileConsentResponse3Data.StatusEnum.REJECTED;
-
-        }
-    }
-
-    public OBWriteInternationalConsentResponse4Data.StatusEnum toOBWriteInternationalConsentResponse4DataStatus() {
-        switch (this) {
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case CONSUMED:
-                return OBWriteInternationalConsentResponse4Data.StatusEnum.CONSUMED;
-            case ACCEPTEDCUSTOMERPROFILE:
-            case ACCEPTEDTECHNICALVALIDATION:
-            case AUTHORISED:
-                return OBWriteInternationalConsentResponse4Data.StatusEnum.AUTHORISED;
-            case AWAITINGAUTHORISATION:
-                return OBWriteInternationalConsentResponse4Data.StatusEnum.AWAITINGAUTHORISATION;
-            default:
-                return OBWriteInternationalConsentResponse4Data.StatusEnum.REJECTED;
-        }
-    }
-
-    public OBWriteInternationalResponse4Data.StatusEnum toOBWriteInternationalResponse4DataStatus() {
-        switch (this) {
-            // TODO #216 - check these values are correct
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-            case ACCEPTEDCUSTOMERPROFILE:
-            case ACCEPTEDTECHNICALVALIDATION:
-                return OBWriteInternationalResponse4Data.StatusEnum.ACCEPTEDSETTLEMENTCOMPLETED;
-            case ACCEPTEDSETTLEMENTINPROCESS:
-                return OBWriteInternationalResponse4Data.StatusEnum.ACCEPTEDSETTLEMENTINPROCESS;
-            case REJECTED:
-            case REVOKED:
-                return OBWriteInternationalResponse4Data.StatusEnum.REJECTED;
-            default:
-                return OBWriteInternationalResponse4Data.StatusEnum.PENDING;
-        }
-    }
-
-    public OBWriteInternationalScheduledConsentResponse4Data.StatusEnum toOBWriteInternationalScheduledConsentResponse4DataStatus() {
-        switch (this) {
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case CONSUMED:
-                return OBWriteInternationalScheduledConsentResponse4Data.StatusEnum.CONSUMED;
-            case ACCEPTEDCUSTOMERPROFILE:
-            case ACCEPTEDTECHNICALVALIDATION:
-            case AUTHORISED:
-                return OBWriteInternationalScheduledConsentResponse4Data.StatusEnum.AUTHORISED;
-            case AWAITINGAUTHORISATION:
-                return OBWriteInternationalScheduledConsentResponse4Data.StatusEnum.AWAITINGAUTHORISATION;
-            default:
-                return OBWriteInternationalScheduledConsentResponse4Data.StatusEnum.REJECTED;
-        }
-    }
-
-    public OBWriteInternationalScheduledResponse4Data.StatusEnum toOBWriteInternationalScheduledResponse4DataStatus() {
-        switch (this) {
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-                return OBWriteInternationalScheduledResponse4Data.StatusEnum.INITIATIONCOMPLETED;
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case PENDING:
-                return OBWriteInternationalScheduledResponse4Data.StatusEnum.INITIATIONPENDING;
-            case REVOKED:
-                return OBWriteInternationalScheduledResponse4Data.StatusEnum.CANCELLED;
-            default:
-                return OBWriteInternationalScheduledResponse4Data.StatusEnum.INITIATIONFAILED;
-        }
-    }
-
-    public OBWriteInternationalStandingOrderConsentResponse5Data.StatusEnum toOBWriteInternationalStandingOrderConsentResponse5DataStatus() {
-        switch (this) {
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case CONSUMED:
-                return OBWriteInternationalStandingOrderConsentResponse5Data.StatusEnum.CONSUMED;
-            case ACCEPTEDCUSTOMERPROFILE:
-            case ACCEPTEDTECHNICALVALIDATION:
-            case AUTHORISED:
-                return OBWriteInternationalStandingOrderConsentResponse5Data.StatusEnum.AUTHORISED;
-            case AWAITINGAUTHORISATION:
-                return OBWriteInternationalStandingOrderConsentResponse5Data.StatusEnum.AWAITINGAUTHORISATION;
-            default:
-                return OBWriteInternationalStandingOrderConsentResponse5Data.StatusEnum.REJECTED;
-        }
-    }
-
-    public OBWriteInternationalStandingOrderResponse5Data.StatusEnum toOBWriteInternationalStandingOrderResponse5DataStatus() {
-        switch (this) {
-            case ACCEPTEDSETTLEMENTCOMPLETED:
-                return OBWriteInternationalStandingOrderResponse5Data.StatusEnum.INITIATIONCOMPLETED;
-            case ACCEPTEDSETTLEMENTINPROCESS:
-            case PENDING:
-                return OBWriteInternationalStandingOrderResponse5Data.StatusEnum.INITIATIONPENDING;
-            case REVOKED:
-                return OBWriteInternationalStandingOrderResponse5Data.StatusEnum.CANCELLED;
-            default:
-                return OBWriteInternationalStandingOrderResponse5Data.StatusEnum.INITIATIONFAILED;
         }
     }
 

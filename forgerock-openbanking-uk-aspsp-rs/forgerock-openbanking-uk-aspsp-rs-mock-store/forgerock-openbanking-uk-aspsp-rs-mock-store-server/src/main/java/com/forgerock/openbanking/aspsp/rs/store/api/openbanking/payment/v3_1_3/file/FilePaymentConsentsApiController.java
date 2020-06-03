@@ -68,6 +68,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteFileConsentResponse3DataStatus;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBFileConverter.toOBWriteFile2DataInitiation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent2;
@@ -317,7 +318,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
         return new OBWriteFileConsentResponse3()
                 .data(new OBWriteFileConsentResponse3Data()
                         .consentId(fileConsent.getId())
-                        .status(fileConsent.getStatus().toOBWriteFileConsentResponse3DataStatus())
+                        .status(toOBWriteFileConsentResponse3DataStatus(fileConsent.getStatus()))
                         .creationDateTime(fileConsent.getCreated())
                         .statusUpdateDateTime(fileConsent.getStatusUpdate())
                         .initiation(toOBWriteFile2DataInitiation(fileConsent.getInitiation()))

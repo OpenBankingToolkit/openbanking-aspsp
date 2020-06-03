@@ -57,6 +57,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticStandingOrderResponse4DataStatus;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -205,7 +206,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .initiation(toOBWriteDomesticStandingOrder3DataInitiation(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))
                 .creationDateTime(frDomesticStandingOrderConsent3.getCreated())
                 .statusUpdateDateTime(frDomesticStandingOrderConsent3.getStatusUpdate())
-                .status(frDomesticStandingOrderConsent3.getStatus().toOBWriteDomesticStandingOrderResponse4DataStatus())
+                .status(toOBWriteDomesticStandingOrderResponse4DataStatus(frDomesticStandingOrderConsent3.getStatus()))
                 .consentId(frDomesticStandingOrderConsent3.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetDomesticStandingOrder()))
                 .meta(new Meta());

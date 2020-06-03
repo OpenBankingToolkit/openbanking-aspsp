@@ -57,6 +57,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalResponse4DataStatus;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -204,7 +205,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .initiation(frPaymentSubmission.getInternationalPayment().getData().getInitiation())
                         .creationDateTime(frInternationalConsent.getCreated())
                         .statusUpdateDateTime(frInternationalConsent.getStatusUpdate())
-                        .status(frInternationalConsent.getStatus().toOBWriteInternationalResponse4DataStatus())
+                        .status(toOBWriteInternationalResponse4DataStatus(frInternationalConsent.getStatus()))
                         .consentId(frInternationalConsent.getId())
                         .exchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetInternationalPayment()))

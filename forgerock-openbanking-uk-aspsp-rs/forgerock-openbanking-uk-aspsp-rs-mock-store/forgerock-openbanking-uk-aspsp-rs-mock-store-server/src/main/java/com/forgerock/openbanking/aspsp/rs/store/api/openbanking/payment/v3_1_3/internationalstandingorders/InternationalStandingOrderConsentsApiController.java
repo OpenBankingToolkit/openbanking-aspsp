@@ -57,6 +57,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalStandingOrderConsentResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -179,7 +180,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
         return new OBWriteInternationalStandingOrderConsentResponse5()
                 .data(new OBWriteInternationalStandingOrderConsentResponse5Data()
                         .initiation(internationalStandingOrderConsent.getInitiation())
-                        .status(internationalStandingOrderConsent.getStatus().toOBWriteInternationalStandingOrderConsentResponse5DataStatus())
+                        .status(toOBWriteInternationalStandingOrderConsentResponse5DataStatus(internationalStandingOrderConsent.getStatus()))
                         .creationDateTime(internationalStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(internationalStandingOrderConsent.getStatusUpdate())
                         .consentId(internationalStandingOrderConsent.getId())

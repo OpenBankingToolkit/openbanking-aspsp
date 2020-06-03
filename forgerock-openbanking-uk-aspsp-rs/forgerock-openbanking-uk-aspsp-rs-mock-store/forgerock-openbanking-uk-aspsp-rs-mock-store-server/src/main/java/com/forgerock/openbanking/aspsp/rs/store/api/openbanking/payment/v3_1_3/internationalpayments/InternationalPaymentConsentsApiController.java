@@ -56,6 +56,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalConsentResponse4DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -230,7 +231,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
         return new OBWriteInternationalConsentResponse4()
                 .data(new OBWriteInternationalConsentResponse4Data()
                         .initiation(internationalConsent.getInitiation())
-                        .status(internationalConsent.getStatus().toOBWriteInternationalConsentResponse4DataStatus())
+                        .status(toOBWriteInternationalConsentResponse4DataStatus(internationalConsent.getStatus()))
                         .creationDateTime(internationalConsent.getCreated())
                         .statusUpdateDateTime(internationalConsent.getStatusUpdate())
                         .exchangeRateInformation(internationalConsent.getCalculatedExchangeRate())
