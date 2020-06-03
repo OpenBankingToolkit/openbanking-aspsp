@@ -23,8 +23,6 @@ package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.paym
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.payment.*;
 
-import java.lang.reflect.Field;
-
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConverterHelper.copyField;
 
 public class OBAccountConverter {
@@ -53,20 +51,11 @@ public class OBAccountConverter {
         return toAccount(new OBWriteDomesticStandingOrder3DataInitiationCreditorAccount(), creditorAccount);
     }
 
-    public static OBWriteInternationalStandingOrder4DataInitiationCreditorAccount toOBWriteInternationalStandingOrder4DataInitiationCreditorAccount(OBCashAccountCreditor3 creditorAccount) {
-        return toAccount(new OBWriteInternationalStandingOrder4DataInitiationCreditorAccount(), creditorAccount);
-
-    }
-
     public static OBCashAccountDebtor4 toOBCashAccountDebtor4(OBWriteDomesticStandingOrder3DataInitiationDebtorAccount debtorAccount) {
         return toAccount(new OBCashAccountDebtor4(), debtorAccount);
     }
 
     public static OBCashAccountCreditor3 toOBCashAccountCreditor3(OBWriteDomesticStandingOrder3DataInitiationCreditorAccount creditorAccount) {
-        return toAccount(new OBCashAccountCreditor3(), creditorAccount);
-    }
-
-    public static OBCashAccountCreditor3 toOBCashAccountCreditor3(OBWriteInternationalStandingOrder4DataInitiationCreditorAccount creditorAccount) {
         return toAccount(new OBCashAccountCreditor3(), creditorAccount);
     }
 

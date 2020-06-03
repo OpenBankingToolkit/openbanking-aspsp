@@ -28,13 +28,13 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalConsent2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalConsent4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
@@ -56,17 +56,6 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAccountConverter.*;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAmountConverter.toOBWriteDomestic2DataInitiationInstructedAmount;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBExchangeRateConverter.toOBExchangeRate1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBExchangeRateConverter.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalConverter.toOBWriteInternational3DataInitiation;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBRemittanceInformationConverter.toOBRemittanceInformation1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBRemittanceInformationConverter.toOBWriteDomestic2DataInitiationRemittanceInformation;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent2;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -76,13 +65,13 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE
 @Slf4j
 public class InternationalPaymentConsentsApiController implements InternationalPaymentConsentsApi {
 
-    private final InternationalConsent2Repository internationalConsentRepository;
+    private final InternationalConsent4Repository internationalConsentRepository;
     private final TppRepository tppRepository;
     private final FundsAvailabilityService fundsAvailabilityService;
     private final ResourceLinkService resourceLinkService;
     private ConsentMetricService consentMetricService;
 
-    public InternationalPaymentConsentsApiController(ConsentMetricService consentMetricService, InternationalConsent2Repository internationalConsentRepository, TppRepository tppRepository, FundsAvailabilityService fundsAvailabilityService, ResourceLinkService resourceLinkService) {
+    public InternationalPaymentConsentsApiController(ConsentMetricService consentMetricService, InternationalConsent4Repository internationalConsentRepository, TppRepository tppRepository, FundsAvailabilityService fundsAvailabilityService, ResourceLinkService resourceLinkService) {
         this.internationalConsentRepository = internationalConsentRepository;
         this.tppRepository = tppRepository;
         this.fundsAvailabilityService = fundsAvailabilityService;
@@ -128,7 +117,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        Optional<FRInternationalConsent2> consentByIdempotencyKey = internationalConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRInternationalConsent4> consentByIdempotencyKey = internationalConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, obWriteInternationalConsent4Param, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
@@ -137,10 +126,10 @@ public class InternationalPaymentConsentsApiController implements InternationalP
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        FRInternationalConsent2 internationalConsent = FRInternationalConsent2.builder()
+        FRInternationalConsent4 internationalConsent = FRInternationalConsent4.builder()
                 .id(IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .internationalConsent(toOBWriteInternationalConsent2(obWriteInternationalConsent4Param))
+                .internationalConsent(obWriteInternationalConsent4Param)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -178,11 +167,11 @@ public class InternationalPaymentConsentsApiController implements InternationalP
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRInternationalConsent2> isInternationalConsent = internationalConsentRepository.findById(consentId);
+        Optional<FRInternationalConsent4> isInternationalConsent = internationalConsentRepository.findById(consentId);
         if (!isInternationalConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("International consent '" + consentId + "' can't be found");
         }
-        FRInternationalConsent2 internationalConsent = isInternationalConsent.get();
+        FRInternationalConsent4 internationalConsent = isInternationalConsent.get();
 
         return ResponseEntity.ok(packageResponse(internationalConsent));
     }
@@ -213,11 +202,11 @@ public class InternationalPaymentConsentsApiController implements InternationalP
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRInternationalConsent2> isInternationalConsent = internationalConsentRepository.findById(consentId);
+        Optional<FRInternationalConsent4> isInternationalConsent = internationalConsentRepository.findById(consentId);
         if (!isInternationalConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("International consent '" + consentId + "' can't be found");
         }
-        FRInternationalConsent2 internationalConsent = isInternationalConsent.get();
+        FRInternationalConsent4 internationalConsent = isInternationalConsent.get();
 
         // Check if funds are available on the account selected in consent
         boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(
@@ -237,16 +226,16 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 );
     }
 
-    private OBWriteInternationalConsentResponse4 packageResponse(FRInternationalConsent2 internationalConsent) {
+    private OBWriteInternationalConsentResponse4 packageResponse(FRInternationalConsent4 internationalConsent) {
         return new OBWriteInternationalConsentResponse4()
                 .data(new OBWriteInternationalConsentResponse4Data()
-                        .initiation(toOBWriteInternational3DataInitiation(internationalConsent.getInitiation()))
+                        .initiation(internationalConsent.getInitiation())
                         .status(internationalConsent.getStatus().toOBWriteInternationalConsentResponse4DataStatus())
                         .creationDateTime(internationalConsent.getCreated())
                         .statusUpdateDateTime(internationalConsent.getStatusUpdate())
-                        .exchangeRateInformation(toOBWriteInternationalConsentResponse4DataExchangeRateInformation(internationalConsent.getCalculatedExchangeRate()))
+                        .exchangeRateInformation(internationalConsent.getCalculatedExchangeRate())
                         .consentId(internationalConsent.getId())
-                        .authorisation(toOBWriteDomesticConsent3DataAuthorisation(internationalConsent.getInternationalConsent().getData().getAuthorisation()))
+                        .authorisation(internationalConsent.getInternationalConsent().getData().getAuthorisation())
                 )
                 .risk(internationalConsent.getRisk())
                 .links(resourceLinkService.toSelfLink(internationalConsent, discovery -> discovery.getV_3_1().getGetInternationalPaymentConsent()))

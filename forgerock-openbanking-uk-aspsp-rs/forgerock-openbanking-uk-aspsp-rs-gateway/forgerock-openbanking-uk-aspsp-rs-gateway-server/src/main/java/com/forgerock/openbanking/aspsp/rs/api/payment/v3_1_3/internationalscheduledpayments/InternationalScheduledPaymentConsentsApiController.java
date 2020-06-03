@@ -44,14 +44,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse4;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBExchangeRateConverter.toOBExchangeRate1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -119,7 +121,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                 )
                 .execute(
                         (String tppId) -> {
-                            exchangeRateVerifier.verify(toOBExchangeRate1(obWriteInternationalScheduledConsent4Param.getData().getInitiation().getExchangeRateInformation()));
+                            exchangeRateVerifier.verify(obWriteInternationalScheduledConsent4Param.getData().getInitiation().getExchangeRateInformation());
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);

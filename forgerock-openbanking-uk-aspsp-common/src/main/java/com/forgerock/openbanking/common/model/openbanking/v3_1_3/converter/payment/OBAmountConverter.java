@@ -22,8 +22,6 @@ package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.paym
 
 import uk.org.openbanking.datamodel.payment.*;
 
-import java.lang.reflect.Field;
-
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConverterHelper.copyField;
 
 public class OBAmountConverter {
