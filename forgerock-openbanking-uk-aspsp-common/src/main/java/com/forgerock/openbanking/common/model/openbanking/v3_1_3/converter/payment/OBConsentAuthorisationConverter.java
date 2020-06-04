@@ -23,18 +23,19 @@ package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.paym
 import uk.org.openbanking.datamodel.payment.OBAuthorisation1;
 import uk.org.openbanking.datamodel.payment.OBExternalAuthorisation1Code;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3DataAuthorisation;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3DataAuthorisation.AuthorisationTypeEnum;
 
 public class OBConsentAuthorisationConverter {
 
     public static OBWriteDomesticConsent3DataAuthorisation toOBWriteDomesticConsent3DataAuthorisation(OBAuthorisation1 authorisation) {
         return (new OBWriteDomesticConsent3DataAuthorisation())
-                .authorisationType(OBWriteDomesticConsent3DataAuthorisation.AuthorisationTypeEnum.fromValue(authorisation.getAuthorisationType().toString()))
+                .authorisationType(AuthorisationTypeEnum.valueOf(authorisation.getAuthorisationType().name()))
                 .completionDateTime(authorisation.getCompletionDateTime());
     }
 
     public static OBAuthorisation1 toOBAuthorisation1(OBWriteDomesticConsent3DataAuthorisation authorisation) {
         return (new OBAuthorisation1())
-                .authorisationType(OBExternalAuthorisation1Code.valueOf(authorisation.getAuthorisationType().getValue()))
+                .authorisationType(OBExternalAuthorisation1Code.valueOf(authorisation.getAuthorisationType().name()))
                 .completionDateTime(authorisation.getCompletionDateTime());
     }
 

@@ -32,7 +32,7 @@ import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converte
 public class OBDomesticConverter {
 
     public static OBDomestic2 toOBDomestic2(OBWriteDomestic2DataInitiation initiation) {
-        return new OBDomestic2()
+        return (new OBDomestic2())
                 .creditorAccount(toOBCashAccount3(initiation.getCreditorAccount()))
                 .creditorPostalAddress(initiation.getCreditorPostalAddress())
                 .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
@@ -40,7 +40,8 @@ public class OBDomesticConverter {
                 .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
                 .instructionIdentification(initiation.getInstructionIdentification())
                 .localInstrument(initiation.getLocalInstrument())
-                .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()));
+                .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()))
+                .supplementaryData(initiation.getSupplementaryData());
     }
 
     public static OBWriteDomestic2DataInitiation toOBWriteDomestic2DataInitiation(OBDomestic2 initiation) {
@@ -53,7 +54,6 @@ public class OBDomesticConverter {
                 .creditorAccount(toOBWriteDomestic2DataInitiationCreditorAccount(initiation.getCreditorAccount()))
                 .creditorPostalAddress(initiation.getCreditorPostalAddress())
                 .remittanceInformation(toOBWriteDomestic2DataInitiationRemittanceInformation(initiation.getRemittanceInformation()))
-                .supplementaryData(initiation.getSupplementaryData())
-                ;
+                .supplementaryData(initiation.getSupplementaryData());
     }
 }
