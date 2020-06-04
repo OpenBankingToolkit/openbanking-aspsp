@@ -120,7 +120,6 @@ public interface FilePaymentsApi {
 
     @RequestMapping(value = "/file-payments/{FilePaymentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteFileResponse2> getFilePaymentsFilePaymentId(
             @ApiParam(value = "FilePaymentId", required = true)
@@ -165,7 +164,6 @@ public interface FilePaymentsApi {
 
     @RequestMapping(value = "/file-payments/{FilePaymentId}/payment-details",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWritePaymentDetailsResponse1> getFilePaymentsFilePaymentIdPaymentDetails(
             @ApiParam(value = "FilePaymentId", required = true)
@@ -210,7 +208,6 @@ public interface FilePaymentsApi {
 
     @RequestMapping(value = "/file-payments/{FilePaymentId}/report-file",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<Resource> getFilePaymentsFilePaymentIdReportFile(
             @ApiParam(value = "FilePaymentId", required = true)

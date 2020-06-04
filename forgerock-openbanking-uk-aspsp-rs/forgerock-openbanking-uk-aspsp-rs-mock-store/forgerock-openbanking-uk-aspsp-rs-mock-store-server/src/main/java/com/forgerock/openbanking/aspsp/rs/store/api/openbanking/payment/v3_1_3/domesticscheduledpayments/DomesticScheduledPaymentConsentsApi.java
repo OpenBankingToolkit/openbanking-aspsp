@@ -118,7 +118,6 @@ public interface DomesticScheduledPaymentConsentsApi {
 
     @RequestMapping(value = "/domestic-scheduled-payment-consents/{ConsentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteDomesticScheduledConsentResponse3> getDomesticScheduledPaymentConsentsConsentId(
 

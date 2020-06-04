@@ -132,7 +132,6 @@ public interface DomesticPaymentsApi {
     )
     @RequestMapping(value = "/domestic-payments/{DomesticPaymentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteDomesticResponse3> getDomesticPaymentsDomesticPaymentId(
 
@@ -180,7 +179,6 @@ public interface DomesticPaymentsApi {
     )
     @RequestMapping(value = "/domestic-payments/{DomesticPaymentId}/payment-details",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticPaymentsDomesticPaymentIdPaymentDetails(
 

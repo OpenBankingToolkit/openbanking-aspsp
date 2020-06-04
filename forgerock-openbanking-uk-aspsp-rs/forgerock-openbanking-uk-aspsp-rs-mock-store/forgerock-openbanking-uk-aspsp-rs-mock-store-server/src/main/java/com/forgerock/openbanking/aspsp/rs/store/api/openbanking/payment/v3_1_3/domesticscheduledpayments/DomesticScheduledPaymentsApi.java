@@ -119,7 +119,6 @@ public interface DomesticScheduledPaymentsApi {
 
     @RequestMapping(value = "/domestic-scheduled-payments/{DomesticScheduledPaymentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteDomesticScheduledResponse3> getDomesticScheduledPaymentsDomesticScheduledPaymentId(
 
@@ -165,7 +164,6 @@ public interface DomesticScheduledPaymentsApi {
 
     @RequestMapping(value = "/domestic-scheduled-payments/{DomesticScheduledPaymentId}/payment-details",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticScheduledPaymentsDomesticScheduledPaymentIdPaymentDetails(
 

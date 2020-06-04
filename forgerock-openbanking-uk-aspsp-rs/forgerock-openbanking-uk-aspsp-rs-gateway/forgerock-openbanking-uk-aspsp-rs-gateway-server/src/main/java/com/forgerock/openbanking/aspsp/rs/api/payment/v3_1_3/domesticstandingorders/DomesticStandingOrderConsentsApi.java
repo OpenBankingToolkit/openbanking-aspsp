@@ -134,7 +134,6 @@ public interface DomesticStandingOrderConsentsApi {
     )
     @RequestMapping(value = "/domestic-standing-order-consents/{ConsentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteDomesticStandingOrderConsentResponse4> getDomesticStandingOrderConsentsConsentId(
             @ApiParam(value = "ConsentId", required = true)

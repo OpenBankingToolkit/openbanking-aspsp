@@ -120,7 +120,6 @@ public interface DomesticPaymentConsentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
     @RequestMapping(value = "/domestic-payment-consents/{ConsentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteDomesticConsentResponse3> getDomesticPaymentConsentsConsentId(
             @ApiParam(value = "ConsentId", required = true)
@@ -167,7 +166,6 @@ public interface DomesticPaymentConsentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
     @RequestMapping(value = "/domestic-payment-consents/{ConsentId}/funds-confirmation",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteFundsConfirmationResponse1> getDomesticPaymentConsentsConsentIdFundsConfirmation(
             @ApiParam(value = "ConsentId", required = true)

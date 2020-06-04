@@ -119,7 +119,6 @@ public interface InternationalScheduledPaymentsApi {
 
     @RequestMapping(value = "/international-scheduled-payments/{InternationalScheduledPaymentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteInternationalScheduledResponse4> getInternationalScheduledPaymentsInternationalScheduledPaymentId(
             @ApiParam(value = "InternationalScheduledPaymentId", required = true)
@@ -165,7 +164,6 @@ public interface InternationalScheduledPaymentsApi {
 
     @RequestMapping(value = "/international-scheduled-payments/{InternationalScheduledPaymentId}/payment-details",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWritePaymentDetailsResponse1> getInternationalScheduledPaymentsInternationalScheduledPaymentIdPaymentDetails(
 

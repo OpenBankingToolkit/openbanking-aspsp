@@ -119,7 +119,6 @@ public interface InternationalStandingOrdersApi {
 
     @RequestMapping(value = "/international-standing-orders/{InternationalStandingOrderPaymentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteInternationalStandingOrderResponse5> getInternationalStandingOrdersInternationalStandingOrderPaymentId(
 
@@ -166,7 +165,6 @@ public interface InternationalStandingOrdersApi {
 
     @RequestMapping(value = "/international-standing-orders/{InternationalStandingOrderPaymentId}/payment-details",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWritePaymentDetailsResponse1> getInternationalStandingOrdersInternationalStandingOrderPaymentIdPaymentDetails(
 

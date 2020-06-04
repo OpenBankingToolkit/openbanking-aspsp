@@ -134,7 +134,6 @@ public interface InternationalScheduledPaymentConsentsApi {
     )
     @RequestMapping(value = "/international-scheduled-payment-consents/{ConsentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteInternationalScheduledConsentResponse4> getInternationalScheduledPaymentConsentsConsentId(
             @ApiParam(value = "ConsentId", required = true)
@@ -183,7 +182,6 @@ public interface InternationalScheduledPaymentConsentsApi {
     )
     @RequestMapping(value = "/international-scheduled-payment-consents/{ConsentId}/funds-confirmation",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteFundsConfirmationResponse1> getInternationalScheduledPaymentConsentsConsentIdFundsConfirmation(
             @ApiParam(value = "ConsentId", required = true)

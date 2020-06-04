@@ -119,7 +119,6 @@ public interface DomesticStandingOrdersApi {
 
     @RequestMapping(value = "/domestic-standing-orders/{DomesticStandingOrderId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteDomesticStandingOrderResponse4> getDomesticStandingOrdersDomesticStandingOrderId(
             @ApiParam(value = "DomesticStandingOrderId", required = true)
@@ -165,7 +164,6 @@ public interface DomesticStandingOrdersApi {
 
     @RequestMapping(value = "/domestic-standing-orders/{DomesticStandingOrderId}/payment-details",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
             method = RequestMethod.GET)
     ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticStandingOrdersDomesticStandingOrderIdPaymentDetails(
 
