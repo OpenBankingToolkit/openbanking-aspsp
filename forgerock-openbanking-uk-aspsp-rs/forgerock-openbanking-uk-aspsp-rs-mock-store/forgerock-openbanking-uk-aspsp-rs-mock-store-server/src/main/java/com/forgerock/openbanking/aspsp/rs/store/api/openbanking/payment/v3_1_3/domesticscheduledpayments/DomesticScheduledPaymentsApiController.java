@@ -210,8 +210,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 .status(toOBWriteDomesticScheduledResponse3DataStatus(frDomesticScheduledConsent2.getStatus()))
                 .consentId(frDomesticScheduledConsent2.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetDomesticScheduledPayment()))
-                .meta(new Meta())
-                ;
+                .meta(new Meta());
     }
 
 }

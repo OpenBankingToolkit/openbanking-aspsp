@@ -27,7 +27,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.domesticscheduledp
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
@@ -59,6 +59,9 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticScheduledConverter.toOBWriteDomesticScheduled2DataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -115,7 +118,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             Principal principal
     ) throws OBErrorResponseException {
         String consentId = obWriteDomesticScheduled2Param.getData().getConsentId();
-        FRDomesticScheduledConsent2 payment = paymentsService.getPayment(consentId);
+        FRDomesticScheduledConsent4 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -126,7 +129,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(obWriteDomesticScheduled2Param.getData().getInitiation(), obWriteDomesticScheduled2Param.getRisk());
+                    f.verifyRiskAndInitiation(toOBWriteDomesticScheduled2DataInitiation(obWriteDomesticScheduled2Param.getData().getInitiation()), obWriteDomesticScheduled2Param.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -135,8 +138,8 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                             LOGGER.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
                             OBScheduledPayment1 scheduledPayment = new OBScheduledPayment1()
                                     .accountId(payment.getAccountId())
-                                    .creditorAccount(payment.getInitiation().getCreditorAccount())
-                                    .instructedAmount(payment.getInitiation().getInstructedAmount())
+                                    .creditorAccount(toOBCashAccount3(payment.getInitiation().getCreditorAccount()))
+                                    .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()))
                                     // Set to EXECUTION because we are creating the creditor payment
                                     .scheduledType(OBExternalScheduleType1Code.EXECUTION)
                                     .scheduledPaymentDateTime(payment.getInitiation().getRequestedExecutionDateTime())

@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,24 +31,24 @@ import java.util.Collection;
 public interface DomesticScheduledPaymentApi {
 
     @RequestMapping(value = "/{paymentId}",
-            produces = { "application/json; charset=utf-8" },
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity get(
             @PathVariable("paymentId") String paymentId
     );
 
     @RequestMapping(value = "/search/findByStatus",
-            produces = { "application/json; charset=utf-8" },
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<Collection<FRDomesticScheduledConsent2>> findByStatus(
+    ResponseEntity<Collection<FRDomesticScheduledConsent4>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     );
 
     @RequestMapping(value = "/",
-            produces = { "application/json; charset=utf-8" },
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT)
-    ResponseEntity<FRDomesticScheduledConsent2> update(
-            @RequestBody FRDomesticScheduledConsent2 payment1
+    ResponseEntity<FRDomesticScheduledConsent4> update(
+            @RequestBody FRDomesticScheduledConsent4 payment1
     );
 }
 

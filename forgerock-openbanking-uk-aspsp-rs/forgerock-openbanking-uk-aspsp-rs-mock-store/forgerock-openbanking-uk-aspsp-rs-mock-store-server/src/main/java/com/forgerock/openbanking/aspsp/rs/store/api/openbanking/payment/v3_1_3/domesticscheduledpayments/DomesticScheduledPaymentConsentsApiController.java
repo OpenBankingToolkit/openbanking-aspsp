@@ -187,6 +187,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                         .consentId(domesticScheduledConsent.getId())
                         .permission(PermissionEnum.valueOf(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission().name()))
                         .authorisation(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation())
+                        .scASupportData(domesticScheduledConsent.getDomesticScheduledConsent().getData().getScASupportData())
                 )
                 .links(resourceLinkService.toSelfLink(domesticScheduledConsent, discovery -> discovery.getV_3_1_3().getGetDomesticScheduledPaymentConsent()))
                 .risk(domesticScheduledConsent.getRisk())
