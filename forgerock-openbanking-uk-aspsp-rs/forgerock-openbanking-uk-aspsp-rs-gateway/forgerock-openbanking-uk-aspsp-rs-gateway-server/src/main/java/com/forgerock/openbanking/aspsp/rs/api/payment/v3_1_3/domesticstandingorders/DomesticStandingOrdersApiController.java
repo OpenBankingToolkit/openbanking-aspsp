@@ -58,6 +58,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRStandingOrderPaymentConverter.toOBDomesticStandingOrder2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -128,7 +129,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(obWriteDomesticStandingOrder3Param.getData().getInitiation(), obWriteDomesticStandingOrder3Param.getRisk());
+                    f.verifyRiskAndInitiation(toOBDomesticStandingOrder2(obWriteDomesticStandingOrder3Param.getData().getInitiation()), obWriteDomesticStandingOrder3Param.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
