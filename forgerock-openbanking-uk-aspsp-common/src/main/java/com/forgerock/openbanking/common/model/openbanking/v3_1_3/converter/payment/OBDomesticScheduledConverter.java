@@ -33,7 +33,7 @@ import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converte
 public class OBDomesticScheduledConverter {
 
     public static OBDomesticScheduled1 toOBDomesticScheduled1(OBWriteDomesticScheduled2DataInitiation initiation) {
-        return (new OBDomesticScheduled1())
+        return initiation == null ? null : (new OBDomesticScheduled1())
                 .instructionIdentification(initiation.getInstructionIdentification())
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(initiation.getLocalInstrument())
@@ -46,7 +46,7 @@ public class OBDomesticScheduledConverter {
     }
 
     public static OBDomesticScheduled2 toOBDomesticScheduled2(OBWriteDomesticScheduled2DataInitiation initiation) {
-        return (new OBDomesticScheduled2())
+        return initiation == null ? null : (new OBDomesticScheduled2())
                 .instructionIdentification(initiation.getInstructionIdentification())
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(initiation.getLocalInstrument())
@@ -60,7 +60,7 @@ public class OBDomesticScheduledConverter {
     }
 
     public static OBWriteDomesticScheduled2DataInitiation toOBWriteDomesticScheduled2DataInitiation(OBDomesticScheduled2 initiation) {
-        return (new OBWriteDomesticScheduled2DataInitiation())
+        return initiation == null ? null : (new OBWriteDomesticScheduled2DataInitiation())
                 .instructionIdentification(initiation.getInstructionIdentification())
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(initiation.getLocalInstrument())

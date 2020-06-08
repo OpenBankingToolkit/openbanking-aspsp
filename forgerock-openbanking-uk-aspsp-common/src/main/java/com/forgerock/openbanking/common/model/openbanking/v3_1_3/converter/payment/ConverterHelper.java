@@ -37,6 +37,12 @@ class ConverterHelper {
      * @param <U>            The type of the original object.
      */
     static <T, U> void copyField(T newObject, U originalObject, String fieldName) {
+        if (originalObject == null) {
+            return; // optional fields may be null
+        }
+        if (newObject == null) {
+            throw new IllegalArgumentException("Cannot copy value to a null object");
+        }
         try {
             Field newField = newObject.getClass().getDeclaredField(fieldName);
             newField.setAccessible(true);

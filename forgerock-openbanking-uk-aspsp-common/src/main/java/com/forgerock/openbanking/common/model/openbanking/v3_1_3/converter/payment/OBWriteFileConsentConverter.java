@@ -36,7 +36,7 @@ public class OBWriteFileConsentConverter {
     }
 
     public static OBWriteDataFileConsent2 toOBWriteDataFileConsent2(OBWriteFileConsent3Data data) {
-        return (new OBWriteDataFileConsent2())
+        return data == null ? null : (new OBWriteDataFileConsent2())
                 .initiation(toOBFile2(data.getInitiation()))
                 .authorisation(toOBAuthorisation1(data.getAuthorisation()));
     }

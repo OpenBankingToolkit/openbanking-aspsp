@@ -29,7 +29,7 @@ import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converte
 public class OBDomesticStandingOrderConverter {
 
     public static OBDomesticStandingOrder3 toOBDomesticStandingOrder3(OBWriteDomesticStandingOrder3DataInitiation initiation) {
-        return (new OBDomesticStandingOrder3())
+        return initiation == null ? null : (new OBDomesticStandingOrder3())
                 .frequency(initiation.getFrequency())
                 .reference(initiation.getReference())
                 .numberOfPayments(initiation.getNumberOfPayments())
@@ -45,7 +45,7 @@ public class OBDomesticStandingOrderConverter {
     }
 
     public static OBWriteDomesticStandingOrder3DataInitiation toOBWriteDomesticStandingOrder3DataInitiation(OBDomesticStandingOrder3 initiation) {
-        return (new OBWriteDomesticStandingOrder3DataInitiation())
+        return initiation == null ? null : (new OBWriteDomesticStandingOrder3DataInitiation())
                 .frequency(initiation.getFrequency())
                 .reference(initiation.getReference())
                 .numberOfPayments(initiation.getNumberOfPayments())

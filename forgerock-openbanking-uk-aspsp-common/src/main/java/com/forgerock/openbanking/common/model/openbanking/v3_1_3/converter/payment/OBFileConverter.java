@@ -31,7 +31,7 @@ import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converte
 public class OBFileConverter {
 
     public static OBFile2 toOBFile2(OBWriteFile2DataInitiation initiation) {
-        return (new OBFile2())
+        return initiation == null ? null : (new OBFile2())
                 .fileType(initiation.getFileType())
                 .fileHash(initiation.getFileHash())
                 .fileReference(initiation.getFileReference())
@@ -45,7 +45,7 @@ public class OBFileConverter {
     }
 
     public static OBWriteFile2DataInitiation toOBWriteFile2DataInitiation(OBFile2 initiation) {
-        return (new OBWriteFile2DataInitiation())
+        return initiation == null ? null : (new OBWriteFile2DataInitiation())
                 .fileType(initiation.getFileType())
                 .fileHash(initiation.getFileHash())
                 .fileReference(initiation.getFileReference())

@@ -26,13 +26,13 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemitt
 public class OBRemittanceInformationConverter {
 
     public static OBRemittanceInformation1 toOBRemittanceInformation1(OBWriteDomestic2DataInitiationRemittanceInformation remittanceInformation) {
-        return (new OBRemittanceInformation1())
+        return remittanceInformation == null ? null : (new OBRemittanceInformation1())
                 .unstructured(remittanceInformation.getUnstructured())
                 .reference(remittanceInformation.getReference());
     }
 
     public static OBWriteDomestic2DataInitiationRemittanceInformation toOBWriteDomestic2DataInitiationRemittanceInformation(OBRemittanceInformation1 remittanceInformation) {
-        return (new OBWriteDomestic2DataInitiationRemittanceInformation())
+        return remittanceInformation == null ? null : (new OBWriteDomestic2DataInitiationRemittanceInformation())
                 .unstructured(remittanceInformation.getUnstructured())
                 .reference(remittanceInformation.getReference());
     }

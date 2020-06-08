@@ -32,7 +32,7 @@ import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converte
 public class OBDomesticConverter {
 
     public static OBDomestic2 toOBDomestic2(OBWriteDomestic2DataInitiation initiation) {
-        return (new OBDomestic2())
+        return initiation == null ? null : (new OBDomestic2())
                 .creditorAccount(toOBCashAccount3(initiation.getCreditorAccount()))
                 .creditorPostalAddress(initiation.getCreditorPostalAddress())
                 .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
@@ -45,7 +45,7 @@ public class OBDomesticConverter {
     }
 
     public static OBWriteDomestic2DataInitiation toOBWriteDomestic2DataInitiation(OBDomestic2 initiation) {
-        return (new OBWriteDomestic2DataInitiation())
+        return initiation == null ? null : (new OBWriteDomestic2DataInitiation())
                 .instructionIdentification(initiation.getInstructionIdentification())
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(initiation.getLocalInstrument())

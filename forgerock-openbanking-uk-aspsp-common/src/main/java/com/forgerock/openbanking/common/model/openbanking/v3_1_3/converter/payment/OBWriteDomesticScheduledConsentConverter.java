@@ -21,6 +21,10 @@
 package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment;
 
 import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3Data.PermissionEnum;
+
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
@@ -29,22 +33,21 @@ import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converte
 
 public class OBWriteDomesticScheduledConsentConverter {
 
-    public static OBWriteDomesticConsent2 toOBWriteDomesticConsent2(OBWriteDomesticConsent3 obWriteDomesticConsent3) {
-        return (new OBWriteDomesticConsent2())
-                .data((new OBWriteDataDomesticConsent2())
-                        .authorisation(toOBAuthorisation1(obWriteDomesticConsent3.getData().getAuthorisation()))
-                        .initiation(toOBDomestic2(obWriteDomesticConsent3.getData().getInitiation())))
-                .risk(obWriteDomesticConsent3.getRisk());
-    }
-
     public static OBWriteDomesticScheduledConsent3 toOBWriteDomesticScheduledConsent3(OBWriteDomesticScheduledConsent2 obWriteDomesticScheduledConsent2) {
         return (new OBWriteDomesticScheduledConsent3())
-                .data((new OBWriteDomesticScheduledConsent3Data())
-                        .permission(OBWriteDomesticScheduledConsent3Data.PermissionEnum.valueOf(obWriteDomesticScheduledConsent2.getData().getPermission().name()))
-                        .initiation(toOBWriteDomesticScheduled2DataInitiation(obWriteDomesticScheduledConsent2.getData().getInitiation()))
-                        .authorisation(toOBWriteDomesticConsent3DataAuthorisation(obWriteDomesticScheduledConsent2.getData().getAuthorisation()))
-                )
+                .data(toOBWriteDomesticScheduledConsent3Data(obWriteDomesticScheduledConsent2))
                 .risk(obWriteDomesticScheduledConsent2.getRisk());
+    }
+
+    public static OBWriteDomesticScheduledConsent3Data toOBWriteDomesticScheduledConsent3Data(OBWriteDomesticScheduledConsent2 obWriteDomesticScheduledConsent2) {
+        return obWriteDomesticScheduledConsent2.getData() == null ? null : (new OBWriteDomesticScheduledConsent3Data())
+                .permission(toPermissionEnum(obWriteDomesticScheduledConsent2.getData()))
+                .initiation(toOBWriteDomesticScheduled2DataInitiation(obWriteDomesticScheduledConsent2.getData().getInitiation()))
+                .authorisation(toOBWriteDomesticConsent3DataAuthorisation(obWriteDomesticScheduledConsent2.getData().getAuthorisation()));
+    }
+
+    private static PermissionEnum toPermissionEnum(OBWriteDataDomesticScheduledConsent2 data) {
+        return data.getPermission() == null ? null : PermissionEnum.valueOf(data.getPermission().name());
     }
 
 }

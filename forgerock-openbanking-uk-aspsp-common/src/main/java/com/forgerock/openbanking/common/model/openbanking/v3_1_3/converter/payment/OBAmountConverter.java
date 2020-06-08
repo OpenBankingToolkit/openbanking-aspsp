@@ -63,6 +63,9 @@ public class OBAmountConverter {
     }
 
     private static <T, U> T toAmount(T newAmount, U originalAmount) {
+        if (originalAmount == null) {
+            return null;
+        }
         copyField(newAmount, originalAmount, "currency");
         copyField(newAmount, originalAmount, "amount");
         return newAmount;

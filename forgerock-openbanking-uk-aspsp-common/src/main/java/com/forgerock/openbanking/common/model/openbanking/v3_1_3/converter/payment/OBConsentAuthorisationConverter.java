@@ -28,13 +28,13 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3DataAuthorisa
 public class OBConsentAuthorisationConverter {
 
     public static OBWriteDomesticConsent3DataAuthorisation toOBWriteDomesticConsent3DataAuthorisation(OBAuthorisation1 authorisation) {
-        return (new OBWriteDomesticConsent3DataAuthorisation())
+        return authorisation == null ? null : (new OBWriteDomesticConsent3DataAuthorisation())
                 .authorisationType(AuthorisationTypeEnum.valueOf(authorisation.getAuthorisationType().name()))
                 .completionDateTime(authorisation.getCompletionDateTime());
     }
 
     public static OBAuthorisation1 toOBAuthorisation1(OBWriteDomesticConsent3DataAuthorisation authorisation) {
-        return (new OBAuthorisation1())
+        return authorisation == null ? null : (new OBAuthorisation1())
                 .authorisationType(OBExternalAuthorisation1Code.valueOf(authorisation.getAuthorisationType().name()))
                 .completionDateTime(authorisation.getCompletionDateTime());
     }

@@ -60,6 +60,9 @@ public class OBAccountConverter {
     }
 
     private static <T, U> T toAccount(T newAccount, U originalAccount) {
+        if (originalAccount == null) {
+            return null;
+        }
         copyField(newAccount, originalAccount, "schemeName");
         copyField(newAccount, originalAccount, "identification");
         copyField(newAccount, originalAccount, "name");

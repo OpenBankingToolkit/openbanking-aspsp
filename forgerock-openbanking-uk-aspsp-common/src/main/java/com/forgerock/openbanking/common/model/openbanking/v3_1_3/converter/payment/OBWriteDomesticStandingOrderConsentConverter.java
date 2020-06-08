@@ -34,9 +34,13 @@ public class OBWriteDomesticStandingOrderConsentConverter {
     }
 
     public static OBWriteDataDomesticStandingOrderConsent3 toOBWriteDataDomesticStandingOrderConsent3(OBWriteDomesticStandingOrderConsent4Data data) {
-        return (new OBWriteDataDomesticStandingOrderConsent3())
-                .permission(OBExternalPermissions2Code.valueOf(data.getPermission().name()))
+        return data == null ? null : (new OBWriteDataDomesticStandingOrderConsent3())
+                .permission(toOBExternalPermissions2Code(data))
                 .initiation(toOBDomesticStandingOrder3(data.getInitiation()))
                 .authorisation(toOBAuthorisation1(data.getAuthorisation()));
+    }
+
+    private static OBExternalPermissions2Code toOBExternalPermissions2Code(OBWriteDomesticStandingOrderConsent4Data data) {
+        return data.getPermission() == null ? null : OBExternalPermissions2Code.valueOf(data.getPermission().name());
     }
 }

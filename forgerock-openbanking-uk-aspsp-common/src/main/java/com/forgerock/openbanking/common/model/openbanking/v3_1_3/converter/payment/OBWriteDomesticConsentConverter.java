@@ -23,6 +23,7 @@ package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.paym
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3Data;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticConverter.toOBDomestic2;
@@ -31,10 +32,14 @@ public class OBWriteDomesticConsentConverter {
 
     public static OBWriteDomesticConsent2 toOBWriteDomesticConsent2(OBWriteDomesticConsent3 obWriteDomesticConsent3) {
         return (new OBWriteDomesticConsent2())
-                .data((new OBWriteDataDomesticConsent2())
-                        .authorisation(toOBAuthorisation1(obWriteDomesticConsent3.getData().getAuthorisation()))
-                        .initiation(toOBDomestic2(obWriteDomesticConsent3.getData().getInitiation())))
+                .data(toOBWriteDataDomesticConsent2(obWriteDomesticConsent3.getData()))
                 .risk(obWriteDomesticConsent3.getRisk());
+    }
+
+    public static OBWriteDataDomesticConsent2 toOBWriteDataDomesticConsent2(OBWriteDomesticConsent3Data data) {
+        return data == null ? null : (new OBWriteDataDomesticConsent2())
+                .authorisation(toOBAuthorisation1(data.getAuthorisation()))
+                .initiation(toOBDomestic2(data.getInitiation()));
     }
 
 }
