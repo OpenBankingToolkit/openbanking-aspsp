@@ -20,15 +20,13 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment;
 
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduledConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3Data.PermissionEnum;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticConverter.toOBDomestic2;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticScheduledConverter.toOBWriteDomesticScheduled2DataInitiation;
 
 public class OBWriteDomesticScheduledConsentConverter {

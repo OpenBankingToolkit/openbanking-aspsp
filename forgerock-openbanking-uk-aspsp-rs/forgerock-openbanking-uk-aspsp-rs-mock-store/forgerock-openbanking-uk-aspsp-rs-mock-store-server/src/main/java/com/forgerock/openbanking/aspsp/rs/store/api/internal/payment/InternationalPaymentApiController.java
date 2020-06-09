@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalConsent2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalConsent4Repository;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +43,11 @@ public class InternationalPaymentApiController implements InternationalPaymentAp
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InternationalPaymentApiController.class);
 
-    private InternationalConsent2Repository internationalConsentRepository;
+    private InternationalConsent4Repository internationalConsentRepository;
     private ConsentMetricService consentMetricService;
 
     @Autowired
-    public InternationalPaymentApiController(InternationalConsent2Repository internationalConsentRepository,
+    public InternationalPaymentApiController(InternationalConsent4Repository internationalConsentRepository,
                                              ConsentMetricService consentMetricService
     ) {
         this.internationalConsentRepository = internationalConsentRepository;
@@ -59,14 +59,14 @@ public class InternationalPaymentApiController implements InternationalPaymentAp
             @PathVariable("paymentId") String paymentId
     ) {
         LOGGER.debug("Find payment by id {}", paymentId);
-        Optional<FRInternationalConsent2> byPaymentId = internationalConsentRepository.findById(paymentId);
+        Optional<FRInternationalConsent4> byPaymentId = internationalConsentRepository.findById(paymentId);
         return byPaymentId.<ResponseEntity>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment id '" + paymentId + "' not found"));
 
     }
 
     @Override
-    public ResponseEntity<Collection<FRInternationalConsent2>> findByStatus(
+    public ResponseEntity<Collection<FRInternationalConsent4>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     ) {
         LOGGER.debug("Find payment by status {}", status);
@@ -74,8 +74,8 @@ public class InternationalPaymentApiController implements InternationalPaymentAp
     }
 
     @Override
-    public ResponseEntity<FRInternationalConsent2> update(
-            @RequestBody FRInternationalConsent2 paymentSetup
+    public ResponseEntity<FRInternationalConsent4> update(
+            @RequestBody FRInternationalConsent4 paymentSetup
     ) {
         LOGGER.debug("Update payment {}", paymentSetup);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(paymentSetup.getId(), paymentSetup.getStatus().name()));

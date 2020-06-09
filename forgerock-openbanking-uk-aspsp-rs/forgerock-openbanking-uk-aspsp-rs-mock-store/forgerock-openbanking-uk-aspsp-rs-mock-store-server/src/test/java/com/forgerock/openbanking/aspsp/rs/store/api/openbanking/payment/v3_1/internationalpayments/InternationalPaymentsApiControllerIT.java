@@ -21,13 +21,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalConsent2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalPaymentSubmission2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalConsent4Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -45,14 +45,19 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation.InstructionPriorityEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation.RateTypeEnum;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Collections;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalConverter.toOBInternational2;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
+/**
+ * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments.InternationalPaymentsApiController}.
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class InternationalPaymentsApiControllerIT {
@@ -61,7 +66,7 @@ public class InternationalPaymentsApiControllerIT {
     private int port;
 
     @Autowired
-    private InternationalConsent2Repository consentRepository;
+    private InternationalConsent4Repository consentRepository;
     @Autowired
     private InternationalPaymentSubmission2Repository submissionRepository;
     @Autowired
@@ -81,7 +86,7 @@ public class InternationalPaymentsApiControllerIT {
     public void testGetInternationalPaymentSubmission() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent2 consent = saveConsent();
+        FRInternationalConsent4 consent = saveConsent();
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -103,7 +108,7 @@ public class InternationalPaymentsApiControllerIT {
     public void testGetMissingInternationalPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent2 consent = saveConsent();
+        FRInternationalConsent4 consent = saveConsent();
         OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
         FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
                 .id(consent.getId())
@@ -124,7 +129,7 @@ public class InternationalPaymentsApiControllerIT {
     public void testGetInternationalPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent2 consent = JMockData.mock(FRInternationalConsent2.class);
+        FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -142,12 +147,13 @@ public class InternationalPaymentsApiControllerIT {
     public void testCreateInternationalPaymentSubmission() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent2 consent = saveConsent();
-        OBWriteInternational2 submissionRequest = new OBWriteInternational2()
-                .risk(consent.getRisk())
-                .data(new OBWriteDataInternational2()
-                        .consentId(consent.getId())
-                        .initiation(consent.getInitiation()));
+        FRInternationalConsent4 consent = saveConsent();
+        OBInternational2 initiation = toOBInternational2(consent.getInitiation());
+        OBWriteInternational2 submissionRequest = new OBWriteInternational2();
+        submissionRequest.setData((new OBWriteDataInternational2())
+                .consentId(consent.getId())
+                .initiation(initiation));
+        submissionRequest.setRisk(consent.getRisk());
 
         // When
         HttpResponse<OBWriteInternationalResponse2> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1/pisp/international-payments")
@@ -172,14 +178,14 @@ public class InternationalPaymentsApiControllerIT {
     public void testDuplicatePaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent2 consent = saveConsent();
+        FRInternationalConsent4 consent = saveConsent();
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
 
         OBWriteInternational2 obWriteInternational2 = new OBWriteInternational2();
         obWriteInternational2.risk(consent.getRisk());
         obWriteInternational2.data(new OBWriteDataInternational2()
                 .consentId(submission.getId())
-                .initiation(consent.getInitiation()));
+                .initiation(toOBInternational2(consent.getInitiation())));
 
         // When
         HttpResponse<String> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1/pisp/international-payments")
@@ -199,25 +205,25 @@ public class InternationalPaymentsApiControllerIT {
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent2 consent = JMockData.mock(FRInternationalConsent2.class);
+        FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consent.getRisk().merchantCategoryCode("ABCD").getDeliveryAddress()
                 .countrySubDivision(Arrays.asList("Wessex"))
-                .addressLine(Collections.singletonList("3 Queens Square"))
+                .addressLine(singletonList("3 Queens Square"))
                 .country("GP");
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
-        consent.getInitiation().getCreditor().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
+        consent.getInitiation().getCreditor().getPostalAddress().country("GB").addressLine(singletonList("3 Queens Square"));
         consent.getInitiation().getExchangeRateInformation().unitCurrency("GBP");
         consent.getInitiation().currencyOfTransfer("USD");
-        consent.getInitiation().getCreditorAgent().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
+        consent.getInitiation().getCreditorAgent().getPostalAddress().country("GB").addressLine(singletonList("3 Queens Square"));
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
 
         OBWriteInternational2 submissionRequest = new OBWriteInternational2()
                 .risk(consent.getRisk())
                 .data(new OBWriteDataInternational2()
                         .consentId(consent.getId())
-                        .initiation(consent.getInitiation()));
+                        .initiation(toOBInternational2(consent.getInitiation())));
 
         // When
         HttpResponse<String> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1/pisp/international-payments")
@@ -229,14 +235,18 @@ public class InternationalPaymentsApiControllerIT {
                 .body(submissionRequest)
                 .asObject(String.class);
 
-
         // Then
         assertThat(response.getStatus()).isEqualTo(400);
     }
 
-    private FRInternationalPaymentSubmission2 savePaymentSubmission(FRInternationalConsent2 consent) {
-        OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
-        submissionRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
+    private FRInternationalPaymentSubmission2 savePaymentSubmission(FRInternationalConsent4 consent) {
+        OBWriteDataInternational2 data = (new OBWriteDataInternational2())
+                .consentId(consent.getId())
+                .initiation(toOBInternational2(consent.getInitiation()));
+        OBWriteInternational2 submissionRequest = (new OBWriteInternational2())
+                .data(data)
+                .risk(consent.getRisk());
+
         FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
                 .id(consent.getId())
                 .internationalPayment(submissionRequest)
@@ -245,23 +255,59 @@ public class InternationalPaymentsApiControllerIT {
         return submission;
     }
 
-    private FRInternationalConsent2 saveConsent() {
-        FRInternationalConsent2 consent = JMockData.mock(FRInternationalConsent2.class);
+    private FRInternationalConsent4 saveConsent() {
+        FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
+        OBWriteInternationalConsent4Data data = (new OBWriteInternationalConsent4Data())
+                .initiation(aValidObWriteInternational3DataInitiation());
+        OBWriteInternationalConsent4 internationalConsent = (new OBWriteInternationalConsent4())
+                .data(data)
+                .risk(aValidObRisk1());
+
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
-        consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
-        consent.getInitiation().getCreditor().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
-        consent.getInitiation().getExchangeRateInformation().unitCurrency("GBP");
-        consent.getInitiation().currencyOfTransfer("USD");
-        consent.getInitiation().getCreditorAgent().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
-        consent.getInitiation().supplementaryData(new OBSupplementaryData1());
-        consent.getRisk().merchantCategoryCode("ABCD")
-                .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
-                .addressLine(Collections.singletonList("3 Queens Square"))
-                .country("GP");
+        consent.setInternationalConsent(internationalConsent);
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
         consentRepository.save(consent);
         return consent;
+    }
+
+    // TODO - create a test data factory in uk-datamodel
+    private OBWriteInternational3DataInitiation aValidObWriteInternational3DataInitiation() {
+        return (new OBWriteInternational3DataInitiation())
+                .instructionIdentification("1")
+                .endToEndIdentification("2")
+                .localInstrument("UK.OBIE.CHAPS")
+                .instructionPriority(InstructionPriorityEnum.NORMAL)
+                .purpose("1011")
+                .instructedAmount((new OBWriteDomestic2DataInitiationInstructedAmount()).currency("GBP").amount("1.00"))
+                .creditor((new OBWriteInternational3DataInitiationCreditor()).name("A Creditor").postalAddress(aValidObPostalAddress6()))
+                .creditorAgent((new OBWriteInternational3DataInitiationCreditorAgent()).schemeName("CHAPS").name("A Creditor Agent").identification("1").postalAddress(aValidObPostalAddress6()))
+                .creditorAccount((new OBWriteDomestic2DataInitiationCreditorAccount().schemeName("CHAPS").identification("123").name("A Creditor Account").secondaryIdentification("321")))
+                .debtorAccount((new OBWriteDomestic2DataInitiationDebtorAccount().schemeName("CHAPS").identification("456").name("A Creditor Account").secondaryIdentification("654")))
+                .exchangeRateInformation((new OBWriteInternational3DataInitiationExchangeRateInformation()).exchangeRate(BigDecimal.ONE).rateType(RateTypeEnum.INDICATIVE).unitCurrency("GBP"))
+                .currencyOfTransfer("USD")
+                .chargeBearer(OBChargeBearerType1Code.SHARED)
+                .destinationCountryCode("GBP")
+                .remittanceInformation((new OBWriteDomestic2DataInitiationRemittanceInformation().unstructured("Unstructured Info").reference("1234")))
+                .supplementaryData(new OBSupplementaryData1());
+    }
+
+    // TODO - create a test data factory in uk-datamodel
+    private OBRisk1 aValidObRisk1() {
+        return (new OBRisk1())
+                .merchantCategoryCode("1731")
+                .merchantCustomerIdentification("1234")
+                .deliveryAddress((new OBRisk1DeliveryAddress())
+                        .addressLine(singletonList("3 Queens Square"))
+                        .townName("Bristol")
+                        .country("GB"));
+    }
+
+    private OBPostalAddress6 aValidObPostalAddress6() {
+        return (new OBPostalAddress6())
+                .addressType(OBAddressTypeCode.BUSINESS)
+                .addressLine(singletonList("3 Queens Square"))
+                .townName("Bristol")
+                .country("GB");
     }
 
 }

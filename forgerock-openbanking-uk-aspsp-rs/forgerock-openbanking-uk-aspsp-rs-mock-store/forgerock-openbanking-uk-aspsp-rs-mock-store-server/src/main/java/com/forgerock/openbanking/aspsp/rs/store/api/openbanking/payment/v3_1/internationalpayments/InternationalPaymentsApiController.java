@@ -21,12 +21,12 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalConsent2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalPaymentSubmission2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalConsent4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -51,16 +51,17 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("InternationalPaymentsApiV3.1")
 @Slf4j
 public class InternationalPaymentsApiController implements InternationalPaymentsApi {
-    private final InternationalConsent2Repository internationalConsentRepository;
+    private final InternationalConsent4Repository internationalConsentRepository;
     private final InternationalPaymentSubmission2Repository internationalPaymentSubmissionRepository;
     private final ResourceLinkService resourceLinkService;
 
-    public InternationalPaymentsApiController(InternationalConsent2Repository internationalConsentRepository, InternationalPaymentSubmission2Repository internationalPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public InternationalPaymentsApiController(InternationalConsent4Repository internationalConsentRepository, InternationalPaymentSubmission2Repository internationalPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
         this.internationalConsentRepository = internationalConsentRepository;
         this.internationalPaymentSubmissionRepository = internationalPaymentSubmissionRepository;
         this.resourceLinkService = resourceLinkService;
@@ -85,7 +86,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -103,8 +104,10 @@ public class InternationalPaymentsApiController implements InternationalPayments
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: {}", obWriteInternational2Param);
 
+        System.out.println("obWriteInternational2Param = " + obWriteInternational2Param);
+
         String paymentId = obWriteInternational2Param.getData().getConsentId();
-        FRInternationalConsent2 paymentConsent = internationalConsentRepository.findById(paymentId)
+        FRInternationalConsent4 paymentConsent = internationalConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -137,7 +140,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -159,24 +162,24 @@ public class InternationalPaymentsApiController implements InternationalPayments
         }
         FRInternationalPaymentSubmission2 frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRInternationalConsent2> isPaymentSetup = internationalConsentRepository.findById(internationalPaymentId);
+        Optional<FRInternationalConsent4> isPaymentSetup = internationalConsentRepository.findById(internationalPaymentId);
         if (!isPaymentSetup.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + internationalPaymentId + "' can't be found");
         }
-        FRInternationalConsent2 frPaymentSetup = isPaymentSetup.get();
+        FRInternationalConsent4 frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteInternationalResponse2 packagePayment(FRInternationalPaymentSubmission2 frPaymentSubmission, FRInternationalConsent2 frInternationalConsent) {
+    private OBWriteInternationalResponse2 packagePayment(FRInternationalPaymentSubmission2 frPaymentSubmission, FRInternationalConsent4 frInternationalConsent) {
         return new OBWriteInternationalResponse2()
                 .data(new OBWriteDataInternationalResponse2()
-                    .internationalPaymentId(frPaymentSubmission.getId())
-                    .initiation(frPaymentSubmission.getInternationalPayment().getData().getInitiation())
-                    .creationDateTime(frInternationalConsent.getCreated())
-                    .statusUpdateDateTime(frInternationalConsent.getStatusUpdate())
-                    .status(frInternationalConsent.getStatus().toOBTransactionIndividualStatus1Code())
-                    .consentId(frInternationalConsent.getId())
-                    .exchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate()))
+                        .internationalPaymentId(frPaymentSubmission.getId())
+                        .initiation(frPaymentSubmission.getInternationalPayment().getData().getInitiation())
+                        .creationDateTime(frInternationalConsent.getCreated())
+                        .statusUpdateDateTime(frInternationalConsent.getStatusUpdate())
+                        .status(frInternationalConsent.getStatus().toOBTransactionIndividualStatus1Code())
+                        .consentId(frInternationalConsent.getId())
+                        .exchangeRateInformation(toOBExchangeRate2(frInternationalConsent.getCalculatedExchangeRate())))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1().getGetInternationalPayment()))
                 .meta(new Meta());
     }

@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
@@ -33,17 +33,21 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBInternational2;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationCreditorAccount;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent4Data;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -69,7 +73,7 @@ public class AcceptInternationalPaymentTaskTest {
     @Test
     public void shouldDebitAccount() throws CurrencyConverterException {
         // Given
-        FRInternationalConsent2 payment = defaultPayment();
+        FRInternationalConsent4 payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -78,14 +82,15 @@ public class AcceptInternationalPaymentTaskTest {
         acceptDomesticPaymentTask.autoAcceptPayment();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getInitiation().getInstructedAmount()), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        OBActiveOrHistoricCurrencyAndAmount amount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        verify(moneyService).moveMoney(eq(account), eq(amount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED)));
     }
 
     @Test
     public void shouldCreditAccount() throws CurrencyConverterException {
         // Given
-        FRInternationalConsent2 payment = defaultPayment();
+        FRInternationalConsent4 payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(defaultAccount(DEBIT_ACCOUNT));
 
@@ -97,14 +102,15 @@ public class AcceptInternationalPaymentTaskTest {
         acceptDomesticPaymentTask.autoAcceptPayment();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getInitiation().getInstructedAmount()), eq(OBCreditDebitCode.CREDIT), eq(payment), any());
+        OBActiveOrHistoricCurrencyAndAmount amount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        verify(moneyService).moveMoney(eq(account), eq(amount), eq(OBCreditDebitCode.CREDIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED)));
     }
 
     @Test
     public void shouldRejectPaymentWhenCurrencyConversionException() throws CurrencyConverterException {
         // Given
-        FRInternationalConsent2 payment = defaultPayment();
+        FRInternationalConsent4 payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -114,14 +120,15 @@ public class AcceptInternationalPaymentTaskTest {
         acceptDomesticPaymentTask.autoAcceptPayment();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getInitiation().getInstructedAmount()), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        OBActiveOrHistoricCurrencyAndAmount amount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        verify(moneyService).moveMoney(eq(account), eq(amount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.REJECTED)));
     }
 
     @Test
     public void shouldRejectPaymentWhenAnyException() throws CurrencyConverterException {
         // Given
-        FRInternationalConsent2 payment = defaultPayment();
+        FRInternationalConsent4 payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -131,7 +138,8 @@ public class AcceptInternationalPaymentTaskTest {
         acceptDomesticPaymentTask.autoAcceptPayment();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getInitiation().getInstructedAmount()), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        OBActiveOrHistoricCurrencyAndAmount amount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        verify(moneyService).moveMoney(eq(account), eq(amount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.REJECTED)));
     }
 
@@ -139,17 +147,17 @@ public class AcceptInternationalPaymentTaskTest {
         return FRAccount2.builder().id(payAccount).build();
     }
 
-    private FRInternationalConsent2 defaultPayment() {
-        OBInternational2 initiation = new OBInternational2()
-                .creditorAccount(new OBCashAccount3().identification(CREDIT_ACCOUNT))
-                .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount()
+    private FRInternationalConsent4 defaultPayment() {
+        OBWriteInternational3DataInitiation initiation = new OBWriteInternational3DataInitiation()
+                .creditorAccount(new OBWriteDomestic2DataInitiationCreditorAccount().identification(CREDIT_ACCOUNT))
+                .instructedAmount(new OBWriteDomestic2DataInitiationInstructedAmount()
                         .amount("3")
                         .currency("GBP"));
-        return FRInternationalConsent2.builder()
+        return FRInternationalConsent4.builder()
                 .accountId(DEBIT_ACCOUNT)
-                .internationalConsent(new OBWriteInternationalConsent2()
-                        .data(new OBWriteDataInternationalConsent2()
-                        .initiation(initiation)))
+                .internationalConsent(new OBWriteInternationalConsent4()
+                        .data(new OBWriteInternationalConsent4Data()
+                                .initiation(initiation)))
                 .build();
     }
 

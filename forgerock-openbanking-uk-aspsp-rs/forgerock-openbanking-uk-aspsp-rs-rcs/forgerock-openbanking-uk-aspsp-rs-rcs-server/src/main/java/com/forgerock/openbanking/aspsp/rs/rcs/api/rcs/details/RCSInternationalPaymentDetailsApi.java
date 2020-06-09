@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.InternationalPaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -34,12 +34,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
-import uk.org.openbanking.datamodel.payment.OBInternational2;
-import uk.org.openbanking.datamodel.payment.OBRemittanceInformation1;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4DataExchangeRateInformation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j
@@ -64,7 +68,7 @@ public class RCSInternationalPaymentDetailsApi implements RCSDetailsApi {
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRInternationalConsent2 payment = paymentService.getPayment(consentId);
+        FRInternationalConsent4 payment = paymentService.getPayment(consentId);
 
         // Only show the debtor account if specified in consent
         if (payment.getInitiation().getDebtorAccount() != null) {
@@ -93,13 +97,13 @@ public class RCSInternationalPaymentDetailsApi implements RCSDetailsApi {
         payment.setUserId(username);
         paymentService.updatePayment(payment);
 
-        final OBInternational2 initiation = payment.getInitiation();
-        final OBExchangeRate2 exchangeRateInformation = payment.getCalculatedExchangeRate();
+        OBWriteInternational3DataInitiation initiation = payment.getInitiation();
+        OBWriteInternationalConsentResponse4DataExchangeRateInformation exchangeRateInformation = payment.getCalculatedExchangeRate();
         return ResponseEntity.ok(InternationalPaymentConsentDetails.builder()
-                .instructedAmount(initiation.getInstructedAmount())
+                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
                 .rate(new OBExchangeRate2()
                         .exchangeRate(exchangeRateInformation.getExchangeRate())
-                        .rateType(exchangeRateInformation.getRateType())
+                        .rateType(toOBExchangeRateType2Code(exchangeRateInformation.getRateType()))
                         .contractIdentification(exchangeRateInformation.getContractIdentification())
                         .unitCurrency(exchangeRateInformation.getUnitCurrency()))
                 .accounts(accounts)
@@ -110,8 +114,12 @@ public class RCSInternationalPaymentDetailsApi implements RCSDetailsApi {
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .paymentReference(Optional.ofNullable(
                         initiation.getRemittanceInformation())
-                        .map(OBRemittanceInformation1::getReference)
+                        .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
+    }
+
+    private OBExchangeRateType2Code toOBExchangeRateType2Code(OBWriteInternationalConsentResponse4DataExchangeRateInformation.RateTypeEnum rateType) {
+        return rateType == null ? null : OBExchangeRateType2Code.valueOf(rateType.name());
     }
 }

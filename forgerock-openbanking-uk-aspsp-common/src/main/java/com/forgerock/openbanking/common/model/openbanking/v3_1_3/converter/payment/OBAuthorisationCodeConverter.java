@@ -18,18 +18,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments;
+package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
-import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.data.repository.query.Param;
-import uk.org.openbanking.datamodel.payment.OBTransactionIndividualStatus1Code;
+import uk.org.openbanking.datamodel.payment.OBExternalAuthorisation1Code;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3DataAuthorisation.AuthorisationTypeEnum;
 
-import java.util.Collection;
-import java.util.Optional;
+public class OBAuthorisationCodeConverter {
 
-public interface InternationalConsent2Repository extends MongoRepository<FRInternationalConsent2, String> {
+    public static OBExternalAuthorisation1Code toOBExternalAuthorisation1Code(AuthorisationTypeEnum authorisationType) {
+        return authorisationType == null ? null : OBExternalAuthorisation1Code.valueOf(authorisationType.name());
+    }
 
-    Collection<FRInternationalConsent2> findByStatus(@Param("status") OBTransactionIndividualStatus1Code status);
-    Optional<FRInternationalConsent2> findByIdempotencyKeyAndPispId(@Param("idempotencyKey") String idempotencyKey, @Param("pispId") String pispId);
+    public static AuthorisationTypeEnum toAuthorisationTypeEnum(OBExternalAuthorisation1Code authorisation1Code) {
+        return authorisation1Code == null ? null : AuthorisationTypeEnum.valueOf(authorisation1Code.name());
+    }
 }
