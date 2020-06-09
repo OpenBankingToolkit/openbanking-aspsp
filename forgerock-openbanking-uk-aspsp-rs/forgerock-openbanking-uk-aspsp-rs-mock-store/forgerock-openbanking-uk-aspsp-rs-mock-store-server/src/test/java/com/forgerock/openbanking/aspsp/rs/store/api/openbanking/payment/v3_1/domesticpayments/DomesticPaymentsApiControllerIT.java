@@ -45,7 +45,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomestic2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse2;
 
 import java.util.Arrays;
 import java.util.Collections;

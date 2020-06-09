@@ -22,6 +22,7 @@ package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.paym
 
 import uk.org.openbanking.datamodel.payment.OBPriority2Code;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
 
 public class OBPriorityCodeConverter {
 
@@ -29,7 +30,16 @@ public class OBPriorityCodeConverter {
         return instructionPriority == null ? null : OBPriority2Code.valueOf(instructionPriority.name());
     }
 
-    public static OBWriteInternational3DataInitiation.InstructionPriorityEnum toInstructionPriorityEnum(OBPriority2Code instructionPriority) {
+    public static OBPriority2Code toOBPriority2Code(OBWriteInternationalScheduled3DataInitiation.InstructionPriorityEnum instructionPriority) {
+        return instructionPriority == null ? null : OBPriority2Code.valueOf(instructionPriority.name());
+    }
+
+    public static OBWriteInternational3DataInitiation.InstructionPriorityEnum toOBWriteInternational3DataInitiationInstructionPriorityEnum(OBPriority2Code instructionPriority) {
         return instructionPriority == null ? null : OBWriteInternational3DataInitiation.InstructionPriorityEnum.valueOf(instructionPriority.name());
     }
+
+    public static OBWriteInternationalScheduled3DataInitiation.InstructionPriorityEnum toOBWriteInternationalScheduled3DataInitiationInstructionPriorityEnum(OBPriority2Code instructionPriority) {
+        return instructionPriority == null ? null : OBWriteInternationalScheduled3DataInitiation.InstructionPriorityEnum.valueOf(instructionPriority.name());
+    }
+
 }

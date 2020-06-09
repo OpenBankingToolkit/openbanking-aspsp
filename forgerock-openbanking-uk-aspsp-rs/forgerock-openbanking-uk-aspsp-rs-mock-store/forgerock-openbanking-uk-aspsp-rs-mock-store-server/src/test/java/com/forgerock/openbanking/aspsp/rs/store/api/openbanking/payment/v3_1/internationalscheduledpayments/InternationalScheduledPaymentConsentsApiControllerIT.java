@@ -23,10 +23,10 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.in
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalScheduledConsent2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalScheduledConsent4Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledConsent4;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -53,10 +53,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalScheduledConverter.toOBInternationalScheduled2;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
-
-
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -66,7 +65,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private InternationalScheduledConsent2Repository repository;
+    private InternationalScheduledConsent4Repository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -77,7 +76,6 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
     @Autowired
     private SpringSecForTest springSecForTest;
 
-
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
@@ -87,11 +85,13 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
     public void testGetInternationalScheduledPaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalScheduledConsent2 consent = JMockData.mock(FRInternationalScheduledConsent2.class);
+        FRInternationalScheduledConsent4 consent = JMockData.mock(FRInternationalScheduledConsent4.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         DateTime requestedExecutionDateTime = DateTime.now().withMillisOfSecond(0);
         consent.getInitiation().requestedExecutionDateTime(requestedExecutionDateTime);
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
+        consent.getInitiation().extendedPurpose(null);
+        consent.getInitiation().destinationCountryCode(null);
         repository.save(consent);
 
         // When
@@ -103,7 +103,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consent.getInitiation());
+        assertThat(toOBWriteInternationalScheduled3DataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
         assertThat(response.getBody().getData().getStatus()).isEqualTo(consent.getStatus().toOBExternalConsentStatus1Code());
         Assertions.assertThat(response.getBody().getData().getCreationDateTime()).isEqualToIgnoringMillis(consent.getCreated());
         Assertions.assertThat(response.getBody().getData().getStatusUpdateDateTime()).isEqualToIgnoringMillis(consent.getStatusUpdate());
@@ -114,7 +114,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
     public void testGetInternationalScheduledPaymentConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalScheduledConsent2 consent = JMockData.mock(FRInternationalScheduledConsent2.class);
+        FRInternationalScheduledConsent4 consent = JMockData.mock(FRInternationalScheduledConsent4.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
         // When
@@ -160,11 +160,11 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteInternationalScheduledConsentResponse2 consentResponse = response.getBody();
-        FRInternationalScheduledConsent2 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRInternationalScheduledConsent4 consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getPispName()).isEqualTo(PaymentTestHelper.MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(consentResponse.getData().getInitiation());
+        assertThat(toOBInternationalScheduled2(consent.getInitiation())).isEqualTo(consentResponse.getData().getInitiation());
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
     }
 

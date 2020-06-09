@@ -44,12 +44,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.*;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation.InstructionPriorityEnum;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation.RateTypeEnum;
+import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataInternational2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse2;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalConverter.toOBInternational2;
 import static java.util.Collections.singletonList;
@@ -148,11 +150,10 @@ public class InternationalPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalConsent4 consent = saveConsent();
-        OBInternational2 initiation = toOBInternational2(consent.getInitiation());
         OBWriteInternational2 submissionRequest = new OBWriteInternational2();
         submissionRequest.setData((new OBWriteDataInternational2())
                 .consentId(consent.getId())
-                .initiation(initiation));
+                .initiation(toOBInternational2(consent.getInitiation())));
         submissionRequest.setRisk(consent.getRisk());
 
         // When
@@ -183,7 +184,7 @@ public class InternationalPaymentsApiControllerIT {
 
         OBWriteInternational2 obWriteInternational2 = new OBWriteInternational2();
         obWriteInternational2.risk(consent.getRisk());
-        obWriteInternational2.data(new OBWriteDataInternational2()
+        obWriteInternational2.data((new OBWriteDataInternational2())
                 .consentId(submission.getId())
                 .initiation(toOBInternational2(consent.getInitiation())));
 
@@ -209,7 +210,7 @@ public class InternationalPaymentsApiControllerIT {
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consent.getRisk().merchantCategoryCode("ABCD").getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
+                .countrySubDivision(singletonList("Wessex"))
                 .addressLine(singletonList("3 Queens Square"))
                 .country("GP");
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
@@ -240,13 +241,8 @@ public class InternationalPaymentsApiControllerIT {
     }
 
     private FRInternationalPaymentSubmission2 savePaymentSubmission(FRInternationalConsent4 consent) {
-        OBWriteDataInternational2 data = (new OBWriteDataInternational2())
-                .consentId(consent.getId())
-                .initiation(toOBInternational2(consent.getInitiation()));
-        OBWriteInternational2 submissionRequest = (new OBWriteInternational2())
-                .data(data)
-                .risk(consent.getRisk());
-
+        OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
+        submissionRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
         FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
                 .id(consent.getId())
                 .internationalPayment(submissionRequest)
@@ -257,57 +253,21 @@ public class InternationalPaymentsApiControllerIT {
 
     private FRInternationalConsent4 saveConsent() {
         FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
-        OBWriteInternationalConsent4Data data = (new OBWriteInternationalConsent4Data())
-                .initiation(aValidObWriteInternational3DataInitiation());
-        OBWriteInternationalConsent4 internationalConsent = (new OBWriteInternationalConsent4())
-                .data(data)
-                .risk(aValidObRisk1());
-
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
-        consent.setInternationalConsent(internationalConsent);
+        consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
+        consent.getInitiation().getCreditor().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
+        consent.getInitiation().getExchangeRateInformation().unitCurrency("GBP");
+        consent.getInitiation().currencyOfTransfer("USD");
+        consent.getInitiation().getCreditorAgent().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
+        consent.getInitiation().supplementaryData(new OBSupplementaryData1());
+        consent.getRisk().merchantCategoryCode("ABCD")
+                .getDeliveryAddress()
+                .countrySubDivision(Arrays.asList("Wessex"))
+                .addressLine(Collections.singletonList("3 Queens Square"))
+                .country("GP");
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
         consentRepository.save(consent);
         return consent;
-    }
-
-    // TODO - create a test data factory in uk-datamodel
-    private OBWriteInternational3DataInitiation aValidObWriteInternational3DataInitiation() {
-        return (new OBWriteInternational3DataInitiation())
-                .instructionIdentification("1")
-                .endToEndIdentification("2")
-                .localInstrument("UK.OBIE.CHAPS")
-                .instructionPriority(InstructionPriorityEnum.NORMAL)
-                .purpose("1011")
-                .instructedAmount((new OBWriteDomestic2DataInitiationInstructedAmount()).currency("GBP").amount("1.00"))
-                .creditor((new OBWriteInternational3DataInitiationCreditor()).name("A Creditor").postalAddress(aValidObPostalAddress6()))
-                .creditorAgent((new OBWriteInternational3DataInitiationCreditorAgent()).schemeName("CHAPS").name("A Creditor Agent").identification("1").postalAddress(aValidObPostalAddress6()))
-                .creditorAccount((new OBWriteDomestic2DataInitiationCreditorAccount().schemeName("CHAPS").identification("123").name("A Creditor Account").secondaryIdentification("321")))
-                .debtorAccount((new OBWriteDomestic2DataInitiationDebtorAccount().schemeName("CHAPS").identification("456").name("A Creditor Account").secondaryIdentification("654")))
-                .exchangeRateInformation((new OBWriteInternational3DataInitiationExchangeRateInformation()).exchangeRate(BigDecimal.ONE).rateType(RateTypeEnum.INDICATIVE).unitCurrency("GBP"))
-                .currencyOfTransfer("USD")
-                .chargeBearer(OBChargeBearerType1Code.SHARED)
-                .destinationCountryCode("GBP")
-                .remittanceInformation((new OBWriteDomestic2DataInitiationRemittanceInformation().unstructured("Unstructured Info").reference("1234")))
-                .supplementaryData(new OBSupplementaryData1());
-    }
-
-    // TODO - create a test data factory in uk-datamodel
-    private OBRisk1 aValidObRisk1() {
-        return (new OBRisk1())
-                .merchantCategoryCode("1731")
-                .merchantCustomerIdentification("1234")
-                .deliveryAddress((new OBRisk1DeliveryAddress())
-                        .addressLine(singletonList("3 Queens Square"))
-                        .townName("Bristol")
-                        .country("GB"));
-    }
-
-    private OBPostalAddress6 aValidObPostalAddress6() {
-        return (new OBPostalAddress6())
-                .addressType(OBAddressTypeCode.BUSINESS)
-                .addressLine(singletonList("3 Queens Square"))
-                .townName("Bristol")
-                .country("GB");
     }
 
 }

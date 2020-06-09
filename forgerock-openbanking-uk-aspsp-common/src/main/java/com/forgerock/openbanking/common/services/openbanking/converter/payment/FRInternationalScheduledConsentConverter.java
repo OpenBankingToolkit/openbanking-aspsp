@@ -22,6 +22,8 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRInternationalScheduledConsent1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteInternationalScheduledConsentConverter;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledConsent4;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter;
 
@@ -50,11 +52,32 @@ public class FRInternationalScheduledConsentConverter {
         frInternationalScheduledConsent1.setUserId(frInternationalScheduledConsent2.getUserId());
         frInternationalScheduledConsent1.setAccountId(frInternationalScheduledConsent2.getAccountId());
         frInternationalScheduledConsent1.setCreated(frInternationalScheduledConsent2.getCreated());
-        frInternationalScheduledConsent1.setInternationalScheduledConsent(OBInternationalScheduledConverter.toOBWriteInternationalScheduledConsent1(frInternationalScheduledConsent2.getInternationalScheduledConsent()));
+        frInternationalScheduledConsent1.setInternationalScheduledConsent(
+                OBInternationalScheduledConverter.toOBWriteInternationalScheduledConsent1(frInternationalScheduledConsent2.getInternationalScheduledConsent())
+        );
         frInternationalScheduledConsent1.setPispId(frInternationalScheduledConsent2.getPispId());
         frInternationalScheduledConsent1.setPispName(frInternationalScheduledConsent2.getPispName());
         frInternationalScheduledConsent1.setStatusUpdate(frInternationalScheduledConsent2.getStatusUpdate());
         frInternationalScheduledConsent1.setUpdated(frInternationalScheduledConsent2.getUpdated());
         return frInternationalScheduledConsent1;
     }
+
+    public FRInternationalScheduledConsent1 toFRInternationalConsent1(FRInternationalScheduledConsent4 frInternationalScheduledConsent4) {
+        FRInternationalScheduledConsent1 frInternationalScheduledConsent1 = new FRInternationalScheduledConsent1();
+        frInternationalScheduledConsent1.setStatus(frInternationalScheduledConsent4.getStatus());
+        frInternationalScheduledConsent1.setId(frInternationalScheduledConsent4.getId());
+        frInternationalScheduledConsent1.setUserId(frInternationalScheduledConsent4.getUserId());
+        frInternationalScheduledConsent1.setAccountId(frInternationalScheduledConsent4.getAccountId());
+        frInternationalScheduledConsent1.setCreated(frInternationalScheduledConsent4.getCreated());
+        frInternationalScheduledConsent1.setInternationalScheduledConsent(
+                // TODO - move to uk-datamodel project
+                OBWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent1(frInternationalScheduledConsent4.getInternationalScheduledConsent())
+        );
+        frInternationalScheduledConsent1.setPispId(frInternationalScheduledConsent4.getPispId());
+        frInternationalScheduledConsent1.setPispName(frInternationalScheduledConsent4.getPispName());
+        frInternationalScheduledConsent1.setStatusUpdate(frInternationalScheduledConsent4.getStatusUpdate());
+        frInternationalScheduledConsent1.setUpdated(frInternationalScheduledConsent4.getUpdated());
+        return frInternationalScheduledConsent1;
+    }
+
 }
