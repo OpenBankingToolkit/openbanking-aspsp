@@ -67,8 +67,8 @@ public interface FilePaymentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
     @RequestMapping(value = "/file-payments",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"application/json; charset=utf-8"},
+            consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<OBWriteFileResponse2> createFilePayments(
             @ApiParam(value = "Default", required = true)
@@ -119,7 +119,7 @@ public interface FilePaymentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
     @RequestMapping(value = "/file-payments/{FilePaymentId}",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteFileResponse2> getFilePaymentsFilePaymentId(
             @ApiParam(value = "FilePaymentId", required = true)
@@ -163,7 +163,7 @@ public interface FilePaymentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
     @RequestMapping(value = "/file-payments/{FilePaymentId}/payment-details",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBWritePaymentDetailsResponse1> getFilePaymentsFilePaymentIdPaymentDetails(
             @ApiParam(value = "FilePaymentId", required = true)
@@ -207,7 +207,7 @@ public interface FilePaymentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
     @RequestMapping(value = "/file-payments/{FilePaymentId}/report-file",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"*/*"},
             method = RequestMethod.GET)
     ResponseEntity<Resource> getFilePaymentsFilePaymentIdReportFile(
             @ApiParam(value = "FilePaymentId", required = true)

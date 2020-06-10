@@ -66,8 +66,8 @@ public interface FilePaymentConsentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
     @RequestMapping(value = "/file-payment-consents",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"application/json; charset=utf-8"},
+            consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
     ResponseEntity<OBWriteFileConsentResponse3> createFilePaymentConsents(
             @ApiParam(value = "Default", required = true)
@@ -122,8 +122,8 @@ public interface FilePaymentConsentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
     @RequestMapping(value = "/file-payment-consents/{ConsentId}/file",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"application/json; charset=utf-8"},
+            consumes = {"*/*"},
             method = RequestMethod.POST)
     ResponseEntity<Void> createFilePaymentConsentsConsentIdFile(
             @ApiParam(value = "Default", required = true)
@@ -178,7 +178,7 @@ public interface FilePaymentConsentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
     @RequestMapping(value = "/file-payment-consents/{ConsentId}",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteFileConsentResponse3> getFilePaymentConsentsConsentId(
             @ApiParam(value = "ConsentId", required = true)
@@ -223,7 +223,7 @@ public interface FilePaymentConsentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
     @RequestMapping(value = "/file-payment-consents/{ConsentId}/file",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"*/*"},
             method = RequestMethod.GET)
     ResponseEntity<Resource> getFilePaymentConsentsConsentIdFile(
             @ApiParam(value = "ConsentId", required = true)

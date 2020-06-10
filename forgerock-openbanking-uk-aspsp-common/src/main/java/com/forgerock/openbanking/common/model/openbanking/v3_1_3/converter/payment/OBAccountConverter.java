@@ -21,7 +21,14 @@
 package com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment;
 
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.account.OBCashAccount5;
+import uk.org.openbanking.datamodel.payment.OBCashAccountCreditor3;
+import uk.org.openbanking.datamodel.payment.OBCashAccountDebtor4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationCreditorAccount;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationDebtorAccount;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiationCreditorAccount;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiationDebtorAccount;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiationCreditorAccount;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConverterHelper.copyField;
 
@@ -33,6 +40,18 @@ public class OBAccountConverter {
 
     public static OBCashAccount3 toOBCashAccount3(OBWriteDomestic2DataInitiationCreditorAccount creditorAccount) {
         return toAccount(new OBCashAccount3(), creditorAccount);
+    }
+
+    public static OBCashAccount3 toOBCashAccount3(OBWriteInternationalStandingOrder4DataInitiationCreditorAccount creditorAccount) {
+        return toAccount(new OBCashAccount3(), creditorAccount);
+    }
+
+    public static OBCashAccount3 toOBCashAccount3(OBWriteDomesticStandingOrder3DataInitiationDebtorAccount debtorAccount) {
+        return toAccount(new OBCashAccount3(), debtorAccount);
+    }
+
+    public static OBCashAccount5 toOBCashAccount5(OBWriteInternationalStandingOrder4DataInitiationCreditorAccount creditorAccount) {
+        return toAccount(new OBCashAccount5(), creditorAccount);
     }
 
     public static OBWriteDomestic2DataInitiationDebtorAccount toOBWriteDomestic2DataInitiationDebtorAccount(OBCashAccount3 debtorAccount) {
@@ -61,14 +80,6 @@ public class OBAccountConverter {
 
     public static OBWriteInternationalStandingOrder4DataInitiationCreditorAccount toOBWriteInternationalStandingOrder4DataInitiationCreditorAccount(OBCashAccountCreditor3 creditorAccount) {
         return toAccount(new OBWriteInternationalStandingOrder4DataInitiationCreditorAccount(), creditorAccount);
-    }
-
-    public static OBCashAccount3 toOBCashAccount3(OBWriteInternationalStandingOrder4DataInitiationCreditorAccount creditorAccount) {
-        return toAccount(new OBCashAccount3(), creditorAccount);
-    }
-
-    public static OBCashAccount3 toOBCashAccount3(OBWriteDomesticStandingOrder3DataInitiationDebtorAccount debtorAccount) {
-        return toAccount(new OBCashAccount3(), debtorAccount);
     }
 
     public static OBCashAccountDebtor4 toOBCashAccountDebtor4(OBWriteDomesticStandingOrder3DataInitiationDebtorAccount debtorAccount) {

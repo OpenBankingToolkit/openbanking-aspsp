@@ -66,6 +66,10 @@ public class OBAmountConverter {
         return toAmount(new OBDomesticStandingOrder3FinalPaymentAmount(), amount);
     }
 
+    public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(OBWriteDomestic2DataInitiationInstructedAmount amount) {
+        return toAmount(new uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount(), amount);
+    }
+
     private static <T, U> T toAmount(T newAmount, U originalAmount) {
         if (originalAmount == null) {
             return null;

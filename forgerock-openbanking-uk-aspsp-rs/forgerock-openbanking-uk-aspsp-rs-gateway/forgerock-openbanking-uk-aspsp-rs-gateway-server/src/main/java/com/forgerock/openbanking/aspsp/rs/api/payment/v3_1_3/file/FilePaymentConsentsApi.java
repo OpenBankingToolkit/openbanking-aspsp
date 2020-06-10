@@ -133,8 +133,8 @@ public interface FilePaymentConsentsApi {
             obReference = OBReference.CREATE_FILE_PAYMENT_FILE
     )
     @RequestMapping(value = "/file-payment-consents/{ConsentId}/file",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"application/json; charset=utf-8"},
+            consumes = {"*/*"},
             method = RequestMethod.POST)
     ResponseEntity<Void> createFilePaymentConsentsConsentIdFile(
             @ApiParam(value = "Default", required = true)
@@ -240,7 +240,7 @@ public interface FilePaymentConsentsApi {
             obReference = OBReference.GET_FILE_PAYMENT_FILE
     )
     @RequestMapping(value = "/file-payment-consents/{ConsentId}/file",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"*/*"},
             method = RequestMethod.GET)
     ResponseEntity<File> getFilePaymentConsentsConsentIdFile(
             @ApiParam(value = "ConsentId", required = true)

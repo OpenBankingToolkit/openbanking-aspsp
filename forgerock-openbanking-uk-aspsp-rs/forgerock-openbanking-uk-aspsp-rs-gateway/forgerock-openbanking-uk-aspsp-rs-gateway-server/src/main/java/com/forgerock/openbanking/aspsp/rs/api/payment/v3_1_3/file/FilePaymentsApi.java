@@ -133,7 +133,7 @@ public interface FilePaymentsApi {
             obReference = OBReference.GET_FILE_PAYMENT
     )
     @RequestMapping(value = "/file-payments/{FilePaymentId}",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBWriteFileResponse2> getFilePaymentsFilePaymentId(
             @ApiParam(value = "FilePaymentId", required = true)
@@ -180,7 +180,7 @@ public interface FilePaymentsApi {
             obReference = OBReference.GET_FILE_PAYMENT_DETAILS
     )
     @RequestMapping(value = "/file-payments/{FilePaymentId}/payment-details",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBWritePaymentDetailsResponse1> getFilePaymentsFilePaymentIdPaymentDetails(
             @ApiParam(value = "FilePaymentId", required = true)
@@ -227,7 +227,7 @@ public interface FilePaymentsApi {
             obReference = OBReference.GET_FILE_PAYMENT_REPORT
     )
     @RequestMapping(value = "/file-payments/{FilePaymentId}/report-file",
-            produces = {"application/json; charset=utf-8", "application/jose+jwe"},
+            produces = {"*/*"},
             method = RequestMethod.GET)
     ResponseEntity<File> getFilePaymentsFilePaymentIdReportFile(
             @ApiParam(value = "FilePaymentId", required = true)
