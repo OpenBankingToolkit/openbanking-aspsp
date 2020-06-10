@@ -57,6 +57,9 @@ import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converte
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalscheduledpayments.InternationalScheduledPaymentConsentsApiController}.
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class InternationalScheduledPaymentConsentsApiControllerIT {

@@ -38,6 +38,10 @@ public class OBAmountConverter {
         return toAmount(new OBWriteDomestic2DataInitiationInstructedAmount(), amount);
     }
 
+    public static OBDomestic2InstructedAmount toOBDomestic2InstructedAmount(OBWriteDomestic2DataInitiationInstructedAmount amount) {
+        return toAmount(new OBDomestic2InstructedAmount(), amount);
+    }
+
     public static OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount toOBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount(OBDomesticStandingOrder3FirstPaymentAmount amount) {
         return toAmount(new OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount(), amount);
     }

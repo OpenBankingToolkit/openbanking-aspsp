@@ -51,11 +51,35 @@ public class OBAccountConverter {
         return toAccount(new OBWriteDomesticStandingOrder3DataInitiationCreditorAccount(), creditorAccount);
     }
 
+    public static OBWriteDomesticStandingOrder3DataInitiationDebtorAccount toOBWriteDomesticStandingOrder3DataInitiationDebtorAccount(OBCashAccount3 debtorAccount) {
+        return toAccount(new OBWriteDomesticStandingOrder3DataInitiationDebtorAccount(), debtorAccount);
+    }
+
+    public static OBWriteInternationalStandingOrder4DataInitiationCreditorAccount toOBWriteInternationalStandingOrder4DataInitiationCreditorAccount(OBCashAccount3 creditorAccount) {
+        return toAccount(new OBWriteInternationalStandingOrder4DataInitiationCreditorAccount(), creditorAccount);
+    }
+
+    public static OBWriteInternationalStandingOrder4DataInitiationCreditorAccount toOBWriteInternationalStandingOrder4DataInitiationCreditorAccount(OBCashAccountCreditor3 creditorAccount) {
+        return toAccount(new OBWriteInternationalStandingOrder4DataInitiationCreditorAccount(), creditorAccount);
+    }
+
+    public static OBCashAccount3 toOBCashAccount3(OBWriteInternationalStandingOrder4DataInitiationCreditorAccount creditorAccount) {
+        return toAccount(new OBCashAccount3(), creditorAccount);
+    }
+
+    public static OBCashAccount3 toOBCashAccount3(OBWriteDomesticStandingOrder3DataInitiationDebtorAccount debtorAccount) {
+        return toAccount(new OBCashAccount3(), debtorAccount);
+    }
+
     public static OBCashAccountDebtor4 toOBCashAccountDebtor4(OBWriteDomesticStandingOrder3DataInitiationDebtorAccount debtorAccount) {
         return toAccount(new OBCashAccountDebtor4(), debtorAccount);
     }
 
     public static OBCashAccountCreditor3 toOBCashAccountCreditor3(OBWriteDomesticStandingOrder3DataInitiationCreditorAccount creditorAccount) {
+        return toAccount(new OBCashAccountCreditor3(), creditorAccount);
+    }
+
+    public static OBCashAccountCreditor3 toOBCashAccountCreditor3(OBWriteInternationalStandingOrder4DataInitiationCreditorAccount creditorAccount) {
         return toAccount(new OBCashAccountCreditor3(), creditorAccount);
     }
 

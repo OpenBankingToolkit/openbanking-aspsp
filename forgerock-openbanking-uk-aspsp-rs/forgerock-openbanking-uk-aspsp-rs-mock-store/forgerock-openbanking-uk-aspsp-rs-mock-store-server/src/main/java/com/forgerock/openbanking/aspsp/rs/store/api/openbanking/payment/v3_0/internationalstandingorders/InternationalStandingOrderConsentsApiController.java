@@ -23,13 +23,12 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.in
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.InternationalStandingOrderConsent3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalStandingOrderConsent4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRStandingOrderPaymentConverter;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderConsent4;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import io.swagger.annotations.ApiParam;
@@ -54,18 +53,22 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder1;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBExternalPermissions2Code;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent5;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("InternationalStandingOrderConsentsApiV3.0")
 @Slf4j
 public class InternationalStandingOrderConsentsApiController implements InternationalStandingOrderConsentsApi {
-    private final InternationalStandingOrderConsent3Repository internationalStandingOrderConsentRepository;
+    private final InternationalStandingOrderConsent4Repository internationalStandingOrderConsentRepository;
     private final TppRepository tppRepository;
     private final ResourceLinkService resourceLinkService;
     private ConsentMetricService consentMetricService;
 
-    public InternationalStandingOrderConsentsApiController(ConsentMetricService consentMetricService, InternationalStandingOrderConsent3Repository internationalStandingOrderConsentRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
+    public InternationalStandingOrderConsentsApiController(ConsentMetricService consentMetricService, InternationalStandingOrderConsent4Repository internationalStandingOrderConsentRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         this.internationalStandingOrderConsentRepository = internationalStandingOrderConsentRepository;
         this.tppRepository = tppRepository;
         this.resourceLinkService = resourceLinkService;
@@ -91,7 +94,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -116,7 +119,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        Optional<FRInternationalStandingOrderConsent3> consentByIdempotencyKey = internationalStandingOrderConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRInternationalStandingOrderConsent4> consentByIdempotencyKey = internationalStandingOrderConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, consent2, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalStandingOrderConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
@@ -124,16 +127,16 @@ public class InternationalStandingOrderConsentsApiController implements Internat
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
-        FRInternationalStandingOrderConsent3 internationalStandingOrderConsent = FRInternationalStandingOrderConsent3.builder()
+        FRInternationalStandingOrderConsent4 internationalStandingOrderConsent = FRInternationalStandingOrderConsent4.builder()
                 .id(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .internationalStandingOrderConsent(FRStandingOrderPaymentConverter.toOBWriteInternationalStandingOrderConsent3(consent2))
+                .internationalStandingOrderConsent(toOBWriteInternationalStandingOrderConsent5(consent2))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
                 .created(DateTime.now())
                 .idempotencyKey(xIdempotencyKey)
-                .obVersion(VersionPathExtractor.getVersionFromPath(request))
+                .version(VersionPathExtractor.getVersionFromPath(request))
                 .build();
         log.debug("Saving consent: {}", internationalStandingOrderConsent);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(internationalStandingOrderConsent.getId(), internationalStandingOrderConsent.getStatus().name()));
@@ -154,7 +157,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -170,26 +173,25 @@ public class InternationalStandingOrderConsentsApiController implements Internat
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRInternationalStandingOrderConsent3> isInternationalStandingOrderConsent = internationalStandingOrderConsentRepository.findById(consentId);
+        Optional<FRInternationalStandingOrderConsent4> isInternationalStandingOrderConsent = internationalStandingOrderConsentRepository.findById(consentId);
         if (!isInternationalStandingOrderConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("International  consent '" + consentId + "' can't be found");
         }
-        FRInternationalStandingOrderConsent3 internationalStandingOrderConsent = isInternationalStandingOrderConsent.get();
+        FRInternationalStandingOrderConsent4 internationalStandingOrderConsent = isInternationalStandingOrderConsent.get();
 
         return ResponseEntity.ok(packageResponse(internationalStandingOrderConsent));
     }
 
-
-    private OBWriteInternationalStandingOrderConsentResponse1 packageResponse(FRInternationalStandingOrderConsent3 internationalStandingOrderConsent) {
+    private OBWriteInternationalStandingOrderConsentResponse1 packageResponse(FRInternationalStandingOrderConsent4 internationalStandingOrderConsent) {
         return new OBWriteInternationalStandingOrderConsentResponse1()
                 .data(new OBWriteDataInternationalStandingOrderConsentResponse1()
-                        .initiation(FRStandingOrderPaymentConverter.toOBInternationalStandingOrder1(internationalStandingOrderConsent.getInitiation()))
+                        .initiation(toOBInternationalStandingOrder1(internationalStandingOrderConsent.getInitiation()))
                         .status(internationalStandingOrderConsent.getStatus().toOBExternalConsentStatus1Code())
                         .creationDateTime(internationalStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(internationalStandingOrderConsent.getStatusUpdate())
                         .consentId(internationalStandingOrderConsent.getId())
-                        .permission(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getPermission())
-                        .authorisation(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getAuthorisation())
+                        .permission(toOBExternalPermissions2Code(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getPermission()))
+                        .authorisation(toOBAuthorisation1(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getAuthorisation()))
                 )
                 .risk(internationalStandingOrderConsent.getRisk())
                 .links(resourceLinkService.toSelfLink(internationalStandingOrderConsent, discovery -> discovery.getV_3_0().getGetInternationalStandingOrderConsent()))
