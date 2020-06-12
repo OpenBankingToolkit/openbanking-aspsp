@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.openbanking.converter;
+package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBExternalProductType1Code;

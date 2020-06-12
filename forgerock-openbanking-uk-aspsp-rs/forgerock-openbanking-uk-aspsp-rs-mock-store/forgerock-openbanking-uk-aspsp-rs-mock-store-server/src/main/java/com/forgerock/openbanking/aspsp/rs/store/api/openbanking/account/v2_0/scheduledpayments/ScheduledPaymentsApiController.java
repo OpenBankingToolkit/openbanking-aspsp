@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.sched
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRScheduledPayment2;
-import com.forgerock.openbanking.common.services.openbanking.converter.FRScheduledPaymentConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRScheduledPaymentConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;

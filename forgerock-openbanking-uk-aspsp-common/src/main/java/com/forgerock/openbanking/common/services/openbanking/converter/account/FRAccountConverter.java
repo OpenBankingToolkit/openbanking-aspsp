@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.openbanking.converter;
+package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccount1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.*;
 import uk.org.openbanking.datamodel.payment.OBCashAccountCreditor3;
 import uk.org.openbanking.datamodel.payment.OBExternalAccountIdentification2Code;
-import uk.org.openbanking.datamodel.service.converter.OBAccountConverter;
+import uk.org.openbanking.datamodel.service.converter.account.OBAccountConverter;
 
 import java.util.ArrayList;
 import java.util.List;

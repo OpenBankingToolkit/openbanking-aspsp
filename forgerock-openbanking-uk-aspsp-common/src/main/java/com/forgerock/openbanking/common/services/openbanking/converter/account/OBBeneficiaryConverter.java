@@ -18,8 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.openbanking.converter;
-
+package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
 import uk.org.openbanking.datamodel.account.OBBeneficiary1;
 import uk.org.openbanking.datamodel.account.OBBeneficiary2;

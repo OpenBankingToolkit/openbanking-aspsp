@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.openbanking.converter;
+package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRStandingOrder1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStandingOrder2;
@@ -27,9 +27,9 @@ import com.forgerock.openbanking.common.model.openbanking.v3_1.account.FRStandin
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
 import uk.org.openbanking.datamodel.account.*;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.service.converter.OBBranchAndFinancialInstitutionIdentificationConverter;
-import uk.org.openbanking.datamodel.service.converter.OBCashAccountConverter;
-import uk.org.openbanking.datamodel.service.converter.OBStandingOrderConverter;
+import uk.org.openbanking.datamodel.service.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter;
+import uk.org.openbanking.datamodel.service.converter.account.OBCashAccountConverter;
+import uk.org.openbanking.datamodel.service.converter.account.OBStandingOrderConverter;
 
 public class FRStandingOrderConverter {
 

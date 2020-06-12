@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.product
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRProduct1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRProduct2;
-import com.forgerock.openbanking.common.services.openbanking.converter.FRProductConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRProductConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;

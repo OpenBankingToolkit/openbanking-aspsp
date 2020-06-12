@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.openbanking.converter;
+package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRScheduledPayment2;
