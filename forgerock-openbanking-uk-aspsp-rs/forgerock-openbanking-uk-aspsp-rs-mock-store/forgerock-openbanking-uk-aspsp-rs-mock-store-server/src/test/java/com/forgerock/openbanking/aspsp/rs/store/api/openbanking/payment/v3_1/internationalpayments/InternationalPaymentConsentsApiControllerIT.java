@@ -56,7 +56,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalConverter.toOBInternational2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBInternational2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;

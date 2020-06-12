@@ -25,7 +25,7 @@ import org.junit.Test;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.payment.*;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.joda.time.DateTime.now;
 

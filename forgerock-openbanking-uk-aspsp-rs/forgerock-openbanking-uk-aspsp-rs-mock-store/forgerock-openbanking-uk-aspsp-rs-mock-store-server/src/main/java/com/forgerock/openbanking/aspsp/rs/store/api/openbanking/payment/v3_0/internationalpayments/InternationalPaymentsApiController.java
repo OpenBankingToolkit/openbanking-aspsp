@@ -53,8 +53,9 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternational2;
 
 @Controller("InternationalPaymentsApiV3.0")
 @Slf4j
@@ -105,7 +106,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: {}", obWriteInternational1Param);
-        OBWriteInternational2 payment = OBInternationalConverter.toOBWriteInternational2(obWriteInternational1Param);
+        OBWriteInternational2 payment = toOBWriteInternational2(obWriteInternational1Param);
         log.trace("Converted to: {}", payment.getClass());
 
         String paymentId = payment.getData().getConsentId();
@@ -119,7 +120,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
         FRInternationalPaymentSubmission2 frPaymentSubmission = FRInternationalPaymentSubmission2.builder()
                 .id(paymentId)
-                .internationalPayment(OBInternationalConverter.toOBWriteInternational2(obWriteInternational1Param))
+                .internationalPayment(toOBWriteInternational2(obWriteInternational1Param))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

@@ -28,7 +28,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3DataAuthorisa
 
 import java.math.BigDecimal;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.joda.time.DateTime.now;
 

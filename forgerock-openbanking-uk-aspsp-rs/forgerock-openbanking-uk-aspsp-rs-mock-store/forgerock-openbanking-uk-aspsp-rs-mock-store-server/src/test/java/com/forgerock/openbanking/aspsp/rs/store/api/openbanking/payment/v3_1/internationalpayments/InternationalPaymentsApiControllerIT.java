@@ -53,7 +53,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse2;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalConverter.toOBInternational2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBInternational2;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -53,8 +53,9 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled2;
 
 @Controller("InternationalScheduledPaymentsApiV3.0")
 @Slf4j
@@ -105,7 +106,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: {}", obWriteInternationalScheduled1Param);
-        OBWriteInternationalScheduled2 payment = OBInternationalScheduledConverter.toOBWriteInternationalScheduled2(obWriteInternationalScheduled1Param);
+        OBWriteInternationalScheduled2 payment = toOBWriteInternationalScheduled2(obWriteInternationalScheduled1Param);
         log.trace("Converted to: {}", payment.getClass());
 
         String paymentId = payment.getData().getConsentId();
@@ -119,7 +120,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
         FRInternationalScheduledPaymentSubmission2 frPaymentSubmission = FRInternationalScheduledPaymentSubmission2.builder()
                 .id(paymentId)
-                .internationalScheduledPayment(OBInternationalScheduledConverter.toOBWriteInternationalScheduled2(obWriteInternationalScheduled1Param))
+                .internationalScheduledPayment(toOBWriteInternationalScheduled2(obWriteInternationalScheduled1Param))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

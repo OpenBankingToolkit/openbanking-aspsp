@@ -46,19 +46,19 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrde
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse1;
-import uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBExternalPermissions2Code;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent5;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBExternalPermissions2Code;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent5;
 
 @Controller("InternationalStandingOrderConsentsApiV3.0")
 @Slf4j
@@ -114,7 +114,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteInternationalStandingOrderConsent1Param);
-        OBWriteInternationalStandingOrderConsent2 consent2 = OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrderConsent2(obWriteInternationalStandingOrderConsent1Param);
+        OBWriteInternationalStandingOrderConsent2 consent2 = toOBWriteInternationalStandingOrderConsent2(obWriteInternationalStandingOrderConsent1Param);
         log.trace("Converted request body to {}", consent2.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);

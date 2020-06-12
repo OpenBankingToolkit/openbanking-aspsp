@@ -24,11 +24,9 @@ import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRInterna
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalStandingOrderConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrderConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent3;
-import uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter;
+
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent2;
 
 @Service
 public class FRInternationalStandingOrderConsentConverter {
@@ -40,7 +38,7 @@ public class FRInternationalStandingOrderConsentConverter {
         frInternationalScheduledConsent2.setUserId(frInternationalStandingOrderConsent1.getUserId());
         frInternationalScheduledConsent2.setAccountId(frInternationalStandingOrderConsent1.getAccountId());
         frInternationalScheduledConsent2.setCreated(frInternationalStandingOrderConsent1.getCreated());
-        frInternationalScheduledConsent2.setInternationalStandingOrderConsent(OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrderConsent2(frInternationalStandingOrderConsent1.getInternationalStandingOrderConsent()));
+        frInternationalScheduledConsent2.setInternationalStandingOrderConsent(toOBWriteInternationalStandingOrderConsent2(frInternationalStandingOrderConsent1.getInternationalStandingOrderConsent()));
         frInternationalScheduledConsent2.setPispId(frInternationalStandingOrderConsent1.getPispId());
         frInternationalScheduledConsent2.setPispName(frInternationalStandingOrderConsent1.getPispName());
         frInternationalScheduledConsent2.setStatusUpdate(frInternationalStandingOrderConsent1.getStatusUpdate());
@@ -55,7 +53,7 @@ public class FRInternationalStandingOrderConsentConverter {
         frInternationalScheduledConsent1.setUserId(frInternationalStandingOrderConsent2.getUserId());
         frInternationalScheduledConsent1.setAccountId(frInternationalStandingOrderConsent2.getAccountId());
         frInternationalScheduledConsent1.setCreated(frInternationalStandingOrderConsent2.getCreated());
-        frInternationalScheduledConsent1.setInternationalStandingOrderConsent(OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrderConsent1(frInternationalStandingOrderConsent2.getInternationalStandingOrderConsent()));
+        frInternationalScheduledConsent1.setInternationalStandingOrderConsent(toOBWriteInternationalStandingOrderConsent1(frInternationalStandingOrderConsent2.getInternationalStandingOrderConsent()));
         frInternationalScheduledConsent1.setPispId(frInternationalStandingOrderConsent2.getPispId());
         frInternationalScheduledConsent1.setPispName(frInternationalStandingOrderConsent2.getPispName());
         frInternationalScheduledConsent1.setStatusUpdate(frInternationalStandingOrderConsent2.getStatusUpdate());
@@ -93,16 +91,4 @@ public class FRInternationalStandingOrderConsentConverter {
         return frInternationalScheduledConsent2;
     }
 
-    private OBWriteInternationalStandingOrderConsent2 toOBWriteInternationalStandingOrderConsent2(OBWriteInternationalStandingOrderConsent3 obWriteInternationalStandingOrderConsent3) {
-        return (new OBWriteInternationalStandingOrderConsent2()).data((
-                new OBWriteDataInternationalStandingOrderConsent2())
-                .authorisation(obWriteInternationalStandingOrderConsent3.getData().getAuthorisation())
-                .initiation(FRStandingOrderPaymentConverter.toOBInternationalStandingOrder2(obWriteInternationalStandingOrderConsent3.getData().getInitiation())))
-                .risk(obWriteInternationalStandingOrderConsent3.getRisk());
-    }
-
-
-    private OBWriteInternationalStandingOrderConsent1 toOBWriteInternationalStandingOrderConsent1(OBWriteInternationalStandingOrderConsent3 internationalStandingOrderConsent) {
-        return OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrderConsent1(toOBWriteInternationalStandingOrderConsent2(internationalStandingOrderConsent));
-    }
 }

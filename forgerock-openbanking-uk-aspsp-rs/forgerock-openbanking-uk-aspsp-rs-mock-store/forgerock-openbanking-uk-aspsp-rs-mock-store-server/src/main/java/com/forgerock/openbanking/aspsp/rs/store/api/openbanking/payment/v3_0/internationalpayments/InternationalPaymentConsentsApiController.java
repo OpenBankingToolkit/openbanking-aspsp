@@ -53,10 +53,11 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalConverter.toOBInternational1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent4;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBInternational1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent4;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -115,7 +116,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteInternationalConsent1Param);
-        OBWriteInternationalConsent2 consent2 = OBInternationalConverter.toOBWriteInternationalConsent2(obWriteInternationalConsent1Param);
+        OBWriteInternationalConsent2 consent2 = toOBWriteInternationalConsent2(obWriteInternationalConsent1Param);
         log.trace("Converted to: {}", consent2.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);

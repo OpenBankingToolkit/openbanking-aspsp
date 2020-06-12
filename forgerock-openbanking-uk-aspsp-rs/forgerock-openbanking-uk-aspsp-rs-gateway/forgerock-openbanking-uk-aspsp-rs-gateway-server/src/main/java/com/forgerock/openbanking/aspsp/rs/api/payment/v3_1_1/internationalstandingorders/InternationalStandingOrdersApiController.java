@@ -51,8 +51,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAccountConverter.toOBCashAccount5;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount5;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 

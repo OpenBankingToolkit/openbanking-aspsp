@@ -24,7 +24,7 @@ import org.junit.Test;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationDebtorAccount;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAccountConverter.toOBCashAccount3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

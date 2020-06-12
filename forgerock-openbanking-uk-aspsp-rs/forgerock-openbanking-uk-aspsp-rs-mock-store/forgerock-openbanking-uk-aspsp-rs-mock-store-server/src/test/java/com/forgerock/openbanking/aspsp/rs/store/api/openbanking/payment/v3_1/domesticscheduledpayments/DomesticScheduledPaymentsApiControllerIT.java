@@ -50,7 +50,7 @@ import uk.org.openbanking.datamodel.payment.*;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled2;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

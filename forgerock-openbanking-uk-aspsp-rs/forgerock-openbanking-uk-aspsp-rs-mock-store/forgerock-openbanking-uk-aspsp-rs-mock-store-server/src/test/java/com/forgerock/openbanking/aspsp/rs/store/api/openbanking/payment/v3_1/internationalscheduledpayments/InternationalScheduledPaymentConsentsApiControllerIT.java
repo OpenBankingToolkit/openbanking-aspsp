@@ -53,8 +53,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalScheduledConverter.toOBInternationalScheduled2;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBInternationalScheduled2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

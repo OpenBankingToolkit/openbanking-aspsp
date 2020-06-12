@@ -29,7 +29,6 @@ import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRStandingOrderPaymentConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import io.swagger.annotations.ApiParam;
@@ -55,6 +54,8 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent3;
 
 @Controller("DomesticStandingOrderConsentsApiV3.1")
 @Slf4j
@@ -125,7 +126,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
         FRDomesticStandingOrderConsent3 domesticStandingOrderConsent = FRDomesticStandingOrderConsent3.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticStandingOrderConsent(FRStandingOrderPaymentConverter.toWriteDomesticStandingOrderConsent3Param(obWriteDomesticStandingOrderConsent2Param))
+                .domesticStandingOrderConsent(toOBWriteDomesticStandingOrderConsent3(obWriteDomesticStandingOrderConsent2Param))
                 .statusUpdate(DateTime.now())
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
@@ -178,7 +179,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
     private OBWriteDomesticStandingOrderConsentResponse2 packageResponse(FRDomesticStandingOrderConsent3 domesticStandingOrderConsent) {
         return new OBWriteDomesticStandingOrderConsentResponse2()
                 .data(new OBWriteDataDomesticStandingOrderConsentResponse2()
-                        .initiation(FRStandingOrderPaymentConverter.toOBDomesticStandingOrder2(domesticStandingOrderConsent.getInitiation()))
+                        .initiation(toOBDomesticStandingOrder2(domesticStandingOrderConsent.getInitiation()))
                         .status(domesticStandingOrderConsent.getStatus().toOBExternalConsentStatus1Code())
                         .creationDateTime(domesticStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(domesticStandingOrderConsent.getStatusUpdate())

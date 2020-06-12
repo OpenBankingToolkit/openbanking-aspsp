@@ -40,8 +40,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAccountConverter.toOBCashAccount5;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount5;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j

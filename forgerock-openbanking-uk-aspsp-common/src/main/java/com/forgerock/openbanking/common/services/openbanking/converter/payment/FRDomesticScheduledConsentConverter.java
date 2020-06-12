@@ -25,11 +25,9 @@ import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRDomesti
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.payment.*;
-import uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent2;
 
 @Service
 public class FRDomesticScheduledConsentConverter {
@@ -41,7 +39,7 @@ public class FRDomesticScheduledConsentConverter {
         frDomesticScheduledConsent2.setUserId(frDomesticScheduledConsent1.getUserId());
         frDomesticScheduledConsent2.setAccountId(frDomesticScheduledConsent1.getAccountId());
         frDomesticScheduledConsent2.setCreated(frDomesticScheduledConsent1.getCreated());
-        frDomesticScheduledConsent2.setDomesticScheduledConsent(OBDomesticScheduledConverter.toOBWriteDomesticScheduledConsent2(frDomesticScheduledConsent1.getDomesticScheduledConsent()));
+        frDomesticScheduledConsent2.setDomesticScheduledConsent(toOBWriteDomesticScheduledConsent2(frDomesticScheduledConsent1.getDomesticScheduledConsent()));
         frDomesticScheduledConsent2.setPispId(frDomesticScheduledConsent1.getPispId());
         frDomesticScheduledConsent2.setPispName(frDomesticScheduledConsent1.getPispName());
         frDomesticScheduledConsent2.setStatusUpdate(frDomesticScheduledConsent1.getStatusUpdate());
@@ -56,7 +54,7 @@ public class FRDomesticScheduledConsentConverter {
         frDomesticScheduledConsent1.setUserId(frDomesticScheduledConsent2.getUserId());
         frDomesticScheduledConsent1.setAccountId(frDomesticScheduledConsent2.getAccountId());
         frDomesticScheduledConsent1.setCreated(frDomesticScheduledConsent2.getCreated());
-        frDomesticScheduledConsent1.setDomesticScheduledConsent(OBDomesticScheduledConverter.toOBWriteDomesticScheduledConsent1(frDomesticScheduledConsent2.getDomesticScheduledConsent()));
+        frDomesticScheduledConsent1.setDomesticScheduledConsent(toOBWriteDomesticScheduledConsent1(frDomesticScheduledConsent2.getDomesticScheduledConsent()));
         frDomesticScheduledConsent1.setPispId(frDomesticScheduledConsent2.getPispId());
         frDomesticScheduledConsent1.setPispName(frDomesticScheduledConsent2.getPispName());
         frDomesticScheduledConsent1.setStatusUpdate(frDomesticScheduledConsent2.getStatusUpdate());
@@ -77,20 +75,5 @@ public class FRDomesticScheduledConsentConverter {
         frDomesticScheduledConsent1.setStatusUpdate(frDomesticScheduledConsent4.getStatusUpdate());
         frDomesticScheduledConsent1.setUpdated(frDomesticScheduledConsent4.getUpdated());
         return frDomesticScheduledConsent1;
-    }
-
-    // TODO #216 - move to uk datamodel project
-    public static OBWriteDomesticScheduledConsent1 toOBWriteDomesticScheduledConsent1(OBWriteDomesticScheduledConsent3 domesticScheduledConsent3) {
-        return (new OBWriteDomesticScheduledConsent1())
-                .data(toOBWriteDataDomesticScheduledConsent1(domesticScheduledConsent3.getData()))
-                .risk(domesticScheduledConsent3.getRisk());
-    }
-
-    // TODO #216 - move to uk datamodel project
-    public static OBWriteDataDomesticScheduledConsent1 toOBWriteDataDomesticScheduledConsent1(OBWriteDomesticScheduledConsent3Data data) {
-        return (new OBWriteDataDomesticScheduledConsent1())
-                .permission(OBExternalPermissions2Code.valueOf(data.getPermission().name()))
-                .initiation(toOBDomesticScheduled1(data.getInitiation()))
-                .authorisation(toOBAuthorisation1(data.getAuthorisation()));
     }
 }

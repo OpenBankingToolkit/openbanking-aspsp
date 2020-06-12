@@ -45,7 +45,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBExchangeRateConverter.toOBExchangeRateType2Code;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRateType2Code;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 

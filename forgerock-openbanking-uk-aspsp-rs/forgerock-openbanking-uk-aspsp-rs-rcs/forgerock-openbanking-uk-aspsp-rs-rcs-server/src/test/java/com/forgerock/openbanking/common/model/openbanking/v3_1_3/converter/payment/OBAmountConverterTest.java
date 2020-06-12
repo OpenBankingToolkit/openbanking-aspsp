@@ -24,7 +24,7 @@ import org.junit.Test;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

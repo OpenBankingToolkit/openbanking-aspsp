@@ -50,9 +50,10 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled1;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent3;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -110,7 +111,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteDomesticScheduledConsent1Param);
-        OBWriteDomesticScheduledConsent2 consent2 = OBDomesticScheduledConverter.toOBWriteDomesticScheduledConsent2(obWriteDomesticScheduledConsent1Param);
+        OBWriteDomesticScheduledConsent2 consent2 = toOBWriteDomesticScheduledConsent2(obWriteDomesticScheduledConsent1Param);
         log.trace("Converted request body to {}", consent2.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);

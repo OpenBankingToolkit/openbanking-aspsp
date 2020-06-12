@@ -24,11 +24,9 @@ import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRDomesti
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticStandingOrderConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent3;
-import uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter;
+
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent2;
 
 @Service
 public class FRDomesticStandingOrderConsentConverter {
@@ -40,7 +38,7 @@ public class FRDomesticStandingOrderConsentConverter {
         frDomesticScheduledConsent2.setUserId(frDomesticStandingOrderConsent1.getUserId());
         frDomesticScheduledConsent2.setAccountId(frDomesticStandingOrderConsent1.getAccountId());
         frDomesticScheduledConsent2.setCreated(frDomesticStandingOrderConsent1.getCreated());
-        frDomesticScheduledConsent2.setDomesticStandingOrderConsent(OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrderConsent2(frDomesticStandingOrderConsent1.getDomesticStandingOrderConsent()));
+        frDomesticScheduledConsent2.setDomesticStandingOrderConsent(toOBWriteDomesticStandingOrderConsent2(frDomesticStandingOrderConsent1.getDomesticStandingOrderConsent()));
         frDomesticScheduledConsent2.setPispId(frDomesticStandingOrderConsent1.getPispId());
         frDomesticScheduledConsent2.setPispName(frDomesticStandingOrderConsent1.getPispName());
         frDomesticScheduledConsent2.setStatusUpdate(frDomesticStandingOrderConsent1.getStatusUpdate());
@@ -55,7 +53,7 @@ public class FRDomesticStandingOrderConsentConverter {
         frDomesticScheduledConsent1.setUserId(frDomesticStandingOrderConsent2.getUserId());
         frDomesticScheduledConsent1.setAccountId(frDomesticStandingOrderConsent2.getAccountId());
         frDomesticScheduledConsent1.setCreated(frDomesticStandingOrderConsent2.getCreated());
-        frDomesticScheduledConsent1.setDomesticStandingOrderConsent(OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrderConsent1(frDomesticStandingOrderConsent2.getDomesticStandingOrderConsent()));
+        frDomesticScheduledConsent1.setDomesticStandingOrderConsent(toOBWriteDomesticStandingOrderConsent1(frDomesticStandingOrderConsent2.getDomesticStandingOrderConsent()));
         frDomesticScheduledConsent1.setPispId(frDomesticStandingOrderConsent2.getPispId());
         frDomesticScheduledConsent1.setPispName(frDomesticStandingOrderConsent2.getPispName());
         frDomesticScheduledConsent1.setStatusUpdate(frDomesticStandingOrderConsent2.getStatusUpdate());
@@ -78,15 +76,6 @@ public class FRDomesticStandingOrderConsentConverter {
         return frDomesticScheduledConsent2;
     }
 
-    private OBWriteDomesticStandingOrderConsent2 toOBWriteDomesticStandingOrderConsent2(OBWriteDomesticStandingOrderConsent3 domesticStandingOrderConsent) {
-        return (new OBWriteDomesticStandingOrderConsent2())
-                .data(new OBWriteDataDomesticStandingOrderConsent2()
-                        .authorisation(domesticStandingOrderConsent.getData().getAuthorisation())
-                        .initiation(FRStandingOrderPaymentConverter.toOBDomesticStandingOrder2(domesticStandingOrderConsent.getData().getInitiation()))
-                        .permission(domesticStandingOrderConsent.getData().getPermission()))
-                .risk(domesticStandingOrderConsent.getRisk());
-
-    }
 
     public FRDomesticStandingOrderConsent1 toFRDomesticConsent1(FRDomesticStandingOrderConsent3 frDomesticStandingOrderConsent3) {
         FRDomesticStandingOrderConsent1 frDomesticScheduledConsent2 = new FRDomesticStandingOrderConsent1();
@@ -103,7 +92,4 @@ public class FRDomesticStandingOrderConsentConverter {
         return frDomesticScheduledConsent2;
     }
 
-    private OBWriteDomesticStandingOrderConsent1 toOBWriteDomesticStandingOrderConsent1(OBWriteDomesticStandingOrderConsent3 domesticStandingOrderConsent) {
-        return OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrderConsent1(toOBWriteDomesticStandingOrderConsent2(domesticStandingOrderConsent));
-    }
 }

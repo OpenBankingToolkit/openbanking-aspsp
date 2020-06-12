@@ -23,7 +23,9 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRFileConsent1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter;
+
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent2;
 
 @Service
 public class FRFileConsentConverter {
@@ -35,7 +37,7 @@ public class FRFileConsentConverter {
         frFileConsent2.setUserId(frFileConsent1.getUserId());
         frFileConsent2.setAccountId(frFileConsent1.getAccountId());
         frFileConsent2.setCreated(frFileConsent1.getCreated());
-        frFileConsent2.setWriteFileConsent(OBFileConverter.toOBWriteFileConsent2(frFileConsent1.getWriteFileConsent()));
+        frFileConsent2.setWriteFileConsent(toOBWriteFileConsent2(frFileConsent1.getWriteFileConsent()));
         frFileConsent2.setPispId(frFileConsent1.getPispId());
         frFileConsent2.setPispName(frFileConsent1.getPispName());
         frFileConsent2.setStatusUpdate(frFileConsent1.getStatusUpdate());
@@ -53,7 +55,7 @@ public class FRFileConsentConverter {
         frFileConsent1.setUserId(frFileConsent2.getUserId());
         frFileConsent1.setAccountId(frFileConsent2.getAccountId());
         frFileConsent1.setCreated(frFileConsent2.getCreated());
-        frFileConsent1.setWriteFileConsent(OBFileConverter.toOBWriteFileConsent1(frFileConsent2.getWriteFileConsent()));
+        frFileConsent1.setWriteFileConsent(toOBWriteFileConsent1(frFileConsent2.getWriteFileConsent()));
         frFileConsent1.setPispId(frFileConsent2.getPispId());
         frFileConsent1.setPispName(frFileConsent2.getPispName());
         frFileConsent1.setStatusUpdate(frFileConsent2.getStatusUpdate());

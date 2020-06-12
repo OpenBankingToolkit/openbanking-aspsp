@@ -26,7 +26,7 @@ import uk.org.openbanking.datamodel.payment.*;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3DataAuthorisation.AuthorisationTypeEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent4Data.PermissionEnum;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent3;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.joda.time.DateTime.now;
 

@@ -55,7 +55,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
