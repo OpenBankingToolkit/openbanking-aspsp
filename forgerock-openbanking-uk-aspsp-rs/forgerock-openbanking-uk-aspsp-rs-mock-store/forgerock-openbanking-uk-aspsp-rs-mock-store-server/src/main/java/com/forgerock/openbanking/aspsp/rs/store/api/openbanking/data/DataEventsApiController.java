@@ -153,9 +153,9 @@ public class DataEventsApiController implements DataEventsApi {
      */
     private void updateEvents(List<FREventNotification> eventsToUpdate, FRDataEvent frDataEvent) throws OBErrorResponseException {
         try {
-            eventsToUpdate.forEach(e -> {
-                Optional<OBEventNotification2> optionalOBEventNotification2 = frDataEvent.getObEventNotification2List().stream().filter(fre -> fre.getJti().equals(e.getJti())).findFirst();
-                if (optionalOBEventNotification2.isEmpty()) {
+            frDataEvent.getObEventNotification2List().forEach(fde -> {
+                Optional<FREventNotification> optionalFREventNotification = eventsToUpdate.stream().filter(e -> e.getJti().equals(fde.getJti())).findFirst();
+                if (optionalFREventNotification.isEmpty()) {
                     log.error("Error updating the events, the jti set in the request not match with any existing event");
                     throw new RuntimeException(new OBErrorResponseException(
                             OBRIErrorType.DATA_INVALID_REQUEST.getHttpStatus(),
@@ -163,8 +163,9 @@ public class DataEventsApiController implements DataEventsApi {
                             OBRIErrorType.DATA_INVALID_REQUEST.toOBError1("The jti set in the request not match with any existing event")));
                 }
                 try {
-                    e.setSignedJwt(signPayload(optionalOBEventNotification2.get()));
-                    frPendingEventsRepository.save(e);
+                    FREventNotification frEventNotification = optionalFREventNotification.get();
+                    frEventNotification.setSignedJwt(signPayload(fde));
+                    frPendingEventsRepository.save(frEventNotification);
                 } catch (OBErrorException obErrorException) {
                     throw new RuntimeException(obErrorException);
                 }
