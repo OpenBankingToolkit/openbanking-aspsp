@@ -30,6 +30,7 @@ import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -61,6 +62,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
     private ExchangeRateVerifier exchangeRateVerifier;
     private InternationalPaymentService paymentsService;
 
+    @Autowired
     public InternationalPaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService,
                                                      RsStoreGateway rsStoreGateway,
                                                      ExchangeRateVerifier exchangeRateVerifier,
@@ -113,6 +115,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 .filters(f -> {
                             f.verifyIdempotencyKeyLength(xIdempotencyKey);
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
+                            f.validateRisk(obWriteInternationalConsent2Param.getRisk());
                         }
                 )
                 .execute(

@@ -20,9 +20,21 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_2.domesticpayments;
 
+import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller("DomesticPaymentsApiV3.1.2")
-public class DomesticPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.domesticpayments.DomesticPaymentsApiController implements DomesticPaymentsApi {
+public class DomesticPaymentsApiController
+        extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.domesticpayments.DomesticPaymentsApiController
+        implements DomesticPaymentsApi {
 
+    @Autowired
+    public DomesticPaymentsApiController(DomesticPaymentService paymentsService,
+                                         RSEndpointWrapperService rsEndpointWrapperService,
+                                         RsStoreGateway rsStoreGateway) {
+        super(paymentsService, rsEndpointWrapperService, rsStoreGateway);
+    }
 }

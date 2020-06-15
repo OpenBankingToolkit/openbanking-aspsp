@@ -26,6 +26,7 @@ import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.BalanceTransferPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.MoneyTransferPaymentValidator;
+import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.PaymPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.*;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
@@ -62,6 +63,7 @@ public class RSEndpointWrapperService {
     public BalanceTransferPaymentValidator balanceTransferPaymentValidator;
     public MoneyTransferPaymentValidator moneyTransferPaymentValidator;
     public PaymPaymentValidator paymPaymentValidator;
+    public OBRisk1Validator riskValidator;
 
     @Autowired
     public RSEndpointWrapperService(OBHeaderCheckerService obHeaderCheckerService,
@@ -79,7 +81,8 @@ public class RSEndpointWrapperService {
                                     BalanceTransferPaymentValidator balanceTransferPaymentValidator,
                                     MoneyTransferPaymentValidator moneyTransferPaymentValidator,
                                     AMResourceServerService amResourceServerService,
-                                    PaymPaymentValidator paymPaymentValidator
+                                    PaymPaymentValidator paymPaymentValidator,
+                                    OBRisk1Validator riskValidator
     ) {
         this.obHeaderCheckerService = obHeaderCheckerService;
         this.cryptoApiClient = cryptoApiClient;
@@ -97,6 +100,7 @@ public class RSEndpointWrapperService {
         this.moneyTransferPaymentValidator = moneyTransferPaymentValidator;
         this.paymPaymentValidator = paymPaymentValidator;
         this.amResourceServerService = amResourceServerService;
+        this.riskValidator = riskValidator;
     }
 
     public AccountsAndTransactionsEndpointWrapper accountAndTransactionEndpoint() {
@@ -112,7 +116,8 @@ public class RSEndpointWrapperService {
     }
 
     public PaymentsApiEndpointWrapper paymentEndpoint() {
-        return new PaymentsApiEndpointWrapper(this, balanceTransferPaymentValidator, moneyTransferPaymentValidator, paymPaymentValidator);
+        return new PaymentsApiEndpointWrapper(this, balanceTransferPaymentValidator, moneyTransferPaymentValidator,
+                paymPaymentValidator, riskValidator);
     }
 
     public FilePaymentsApiEndpointWrapper filePaymentEndpoint() {

@@ -31,7 +31,10 @@ import org.springframework.stereotype.Controller;
 public class InternationalPaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.internationalpayments.InternationalPaymentConsentsApiController implements InternationalPaymentConsentsApi {
 
     @Autowired
-    public InternationalPaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway, ExchangeRateVerifier exchangeRateVerifier, InternationalPaymentService paymentsService) {
+    public InternationalPaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService,
+                                                     RsStoreGateway rsStoreGateway,
+                                                     ExchangeRateVerifier exchangeRateVerifier,
+                                                     InternationalPaymentService paymentsService) {
         super(rsEndpointWrapperService, rsStoreGateway, exchangeRateVerifier, paymentsService);
     }
 }

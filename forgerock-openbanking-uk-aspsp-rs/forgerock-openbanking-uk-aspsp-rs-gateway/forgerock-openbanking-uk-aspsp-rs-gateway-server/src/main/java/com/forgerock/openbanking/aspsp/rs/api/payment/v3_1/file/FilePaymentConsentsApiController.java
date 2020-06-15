@@ -55,11 +55,16 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 @Slf4j
 public class FilePaymentConsentsApiController implements FilePaymentConsentsApi {
 
-    @Autowired
+    public FilePaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService,
+                                            RsStoreGateway rsStoreGateway,
+                                            FilePaymentService filePaymentService) {
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+        this.filePaymentService = filePaymentService;
+    }
+
     private RSEndpointWrapperService rsEndpointWrapperService;
-    @Autowired
     private RsStoreGateway rsStoreGateway;
-    @Autowired
     private FilePaymentService filePaymentService;
 
     @Override
