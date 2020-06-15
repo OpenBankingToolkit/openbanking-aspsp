@@ -20,9 +20,21 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.file;
 
+import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller("FilePaymentConsentsApiV3.1.1")
-public class FilePaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.file.FilePaymentConsentsApiController implements FilePaymentConsentsApi {
+public class FilePaymentConsentsApiController
+        extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.file.FilePaymentConsentsApiController
+        implements FilePaymentConsentsApi {
 
+    @Autowired
+    public FilePaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService,
+                                            RsStoreGateway rsStoreGateway,
+                                            FilePaymentService filePaymentService) {
+        super(rsEndpointWrapperService, rsStoreGateway, filePaymentService);
+    }
 }

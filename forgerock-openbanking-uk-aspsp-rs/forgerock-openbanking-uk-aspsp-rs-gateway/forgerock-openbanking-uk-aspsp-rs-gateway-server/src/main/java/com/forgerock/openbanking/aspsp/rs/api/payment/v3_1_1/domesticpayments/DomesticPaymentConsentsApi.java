@@ -38,6 +38,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
         obReference = OBReference.DOMESTIC_PAYMENTS
 )
 @RequestMapping(value = "/open-banking/v3.1.1/pisp")
-public interface DomesticPaymentConsentsApi extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.domesticpayments.DomesticPaymentConsentsApi {
-
+public interface DomesticPaymentConsentsApi
+        extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.domesticpayments.DomesticPaymentConsentsApi {
 }

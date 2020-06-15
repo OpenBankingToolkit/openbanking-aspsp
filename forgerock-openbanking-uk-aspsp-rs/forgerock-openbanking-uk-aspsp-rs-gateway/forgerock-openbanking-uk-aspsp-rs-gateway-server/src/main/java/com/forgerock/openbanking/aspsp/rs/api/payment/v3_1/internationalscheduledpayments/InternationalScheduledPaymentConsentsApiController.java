@@ -114,6 +114,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                 .filters(f -> {
                             f.verifyIdempotencyKeyLength(xIdempotencyKey);
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
+                            f.validateRisk(obWriteInternationalScheduledConsent2Param.getRisk());
                         }
 
                 )

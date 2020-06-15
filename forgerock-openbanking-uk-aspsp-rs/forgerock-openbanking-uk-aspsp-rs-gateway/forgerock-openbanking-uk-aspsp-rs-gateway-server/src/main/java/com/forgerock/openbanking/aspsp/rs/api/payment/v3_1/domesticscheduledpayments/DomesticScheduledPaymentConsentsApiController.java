@@ -99,6 +99,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                 .filters(f -> {
                             f.verifyIdempotencyKeyLength(xIdempotencyKey);
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
+                            f.validateRisk(obWriteDomesticScheduledConsent2Param.getRisk());
                         }
                 )
                 .execute(

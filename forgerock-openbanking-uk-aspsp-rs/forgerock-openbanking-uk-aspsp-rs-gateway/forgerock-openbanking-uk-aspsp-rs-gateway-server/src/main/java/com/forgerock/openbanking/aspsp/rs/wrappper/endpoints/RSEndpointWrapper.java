@@ -43,6 +43,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import uk.org.openbanking.OBConstants;
 import uk.org.openbanking.OBHeaders;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;

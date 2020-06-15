@@ -27,9 +27,14 @@ import com.forgerock.openbanking.common.services.store.payment.InternationalSche
 import org.springframework.stereotype.Controller;
 
 @Controller("InternationalScheduledPaymentConsentsApiV3.1.2")
-public class InternationalScheduledPaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.internationalscheduledpayments.InternationalScheduledPaymentConsentsApiController implements InternationalScheduledPaymentConsentsApi {
+public class InternationalScheduledPaymentConsentsApiController
+        extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.internationalscheduledpayments.InternationalScheduledPaymentConsentsApiController
+        implements InternationalScheduledPaymentConsentsApi {
 
-    public InternationalScheduledPaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway, ExchangeRateVerifier exchangeRateVerifier, InternationalScheduledPaymentService paymentsService) {
+    public InternationalScheduledPaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService,
+                                                              RsStoreGateway rsStoreGateway,
+                                                              ExchangeRateVerifier exchangeRateVerifier,
+                                                              InternationalScheduledPaymentService paymentsService) {
         super(rsEndpointWrapperService, rsStoreGateway, exchangeRateVerifier, paymentsService);
     }
 }

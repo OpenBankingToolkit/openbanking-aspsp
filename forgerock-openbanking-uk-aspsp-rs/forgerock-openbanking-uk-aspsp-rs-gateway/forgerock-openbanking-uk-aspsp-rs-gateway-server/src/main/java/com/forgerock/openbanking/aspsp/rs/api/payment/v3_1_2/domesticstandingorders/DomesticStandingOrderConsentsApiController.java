@@ -20,8 +20,18 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_2.domesticstandingorders;
 
+import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller("DomesticStandingOrderConsentsApiV3.1.2")
-public class DomesticStandingOrderConsentsApiController extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController implements DomesticStandingOrderConsentsApi {
+public class DomesticStandingOrderConsentsApiController
+        extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController
+        implements DomesticStandingOrderConsentsApi {
+
+    @Autowired
+    public DomesticStandingOrderConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway) {
+        super(rsEndpointWrapperService, rsStoreGateway);
+    }
 }

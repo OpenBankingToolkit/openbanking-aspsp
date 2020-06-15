@@ -78,7 +78,7 @@ public class PaymentsSubmissionEndpointWrapperTest {
         RSEndpointWrapperService rsEndpointWrapperService = new RSEndpointWrapperService(obHeaderCheckerService, cryptoApiClient,
                 null, null, rsConfiguration, null,
                 null, false, null, rsConfiguration.financialId, amOpenBankingConfiguration, null,
-                null, null, amResourceServerService, null);
+                null, null, amResourceServerService, null, null);
 
         wrapper = new PaymentsSubmissionsEndpointWrapper(rsEndpointWrapperService) {
             @Override
