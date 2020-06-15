@@ -23,10 +23,10 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.do
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticScheduledConsent2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.DomesticScheduledConsent4Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -48,17 +48,20 @@ import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
 import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3Data.PermissionEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse2;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBWriteDomesticScheduled2DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 
-
-
-
+/**
+ * Spring Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.domesticscheduledpayments.DomesticScheduledPaymentConsentsApiController}.
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DomesticScheduledPaymentConsentsApiControllerIT {
@@ -67,7 +70,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private DomesticScheduledConsent2Repository repository;
+    private DomesticScheduledConsent4Repository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -88,7 +91,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
     public void testGetDomesticScheduledPaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticScheduledConsent2 consent = JMockData.mock(FRDomesticScheduledConsent2.class);
+        FRDomesticScheduledConsent4 consent = JMockData.mock(FRDomesticScheduledConsent4.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         DateTime requestedExecutionDateTime = DateTime.now().withMillisOfSecond(0);
         consent.getInitiation().requestedExecutionDateTime(DateTime.now().withMillisOfSecond(0));
@@ -104,7 +107,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consent.getInitiation());
+        assertThat(response.getBody().getData().getInitiation()).isEqualTo(toOBDomesticScheduled2(consent.getInitiation()));
         assertThat(response.getBody().getData().getStatus()).isEqualTo(consent.getStatus().toOBExternalConsentStatus1Code());
         Assertions.assertThat(response.getBody().getData().getCreationDateTime()).isEqualToIgnoringMillis(consent.getCreated());
         Assertions.assertThat(response.getBody().getData().getStatusUpdateDateTime()).isEqualToIgnoringMillis(consent.getStatusUpdate());
@@ -115,7 +118,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
     public void testGetDomesticScheduledPaymentConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticScheduledConsent2 consent = JMockData.mock(FRDomesticScheduledConsent2.class);
+        FRDomesticScheduledConsent4 consent = JMockData.mock(FRDomesticScheduledConsent4.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
         // When
@@ -158,14 +161,14 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteDomesticScheduledConsentResponse2 consentResponse = response.getBody();
-        FRDomesticScheduledConsent2 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRDomesticScheduledConsent4 consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getPispName()).isEqualTo(PaymentTestHelper.MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(consentResponse.getData().getInitiation());
+        assertThat(consent.getInitiation()).isEqualTo(toOBWriteDomesticScheduled2DataInitiation(consentResponse.getData().getInitiation()));
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
         assertThat(consent.getRisk()).isEqualTo(consentResponse.getRisk());
-        assertThat(consent.getDomesticScheduledConsent().getData().getPermission()).isEqualTo(consentResponse.getData().getPermission());
+        assertThat(consent.getDomesticScheduledConsent().getData().getPermission()).isEqualTo(PermissionEnum.valueOf(consentResponse.getData().getPermission().name()));
     }
 
 }

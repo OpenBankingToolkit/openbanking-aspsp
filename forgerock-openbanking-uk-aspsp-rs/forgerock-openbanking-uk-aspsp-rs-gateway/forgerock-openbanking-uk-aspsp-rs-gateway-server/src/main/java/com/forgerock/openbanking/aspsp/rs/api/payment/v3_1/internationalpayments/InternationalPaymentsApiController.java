@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.internationalpayment
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -38,7 +38,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse2;
 
@@ -82,7 +81,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -99,7 +98,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             Principal principal
     ) throws OBErrorResponseException {
         String consentId = obWriteInternational2Param.getData().getConsentId();
-        FRInternationalConsent2 payment = paymentsService.getPayment(consentId);
+        FRInternationalConsent4 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -141,7 +140,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")

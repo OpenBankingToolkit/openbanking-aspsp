@@ -55,6 +55,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomestic2;
 
 @Controller("DomesticPaymentsApiV3.0")
 @Slf4j
@@ -106,7 +107,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: {}", obWriteDomestic1Param);
-        OBWriteDomestic2 payment = OBDomesticConverter.toOBWriteDomestic2(obWriteDomestic1Param);
+        OBWriteDomestic2 payment = toOBWriteDomestic2(obWriteDomestic1Param);
         log.trace("Converted to: {}", payment.getClass());
 
         String paymentId = payment.getData().getConsentId();

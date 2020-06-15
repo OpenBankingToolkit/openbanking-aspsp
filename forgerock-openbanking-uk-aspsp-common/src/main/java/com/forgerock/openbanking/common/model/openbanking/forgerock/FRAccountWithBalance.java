@@ -23,7 +23,7 @@ package com.forgerock.openbanking.common.model.openbanking.forgerock;
 
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
-import com.forgerock.openbanking.common.services.openbanking.converter.FRAccountConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

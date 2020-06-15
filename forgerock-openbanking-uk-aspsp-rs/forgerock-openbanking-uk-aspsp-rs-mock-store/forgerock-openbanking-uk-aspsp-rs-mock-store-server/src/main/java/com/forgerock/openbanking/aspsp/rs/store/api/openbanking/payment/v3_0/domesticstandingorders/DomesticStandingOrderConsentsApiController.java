@@ -29,7 +29,6 @@ import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRStandingOrderPaymentConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import io.swagger.annotations.ApiParam;
@@ -48,7 +47,6 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderCons
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse1;
-import uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -57,6 +55,9 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent3;
 
 @Controller("DomesticStandingOrderConsentsApiV3.0")
 @Slf4j
@@ -114,7 +115,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteDomesticStandingOrderConsent1Param);
-        OBWriteDomesticStandingOrderConsent2 consent2 = OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrderConsent2(obWriteDomesticStandingOrderConsent1Param);
+        OBWriteDomesticStandingOrderConsent2 consent2 = toOBWriteDomesticStandingOrderConsent2(obWriteDomesticStandingOrderConsent1Param);
         log.trace("Converted request body to {}", consent2.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
@@ -130,7 +131,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
         FRDomesticStandingOrderConsent3 domesticStandingOrderConsent = FRDomesticStandingOrderConsent3.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticStandingOrderConsent(FRStandingOrderPaymentConverter.toWriteDomesticStandingOrderConsent3Param(consent2))
+                .domesticStandingOrderConsent(toOBWriteDomesticStandingOrderConsent3(consent2))
                 .statusUpdate(DateTime.now())
                 .created(DateTime.now())
                 .pispId(tpp.getId())
@@ -184,7 +185,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
     private OBWriteDomesticStandingOrderConsentResponse1 packageResponse(FRDomesticStandingOrderConsent3 domesticStandingOrderConsent) {
         return new OBWriteDomesticStandingOrderConsentResponse1()
                 .data(new OBWriteDataDomesticStandingOrderConsentResponse1()
-                        .initiation(FRStandingOrderPaymentConverter.toOBDomesticStandingOrder1(domesticStandingOrderConsent.getInitiation()))
+                        .initiation(toOBDomesticStandingOrder1(domesticStandingOrderConsent.getInitiation()))
                         .status(domesticStandingOrderConsent.getStatus().toOBExternalConsentStatus1Code())
                         .creationDateTime(domesticStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(domesticStandingOrderConsent.getStatusUpdate())

@@ -38,8 +38,7 @@ public enum ConsentStatusCode {
     ACCEPTEDTECHNICALVALIDATION("AcceptedTechnicalValidation"),
     PENDING("Pending"),
     REVOKED("Revoked"),
-    AWAITINGUPLOAD("AwaitingUpload")
-    ;
+    AWAITINGUPLOAD("AwaitingUpload");
 
     private final String value;
 
@@ -48,7 +47,7 @@ public enum ConsentStatusCode {
     }
 
     public static ConsentStatusCode fromValue(String value) {
-        for(ConsentStatusCode consentStatusCode: ConsentStatusCode.values()) {
+        for (ConsentStatusCode consentStatusCode : ConsentStatusCode.values()) {
             if (consentStatusCode.value.equals(value)) {
                 return consentStatusCode;
             }

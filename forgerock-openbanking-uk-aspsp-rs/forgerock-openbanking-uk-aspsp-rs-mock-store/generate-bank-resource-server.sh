@@ -36,4 +36,6 @@ generate ${output_dir} ${base_path}/openbanking-v2.0.json ${language} ${library}
 generate ${output_dir} ${base_path}/openbanking-v3.0.json ${language} ${library} "--model-package com.forgerock.rs.store.models.v3_0 --api-package=com.forgerock.rs.store.apis.v3_0 ${config}"
 generate ${output_dir} ${base_path}/openbanking-v3.1.1.json ${language} ${library} "--model-package com.forgerock.rs.store.models.v3.1.1 --api-package=com.forgerock.rs.store.apis.v3_1_1 ${config}"
 generate ${output_dir} ${base_path}/openbanking-v3.1.2.json ${language} ${library} "--model-package com.forgerock.rs.store.models.v3_1_2 --api-package=com.forgerock.rs.store.apis.v3_1_2 ${config}"
+# TODO #216 - create openbanking-v3.1.3.json
+# generate ${output_dir} ${base_path}/openbanking-v3.1.3.json ${language} ${library} "--model-package com.forgerock.rs.store.models.v3_1_3 --api-package=com.forgerock.rs.store.apis.v3_1_3 ${config}"
 generate ${output_dir} ${base_path}/openbanking-v3.1.json ${language} ${library} "--model-package com.forgerock.rs.store.models.v3_1 --api-package=com.forgerock.rs.store.apis.v3_1 ${config}"

@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticSchedulePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -34,12 +34,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
-import uk.org.openbanking.datamodel.payment.OBDomesticScheduled2;
-import uk.org.openbanking.datamodel.payment.OBRemittanceInformation1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j
@@ -64,19 +67,19 @@ public class RCSDomesticSchedulePaymentDetailsApi implements RCSDetailsApi {
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRDomesticScheduledConsent2 domesticConsent = paymentService.getPayment(consentId);
+        FRDomesticScheduledConsent4 domesticConsent = paymentService.getPayment(consentId);
 
         // Only show the debtor account if specified in consent
-       if (domesticConsent.getInitiation().getDebtorAccount() != null) {
-           Optional<FRAccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(domesticConsent.getInitiation().getDebtorAccount().getIdentification(), accounts);
-           if (!matchingUserAccount.isPresent()) {
-               log.error("The PISP '{}' created the payment request '{}' but the debtor account: {} on the payment consent " +
-                       " is not one of the user's accounts: {}.", domesticConsent.getPispId(), consentId, domesticConsent.getInitiation().getDebtorAccount(), accounts);
-               return rcsErrorService.invalidConsentError(remoteConsentRequest, OBRIErrorType.RCS_CONSENT_REQUEST_DEBTOR_ACCOUNT_NOT_FOUND,
-                       domesticConsent.getPispId(), consentId, accounts);
-           }
-           accounts = Collections.singletonList(matchingUserAccount.get());
-       }
+        if (domesticConsent.getInitiation().getDebtorAccount() != null) {
+            Optional<FRAccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(domesticConsent.getInitiation().getDebtorAccount().getIdentification(), accounts);
+            if (!matchingUserAccount.isPresent()) {
+                log.error("The PISP '{}' created the payment request '{}' but the debtor account: {} on the payment consent " +
+                        " is not one of the user's accounts: {}.", domesticConsent.getPispId(), consentId, domesticConsent.getInitiation().getDebtorAccount(), accounts);
+                return rcsErrorService.invalidConsentError(remoteConsentRequest, OBRIErrorType.RCS_CONSENT_REQUEST_DEBTOR_ACCOUNT_NOT_FOUND,
+                        domesticConsent.getPispId(), consentId, accounts);
+            }
+            accounts = Collections.singletonList(matchingUserAccount.get());
+        }
         Optional<Tpp> isTpp = tppStoreService.findById(domesticConsent.getPispId());
         if (!isTpp.isPresent()) {
             log.error("The TPP '{}' (Client ID {}) that created this consent id '{}' doesn't exist anymore.", domesticConsent.getPispId(), clientId, consentId);
@@ -92,13 +95,13 @@ public class RCSDomesticSchedulePaymentDetailsApi implements RCSDetailsApi {
         domesticConsent.setUserId(username);
         paymentService.updatePayment(domesticConsent);
 
-        OBDomesticScheduled2 domesticScheduled = domesticConsent.getInitiation();
+        OBWriteDomesticScheduled2DataInitiation domesticScheduled = domesticConsent.getInitiation();
         OBScheduledPayment1 obScheduledPayment1 = new OBScheduledPayment1()
                 .accountId(domesticConsent.getAccountId())
                 .scheduledPaymentId(domesticScheduled.getInstructionIdentification())
                 .scheduledPaymentDateTime(domesticScheduled.getRequestedExecutionDateTime())
-                .creditorAccount(domesticScheduled.getCreditorAccount())
-                .instructedAmount(domesticScheduled.getInstructedAmount())
+                .creditorAccount(toOBCashAccount3(domesticScheduled.getCreditorAccount()))
+                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(domesticScheduled.getInstructedAmount()))
                 .reference(domesticScheduled.getRemittanceInformation().getReference());
 
         return ResponseEntity.ok(DomesticSchedulePaymentConsentDetails.builder()
@@ -110,7 +113,7 @@ public class RCSDomesticSchedulePaymentDetailsApi implements RCSDetailsApi {
                 .clientId(clientId)
                 .paymentReference(Optional.ofNullable(
                         domesticConsent.getInitiation().getRemittanceInformation())
-                        .map(OBRemittanceInformation1::getReference)
+                        .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
     }

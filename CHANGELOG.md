@@ -1,39 +1,6 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
-## Unreleased
-### GitHub [#181](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/181) Release 1.0.79
-[9f6afb8063341ee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f6afb8063341ee) Jorge Sanchez Perez *2020-04-24 17:06:53*
-Release 1.0.79 (#181)
-
-* [maven-release-plugin] prepare release forgerock-openbanking-aspsp-1.0.79
-
-* [maven-release-plugin] prepare for next development iteration
-### GitHub [#182](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/182) upgrade openbanking-ui-cli to handle building forge rock new theme as…
-[8aea7d836351a41](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8aea7d836351a41) Julien Renaux *2020-04-28 08:29:42*
-upgrade openbanking-ui-cli to handle building forge rock new theme as the other themes (#182)
-### GitHub [#183](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/183) use common utils/forms. 
-[7477ad1fe49d907](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7477ad1fe49d907) Julien Renaux *2020-04-29 11:22:44*
-use common utils/forms. https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/8 (#183)
-### GitHub [#184](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/184) upgrade @forgerock/openbanking-ui-cli. https://github.com/OpenBanking…
-[f351e3229a4ea1e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f351e3229a4ea1e) Julien Renaux *2020-04-29 16:38:42*
-upgrade @forgerock/openbanking-ui-cli. https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/8 (#184)
-[fd08b064e6746e4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fd08b064e6746e4) Matt Wills *2020-05-05 12:50:27*
-Waiver 007 expiry - enabled detached JWT signature verification (#219)
-[9f6afb8063341ee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f6afb8063341ee) Jorge Sanchez Perez *2020-04-24 17:06:53*
-Release 1.0.79 (#181)
-
-* [maven-release-plugin] prepare release forgerock-openbanking-aspsp-1.0.79
-
-* [maven-release-plugin] prepare for next development iteration
-[475850b80e3e28f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/475850b80e3e28f) jorgesanchezperez *2020-05-13 10:53:11*
-Fix CLIENT_CREDENTIALS Grant type thru all payments APIs and versions APIS
-[849dc8d817838b8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/849dc8d817838b8) jorgesanchezperez *2020-04-24 15:42:03*
-skip test on github actions and rolback version to 1.0.79-SNAPSHOT to create again the release
-[bd2d31c60998e30](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bd2d31c60998e30) Julien Renaux *2020-04-24 09:44:19*
-remove unused file
-[ea0beafab3e80a3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ea0beafab3e80a3) Julien Renaux *2020-04-24 08:45:41*
-upgrade common ui. https://github.com/OpenBankingToolkit/openbanking-common/issues/59
-## forgerock-openbanking-aspsp-1.0.79
+## forgerock-openbanking-aspsp-1.0.81
 ### GitHub [#175](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/175) Use new merge-master flow
 [d0113073476393f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d0113073476393f) Jonathan Gazeley *2020-04-21 13:51:06*
 Use new merge-master flow (#175)
@@ -48,10 +15,102 @@ upgrade CLI (#177)
 * push latest image
 
 * adding docker-compose.override.yml into gitignore
+### GitHub [#181](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/181) Release 1.0.79
+[9f6afb8063341ee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f6afb8063341ee) Jorge Sanchez Perez *2020-04-24 17:06:53*
+Release 1.0.79 (#181)
+
+* [maven-release-plugin] prepare release forgerock-openbanking-aspsp-1.0.79
+
+* [maven-release-plugin] prepare for next development iteration
+### GitHub [#182](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/182) upgrade openbanking-ui-cli to handle building forge rock new theme as…
+[8aea7d836351a41](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8aea7d836351a41) Julien Renaux *2020-04-28 08:29:42*
+upgrade openbanking-ui-cli to handle building forge rock new theme as the other themes (#182)
+### GitHub [#183](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/183) use common utils/forms. 
+[7477ad1fe49d907](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7477ad1fe49d907) Julien Renaux *2020-04-29 11:22:44*
+use common utils/forms. https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/8 (#183)
+[9f6afb8063341ee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f6afb8063341ee) Jorge Sanchez Perez *2020-04-24 17:06:53*
+Release 1.0.79 (#181)
+
+* [maven-release-plugin] prepare release forgerock-openbanking-aspsp-1.0.79
+
+* [maven-release-plugin] prepare for next development iteration
+[d183f414fc0641e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d183f414fc0641e) dependabot-preview[bot] *2020-05-20 08:04:22*
+Bump forgerock-openbanking-auth from 1.0.55 to 1.0.57
+
+Bumps [forgerock-openbanking-auth](https://github.com/OpenBankingToolkit/openbanking-auth) from 1.0.55 to 1.0.57.
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-auth/releases)
+- [Changelog](https://github.com/OpenBankingToolkit/openbanking-auth/blob/master/pom.xml.releaseBackup)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-auth/compare/forgerock-openbanking-starter-auth-1.0.55...forgerock-openbanking-starter-auth-1.0.57)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[2e773335c865e63](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2e773335c865e63) dependabot-preview[bot] *2020-04-29 11:24:07*
+Bump ob-clients.version from 1.0.31 to 1.0.32
+
+Bumps `ob-clients.version` from 1.0.31 to 1.0.32.
+
+Updates `forgerock-openbanking-jwkms-client` from 1.0.31 to 1.0.32
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.31...forgerock-openbanking-reference-implementation-clients-1.0.32)
+
+Updates `forgerock-openbanking-analytics-client` from 1.0.31 to 1.0.32
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.31...forgerock-openbanking-reference-implementation-clients-1.0.32)
+
+Updates `forgerock-openbanking-analytics-webclient` from 1.0.31 to 1.0.32
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.31...forgerock-openbanking-reference-implementation-clients-1.0.32)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[83088724d129b8a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/83088724d129b8a) dependabot-preview[bot] *2020-05-15 13:39:56*
+Bump ob-common.version from 1.0.74 to 1.0.75
+
+Bumps `ob-common.version` from 1.0.74 to 1.0.75.
+
+Updates `forgerock-openbanking-model` from 1.0.74 to 1.0.75
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.74...forgerock-openbanking-starter-commons-1.0.75)
+
+Updates `forgerock-openbanking-am` from 1.0.74 to 1.0.75
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.74...forgerock-openbanking-starter-commons-1.0.75)
+
+Updates `forgerock-openbanking-jwt` from 1.0.74 to 1.0.75
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.74...forgerock-openbanking-starter-commons-1.0.75)
+
+Updates `forgerock-openbanking-oidc` from 1.0.74 to 1.0.75
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.74...forgerock-openbanking-starter-commons-1.0.75)
+
+Updates `forgerock-openbanking-upgrade` from 1.0.74 to 1.0.75
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.74...forgerock-openbanking-starter-commons-1.0.75)
+
+Updates `forgerock-openbanking-ssl` from 1.0.74 to 1.0.75
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.74...forgerock-openbanking-starter-commons-1.0.75)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[f3b878ca0944044](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f3b878ca0944044) JamieB *2020-05-15 09:52:09*
+Updated ui project version to updating-ui-version-to-3.1.2-queen-rc7
+[849dc8d817838b8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/849dc8d817838b8) jorgesanchezperez *2020-04-24 15:42:03*
+skip test on github actions and rolback version to 1.0.79-SNAPSHOT to create again the release
 [c5ae6dc9c2e6c6c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c5ae6dc9c2e6c6c) JamieB *2020-04-24 10:47:30*
 Use latest version of ob-commons
+[bd2d31c60998e30](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bd2d31c60998e30) Julien Renaux *2020-04-24 09:44:19*
+remove unused file
+[ea0beafab3e80a3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ea0beafab3e80a3) Julien Renaux *2020-04-24 08:45:41*
+upgrade common ui. https://github.com/OpenBankingToolkit/openbanking-common/issues/59
 [e567d3cd251e50f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e567d3cd251e50f) JamieB *2020-04-22 15:53:06*
 Updated ui project version to updating-ui-version-to-
+## forgerock-openbanking-aspsp-1.0.80
+### GitHub [#184](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/184) upgrade @forgerock/openbanking-ui-cli. https://github.com/OpenBanking…
+[f351e3229a4ea1e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f351e3229a4ea1e) Julien Renaux *2020-04-29 16:38:42*
+upgrade @forgerock/openbanking-ui-cli. https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/8 (#184)
+[fd08b064e6746e4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fd08b064e6746e4) Matt Wills *2020-05-05 12:50:27*
+Waiver 007 expiry - enabled detached JWT signature verification (#219)
+[475850b80e3e28f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/475850b80e3e28f) jorgesanchezperez *2020-05-13 10:53:11*
+Fix CLIENT_CREDENTIALS Grant type thru all payments APIs and versions APIS
 ## forgerock-openbanking-aspsp-1.0.78
 ### GitHub [#167](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/167) fix missing translation
 [5938b495358e044](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5938b495358e044) Julien Renaux *2020-03-25 13:08:00*

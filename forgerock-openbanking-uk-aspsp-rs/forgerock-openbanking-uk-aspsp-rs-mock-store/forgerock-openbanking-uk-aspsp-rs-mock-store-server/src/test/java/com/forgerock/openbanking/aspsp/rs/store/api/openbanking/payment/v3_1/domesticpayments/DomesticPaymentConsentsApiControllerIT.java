@@ -49,18 +49,29 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.*;
-import uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter;
+import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.*;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_CLIENT_ID;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_PISP_ID;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_PISP_NAME;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.setupMockTpp;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
 
+/**
+ * Spring Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.domesticpayments.DomesticPaymentConsentsApiController}.
+ */
 @RunWith(SpringRunner.class)
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -256,7 +267,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         FRDomesticConsent2 existingConsent = JMockData.mock(FRDomesticConsent2.class);
         existingConsent.setId(UUID.randomUUID().toString());
         existingConsent.setStatus(ConsentStatusCode.AUTHORISED);
-        existingConsent.setDomesticConsent(OBDomesticConverter.toOBWriteDomesticConsent2(consentRequest));
+        existingConsent.setDomesticConsent(toOBWriteDomesticConsent2(consentRequest));
         existingConsent.setIdempotencyKey(idempotencyKey);
         existingConsent = repository.save(existingConsent);
 

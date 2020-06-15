@@ -56,6 +56,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFile2;
 
 @Controller("FilePaymentsApiV3.0")
 @Slf4j
@@ -108,7 +109,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
             Principal principal) throws OBErrorResponseException {
         log.debug("Received payment submission: {}", obWriteFile1Param);
-        OBWriteFile2 payment = OBFileConverter.toOBWriteFile2(obWriteFile1Param);
+        OBWriteFile2 payment = toOBWriteFile2(obWriteFile1Param);
         log.trace("Converted to: {}", payment.getClass());
 
         String paymentId = payment.getData().getConsentId();

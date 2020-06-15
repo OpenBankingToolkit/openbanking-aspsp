@@ -27,7 +27,6 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderPaymentSubmission3;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRStandingOrderPaymentConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -53,6 +52,8 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3;
 
 @Controller("DomesticStandingOrdersApiV3.1")
 @Slf4j
@@ -115,7 +116,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
         FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission3.builder()
                 .id(paymentId)
-                .domesticStandingOrder(FRStandingOrderPaymentConverter.toOBWriteDomesticStandingOrder3(obWriteDomesticStandingOrder2Param))
+                .domesticStandingOrder(toOBWriteDomesticStandingOrder3(obWriteDomesticStandingOrder2Param))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -171,7 +172,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     private OBWriteDomesticStandingOrderResponse2 packagePayment(FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission, FRDomesticStandingOrderConsent3 frDomesticStandingOrderConsent2) {
         return new OBWriteDomesticStandingOrderResponse2().data(new OBWriteDataDomesticStandingOrderResponse2()
                 .domesticStandingOrderId(frPaymentSubmission.getId())
-                .initiation(FRStandingOrderPaymentConverter.toOBDomesticStandingOrder2(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))
+                .initiation(toOBDomesticStandingOrder2(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))
                 .creationDateTime(frDomesticStandingOrderConsent2.getCreated())
                 .statusUpdateDateTime(frDomesticStandingOrderConsent2.getStatusUpdate())
                 .status(frDomesticStandingOrderConsent2.getStatus().toOBExternalStatusCode1())

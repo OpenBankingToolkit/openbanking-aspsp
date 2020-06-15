@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_2.internationalscheduledpayments;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalScheduledConsent2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalScheduledPaymentSubmission2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalScheduledConsent4Repository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Controller;
 @Controller("InternationalScheduledPaymentsApiV3.1.2")
 @Slf4j
 public class InternationalScheduledPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.internationalscheduledpayments.InternationalScheduledPaymentsApiController implements InternationalScheduledPaymentsApi {
-    public InternationalScheduledPaymentsApiController(InternationalScheduledConsent2Repository internationalScheduledConsentRepository, InternationalScheduledPaymentSubmission2Repository internationalScheduledPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public InternationalScheduledPaymentsApiController(InternationalScheduledConsent4Repository internationalScheduledConsentRepository, InternationalScheduledPaymentSubmission2Repository internationalScheduledPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
         super(internationalScheduledConsentRepository, internationalScheduledPaymentSubmissionRepository, resourceLinkService);
     }
 }

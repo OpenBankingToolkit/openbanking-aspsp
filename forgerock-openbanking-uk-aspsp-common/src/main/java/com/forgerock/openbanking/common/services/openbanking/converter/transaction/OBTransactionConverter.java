@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.transaction;
 
+import com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.FRModelMapper;
 import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
-import com.forgerock.openbanking.common.services.openbanking.converter.OBCashAccountConverter;
 import uk.org.openbanking.datamodel.account.*;
 
 public final class OBTransactionConverter {

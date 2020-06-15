@@ -55,6 +55,7 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
 
 @Controller("DomesticPaymentConsentsApiV3.0")
 @Slf4j
@@ -110,7 +111,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteDomesticConsent1Param);
-        OBWriteDomesticConsent2 consent2 = OBDomesticConverter.toOBWriteDomesticConsent2(obWriteDomesticConsent1Param);
+        OBWriteDomesticConsent2 consent2 = toOBWriteDomesticConsent2(obWriteDomesticConsent1Param);
         log.trace("Converted request body to {}", consent2.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);

@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledConsent4;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
-public class InternationalScheduledPaymentService implements PaymentService<FRInternationalScheduledConsent2> {
+public class InternationalScheduledPaymentService implements PaymentService<FRInternationalScheduledConsent4> {
     private static final String BASE_RESOURCE_PATH = "/api/international-scheduled-payments/";
 
     private String rsStoreRoot;
@@ -41,14 +41,14 @@ public class InternationalScheduledPaymentService implements PaymentService<FRIn
         this.rsStoreRoot = rsStoreRoot;
     }
 
-    public void updatePayment(FRInternationalScheduledConsent2 consent) {
+    public void updatePayment(FRInternationalScheduledConsent4 consent) {
         log.debug("Update the consent in the store. {}", consent);
         restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH, consent);
     }
 
-    public FRInternationalScheduledConsent2 getPayment(String consentId) {
+    public FRInternationalScheduledConsent4 getPayment(String consentId) {
         log.debug("Getting consent for {}", consentId);
         return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId,
-                FRInternationalScheduledConsent2.class);
+                FRInternationalScheduledConsent4.class);
     }
 }
