@@ -40,4 +40,6 @@ public interface FRPendingEventsRepository extends MongoRepository<FREventNotifi
     Optional<FREventNotification> findByTppIdAndJti(@Param("tppId") String tppId, @Param("jti") String jti);
 
     void deleteByTppIdAndJti(@Param("tppId") String tppId, @Param("jti") String jti);
+
+    void deleteByTppId(@Param("tppId") String tppId);
 }
