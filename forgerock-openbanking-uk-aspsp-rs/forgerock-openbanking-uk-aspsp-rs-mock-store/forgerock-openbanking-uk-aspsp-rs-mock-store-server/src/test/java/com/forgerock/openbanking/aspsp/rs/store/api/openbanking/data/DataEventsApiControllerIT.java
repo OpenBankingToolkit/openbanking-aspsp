@@ -75,6 +75,7 @@ public class DataEventsApiControllerIT {
     private static final String TPP = "3ffb98cc-be98-4b10-a405-bde41e88c2c7";
     private static final String JTI = "b460a07c-4962-43d1-85ee-9dc10fbb8f6c";
     private static final String PAYMENT_ID = "PAY_001";
+    private static final String URL_CONTEXT = "/api/data/events";
 
     @Before
     public void setUp() throws Exception {
@@ -85,7 +86,7 @@ public class DataEventsApiControllerIT {
 
     @Test
     public void whenValidInput_thenReturnEventsImported() throws Exception {
-        mockMvc.perform(post("/api/data/events")
+        mockMvc.perform(post(URL_CONTEXT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createFRDataEvent()))
         )
@@ -93,7 +94,7 @@ public class DataEventsApiControllerIT {
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
 
         // delete event created
-        mockMvc.perform(delete("/api/data/events")
+        mockMvc.perform(delete(URL_CONTEXT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new FRDataEvent().tppId(TPP)))
         )
@@ -103,7 +104,7 @@ public class DataEventsApiControllerIT {
     @Test
     public void whenValidInput_thenReturnEventsUpdated() throws Exception {
 
-        MvcResult result = mockMvc.perform(post("/api/data/events")
+        MvcResult result = mockMvc.perform(post(URL_CONTEXT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createFRDataEvent()))
         )
@@ -114,7 +115,7 @@ public class DataEventsApiControllerIT {
         String jti = objectMapper.readValue(result.getResponse().getContentAsString(), FREventNotification[].class)[0].getJti();
         FRDataEvent frDataEvent = createFRDataEvent();
         frDataEvent.getObEventNotification2List().get(0).setJti(jti);
-        mockMvc.perform(put("/api/data/events")
+        mockMvc.perform(put(URL_CONTEXT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(frDataEvent))
         )
@@ -122,7 +123,7 @@ public class DataEventsApiControllerIT {
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
 
         // delete event created
-        mockMvc.perform(delete("/api/data/events")
+        mockMvc.perform(delete(URL_CONTEXT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new FRDataEvent().tppId(TPP)))
         )
@@ -132,14 +133,14 @@ public class DataEventsApiControllerIT {
     @Test
     public void whenValidInput_thenReturnExportEventsByTppId() throws Exception {
 
-        mockMvc.perform(post("/api/data/events")
+        mockMvc.perform(post(URL_CONTEXT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createFRDataEvent()))
         )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
 
-        mockMvc.perform(get("/api/data/events")
+        mockMvc.perform(get(URL_CONTEXT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .param("tppId", TPP)
         )
@@ -147,7 +148,7 @@ public class DataEventsApiControllerIT {
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
 
         // delete event created
-        mockMvc.perform(delete("/api/data/events")
+        mockMvc.perform(delete(URL_CONTEXT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new FRDataEvent().tppId(TPP)))
         )
@@ -157,21 +158,21 @@ public class DataEventsApiControllerIT {
     @Test
     public void whenValidInput_thenReturnExportAllEvents() throws Exception {
 
-        mockMvc.perform(post("/api/data/events")
+        mockMvc.perform(post(URL_CONTEXT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createFRDataEvent()))
         )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
 
-        mockMvc.perform(get("/api/data/events/all")
+        mockMvc.perform(get(URL_CONTEXT + "/all")
                 .contentType(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
 
         // delete event created
-        mockMvc.perform(delete("/api/data/events")
+        mockMvc.perform(delete(URL_CONTEXT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(new FRDataEvent().tppId(TPP)))
         )

@@ -52,6 +52,8 @@ public class DataEventsService {
     @Value("${rs-store.base-url}")
     private String rsStoreRoot;
 
+    private final String URL_CONTEXT = "/api/data/events";
+
     @Autowired
     public DataEventsService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -63,7 +65,7 @@ public class DataEventsService {
      */
     public Collection<FREventNotification> exportEvents() {
         log.debug("Export all data events");
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/api/data/events/all");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + URL_CONTEXT + "/all");
         URI uri = builder.build().encode().toUri();
         return restTemplate.exchange(uri, HttpMethod.GET, null, getParameterizedTypeReference()).getBody();
     }
@@ -77,7 +79,7 @@ public class DataEventsService {
     public Collection<FREventNotification> exportEventsByTppId(FRDataEvent frDataEvent) throws OBErrorResponseException {
         validateTppId(frDataEvent);
         log.debug("Export all data events by user {}", frDataEvent.getTppId());
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/api/data/events");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + URL_CONTEXT);
         builder.queryParam("tppId", frDataEvent.getTppId());
         URI uri = builder.build().encode().toUri();
         return restTemplate.exchange(uri, HttpMethod.GET, null, getParameterizedTypeReference()).getBody();
@@ -96,7 +98,7 @@ public class DataEventsService {
         validateTppId(frDataEvent);
         validateEvents(frDataEvent);
         HttpEntity request = new HttpEntity(frDataEvent, new HttpHeaders());
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/api/data/events");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + URL_CONTEXT);
         URI uri = builder.build().encode().toUri();
         return restTemplate.exchange(uri, HttpMethod.POST, request, getParameterizedTypeReference()).getBody();
     }
@@ -112,7 +114,7 @@ public class DataEventsService {
         validateTppId(frDataEvent);
         validateEvents(frDataEvent);
         HttpEntity request = new HttpEntity(frDataEvent, new HttpHeaders());
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/api/data/events");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + URL_CONTEXT);
         URI uri = builder.build().encode().toUri();
         return restTemplate.exchange(uri, HttpMethod.PUT, request, getParameterizedTypeReference()).getBody();
     }
@@ -127,7 +129,7 @@ public class DataEventsService {
         log.debug("Delete events for the tppId {}", frDataEvent.getTppId());
         validateTppId(frDataEvent);
         HttpEntity request = new HttpEntity(frDataEvent, new HttpHeaders());
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/api/data/events");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + URL_CONTEXT);
         URI uri = builder.build().encode().toUri();
         return restTemplate.exchange(uri, HttpMethod.DELETE, request, Void.class).getBody();
     }
