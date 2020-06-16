@@ -58,10 +58,15 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomesticScheduledPaymentConsentsApiController.class);
 
-    @Autowired
     private RSEndpointWrapperService rsEndpointWrapperService;
-    @Autowired
     private RsStoreGateway rsStoreGateway;
+
+    @Autowired
+    public DomesticScheduledPaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService,
+                                                         RsStoreGateway rsStoreGateway) {
+        this.rsEndpointWrapperService =  rsEndpointWrapperService;
+        this.rsStoreGateway =  rsStoreGateway;
+    }
 
     public ResponseEntity<OBWriteDomesticScheduledConsentResponse3> createDomesticScheduledPaymentConsents(
             @ApiParam(value = "Default", required = true)
@@ -101,6 +106,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                 .filters(f -> {
                             f.verifyIdempotencyKeyLength(xIdempotencyKey);
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
+                            f.validateRisk(obWriteDomesticScheduledConsent3Param.getRisk());
                         }
                 )
                 .execute(
