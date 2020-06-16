@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.common.model.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.forgerock.openbanking.common.services.store.data.DataEventsService;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.validation.annotation.Validated;
@@ -33,8 +34,21 @@ import javax.validation.constraints.Size;
 import java.util.Objects;
 
 /**
- * The resource event
- * Only to import events, we have change the class name generated to avoid conflicts with the openbanking spec model
+ * A resource used within <code>/api/data/events</code> that allows static data to be pushed into the system.
+ * This data will then be returned by the P2 aggregated polling API at /events.
+ *
+ * <p>The EventNotificationAPISpecification describes the object OBEventNotification2 that contains the events claim.
+ * However, this object is not defined in the swagger specification.
+ * Instead the spec defines {@link uk.org.openbanking.datamodel.event.OBEventNotification1} which is used around the sandbox source.
+ *
+ * <p>This object has been created to provide a collection of events. It is intended to be isolated within {@link FRDataEvent} for the following purposes only:
+ * <ul>
+ *     <li>Import events {@link DataEventsService#importEvents(FRDataEvent)}</li>
+ *     <li>Update events {@link DataEventsService#updateEvents(FRDataEvent)}</li>
+ *     <li>Remove events {@link DataEventsService#removeEvents(FRDataEvent)}</li>
+ *     <li>Export events {@link DataEventsService#exportEventsByTppId(FRDataEvent)}</li>
+ * </ul>
+ * <p>This object isn't part of the openbanking spec source datamodel created from swagger files descriptors.</p>
  */
 @ApiModel(
         description = "The resource import event."

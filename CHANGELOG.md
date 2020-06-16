@@ -1,6 +1,43 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#203](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/203) Handler events (Data APIs /api/data/events)
+[954bec38b7eb2e3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/954bec38b7eb2e3) Jorge Sanchez Perez *2020-06-16 13:14:11*
+Handler events (Data APIs /api/data/events) (#203)
+
+* import events feature for aggregated polling
+
+* Integration test for rs-store data events controller
+
+* Integration test for rs-store data events controller, delete de events created on test
+
+* Integration test for rs-store data events controller, code format
+
+* integration test
+
+* change the url events context hardcoded to a constant
+### GitHub [#204](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/204) Make OBRisk1.PaymentCodeContext field required v3.1.3
+[d73d2db5d95768b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d73d2db5d95768b) Jamie Bowen *2020-06-16 13:04:03*
+Make OBRisk1.PaymentCodeContext field required v3.1.3 (#204)
+
+* Release candidate: prepare release 1.0.83
+
+* Release candidate: prepare for next development iteration
+
+* Make OBRisk1.PaymentCodeContext field configurably a required field -
+v3.1.3
+
+This work was done for all version, but version 3.1.3 has been created
+recently and these risk validators also need to be applied in the 3.1.3
+payment controllers.
+
+Part fix for https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/196
+
+Some implementors have expressed a need to be able to enfore that a
+PaymentCodeContext is provided in the Risk object when requesting a
+consent. This PR enables this feature to be turned on by setting the
+following spring config setting to true;
+`rs.api.payment.validate.risk.require-payment-context-code`
 [861981393939c0a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/861981393939c0a) JamieB *2020-06-15 11:27:45*
 Release candidate: prepare for next development iteration
 ## 1.0.83
