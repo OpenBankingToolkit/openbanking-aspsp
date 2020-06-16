@@ -115,6 +115,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 .filters(f -> {
                             f.verifyIdempotencyKeyLength(xIdempotencyKey);
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
+                            f.validateRisk(obWriteInternationalConsent4Param.getRisk());
                         }
                 )
                 .execute(

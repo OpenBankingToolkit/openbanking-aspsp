@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.domesticpayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.RSEndpointWrapper;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
@@ -57,13 +58,22 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomesticPaymentConsentsApiController.class);
 
+    
     @Autowired
+    public DomesticPaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService,
+                                                RsStoreGateway rsStoreGateway,
+                                                DomesticPaymentService paymentsService,
+                                                ObjectMapper objectMapper) {
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+        this.paymentsService = paymentsService;
+        this.mapper = objectMapper;
+    }
+
+
     private RSEndpointWrapperService rsEndpointWrapperService;
-    @Autowired
     private RsStoreGateway rsStoreGateway;
-    @Autowired
     private DomesticPaymentService paymentsService;
-    @Autowired
     private ObjectMapper mapper;
 
     @Override
@@ -110,6 +120,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                             f.validateBalanceTransferPayment(obWriteDomesticConsent2);
                             f.validateMoneyTransferPayment(obWriteDomesticConsent2);
                             f.validatePaymPayment(obWriteDomesticConsent2);
+                            f.validateRisk(obWriteDomesticConsent3Param.getRisk());
                         }
                 )
                 .execute(

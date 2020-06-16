@@ -55,7 +55,8 @@ public class InternationalStandingOrderConsentsApiController implements Internat
     private final RSEndpointWrapperService rsEndpointWrapperService;
     private final RsStoreGateway rsStoreGateway;
 
-    public InternationalStandingOrderConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway) {
+    public InternationalStandingOrderConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService,
+                                                           RsStoreGateway rsStoreGateway) {
         this.rsEndpointWrapperService = rsEndpointWrapperService;
         this.rsStoreGateway = rsStoreGateway;
     }
@@ -98,6 +99,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
                 .filters(f -> {
                             f.verifyIdempotencyKeyLength(xIdempotencyKey);
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
+                            f.validateRisk(obWriteInternationalStandingOrderConsent5Param.getRisk());
                         }
                 )
                 .execute(
