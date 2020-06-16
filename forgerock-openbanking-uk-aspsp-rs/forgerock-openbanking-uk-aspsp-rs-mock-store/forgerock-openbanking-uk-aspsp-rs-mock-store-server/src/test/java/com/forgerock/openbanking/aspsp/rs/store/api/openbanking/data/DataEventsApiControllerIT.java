@@ -92,6 +92,13 @@ public class DataEventsApiControllerIT {
         )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
+
+        // delete event created
+        mockMvc.perform(delete("/api/data/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new FRDataEvent().tppId(TPP)))
+        )
+                .andExpect(status().isNoContent());
     }
 
 
@@ -115,6 +122,13 @@ public class DataEventsApiControllerIT {
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
+
+        // delete event created
+        mockMvc.perform(delete("/api/data/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new FRDataEvent().tppId(TPP)))
+        )
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -133,6 +147,13 @@ public class DataEventsApiControllerIT {
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
+
+        // delete event created
+        mockMvc.perform(delete("/api/data/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new FRDataEvent().tppId(TPP)))
+        )
+                .andExpect(status().isNoContent());
     }
 
     @Test
@@ -150,6 +171,13 @@ public class DataEventsApiControllerIT {
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
+
+        // delete event created
+        mockMvc.perform(delete("/api/data/events")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(new FRDataEvent().tppId(TPP)))
+        )
+                .andExpect(status().isNoContent());
     }
 
     FRDataEvent createFRDataEvent() {
