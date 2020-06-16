@@ -57,11 +57,29 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE
 @RequestMapping(value = "/open-banking/v3.1/pisp")
 public interface DomesticPaymentConsentsApi {
 
-    @ApiOperation(value = "Create Domestic Payment Consents", nickname = "createDomesticPaymentConsents", notes = "", response = OBWriteDomesticConsentResponse2.class, authorizations = {
+    /**
+     *  createDomesticPaymentConsents
+     * @param obWriteDomesticConsent2Param
+     * @param xFapiFinancialId
+     * @param authorization
+     * @param xIdempotencyKey
+     * @param xJwsSignature
+     * @param xFapiCustomerLastLoggedTime
+     * @param xFapiCustomerIpAddress
+     * @param xFapiInteractionId
+     * @param xCustomerUserAgent
+     * @param request
+     * @param principal
+     * @return
+     * @throws OBErrorResponseException
+     */
+    @ApiOperation(value = "Create Domestic Payment Consents", nickname = "createDomesticPaymentConsents", notes = "",
+            response = OBWriteDomesticConsentResponse2.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")
             })
     }, tags = {"Domestic Payments",})
+
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "Domestic Payment Consents Created", response = OBWriteDomesticConsentResponse2.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -72,7 +90,9 @@ public interface DomesticPaymentConsentsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
+
     @PreAuthorize("hasAuthority('ROLE_PISP')")
+
     @OpenBankingAPI(
             obReference = OBReference.CREATE_DOMESTIC_PAYMENT_CONSENT
     )

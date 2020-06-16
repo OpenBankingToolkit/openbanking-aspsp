@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.internationalschedul
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledConsent4;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.payment.InternationalScheduledPaymentService;
@@ -49,6 +49,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
@@ -108,7 +110,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             Principal principal
     ) throws OBErrorResponseException {
         String consentId = obWriteInternationalScheduled2Param.getData().getConsentId();
-        FRInternationalScheduledConsent2 payment = paymentsService.getPayment(consentId);
+        FRInternationalScheduledConsent4 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -129,8 +131,8 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
                             OBScheduledPayment1 scheduledPayment = new OBScheduledPayment1()
                                     .accountId(payment.getAccountId())
-                                    .creditorAccount(payment.getInitiation().getCreditorAccount())
-                                    .instructedAmount(payment.getInitiation().getInstructedAmount())
+                                    .creditorAccount(toOBCashAccount3(payment.getInitiation().getCreditorAccount()))
+                                    .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()))
                                     .reference(payment.getInitiation().getRemittanceInformation().getReference())
                                     // Set to EXECUTION because we are creating the creditor payment
                                     .scheduledType(OBExternalScheduleType1Code.EXECUTION)

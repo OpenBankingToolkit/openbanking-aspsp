@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.be
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.beneficiaries.FRBeneficiary3Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRBeneficiary3;
-import com.forgerock.openbanking.common.services.openbanking.converter.FRBeneficiaryConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRBeneficiaryConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;

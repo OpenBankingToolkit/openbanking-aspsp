@@ -23,7 +23,9 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRDomesticConsent1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter;
+
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
 
 @Service
 public class FRDomesticConsentConverter {
@@ -36,7 +38,7 @@ public class FRDomesticConsentConverter {
         frDomesticConsent2.setUserId(frDomesticConsent1.getUserId());
         frDomesticConsent2.setAccountId(frDomesticConsent1.getAccountId());
         frDomesticConsent2.setCreated(frDomesticConsent1.getCreated());
-        frDomesticConsent2.setDomesticConsent(OBDomesticConverter.toOBWriteDomesticConsent2(frDomesticConsent1.getDomesticConsent()));
+        frDomesticConsent2.setDomesticConsent(toOBWriteDomesticConsent2(frDomesticConsent1.getDomesticConsent()));
         frDomesticConsent2.setPispId(frDomesticConsent1.getPispId());
         frDomesticConsent2.setPispName(frDomesticConsent1.getPispName());
         frDomesticConsent2.setStatusUpdate(frDomesticConsent1.getStatusUpdate());
@@ -52,7 +54,7 @@ public class FRDomesticConsentConverter {
         frDomesticConsent1.setUserId(frDomesticConsent2.getUserId());
         frDomesticConsent1.setAccountId(frDomesticConsent2.getAccountId());
         frDomesticConsent1.setCreated(frDomesticConsent2.getCreated());
-        frDomesticConsent1.setDomesticConsent(OBDomesticConverter.toOBWriteDomesticConsent1(frDomesticConsent2.getDomesticConsent()));
+        frDomesticConsent1.setDomesticConsent(toOBWriteDomesticConsent1(frDomesticConsent2.getDomesticConsent()));
         frDomesticConsent1.setPispId(frDomesticConsent2.getPispId());
         frDomesticConsent1.setPispName(frDomesticConsent2.getPispName());
         frDomesticConsent1.setStatusUpdate(frDomesticConsent2.getStatusUpdate());

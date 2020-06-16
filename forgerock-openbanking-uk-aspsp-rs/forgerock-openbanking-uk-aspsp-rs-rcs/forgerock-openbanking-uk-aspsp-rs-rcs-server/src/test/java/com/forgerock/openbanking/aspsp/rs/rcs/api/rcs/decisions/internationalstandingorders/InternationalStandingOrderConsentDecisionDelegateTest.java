@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalst
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderConsent4;
 import com.forgerock.openbanking.common.services.store.payment.InternationalStandingOrderService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Before;
@@ -33,18 +33,21 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InternationalStandingOrderConsentDecisionDelegateTest extends AbstractDecisionDelegateTest {
     private InternationalStandingOrderService paymentService;
-    private FRInternationalStandingOrderConsent3 consent;
+    private FRInternationalStandingOrderConsent4 consent;
     private InternationalStandingOrderConsentDecisionDelegate decisionDelegate;
 
     @Before
     public void setup() {
         paymentService = mock(InternationalStandingOrderService.class);
-        consent = FRInternationalStandingOrderConsent3.builder()
+        consent = FRInternationalStandingOrderConsent4.builder()
                 .id(CONSENT_ID)
                 .pispId(PISP_ID)
                 .userId(USER_ID)

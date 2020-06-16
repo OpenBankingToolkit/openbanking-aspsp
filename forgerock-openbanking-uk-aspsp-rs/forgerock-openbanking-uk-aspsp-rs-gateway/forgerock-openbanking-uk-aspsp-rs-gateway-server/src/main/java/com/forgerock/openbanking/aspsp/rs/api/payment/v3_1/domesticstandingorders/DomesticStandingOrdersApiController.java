@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.domesticstandingorde
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
-import com.forgerock.openbanking.common.services.openbanking.converter.FRAccountConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;

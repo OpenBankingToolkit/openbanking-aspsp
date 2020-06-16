@@ -20,11 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.accounts;
 
-
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
-import com.forgerock.openbanking.common.services.openbanking.converter.FRAccountConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -37,8 +36,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.org.openbanking.datamodel.account.*;
-import uk.org.openbanking.datamodel.service.converter.OBExternalAccountIdentificationConverter;
+import uk.org.openbanking.datamodel.account.OBAccount2;
+import uk.org.openbanking.datamodel.account.OBCashAccount5;
+import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification3Code;
+import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification4Code;
+import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import uk.org.openbanking.datamodel.account.OBReadAccount2;
+import uk.org.openbanking.datamodel.account.OBReadAccount2Data;
+import uk.org.openbanking.datamodel.service.converter.account.OBExternalAccountIdentificationConverter;
 
 import java.util.Collections;
 import java.util.List;

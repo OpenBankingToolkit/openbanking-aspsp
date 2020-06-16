@@ -55,11 +55,20 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomesticPaymentsApiController.class);
 
+
     @Autowired
+    public DomesticPaymentsApiController(DomesticPaymentService paymentsService,
+                                  RSEndpointWrapperService rsEndpointWrapperService,
+                                  RsStoreGateway rsStoreGateway){
+        this.paymentsService = paymentsService;
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+    }
+
     private DomesticPaymentService paymentsService;
-    @Autowired
+
     private RSEndpointWrapperService rsEndpointWrapperService;
-    @Autowired
+
     private RsStoreGateway rsStoreGateway;
 
     @Override
@@ -111,6 +120,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                     f.verifyPaymentStatus();
                     f.verifyRiskAndInitiation(obWriteDomestic2Param.getData().getInitiation(), obWriteDomestic2Param.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
+                    f.verifyRisk(obWriteDomestic2Param.getRisk());
                 })
                 .execute(
                         (String tppId) -> {

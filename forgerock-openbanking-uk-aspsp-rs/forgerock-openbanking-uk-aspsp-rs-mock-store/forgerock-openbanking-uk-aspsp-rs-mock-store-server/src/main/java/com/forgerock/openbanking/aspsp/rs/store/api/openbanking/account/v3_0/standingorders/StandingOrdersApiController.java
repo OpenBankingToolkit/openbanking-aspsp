@@ -25,7 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilte
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRStandingOrder3;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
-import com.forgerock.openbanking.common.services.openbanking.converter.FRStandingOrderConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;

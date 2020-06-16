@@ -23,10 +23,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderConsent4;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.InternationalStandingOrderPaymentConsentDetails;
-import com.forgerock.openbanking.common.services.openbanking.converter.FRAccountConverter;
-import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
 import com.forgerock.openbanking.common.services.store.payment.InternationalStandingOrderService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -36,11 +34,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBStandingOrder5;
-import uk.org.openbanking.datamodel.payment.OBInternationalStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount5;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j
@@ -65,7 +66,7 @@ public class RCSInternationalStandingOrderPaymentDetailsApi implements RCSDetail
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRInternationalStandingOrderConsent3 payment = paymentService.getPayment(consentId);
+        FRInternationalStandingOrderConsent4 payment = paymentService.getPayment(consentId);
 
         Optional<Tpp> isTpp = tppStoreService.findById(payment.getPispId());
         if (!isTpp.isPresent()) {
@@ -95,18 +96,18 @@ public class RCSInternationalStandingOrderPaymentDetailsApi implements RCSDetail
         payment.setUserId(username);
         paymentService.updatePayment(payment);
 
-        final OBInternationalStandingOrder3 initiation  = payment.getInitiation();
+        final OBWriteInternationalStandingOrder4DataInitiation initiation = payment.getInitiation();
         OBStandingOrder5 standingOrder = new OBStandingOrder5()
                 .accountId(payment.getAccountId())
                 .standingOrderId(payment.getId())
-                .finalPaymentAmount(OBActiveOrHistoricCurrencyAndAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
+                .finalPaymentAmount(toAccountOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
                 .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
-                .firstPaymentAmount(OBActiveOrHistoricCurrencyAndAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
+                .firstPaymentAmount(toAccountOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
                 .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
                 .nextPaymentDateTime(initiation.getFirstPaymentDateTime())
-                .nextPaymentAmount(OBActiveOrHistoricCurrencyAndAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
+                .nextPaymentAmount(toAccountOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
                 .frequency(initiation.getFrequency())
-                .creditorAccount(FRAccountConverter.toOBCashAccount5(initiation.getCreditorAccount()))
+                .creditorAccount(toOBCashAccount5(initiation.getCreditorAccount()))
                 .reference(initiation.getReference());
 
         return ResponseEntity.ok(InternationalStandingOrderPaymentConsentDetails.builder()
@@ -122,4 +123,5 @@ public class RCSInternationalStandingOrderPaymentDetailsApi implements RCSDetail
                         .orElse(""))
                 .build());
     }
+
 }

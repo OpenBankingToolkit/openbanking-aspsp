@@ -25,8 +25,8 @@ import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationF
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import com.forgerock.openbanking.common.services.currency.CurrencyRateService;
 import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
@@ -52,6 +52,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 
 @Slf4j
@@ -76,8 +78,8 @@ public class AcceptInternationalPaymentTask {
     @SchedulerLock(name = "internationalPayment")
     public void autoAcceptPayment() {
         log.info("Auto-accept payment task waking up. The time is now {}.", format.print(DateTime.now()));
-        Collection<FRInternationalConsent2> allPaymentsInProcess = internationalPaymentService.getAllPaymentsInProcess();
-        for (FRInternationalConsent2 payment: allPaymentsInProcess) {
+        Collection<FRInternationalConsent4> allPaymentsInProcess = internationalPaymentService.getAllPaymentsInProcess();
+        for (FRInternationalConsent4 payment : allPaymentsInProcess) {
             log.info("Processing payment {}", payment);
             try {
                 String identificationTo = moveDebitPayment(payment);
@@ -109,11 +111,11 @@ public class AcceptInternationalPaymentTask {
                 format.print(DateTime.now()));
     }
 
-    private String moveDebitPayment(FRInternationalConsent2 payment) throws CurrencyConverterException {
+    private String moveDebitPayment(FRInternationalConsent4 payment) throws CurrencyConverterException {
         FRAccount accountFrom = accountStoreService.getAccount(payment.getAccountId());
         log.info("We are going to pay from this account: {}", accountFrom);
 
-        moneyService.moveMoney(accountFrom, payment.getInitiation().getInstructedAmount(),
+        moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
                 OBCreditDebitCode.DEBIT, payment, this::createTransaction);
 
         String identificationFrom = payment.getInitiation().getCreditorAccount().getIdentification();
@@ -121,14 +123,14 @@ public class AcceptInternationalPaymentTask {
         return identificationFrom;
     }
 
-    private void moveCreditPayment(FRInternationalConsent2 payment, String identificationTo, FRAccount accountFrom) throws CurrencyConverterException {
+    private void moveCreditPayment(FRInternationalConsent4 payment, String identificationTo, FRAccount accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationTo, accountFrom);
         log.info("Move the money to this account");
-        moneyService.moveMoney(accountFrom, payment.getInitiation().getInstructedAmount(),
+        moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
                 OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction5 createTransaction(FRAccount account, FRInternationalConsent2 payment, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction5 createTransaction(FRAccount account, FRInternationalConsent4 payment, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());
@@ -164,13 +166,13 @@ public class AcceptInternationalPaymentTask {
         return transaction;
     }
 
-    private OBCurrencyExchange5 toOBCurrencyExchange(FRInternationalConsent2 payment, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
-        OBExchangeRate2 exchangeRateInformation = payment.getCalculatedExchangeRate();
-        if (exchangeRateInformation==null) {
+    private OBCurrencyExchange5 toOBCurrencyExchange(FRInternationalConsent4 payment, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+        OBExchangeRate2 exchangeRateInformation = toOBExchangeRate2(payment.getCalculatedExchangeRate());
+        if (exchangeRateInformation == null) {
             log.debug("Payment: '{}' does not have an exchange rate specified. Using default exchange rate of ACTUAL", payment.getId());
             exchangeRateInformation = CurrencyRateService.getCalculatedExchangeRate(new OBExchangeRate1()
-                    .rateType(OBExchangeRateType2Code.AGREED)
-                    .unitCurrency("XTS") // XTS	963 Code for testing
+                            .rateType(OBExchangeRateType2Code.AGREED)
+                            .unitCurrency("XTS") // XTS	963 Code for testing
                     , DateTime.now());
         }
         log.info("International Payment: '{}' using exchange rate: {}", payment.getId(), exchangeRateInformation);

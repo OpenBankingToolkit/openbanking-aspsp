@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +38,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class InternationalPaymentService implements PaymentService<FRInternationalConsent2> {
+public class InternationalPaymentService implements PaymentService<FRInternationalConsent4> {
     private static final String BASE_RESOURCE_PATH = "/api/international-payments/";
 
     private String rsStoreRoot;
@@ -50,27 +50,27 @@ public class InternationalPaymentService implements PaymentService<FRInternation
         this.rsStoreRoot = rsStoreRoot;
     }
 
-    public void updatePayment(FRInternationalConsent2 consent) {
+    public void updatePayment(FRInternationalConsent4 consent) {
         log.debug("Update the consent in the store. {}", consent);
         restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH, consent);
     }
 
-    public FRInternationalConsent2 getPayment(String consentId) {
+    public FRInternationalConsent4 getPayment(String consentId) {
         log.debug("Getting consent for {}", consentId);
         return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId,
-                FRInternationalConsent2.class);
+                FRInternationalConsent4.class);
     }
 
-    public Collection<FRInternationalConsent2> getAllPaymentsInProcess() {
+    public Collection<FRInternationalConsent4> getAllPaymentsInProcess() {
         log.debug("Read all the payments");
-        ParameterizedTypeReference<List<FRInternationalConsent2>> ptr =
-                new ParameterizedTypeReference<List<FRInternationalConsent2>>() {};
+        ParameterizedTypeReference<List<FRInternationalConsent4>> ptr =
+                new ParameterizedTypeReference<List<FRInternationalConsent4>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + BASE_RESOURCE_PATH + "search/findByStatus"
         );
         builder.queryParam("status", ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRInternationalConsent2>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<List<FRInternationalConsent4>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
 
         return entity.getBody();
     }

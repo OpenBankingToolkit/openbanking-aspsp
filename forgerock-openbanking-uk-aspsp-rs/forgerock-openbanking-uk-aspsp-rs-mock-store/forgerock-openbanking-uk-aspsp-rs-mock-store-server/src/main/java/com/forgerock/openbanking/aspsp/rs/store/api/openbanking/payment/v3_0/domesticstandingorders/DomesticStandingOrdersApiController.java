@@ -27,7 +27,6 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderPaymentSubmission3;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRStandingOrderPaymentConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -47,7 +46,6 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderResp
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse1;
-import uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -56,6 +54,9 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3;
 
 @Controller("DomesticStandingOrdersApiV3.0")
 @Slf4j
@@ -107,7 +108,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: {}", obWriteDomesticStandingOrder1Param);
-        OBWriteDomesticStandingOrder2 payment = OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrder2(obWriteDomesticStandingOrder1Param);
+        OBWriteDomesticStandingOrder2 payment = toOBWriteDomesticStandingOrder2(obWriteDomesticStandingOrder1Param);
         log.trace("Converted to OBWriteDomesticStandingOrder2: {}", payment);
 
         String paymentId = payment.getData().getConsentId();
@@ -121,7 +122,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
         FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission3.builder()
                 .id(paymentId)
-                .domesticStandingOrder(FRStandingOrderPaymentConverter.toOBWriteDomesticStandingOrder3(payment))
+                .domesticStandingOrder(toOBWriteDomesticStandingOrder3(payment))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -178,7 +179,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                                                                  FRDomesticStandingOrderConsent3 frDomesticStandingOrderConsent1) {
         return new OBWriteDomesticStandingOrderResponse1().data(new OBWriteDataDomesticStandingOrderResponse1()
                 .domesticStandingOrderId(frPaymentSubmission.getId())
-                .initiation(FRStandingOrderPaymentConverter.toOBDomesticStandingOrder1(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))
+                .initiation(toOBDomesticStandingOrder1(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))
                 .creationDateTime(frDomesticStandingOrderConsent1.getCreated())
                 .statusUpdateDateTime(frDomesticStandingOrderConsent1.getStatusUpdate())
                 .status(frDomesticStandingOrderConsent1.getStatus().toOBExternalStatusCode1())

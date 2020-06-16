@@ -53,8 +53,15 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
     private static final Logger LOGGER = LoggerFactory.getLogger(DomesticStandingOrderConsentsApiController.class);
 
     @Autowired
+    public DomesticStandingOrderConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService,
+                                                      RsStoreGateway rsStoreGateway) {
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+    }
+
+
     private RSEndpointWrapperService rsEndpointWrapperService;
-    @Autowired
+
     private RsStoreGateway rsStoreGateway;
 
     @Override
@@ -99,6 +106,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
                 .filters(f -> {
                         f.verifyIdempotencyKeyLength(xIdempotencyKey);
                         f.verifyJwsDetachedSignature(xJwsSignature, request);
+                        f.validateRisk(OBWriteDomesticStandingOrderConsent3Param.getRisk());
                 }
                 )
                 .execute(

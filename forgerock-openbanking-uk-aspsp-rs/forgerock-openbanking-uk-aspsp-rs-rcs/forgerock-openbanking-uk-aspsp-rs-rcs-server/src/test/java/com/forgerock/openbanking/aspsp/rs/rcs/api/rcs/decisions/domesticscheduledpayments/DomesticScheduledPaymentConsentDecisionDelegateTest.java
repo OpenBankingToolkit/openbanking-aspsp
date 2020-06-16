@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.domesticschedul
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Before;
@@ -38,13 +38,13 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class DomesticScheduledPaymentConsentDecisionDelegateTest extends AbstractDecisionDelegateTest {
     private DomesticScheduledPaymentService paymentService;
-    private FRDomesticScheduledConsent2 consent;
+    private FRDomesticScheduledConsent4 consent;
     private DomesticScheduledPaymentConsentDecisionDelegate decisionDelegate;
 
     @Before
     public void setup() {
         paymentService = mock(DomesticScheduledPaymentService.class);
-        consent = FRDomesticScheduledConsent2.builder()
+        consent = FRDomesticScheduledConsent4.builder()
                 .id(CONSENT_ID)
                 .pispId(PISP_ID)
                 .userId(USER_ID)
@@ -67,7 +67,7 @@ public class DomesticScheduledPaymentConsentDecisionDelegateTest extends Abstrac
     }
 
     @Test
-    public void consentDecision_userAuthorised_setAccountIdAndStatus_updateConsent() throws Exception{
+    public void consentDecision_userAuthorised_setAccountIdAndStatus_updateConsent() throws Exception {
         // When
         decisionDelegate.consentDecision(toSerializedDecision(ACCOUNT_ID, true), true);
 
@@ -76,8 +76,9 @@ public class DomesticScheduledPaymentConsentDecisionDelegateTest extends Abstrac
         assertThat(consent.getStatus()).isEqualTo(ConsentStatusCode.AUTHORISED);
         verify(paymentService, times(1)).updatePayment(any());
     }
+
     @Test
-    public void consentDecision_userRejected_setStatusRejected_updateConsent() throws Exception{
+    public void consentDecision_userRejected_setStatusRejected_updateConsent() throws Exception {
         // When
         decisionDelegate.consentDecision(toSerializedDecision(ACCOUNT_ID, false), false);
 

@@ -67,6 +67,7 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent2;
 
 @Controller("FilePaymentConsentsApiV3.0")
 @Slf4j
@@ -123,7 +124,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteFileConsent1Param);
-        OBWriteFileConsent2 consent2 = OBFileConverter.toOBWriteFileConsent2(obWriteFileConsent1Param);
+        OBWriteFileConsent2 consent2 = toOBWriteFileConsent2(obWriteFileConsent1Param);
         log.debug("Converted to OBWriteFileConsent2: {}", consent2);
 
         final Tpp tpp = Optional.ofNullable(tppRepository.findByClientId(clientId))

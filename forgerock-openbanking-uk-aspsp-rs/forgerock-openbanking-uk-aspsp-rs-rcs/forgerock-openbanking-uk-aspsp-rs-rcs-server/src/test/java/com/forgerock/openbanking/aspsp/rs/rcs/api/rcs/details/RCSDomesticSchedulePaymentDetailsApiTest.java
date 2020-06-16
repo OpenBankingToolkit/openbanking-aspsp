@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticSchedulePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -63,7 +63,7 @@ public class RCSDomesticSchedulePaymentDetailsApiTest {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<List<FRAccountWithBalance>>() {
         });
-        FRDomesticScheduledConsent2 consent = JMockData.mock(FRDomesticScheduledConsent2.class);
+        FRDomesticScheduledConsent4 consent = JMockData.mock(FRDomesticScheduledConsent4.class);
         consent.getDomesticScheduledConsent().getData().getInitiation().setDebtorAccount(null);
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";
@@ -83,7 +83,7 @@ public class RCSDomesticSchedulePaymentDetailsApiTest {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<List<FRAccountWithBalance>>() {
         });
-        FRDomesticScheduledConsent2 consent = JMockData.mock(FRDomesticScheduledConsent2.class);
+        FRDomesticScheduledConsent4 consent = JMockData.mock(FRDomesticScheduledConsent4.class);
         OBCashAccount5 firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getDomesticScheduledConsent().getData().getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);

@@ -21,9 +21,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderConsent4;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
 
@@ -40,15 +44,15 @@ public interface InternationalStandingOrderApi {
     @RequestMapping(value = "/search/findByStatus",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<Collection<FRInternationalStandingOrderConsent3>> findByStatus(
+    ResponseEntity<Collection<FRInternationalStandingOrderConsent4>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     );
 
     @RequestMapping(value = "/",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.PUT)
-    ResponseEntity<FRInternationalStandingOrderConsent3> update(
-            @RequestBody FRInternationalStandingOrderConsent3 payment
+    ResponseEntity<FRInternationalStandingOrderConsent4> update(
+            @RequestBody FRInternationalStandingOrderConsent4 payment
     );
 }
 

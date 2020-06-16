@@ -101,6 +101,23 @@ Use latest version of ob-commons
 remove unused file
 [ea0beafab3e80a3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ea0beafab3e80a3) Julien Renaux *2020-04-24 08:45:41*
 upgrade common ui. https://github.com/OpenBankingToolkit/openbanking-common/issues/59
+## forgerock-openbanking-aspsp-1.0.79
+### GitHub [#175](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/175) Use new merge-master flow
+[d0113073476393f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d0113073476393f) Jonathan Gazeley *2020-04-21 13:51:06*
+Use new merge-master flow (#175)
+
+Use new merge-master flow
+### GitHub [#177](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/177) upgrade CLI
+[de8bdc233ca80db](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/de8bdc233ca80db) Julien Renaux *2020-04-23 15:01:15*
+upgrade CLI (#177)
+
+* upgrade CLI
+
+* push latest image
+
+* adding docker-compose.override.yml into gitignore
+[c5ae6dc9c2e6c6c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c5ae6dc9c2e6c6c) JamieB *2020-04-24 10:47:30*
+Use latest version of ob-commons
 [e567d3cd251e50f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e567d3cd251e50f) JamieB *2020-04-22 15:53:06*
 Updated ui project version to updating-ui-version-to-
 ## forgerock-openbanking-aspsp-1.0.80

@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletRequest;
         value = "/oauth2/.well-known"
 )
 public interface DiscoveryApi {
-    String CURRENT_VERSION = "3.1.2";
+    String CURRENT_VERSION = "3.1.3";
 
     @ApiOperation(
             value = "OAuth2 discovery, also called well-known endpoint",

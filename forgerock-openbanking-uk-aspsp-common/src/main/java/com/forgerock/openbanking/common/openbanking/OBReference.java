@@ -118,33 +118,39 @@ public enum OBReference {
     CREATE_DOMESTIC_PAYMENT("CreateDomesticPayment"),
     GET_DOMESTIC_PAYMENT("GetDomesticPayment"),
     GET_DOMESTIC_PAYMENT_CONSENTS_CONSENT_ID_FUNDS_CONFIRMATION("GetDomesticPaymentConsentsConsentIdFundsConfirmation"),
+    GET_DOMESTIC_PAYMENTS_DOMESTIC_PAYMENT_ID_PAYMENT_DETAILS("GetDomesticPaymentsDomesticPaymentIdPaymentDetails"),
 
     CREATE_DOMESTIC_SCHEDULED_PAYMENT_CONSENT("CreateDomesticScheduledPaymentConsent"),
     GET_DOMESTIC_SCHEDULED_PAYMENT_CONSENT("GetDomesticScheduledPaymentConsent"),
     CREATE_DOMESTIC_SCHEDULED_PAYMENT("CreateDomesticScheduledPayment"),
     GET_DOMESTIC_SCHEDULED_PAYMENT("GetDomesticScheduledPayment"),
+    GET_DOMESTIC_SCHEDULED_PAYMENTS_DOMESTIC_SCHEDULED_PAYMENT_ID_PAYMENT_DETAILS("GetDomesticScheduledPaymentsDomesticScheduledPaymentIdPaymentDetails"),
 
     CREATE_DOMESTIC_STANDING_ORDER_CONSENT("CreateDomesticStandingOrderConsent"),
     GET_DOMESTIC_STANDING_ORDER_CONSENT("GetDomesticStandingOrderConsent"),
     CREATE_DOMESTIC_STANDING_ORDER("CreateDomesticStandingOrder"),
     GET_DOMESTIC_STANDING_ORDER("GetDomesticStandingOrder"),
+    GET_DOMESTIC_STANDING_ORDERS_DOMESTIC_STANDING_ORDER_ID_PAYMENT_DETAILS("GetDomesticStandingOrdersDomesticStandingOrderIdPaymentDetails"),
 
     CREATE_INTERNATIONAL_PAYMENT_CONSENT("CreateInternationalPaymentConsent"),
     GET_INTERNATIONAL_PAYMENT_CONSENT("GetInternationalPaymentConsent"),
     CREATE_INTERNATIONAL_PAYMENT("CreateInternationalPayment"),
     GET_INTERNATIONAL_PAYMENT("GetInternationalPayment"),
     GET_INTERNATIONAL_PAYMENT_CONSENTS_CONSENT_ID_FUNDS_CONFIRMATION("GetInternationalPaymentConsentsConsentIdFundsConfirmation"),
+    GET_INTERNATIONAL_PAYMENTS_INTERNATIONAL_PAYMENT_ID_PAYMENT_DETAILS("GetInternationalPaymentsInternationalPaymentIdPaymentDetails"),
 
     CREATE_INTERNATIONAL_SCHEDULED_PAYMENT_CONSENT("CreateInternationalScheduledPaymentConsent"),
     GET_INTERNATIONAL_SCHEDULED_PAYMENT_CONSENT("GetInternationalScheduledPaymentConsent"),
     CREATE_INTERNATIONAL_SCHEDULED_PAYMENT("CreateInternationalScheduledPayment"),
     GET_INTERNATIONAL_SCHEDULED_PAYMENT("GetInternationalScheduledPayment"),
     GET_INTERNATIONAL_SCHEDULED_PAYMENT_CONSENTS_CONSENT_ID_FUNDS_CONFIRMATION("GetInternationalScheduledPaymentConsentsConsentIdFundsConfirmation"),
+    GET_INTERNATIONAL_SCHEDULED_PAYMENT_DETAILS("GetInternationalScheduledPaymentDetails"),
 
     CREATE_INTERNATIONAL_STANDING_ORDER_CONSENT("CreateInternationalStandingOrderConsent"),
     GET_INTERNATIONAL_STANDING_ORDER_CONSENT("GetInternationalStandingOrderConsent"),
     CREATE_INTERNATIONAL_STANDING_ORDER("CreateInternationalStandingOrder"),
     GET_INTERNATIONAL_STANDING_ORDER("GetInternationalStandingOrder"),
+    GET_INTERNATIONAL_STANDING_ORDER_PAYMENT_DETAILS("GetInternationalStandingOrderPaymentDetails"),
 
     CREATE_FILE_PAYMENT_CONSENT("CreateFilePaymentConsent"),
     GET_FILE_PAYMENT_CONSENT("GetFilePaymentConsent"),
@@ -154,7 +160,7 @@ public enum OBReference {
 
     CREATE_FILE_PAYMENT("CreateFilePayment"),
     GET_FILE_PAYMENT("GetFilePayment"),
-
+    GET_FILE_PAYMENT_DETAILS("GetFilePaymentDetails"),
     GET_FILE_PAYMENT_REPORT("GetFilePaymentReport"),
 
     NONE("");

@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.BalanceTransferPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.MoneyTransferPaymentValidator;
+import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.PaymPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
@@ -29,25 +30,35 @@ import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
+import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.XSlf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
 
 import java.util.Arrays;
 
+@Slf4j
 public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEndpointWrapper, PaymentsApiEndpointWrapper.PaymentRestEndpointContent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentsApiEndpointWrapper.class);
     private FRPaymentConsent payment;
     private final BalanceTransferPaymentValidator balanceTransferPaymentValidator;
     private final MoneyTransferPaymentValidator moneyTransferPaymentValidator;
     private final PaymPaymentValidator paymPaymentValidator;
+    private final OBRisk1Validator riskValidator;
 
-    public PaymentsApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService, BalanceTransferPaymentValidator balanceTransferPaymentValidator, MoneyTransferPaymentValidator moneyTransferPaymentValidator, PaymPaymentValidator paymPaymentValidator) {
+    public PaymentsApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
+                                      BalanceTransferPaymentValidator balanceTransferPaymentValidator,
+                                      MoneyTransferPaymentValidator moneyTransferPaymentValidator,
+                                      PaymPaymentValidator paymPaymentValidator,
+                                      OBRisk1Validator riskValidator) {
         super(RSEndpointWrapperService);
         this.balanceTransferPaymentValidator = balanceTransferPaymentValidator;
         this.moneyTransferPaymentValidator = moneyTransferPaymentValidator;
         this.paymPaymentValidator = paymPaymentValidator;
+        this.riskValidator = riskValidator;
     }
 
     public PaymentsApiEndpointWrapper payment(FRPaymentConsent payment) {
@@ -59,7 +70,6 @@ public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEnd
     protected ResponseEntity run(PaymentRestEndpointContent main) throws OBErrorException {
         return main.run(tppId);
     }
-
 
     public void verifyConsentStatusForConfirmationOfFund() throws OBErrorException {
         switch (payment.getStatus()) {
@@ -102,5 +112,15 @@ public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEnd
 
     public void validatePaymPayment(OBWriteDomesticConsent2 consent) throws OBErrorException {
         paymPaymentValidator.validate(consent);
+    }
+
+    public void validateRisk(OBRisk1 risk) throws OBErrorException{
+        if(riskValidator != null) {
+            riskValidator.validate(risk);
+        }else{
+            String errorString = "validatePaymentCodeContext called but no validator present";
+            log.error(errorString);
+            throw new NullPointerException(errorString);
+        }
     }
 }
