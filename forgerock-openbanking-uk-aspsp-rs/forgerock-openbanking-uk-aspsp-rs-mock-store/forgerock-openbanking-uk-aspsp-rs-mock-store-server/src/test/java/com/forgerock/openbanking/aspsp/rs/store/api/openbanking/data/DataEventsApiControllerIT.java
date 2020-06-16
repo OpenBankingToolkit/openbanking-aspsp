@@ -83,7 +83,6 @@ public class DataEventsApiControllerIT {
         given(cryptoApiClient.signClaims(eq(ISSUER_ID_VALUE), claimsCaptor.capture(), anyBoolean())).willReturn(FAKE_SIGNED_JWT);
     }
 
-
     @Test
     public void whenValidInput_thenReturnEventsImported() throws Exception {
         mockMvc.perform(post("/api/data/events")
@@ -100,7 +99,6 @@ public class DataEventsApiControllerIT {
         )
                 .andExpect(status().isNoContent());
     }
-
 
     @Test
     public void whenValidInput_thenReturnEventsUpdated() throws Exception {
