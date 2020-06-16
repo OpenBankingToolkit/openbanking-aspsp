@@ -1,6 +1,24 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
-## forgerock-openbanking-aspsp-1.0.81
+## Unreleased
+[861981393939c0a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/861981393939c0a) JamieB *2020-06-15 11:27:45*
+Release candidate: prepare for next development iteration
+## 1.0.83
+[553440e6b90bbf9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/553440e6b90bbf9) JamieB *2020-06-15 11:27:36*
+Release candidate: prepare release 1.0.83
+[91f910625f5fcb1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/91f910625f5fcb1) JamieB *2020-06-15 10:23:12*
+Make OBRisk1.PaymentCodeContext field configurably a required field
+
+Part fix for https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/196
+
+Some implementors have expressed a need to be able to enfore that a
+PaymentCodeContext is provided in the Risk object when requesting a
+consent. This PR enables this feature to be turned on by setting the
+following spring config setting to true;
+`rs.api.payment.validate.risk.require-payment-context-code`
+[50f645798ab6ff6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/50f645798ab6ff6) Matt Wills *2020-06-15 09:11:57*
+Release candidate: prepare for next development iteration
+## 1.0.82
 ### GitHub [#175](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/175) Use new merge-master flow
 [d0113073476393f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d0113073476393f) Jonathan Gazeley *2020-04-21 13:51:06*
 Use new merge-master flow (#175)
@@ -28,6 +46,67 @@ upgrade openbanking-ui-cli to handle building forge rock new theme as the other 
 ### GitHub [#183](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/183) use common utils/forms. 
 [7477ad1fe49d907](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7477ad1fe49d907) Julien Renaux *2020-04-29 11:22:44*
 use common utils/forms. https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/8 (#183)
+### GitHub [#184](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/184) upgrade @forgerock/openbanking-ui-cli. https://github.com/OpenBanking…
+[f351e3229a4ea1e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f351e3229a4ea1e) Julien Renaux *2020-04-29 16:38:42*
+upgrade @forgerock/openbanking-ui-cli. https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/8 (#184)
+[ea2a27cb4d43ff9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ea2a27cb4d43ff9) Matt Wills *2020-06-12 15:52:31*
+Removed tests which have been moved to the uk-datamodel repo (#216)
+[4f937d0ec38fdbb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4f937d0ec38fdbb) Matt Wills *2020-06-12 15:41:03*
+Bumped version of parent pom to pull in correct version of uk-datamodel (#216)
+[5fcd86d3b12268b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5fcd86d3b12268b) Matt Wills *2020-06-12 14:55:21*
+Moved account related converters to package of that name (#216)
+[509ce5aa585b8f6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/509ce5aa585b8f6) Matt Wills *2020-06-12 12:07:17*
+Deleted converters - using ones in uk-datamodel instead (#216)
+[45d99de2f681fa0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/45d99de2f681fa0) Matt Wills *2020-06-10 15:34:27*
+Fixes for international standing orders and file payments (#216)
+[66cb9d2142fe782](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/66cb9d2142fe782) Matt Wills *2020-06-10 11:35:49*
+Removed InternationalStandingOrderConsent3Repository (using InternationalStandingOrderConsent4Repository and FRInternationalStandingOrderConsent4 instead). Added required converter methods (#216)
+[84cb495d7b0faf5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/84cb495d7b0faf5) Matt Wills *2020-06-09 15:14:52*
+Removed InternationalScheduledConsent2Repository (using InternationalScheduledConsent4Repository and FRInternationalScheduledConsent4 instead). Added required converter methods (#216)
+[b40ebc821710d67](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b40ebc821710d67) Matt Wills *2020-06-09 09:35:01*
+Removed InternationalConsent2Repository (using InternationalConsent4Repository instead). Added required converter methods (#216)
+[6b32c6da81b0a96](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6b32c6da81b0a96) Matt Wills *2020-06-08 08:04:22*
+Added null checks to converters (#216)
+[7f6ed1e97fe8ac9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7f6ed1e97fe8ac9) Matt Wills *2020-06-05 15:30:45*
+Fixes to enable scheduled payments to work (#216)
+[9a86b147dbe5451](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9a86b147dbe5451) Matt Wills *2020-05-28 14:42:51*
+Changes for v3.1.3 of the Payment Initiation API.
+Many of the changes in the rsstore controllers need implementing - search for "TODO #216" statements (#232)
+[fd08b064e6746e4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fd08b064e6746e4) Matt Wills *2020-05-05 12:50:27*
+Waiver 007 expiry - enabled detached JWT signature verification (#219)
+[30af22b186cb15b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/30af22b186cb15b) Matt Wills *2020-06-05 10:52:29*
+Converting back to OBDomesticStandingOrder2 for verification method (#232)
+[2035d40b22e24a2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2035d40b22e24a2) Matt Wills *2020-06-04 15:04:56*
+Removed 'consumes' attribute from @RequestMapping annotations on get methods (#232)
+[99e53cb2356cf24](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/99e53cb2356cf24) Matt Wills *2020-06-04 14:06:34*
+Fixed 2 issues in converters. Added unit tests (#232)
+[bfc8f6951aaca33](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bfc8f6951aaca33) Matt Wills *2020-06-03 15:35:11*
+Added ConsentStatusCodeToResponseDataStatusConverter to convert ConsentStatusCode to new StatusEnum (#232)
+[610181a80ea2959](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/610181a80ea2959) Matt Wills *2020-06-03 15:14:43*
+Fixed TODO statement concerning scaSupportData in OBWriteDomesticScheduledConsent3Data. Fixed self links in Controllers (#232)
+[4835ed7175f166c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4835ed7175f166c) Matt Wills *2020-06-03 12:11:43*
+Removed unnecessary international payment converters. Storing native OB objects in Mongo via new repositories and FR Data objects (#232)
+[a7cf0ba72bc44d2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a7cf0ba72bc44d2) Matt Wills *2020-06-02 15:49:44*
+Reduce duplication within some of the repetitive converters (#232)
+[736127098468f9e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/736127098468f9e) Matt Wills *2020-06-02 10:28:55*
+Added converters and implemented controllers for scheduled international payments and international standing orders (#232)
+Need to address TODO comments, particularly the population of the destinationCountry and extendedPurpose
+Need to refactor converters to reduce duplication (and potentially re-use pre-existing converters - i.e. converters added for previous versions)
+[53e3d38938fdf8e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/53e3d38938fdf8e) Matt Wills *2020-06-01 14:41:01*
+Added converters and implemented controllers for immediate international payments (#232)
+[72a599e90019d32](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/72a599e90019d32) Matt Wills *2020-06-01 11:22:51*
+Added converters and implemented controllers for file payments (#232)
+[bf2e2272c3c0500](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bf2e2272c3c0500) Matt Wills *2020-06-01 09:53:05*
+Added converters and implemented controllers for rs-store domestic standing orders (#232)
+[be4d9d736391375](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/be4d9d736391375) Matt Wills *2020-05-29 15:20:07*
+Added converters and implemented controllers for rs-store domestic payments and scheduled domestic payments (#232)
+[3a73cabc7cabe48](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3a73cabc7cabe48) Matt Wills *2020-05-29 08:40:03*
+Converted model classes to previous versions in order to perform verification (#232)
+[b0375d4b8ea8261](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0375d4b8ea8261) Matt Wills *2020-05-28 14:45:27*
+Removed unsupported endpoints from application.yml (#232)
+[9a86b147dbe5451](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9a86b147dbe5451) Matt Wills *2020-05-28 14:42:51*
+Changes for v3.1.3 of the Payment Initiation API.
+Many of the changes in the rsstore controllers need implementing - search for "TODO #216" statements (#232)
 [9f6afb8063341ee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f6afb8063341ee) Jorge Sanchez Perez *2020-04-24 17:06:53*
 Release 1.0.79 (#181)
 
@@ -93,6 +172,10 @@ Updates `forgerock-openbanking-ssl` from 1.0.74 to 1.0.75
 Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
 [f3b878ca0944044](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f3b878ca0944044) JamieB *2020-05-15 09:52:09*
 Updated ui project version to updating-ui-version-to-3.1.2-queen-rc7
+[162d7fe6da5c45e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/162d7fe6da5c45e) Matt Wills *2020-06-15 09:11:46*
+Release candidate: prepare release 1.0.82
+[475850b80e3e28f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/475850b80e3e28f) jorgesanchezperez *2020-05-13 10:53:11*
+Fix CLIENT_CREDENTIALS Grant type thru all payments APIs and versions APIS
 [849dc8d817838b8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/849dc8d817838b8) jorgesanchezperez *2020-04-24 15:42:03*
 skip test on github actions and rolback version to 1.0.79-SNAPSHOT to create again the release
 [c5ae6dc9c2e6c6c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c5ae6dc9c2e6c6c) JamieB *2020-04-24 10:47:30*
@@ -101,33 +184,8 @@ Use latest version of ob-commons
 remove unused file
 [ea0beafab3e80a3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ea0beafab3e80a3) Julien Renaux *2020-04-24 08:45:41*
 upgrade common ui. https://github.com/OpenBankingToolkit/openbanking-common/issues/59
-## forgerock-openbanking-aspsp-1.0.79
-### GitHub [#175](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/175) Use new merge-master flow
-[d0113073476393f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d0113073476393f) Jonathan Gazeley *2020-04-21 13:51:06*
-Use new merge-master flow (#175)
-
-Use new merge-master flow
-### GitHub [#177](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/177) upgrade CLI
-[de8bdc233ca80db](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/de8bdc233ca80db) Julien Renaux *2020-04-23 15:01:15*
-upgrade CLI (#177)
-
-* upgrade CLI
-
-* push latest image
-
-* adding docker-compose.override.yml into gitignore
-[c5ae6dc9c2e6c6c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c5ae6dc9c2e6c6c) JamieB *2020-04-24 10:47:30*
-Use latest version of ob-commons
 [e567d3cd251e50f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e567d3cd251e50f) JamieB *2020-04-22 15:53:06*
 Updated ui project version to updating-ui-version-to-
-## forgerock-openbanking-aspsp-1.0.80
-### GitHub [#184](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/184) upgrade @forgerock/openbanking-ui-cli. https://github.com/OpenBanking…
-[f351e3229a4ea1e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f351e3229a4ea1e) Julien Renaux *2020-04-29 16:38:42*
-upgrade @forgerock/openbanking-ui-cli. https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/8 (#184)
-[fd08b064e6746e4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fd08b064e6746e4) Matt Wills *2020-05-05 12:50:27*
-Waiver 007 expiry - enabled detached JWT signature verification (#219)
-[475850b80e3e28f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/475850b80e3e28f) jorgesanchezperez *2020-05-13 10:53:11*
-Fix CLIENT_CREDENTIALS Grant type thru all payments APIs and versions APIS
 ## forgerock-openbanking-aspsp-1.0.78
 ### GitHub [#167](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/167) fix missing translation
 [5938b495358e044](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5938b495358e044) Julien Renaux *2020-03-25 13:08:00*
