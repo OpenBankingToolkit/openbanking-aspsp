@@ -46,6 +46,7 @@ import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduledConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse2;
 
 import javax.servlet.http.HttpServletRequest;
@@ -114,12 +115,14 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteDomesticScheduledConsent2Param);
+        OBWriteDomesticScheduledConsent3 consent3 = toOBWriteDomesticScheduledConsent3(obWriteDomesticScheduledConsent2Param);
+        log.trace("Converted request body to {}", consent3.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
         Optional<FRDomesticScheduledConsent4> consentByIdempotencyKey = domesticScheduledConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, obWriteDomesticScheduledConsent2Param, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticScheduledConsent());
+            validateIdempotencyRequest(xIdempotencyKey, consent3, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticScheduledConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
@@ -128,7 +131,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
         FRDomesticScheduledConsent4 domesticScheduledConsent = FRDomesticScheduledConsent4.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticScheduledConsent(toOBWriteDomesticScheduledConsent3(obWriteDomesticScheduledConsent2Param))
+                .domesticScheduledConsent(consent3)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())

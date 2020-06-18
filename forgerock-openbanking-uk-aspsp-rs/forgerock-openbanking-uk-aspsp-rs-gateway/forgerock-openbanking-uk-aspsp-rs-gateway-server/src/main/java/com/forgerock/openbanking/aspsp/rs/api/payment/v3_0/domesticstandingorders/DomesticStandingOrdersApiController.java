@@ -23,8 +23,8 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.domesticstandingorde
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
@@ -56,6 +56,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder3;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -107,7 +108,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -135,7 +136,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(obWriteDomesticStandingOrder1Param.getData().getInitiation(), obWriteDomesticStandingOrder1Param.getRisk());
+                    f.verifyRiskAndInitiation(toOBDomesticStandingOrder3(obWriteDomesticStandingOrder1Param.getData().getInitiation()), obWriteDomesticStandingOrder1Param.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -159,8 +160,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                                     .nextPaymentDateTime(frequencyService.getNextDateTime(firstPaymentDateTime, initiation.getFrequency()))
                                     .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
                                     .finalPaymentAmount(OBActiveOrHistoricCurrencyAndAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount(initiation.getFinalPaymentAmount()))
-                                    .standingOrderId(payment.getId())
-                                    ;
+                                    .standingOrderId(payment.getId());
 
                             String pispId = tppStoreService.findByClientId(tppId)
                                     .map(tpp -> tpp.getId())
@@ -173,7 +173,8 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            ParameterizedTypeReference<OBWriteDomesticStandingOrderResponse1> ptr = new ParameterizedTypeReference<OBWriteDomesticStandingOrderResponse1>() {};
+                            ParameterizedTypeReference<OBWriteDomesticStandingOrderResponse1> ptr = new ParameterizedTypeReference<OBWriteDomesticStandingOrderResponse1>() {
+                            };
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticStandingOrderResponse1.class, obWriteDomesticStandingOrder1Param);
                         }
                 );
@@ -191,7 +192,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")

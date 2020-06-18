@@ -170,16 +170,15 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteDomesticScheduledResponse2 packagePayment(FRDomesticScheduledPayment frPaymentSubmission, FRDomesticScheduledConsent4 frDomesticScheduledConsent2) {
+    private OBWriteDomesticScheduledResponse2 packagePayment(FRDomesticScheduledPayment frPaymentSubmission, FRDomesticScheduledConsent4 frDomesticScheduledConsent4) {
         return new OBWriteDomesticScheduledResponse2().data(new OBWriteDataDomesticScheduledResponse2()
                 .domesticScheduledPaymentId(frPaymentSubmission.getId())
                 .initiation(frPaymentSubmission.getDomesticScheduledPayment().getData().getInitiation())
-                .creationDateTime(frDomesticScheduledConsent2.getCreated())
-                .statusUpdateDateTime(frDomesticScheduledConsent2.getStatusUpdate())
-                .status(frDomesticScheduledConsent2.getStatus().toOBExternalStatusCode1())
-                .consentId(frDomesticScheduledConsent2.getId()))
+                .creationDateTime(frDomesticScheduledConsent4.getCreated())
+                .statusUpdateDateTime(frDomesticScheduledConsent4.getStatusUpdate())
+                .status(frDomesticScheduledConsent4.getStatus().toOBExternalStatusCode1())
+                .consentId(frDomesticScheduledConsent4.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1().getGetDomesticScheduledPayment()))
-                .meta(new Meta())
-                ;
+                .meta(new Meta());
     }
 }

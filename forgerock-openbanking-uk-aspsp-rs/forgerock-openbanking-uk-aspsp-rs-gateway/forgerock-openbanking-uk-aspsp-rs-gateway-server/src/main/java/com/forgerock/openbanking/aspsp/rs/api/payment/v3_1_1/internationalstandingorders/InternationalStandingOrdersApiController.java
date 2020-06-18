@@ -54,7 +54,7 @@ import java.util.Collections;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount5;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 
 @Controller("InternationalStandingOrdersApiV3.1.1")
 public class InternationalStandingOrdersApiController implements InternationalStandingOrdersApi {
@@ -122,7 +122,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(OBWriteInternationalStandingOrder3Param.getData().getInitiation(), OBWriteInternationalStandingOrder3Param.getRisk());
+                    f.verifyRiskAndInitiation(toOBWriteInternationalStandingOrder4DataInitiation(OBWriteInternationalStandingOrder3Param.getData().getInitiation()), OBWriteInternationalStandingOrder3Param.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
 
                 })

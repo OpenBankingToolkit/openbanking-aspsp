@@ -50,6 +50,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduledCon
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse2;
 
 import javax.servlet.http.HttpServletRequest;
@@ -121,12 +122,14 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteInternationalScheduledConsent2Param);
+        OBWriteInternationalScheduledConsent4 consent4 = toOBWriteInternationalScheduledConsent4(obWriteInternationalScheduledConsent2Param);
+        log.trace("Converted request body to {}", consent4.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
         Optional<FRInternationalScheduledConsent4> consentByIdempotencyKey = internationalScheduledConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, obWriteInternationalScheduledConsent2Param, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalScheduledConsent());
+            validateIdempotencyRequest(xIdempotencyKey, consent4, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalScheduledConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
@@ -135,7 +138,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         FRInternationalScheduledConsent4 internationalScheduledConsent = FRInternationalScheduledConsent4.builder()
                 .id(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .internationalScheduledConsent(toOBWriteInternationalScheduledConsent4(obWriteInternationalScheduledConsent2Param))
+                .internationalScheduledConsent(consent4)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())

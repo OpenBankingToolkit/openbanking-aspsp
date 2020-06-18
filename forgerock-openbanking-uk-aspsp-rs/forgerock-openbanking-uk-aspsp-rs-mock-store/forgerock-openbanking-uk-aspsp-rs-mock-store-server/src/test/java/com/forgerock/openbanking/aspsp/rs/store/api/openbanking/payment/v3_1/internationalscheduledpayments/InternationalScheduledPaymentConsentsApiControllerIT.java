@@ -53,9 +53,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBInternationalScheduled2;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalscheduledpayments.InternationalScheduledPaymentConsentsApiController}.
@@ -94,7 +94,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
         consent.getInitiation().requestedExecutionDateTime(requestedExecutionDateTime);
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
         consent.getInitiation().extendedPurpose(null);
-        consent.getInitiation().destinationCountryCode(null);
+        consent.getInitiation().destinationCountryCode("GB");
         repository.save(consent);
 
         // When

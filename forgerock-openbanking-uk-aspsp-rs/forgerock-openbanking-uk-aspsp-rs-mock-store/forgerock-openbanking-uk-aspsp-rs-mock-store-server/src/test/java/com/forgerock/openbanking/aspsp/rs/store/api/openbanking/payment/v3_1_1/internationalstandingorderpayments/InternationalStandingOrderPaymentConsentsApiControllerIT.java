@@ -50,14 +50,14 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
+import static uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent3;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.internationalstandingorders.InternationalStandingOrderConsentsApiController}.
@@ -130,13 +130,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         PaymentTestHelper.setupMockTpp(tppRepository);
-        OBWriteInternationalStandingOrderConsent3 consentRequest = JMockData.mock(OBWriteInternationalStandingOrderConsent3.class);
-        setupTestConsentInitiation(consentRequest.getData().getInitiation());
-        consentRequest.getRisk().merchantCategoryCode("ABCD")
-                .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
-                .addressLine(Collections.singletonList("3 Queens Square"))
-                .country("GP");
+        OBWriteInternationalStandingOrderConsent3 consentRequest = aValidOBWriteInternationalStandingOrderConsent3();
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
@@ -168,23 +162,6 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
     }
 
-    private void setupTestConsentInitiation(OBInternationalStandingOrder3 initiation) {
-        initiation.purpose("test");
-        initiation.setInstructedAmount(new OBDomestic2InstructedAmount().amount("100.0").currency("GBP"));
-        initiation.currencyOfTransfer("GBP");
-        initiation.firstPaymentDateTime(DateTime.now().withMillisOfSecond(0));
-        initiation.finalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
-        initiation.frequency("EvryDay");
-        initiation.reference("123");
-        initiation.numberOfPayments("12");
-        initiation.setCreditor(new OBPartyIdentification43().name("user").postalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square"))));
-        initiation.setCreditorAgent(new OBBranchAndFinancialInstitutionIdentification6().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber"));
-        initiation.getCreditor().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
-        initiation.getCreditorAgent().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
-        initiation.getCreditorAgent().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
-        initiation.supplementaryData(new OBSupplementaryData1());
-    }
-
     private static void setupTestConsentInitiation(OBWriteInternationalStandingOrder4DataInitiation initiation) {
         initiation.purpose("test");
         initiation.setInstructedAmount(new OBWriteDomestic2DataInitiationInstructedAmount().amount("100.0").currency("GBP"));
@@ -200,8 +177,8 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         initiation.getCreditorAgent().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
         initiation.getCreditorAgent().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
         initiation.setExtendedPurpose(null);
-        initiation.setDestinationCountryCode(null);
-        initiation.supplementaryData(new OBSupplementaryData1());
+        initiation.setDestinationCountryCode("GB");
+        initiation.setSupplementaryData(new OBSupplementaryData1());
     }
 
 }

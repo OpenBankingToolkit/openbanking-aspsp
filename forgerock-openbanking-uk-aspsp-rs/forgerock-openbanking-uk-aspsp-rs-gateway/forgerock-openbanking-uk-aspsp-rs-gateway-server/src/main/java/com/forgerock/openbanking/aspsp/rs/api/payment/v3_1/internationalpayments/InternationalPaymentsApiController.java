@@ -47,6 +47,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBWriteInternational3DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -109,7 +110,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(obWriteInternational2Param.getData().getInitiation(), obWriteInternational2Param.getRisk());
+                    f.verifyRiskAndInitiation(toOBWriteInternational3DataInitiation(obWriteInternational2Param.getData().getInitiation()), obWriteInternational2Param.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
