@@ -49,6 +49,10 @@ Release/1.0.84 (#205)
 * Release candidate: prepare for next development iteration
 
 * changelog updated
+[22e91f504289040](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/22e91f504289040) Matt Wills *2020-06-18 14:27:05*
+Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
+[2a5d119633adb1a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2a5d119633adb1a) Matt Wills *2020-06-18 13:56:30*
+Added required version for versions prior to 3.1.3 in the rs-store (#216)
 [861981393939c0a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/861981393939c0a) JamieB *2020-06-15 11:27:45*
 Release candidate: prepare for next development iteration
 ## 1.0.83
