@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderConsentResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +56,6 @@ import java.util.Optional;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent2;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent3;
 
 @Controller("DomesticStandingOrderConsentsApiV3.0")
@@ -95,7 +94,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -115,14 +114,14 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteDomesticStandingOrderConsent1Param);
-        OBWriteDomesticStandingOrderConsent2 consent2 = toOBWriteDomesticStandingOrderConsent2(obWriteDomesticStandingOrderConsent1Param);
-        log.trace("Converted request body to {}", consent2.getClass());
+        OBWriteDomesticStandingOrderConsent3 consent3 = toOBWriteDomesticStandingOrderConsent3(obWriteDomesticStandingOrderConsent1Param);
+        log.trace("Converted request body to {}", consent3.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
         Optional<FRDomesticStandingOrderConsent3> consentByIdempotencyKey = domesticStandingOrderConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, consent2, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticStandingOrderConsent());
+            validateIdempotencyRequest(xIdempotencyKey, consent3, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticStandingOrderConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
@@ -131,7 +130,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
         FRDomesticStandingOrderConsent3 domesticStandingOrderConsent = FRDomesticStandingOrderConsent3.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticStandingOrderConsent(toOBWriteDomesticStandingOrderConsent3(consent2))
+                .domesticStandingOrderConsent(consent3)
                 .statusUpdate(DateTime.now())
                 .created(DateTime.now())
                 .pispId(tpp.getId())
@@ -157,7 +156,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -181,7 +180,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
 
         return ResponseEntity.ok(packageResponse(domesticStandingOrderConsent));
     }
-    
+
     private OBWriteDomesticStandingOrderConsentResponse1 packageResponse(FRDomesticStandingOrderConsent3 domesticStandingOrderConsent) {
         return new OBWriteDomesticStandingOrderConsentResponse1()
                 .data(new OBWriteDataDomesticStandingOrderConsentResponse1()

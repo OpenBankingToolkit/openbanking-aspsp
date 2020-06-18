@@ -80,7 +80,6 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     @Autowired
     private SpringSecForTest springSecForTest;
 
-
     @MockBean
     private TppRepository tppRepository;
 

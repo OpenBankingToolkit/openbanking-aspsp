@@ -39,7 +39,12 @@
     </parent>
 
     <dependencies>
-
+        <dependency>
+            <groupId>com.forgerock.openbanking.uk</groupId>
+            <artifactId>openbanking-uk-datamodel</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.forgerock.openbanking.aspsp</groupId>
             <artifactId>forgerock-openbanking-uk-aspsp-common</artifactId>

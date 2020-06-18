@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrderConsentResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse3;
 
 import javax.servlet.http.HttpServletRequest;
@@ -112,12 +113,14 @@ public class InternationalStandingOrderConsentsApiController implements Internat
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", OBWriteInternationalStandingOrderConsent3Param);
+        OBWriteInternationalStandingOrderConsent5 consent5 = toOBWriteInternationalStandingOrderConsent5(OBWriteInternationalStandingOrderConsent3Param);
+        log.trace("Converted request body to {}", consent5.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
         Optional<FRInternationalStandingOrderConsent4> consentByIdempotencyKey = internationalStandingOrderConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, OBWriteInternationalStandingOrderConsent3Param, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalStandingOrderConsent());
+            validateIdempotencyRequest(xIdempotencyKey, consent5, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalStandingOrderConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
@@ -126,7 +129,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
         FRInternationalStandingOrderConsent4 internationalStandingOrderConsent = FRInternationalStandingOrderConsent4.builder()
                 .id(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .internationalStandingOrderConsent(toOBWriteInternationalStandingOrderConsent5(OBWriteInternationalStandingOrderConsent3Param))
+                .internationalStandingOrderConsent(consent5)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())

@@ -28,7 +28,6 @@ import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-
 @Controller("DomesticScheduledPaymentsApiV3.1.1")
 public class DomesticScheduledPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.domesticscheduledpayments.DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
 

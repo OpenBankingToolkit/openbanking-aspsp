@@ -38,6 +38,17 @@ PaymentCodeContext is provided in the Risk object when requesting a
 consent. This PR enables this feature to be turned on by setting the
 following spring config setting to true;
 `rs.api.payment.validate.risk.require-payment-context-code`
+### GitHub [#205](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/205) Release/1.0.84
+[49eda970989f335](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/49eda970989f335) Jorge Sanchez Perez *2020-06-16 15:10:42*
+Release/1.0.84 (#205)
+
+* javadoc for OBEventNotification2 object
+
+* Release candidate: prepare release 1.0.84
+
+* Release candidate: prepare for next development iteration
+
+* changelog updated
 [861981393939c0a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/861981393939c0a) JamieB *2020-06-15 11:27:45*
 Release candidate: prepare for next development iteration
 ## 1.0.83

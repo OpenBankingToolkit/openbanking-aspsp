@@ -56,8 +56,8 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderRes
 import java.util.Arrays;
 import java.util.Collections;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder3;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder3;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.internationalstandingorders.InternationalStandingOrdersApiController}.

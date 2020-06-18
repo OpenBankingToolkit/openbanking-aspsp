@@ -40,10 +40,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
 import uk.org.openbanking.datamodel.account.OBStandingOrder5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse3;
@@ -53,10 +51,10 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount5;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 
 @Controller("InternationalStandingOrdersApiV3.1.2")
 public class InternationalStandingOrdersApiController implements InternationalStandingOrdersApi {
@@ -124,7 +122,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(OBWriteInternationalStandingOrder3Param.getData().getInitiation(), OBWriteInternationalStandingOrder3Param.getRisk());
+                    f.verifyRiskAndInitiation(toOBWriteInternationalStandingOrder4DataInitiation(OBWriteInternationalStandingOrder3Param.getData().getInitiation()), OBWriteInternationalStandingOrder3Param.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
 
                 })

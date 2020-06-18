@@ -43,6 +43,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.OBExternalScheduleType1Code;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled1;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,6 +54,7 @@ import java.util.Collections;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -126,10 +128,11 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 .payment(frInternationalScheduledConsentConverter.toFRInternationalConsent1(payment))
                 .principal(principal)
                 .filters(f -> {
+                    OBWriteInternationalScheduled3DataInitiation expectedInitiation = toOBWriteInternationalScheduled3DataInitiation(obWriteInternationalScheduled1Param.getData().getInitiation());
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(obWriteInternationalScheduled1Param.getData().getInitiation(), obWriteInternationalScheduled1Param.getRisk());
+                    f.verifyRiskAndInitiation(expectedInitiation, obWriteInternationalScheduled1Param.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
