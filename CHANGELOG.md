@@ -1,6 +1,16 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#208](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/208) bumped the parent version 1.0.73
+[094f4025242a00e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/094f4025242a00e) Jorge Sanchez Perez *2020-06-23 17:38:32*
+bumped the parent version 1.0.73 (#208)
+
+Force the merge like as administrator to unlock work.
+[0ee32fe1b6392e3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0ee32fe1b6392e3) Matt Wills *2020-06-18 15:32:18*
+Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
+[499a9be21344a26](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/499a9be21344a26) Matt Wills *2020-06-18 15:25:44*
+Release candidate: prepare for next development iteration
+## 1.0.85
 ### GitHub [#203](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/203) Handler events (Data APIs /api/data/events)
 [954bec38b7eb2e3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/954bec38b7eb2e3) Jorge Sanchez Perez *2020-06-16 13:14:11*
 Handler events (Data APIs /api/data/events) (#203)
@@ -53,6 +63,8 @@ Release/1.0.84 (#205)
 Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
 [2a5d119633adb1a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2a5d119633adb1a) Matt Wills *2020-06-18 13:56:30*
 Added required version for versions prior to 3.1.3 in the rs-store (#216)
+[30e9a9a542dd0d5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/30e9a9a542dd0d5) Matt Wills *2020-06-18 15:25:33*
+Release candidate: prepare release 1.0.85
 [861981393939c0a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/861981393939c0a) JamieB *2020-06-15 11:27:45*
 Release candidate: prepare for next development iteration
 ## 1.0.83
