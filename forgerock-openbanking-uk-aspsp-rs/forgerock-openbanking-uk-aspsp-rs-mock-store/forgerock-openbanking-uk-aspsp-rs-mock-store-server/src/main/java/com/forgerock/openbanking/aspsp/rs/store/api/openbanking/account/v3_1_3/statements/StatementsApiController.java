@@ -20,11 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_3.statements;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.statements.FRStatement1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements.FRStatement4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.service.statement.StatementPDFService;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStatement1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -38,14 +38,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
-import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
 import uk.org.openbanking.datamodel.account.OBReadStatement2Data;
-import uk.org.openbanking.datamodel.account.OBStatement1;
-import uk.org.openbanking.datamodel.account.OBStatement2;
-import uk.org.openbanking.datamodel.account.OBStatementInterest1;
-import uk.org.openbanking.datamodel.account.OBStatementInterest2;
 
 import java.io.IOException;
 import java.util.List;
@@ -60,18 +55,18 @@ public class StatementsApiController implements StatementsApi {
 
     private final int pageLimitStatements;
 
-    private final FRStatement1Repository frStatement1Repository;
+    private final FRStatement4Repository frStatement4Repository;
 
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
     private final StatementPDFService statementPDFService;
 
     public StatementsApiController(@Value("${rs.page.default.statement.size}") int pageLimitStatements,
-                                   FRStatement1Repository frStatement1Repository,
+                                   FRStatement4Repository frStatement4Repository,
                                    AccountDataInternalIdFilter accountDataInternalIdFilter,
                                    StatementPDFService statementPDFService) {
         this.pageLimitStatements = pageLimitStatements;
-        this.frStatement1Repository = frStatement1Repository;
+        this.frStatement4Repository = frStatement4Repository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
         this.statementPDFService = statementPDFService;
     }
@@ -89,7 +84,7 @@ public class StatementsApiController implements StatementsApi {
                                                                 String httpUrl) throws OBErrorResponseException {
         log.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
 
-        List<FRStatement1> statements = frStatement1Repository.byAccountIdAndStatementIdWithPermissions(accountId, statementId, permissions);
+        List<FRStatement4> statements = frStatement4Repository.byAccountIdAndStatementIdWithPermissions(accountId, statementId, permissions);
         int totalPages = 1;
         return packageResponse(page, httpUrl, statements, totalPages);
     }
@@ -134,7 +129,7 @@ public class StatementsApiController implements StatementsApi {
                                                                  String httpUrl) throws OBErrorResponseException {
         log.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
 
-        Page<FRStatement1> statements = frStatement1Repository.byAccountIdWithPermissions(accountId,
+        Page<FRStatement4> statements = frStatement4Repository.byAccountIdWithPermissions(accountId,
                 fromStatementDateTime, toStatementDateTime, permissions,
                 PageRequest.of(page, pageLimitStatements, Sort.Direction.ASC, "startDateTime"));
 
@@ -156,7 +151,7 @@ public class StatementsApiController implements StatementsApi {
                                                           String httpUrl) throws OBErrorResponseException {
         log.info("Reading statements from account ids {}", accountIds);
 
-        Page<FRStatement1> statements = frStatement1Repository.findByAccountIdIn(accountIds, PageRequest.of(page, pageLimitStatements, Sort.Direction.ASC, "startDateTime"));
+        Page<FRStatement4> statements = frStatement4Repository.findByAccountIdIn(accountIds, PageRequest.of(page, pageLimitStatements, Sort.Direction.ASC, "startDateTime"));
         int totalPages = statements.getTotalPages();
         return packageResponse(page, httpUrl, statements.getContent(), totalPages);
     }
@@ -172,59 +167,15 @@ public class StatementsApiController implements StatementsApi {
         }
     }
 
-    private ResponseEntity<OBReadStatement2> packageResponse(int page, String httpUrl, List<FRStatement1> statements, int totalPages) {
+    private ResponseEntity<OBReadStatement2> packageResponse(int page, String httpUrl, List<FRStatement4> statements, int totalPages) {
         return ResponseEntity.ok(new OBReadStatement2().data(new OBReadStatement2Data().statement(
                 statements
                         .stream()
-                        .map(FRStatement1::getStatement)
+                        .map(FRStatement4::getStatement)
                         .map(st -> accountDataInternalIdFilter.apply(st))
-                        .map(st -> toOBStatement2(st))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
-    // TODO #232 - move to uk-datemodel repo
-    public static OBStatement2 toOBStatement2(OBStatement1 obStatement1) {
-        return obStatement1 == null ? null : (new OBStatement2())
-                .accountId(obStatement1.getAccountId())
-                .statementId(obStatement1.getStatementId())
-                .statementReference(obStatement1.getStatementReference())
-                .type(obStatement1.getType())
-                .startDateTime(obStatement1.getStartDateTime())
-                .endDateTime(obStatement1.getEndDateTime())
-                .creationDateTime(obStatement1.getCreationDateTime())
-                .statementDescription(obStatement1.getStatementDescription())
-                .statementBenefit(obStatement1.getStatementBenefit())
-                .statementFee(null) // TODO #232 - populate from datasource?
-                .statementInterest(toOBStatementInterest2List(obStatement1.getStatementInterest()))
-                .statementDateTime(obStatement1.getStatementDateTime())
-                .statementRate(obStatement1.getStatementRate())
-                .statementValue(obStatement1.getStatementValue())
-                .statementAmount(obStatement1.getStatementAmount());
-    }
-
-    public static List<OBStatementInterest2> toOBStatementInterest2List(List<OBStatementInterest1> statementInterest1s) {
-        return statementInterest1s == null ? null : statementInterest1s
-                .stream()
-                .map(st -> tostatementInterest2(st))
-                .collect(Collectors.toList());
-    }
-
-    public static OBStatementInterest2 tostatementInterest2(OBStatementInterest1 obStatementInterest1) {
-        return obStatementInterest1 == null ? null : (new OBStatementInterest2())
-                .description(null) // TODO #232 - populate from datasource?
-                .creditDebitIndicator(OBStatementInterest2.CreditDebitIndicatorEnum.valueOf(obStatementInterest1.getCreditDebitIndicator().name()))
-                .type(obStatementInterest1.getType())
-                .rate(null) // TODO #232 - populate from datasource?
-                .rateType(null) // TODO #232 - populate from datasource?
-                .frequency(null) // TODO #232 - populate from datasource?
-                .amount(toOBActiveOrHistoricCurrencyAndAmount(obStatementInterest1.getAmount()));
-    }
-
-    public static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount amount) {
-        return amount == null ? null : (new OBActiveOrHistoricCurrencyAndAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
-    }
 }

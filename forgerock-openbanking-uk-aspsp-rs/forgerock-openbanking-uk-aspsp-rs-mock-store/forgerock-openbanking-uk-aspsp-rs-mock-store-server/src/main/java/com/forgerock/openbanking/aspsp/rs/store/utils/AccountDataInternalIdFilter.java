@@ -37,21 +37,43 @@ public class AccountDataInternalIdFilter {
         this.showAccountDataInternalIds = showAccountDataInternalIds;
     }
 
-    public OBTransaction1 apply(final OBTransaction1 data) { return apply(data, data::setTransactionId); }
+    public OBTransaction1 apply(final OBTransaction1 data) {
+        return apply(data, data::setTransactionId);
+    }
 
-    public OBTransaction2 apply(final OBTransaction2 data) { return apply(data, data::setTransactionId); }
+    public OBTransaction2 apply(final OBTransaction2 data) {
+        return apply(data, data::setTransactionId);
+    }
 
-    public OBTransaction3 apply(final OBTransaction3 data) { return apply(data, data::setTransactionId); }
+    public OBTransaction3 apply(final OBTransaction3 data) {
+        return apply(data, data::setTransactionId);
+    }
 
-    public OBTransaction4 apply(final OBTransaction4 data) { return apply(data, data::setTransactionId); }
+    public OBTransaction4 apply(final OBTransaction4 data) {
+        return apply(data, data::setTransactionId);
+    }
 
-    public OBTransaction5 apply(final OBTransaction5 data) { return apply(data, data::setTransactionId); }
+    public OBTransaction5 apply(final OBTransaction5 data) {
+        return apply(data, data::setTransactionId);
+    }
 
-    public OBBeneficiary2 apply(final OBBeneficiary2 data) { return apply(data, data::setBeneficiaryId); }
+    public OBBeneficiary2 apply(final OBBeneficiary2 data) {
+        return apply(data, data::setBeneficiaryId);
+    }
 
-    public OBBeneficiary3 apply(final OBBeneficiary3 data) { return apply(data, data::setBeneficiaryId); }
+    public OBBeneficiary3 apply(final OBBeneficiary3 data) {
+        return apply(data, data::setBeneficiaryId);
+    }
+
+    public OBBeneficiary4 apply(final OBBeneficiary4 data) {
+        return apply(data, data::setBeneficiaryId);
+    }
 
     public OBDirectDebit1 apply(OBDirectDebit1 data) {
+        return apply(data, data::setDirectDebitId);
+    }
+
+    public OBReadDirectDebit2DataDirectDebit apply(OBReadDirectDebit2DataDirectDebit data) {
         return apply(data, data::setDirectDebitId);
     }
 
@@ -59,9 +81,17 @@ public class AccountDataInternalIdFilter {
         return apply(data, data::setOfferId);
     }
 
-    public OBScheduledPayment1 apply(OBScheduledPayment1 data) { return apply(data, data::setScheduledPaymentId); }
+    public OBScheduledPayment1 apply(OBScheduledPayment1 data) {
+        return apply(data, data::setScheduledPaymentId);
+    }
 
-    public OBScheduledPayment2 apply(OBScheduledPayment2 data) { return apply(data, data::setScheduledPaymentId); }
+    public OBScheduledPayment2 apply(OBScheduledPayment2 data) {
+        return apply(data, data::setScheduledPaymentId);
+    }
+
+    public OBScheduledPayment3 apply(OBScheduledPayment3 data) {
+        return apply(data, data::setScheduledPaymentId);
+    }
 
     public OBStandingOrder1 apply(OBStandingOrder1 data) {
         return apply(data, data::setStandingOrderId);
@@ -79,13 +109,19 @@ public class AccountDataInternalIdFilter {
         return apply(data, data::setStandingOrderId);
     }
 
-    public OBStandingOrder5 apply(OBStandingOrder5 data) { return apply(data, data::setStandingOrderId); }
+    public OBStandingOrder5 apply(OBStandingOrder5 data) {
+        return apply(data, data::setStandingOrderId);
+    }
 
     public OBStatement1 apply(OBStatement1 data) {
         return apply(data, data::setStatementId);
     }
 
-    private  <T> T apply(final T data, Consumer<String> setIdFunction) {
+    public OBStatement2 apply(OBStatement2 data) {
+        return apply(data, data::setStatementId);
+    }
+
+    private <T> T apply(final T data, Consumer<String> setIdFunction) {
         if (showAccountDataInternalIds) {
             log.debug("Show Account Data Internal Ids is 'ON'. Data response will contain internal ids");
             return data;
