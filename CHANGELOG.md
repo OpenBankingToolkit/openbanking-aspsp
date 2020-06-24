@@ -6,6 +6,15 @@ Changelog of Git Changelog Maven plugin.
 bumped the parent version 1.0.73 (#208)
 
 Force the merge like as administrator to unlock work.
+### GitHub [#209](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/209) Release/1.0.86
+[d2be7b8b9c1b1eb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d2be7b8b9c1b1eb) Jorge Sanchez Perez *2020-06-23 18:13:50*
+Release/1.0.86 (#209)
+
+* Release candidate: prepare release 1.0.86
+
+* Release candidate: prepare for next development iteration
+
+* changelog updated
 [0ee32fe1b6392e3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0ee32fe1b6392e3) Matt Wills *2020-06-18 15:32:18*
 Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
 [499a9be21344a26](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/499a9be21344a26) Matt Wills *2020-06-18 15:25:44*
