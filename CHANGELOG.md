@@ -15,6 +15,8 @@ Release/1.0.86 (#209)
 * Release candidate: prepare for next development iteration
 
 * changelog updated
+[31df7829405d769](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/31df7829405d769) Matt Wills *2020-06-24 10:46:10*
+Controller interfaces and implementations for v3.1.3 of the accounts API. New fields not yet being returned. (#216)
 [0ee32fe1b6392e3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0ee32fe1b6392e3) Matt Wills *2020-06-18 15:32:18*
 Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
 [499a9be21344a26](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/499a9be21344a26) Matt Wills *2020-06-18 15:25:44*
