@@ -31,78 +31,51 @@ import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileCon
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.payment.OBWriteFile2;
 import uk.org.openbanking.datamodel.payment.OBWriteFileResponse2;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.io.File;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
 @Controller("FilePaymentsApiV3.1.3")
+@Slf4j
 public class FilePaymentsApiController implements FilePaymentsApi {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FilePaymentsApiController.class);
+    private final FilePaymentService paymentsService;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
 
-    @Autowired
-    private FilePaymentService paymentsService;
-    @Autowired
-    private RSEndpointWrapperService rsEndpointWrapperService;
-    @Autowired
-    private RsStoreGateway rsStoreGateway;
+    public FilePaymentsApiController(FilePaymentService paymentsService, RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway) {
+        this.paymentsService = paymentsService;
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+    }
 
     public ResponseEntity<OBWriteFileResponse2> createFilePayments(
-            @ApiParam(value = "Default", required = true)
-            @Valid
-            @RequestBody OBWriteFile2 obWriteFile2Param,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true)
-            @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
-
-            @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
-            @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            OBWriteFile2 obWriteFile2,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteFile2Param.getData().getConsentId();
+        String consentId = obWriteFile2.getData().getConsentId();
         FRFileConsent2 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
@@ -114,47 +87,33 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyInitiation(obWriteFile2Param.getData().getInitiation());
+                    f.verifyInitiation(obWriteFile2.getData().getInitiation());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
                         (String tppId) -> {
                             //Modify the status of the payment
-                            LOGGER.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
+                            log.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
 
                             payment.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
-                            LOGGER.info("Updating payment");
+                            log.info("Updating payment");
                             paymentsService.updatePayment(payment);
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteFileResponse2.class, obWriteFile2Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteFileResponse2.class, obWriteFile2);
                         }
                 );
     }
 
     public ResponseEntity<OBWriteFileResponse2> getFilePaymentsFilePaymentId(
-            @ApiParam(value = "FilePaymentId", required = true)
-            @PathVariable("FilePaymentId") String filePaymentId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            String filePaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
         return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()
@@ -170,27 +129,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     }
 
     public ResponseEntity<OBWritePaymentDetailsResponse1> getFilePaymentsFilePaymentIdPaymentDetails(
-            @ApiParam(value = "FilePaymentId", required = true)
-            @PathVariable("FilePaymentId") String filePaymentId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            String filePaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
         // Optional endpoint - not implemented
@@ -198,27 +143,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     }
 
     public ResponseEntity<File> getFilePaymentsFilePaymentIdReportFile(
-            @ApiParam(value = "FilePaymentId", required = true)
-            @PathVariable("FilePaymentId") String filePaymentId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            String filePaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
         return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()

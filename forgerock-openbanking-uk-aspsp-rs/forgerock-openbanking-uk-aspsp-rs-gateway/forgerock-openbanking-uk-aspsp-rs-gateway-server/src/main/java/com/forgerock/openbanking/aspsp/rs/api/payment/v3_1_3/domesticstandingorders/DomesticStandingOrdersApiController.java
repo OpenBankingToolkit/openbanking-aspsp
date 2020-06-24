@@ -28,8 +28,8 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.domesticstandingor
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
@@ -37,28 +37,24 @@ import com.forgerock.openbanking.common.services.store.account.standingorder.Sta
 import com.forgerock.openbanking.common.services.store.payment.DomesticStandingOrderService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
 import uk.org.openbanking.datamodel.account.OBStandingOrder5;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse4;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder2;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -67,15 +63,14 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticS
 @Slf4j
 public class DomesticStandingOrdersApiController implements DomesticStandingOrdersApi {
 
-    private DomesticStandingOrderService paymentsService;
-    private RSEndpointWrapperService rsEndpointWrapperService;
-    private RsStoreGateway rsStoreGateway;
-    private StandingOrderService standingOrderService;
-    private FrequencyService frequencyService;
-    private TppStoreService tppStoreService;
-    private FRDomesticStandingOrderConsentConverter frDomesticStandingOrderConsentConverter;
+    private final DomesticStandingOrderService paymentsService;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
+    private final StandingOrderService standingOrderService;
+    private final FrequencyService frequencyService;
+    private final TppStoreService tppStoreService;
+    private final FRDomesticStandingOrderConsentConverter frDomesticStandingOrderConsentConverter;
 
-    @Autowired
     public DomesticStandingOrdersApiController(DomesticStandingOrderService paymentsService, RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway, StandingOrderService standingOrderService, FrequencyService frequencyService, TppStoreService tppStoreService, FRDomesticStandingOrderConsentConverter frDomesticStandingOrderConsentConverter) {
         this.paymentsService = paymentsService;
         this.rsEndpointWrapperService = rsEndpointWrapperService;
@@ -87,37 +82,18 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     }
 
     public ResponseEntity<OBWriteDomesticStandingOrderResponse4> createDomesticStandingOrders(
-            @ApiParam(value = "Default", required = true)
-            @Valid
-            @RequestBody OBWriteDomesticStandingOrder3 obWriteDomesticStandingOrder3Param,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true)
-            @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
-
-            @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
-            @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            OBWriteDomesticStandingOrder3 obWriteDomesticStandingOrder3,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteDomesticStandingOrder3Param.getData().getConsentId();
+        String consentId = obWriteDomesticStandingOrder3.getData().getConsentId();
         FRDomesticStandingOrderConsent3 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
@@ -129,7 +105,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(toOBDomesticStandingOrder2(obWriteDomesticStandingOrder3Param.getData().getInitiation()), obWriteDomesticStandingOrder3Param.getRisk());
+                    f.verifyRiskAndInitiation(toOBDomesticStandingOrder2(obWriteDomesticStandingOrder3.getData().getInitiation()), obWriteDomesticStandingOrder3.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -166,33 +142,19 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticStandingOrderResponse2.class, obWriteDomesticStandingOrder3Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticStandingOrderResponse2.class, obWriteDomesticStandingOrder3);
                         }
                 );
     }
 
     public ResponseEntity<OBWriteDomesticStandingOrderResponse4> getDomesticStandingOrdersDomesticStandingOrderId(
-            @ApiParam(value = "DomesticStandingOrderId", required = true)
-            @PathVariable("DomesticStandingOrderId") String domesticStandingOrderId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            String domesticStandingOrderId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
         return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()
@@ -207,28 +169,13 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     }
 
     public ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticStandingOrdersDomesticStandingOrderIdPaymentDetails(
-
-            @ApiParam(value = "DomesticStandingOrderId", required = true)
-            @PathVariable("DomesticStandingOrderId") String domesticStandingOrderId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            String domesticStandingOrderId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
         // Optional endpoint - not implemented

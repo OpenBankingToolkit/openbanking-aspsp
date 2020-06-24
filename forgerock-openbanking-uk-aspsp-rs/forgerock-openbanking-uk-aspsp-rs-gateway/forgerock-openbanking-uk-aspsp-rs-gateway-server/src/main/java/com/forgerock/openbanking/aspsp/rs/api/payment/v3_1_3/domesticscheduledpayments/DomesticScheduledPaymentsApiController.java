@@ -33,20 +33,13 @@ import com.forgerock.openbanking.common.services.store.account.scheduledpayment.
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.OBExternalScheduleType1Code;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
@@ -55,29 +48,25 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse3;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBWriteDomesticScheduled2DataInitiation;
-import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
 @Controller("DomesticScheduledPaymentsApiV3.1.3")
+@Slf4j
 public class DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DomesticScheduledPaymentsApiController.class);
-
-    private DomesticScheduledPaymentService paymentsService;
-    private RSEndpointWrapperService rsEndpointWrapperService;
-    private RsStoreGateway rsStoreGateway;
-    private ScheduledPaymentService scheduledPaymentService;
+    private final DomesticScheduledPaymentService paymentsService;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
+    private final ScheduledPaymentService scheduledPaymentService;
     private final TppStoreService tppStoreService;
 
-    @Autowired
     public DomesticScheduledPaymentsApiController(DomesticScheduledPaymentService paymentsService, RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway, ScheduledPaymentService scheduledPaymentService, TppStoreService tppStoreService) {
         this.paymentsService = paymentsService;
         this.rsEndpointWrapperService = rsEndpointWrapperService;
@@ -87,37 +76,18 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     }
 
     public ResponseEntity<OBWriteDomesticScheduledResponse3> createDomesticScheduledPayments(
-            @ApiParam(value = "Default", required = true)
-            @Valid
-            @RequestBody OBWriteDomesticScheduled2 obWriteDomesticScheduled2Param,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true)
-            @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
-
-            @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
-            @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            OBWriteDomesticScheduled2 obWriteDomesticScheduled2,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteDomesticScheduled2Param.getData().getConsentId();
+        String consentId = obWriteDomesticScheduled2.getData().getConsentId();
         FRDomesticScheduledConsent4 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
@@ -129,13 +99,13 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(toOBWriteDomesticScheduled2DataInitiation(obWriteDomesticScheduled2Param.getData().getInitiation()), obWriteDomesticScheduled2Param.getRisk());
+                    f.verifyRiskAndInitiation(toOBWriteDomesticScheduled2DataInitiation(obWriteDomesticScheduled2.getData().getInitiation()), obWriteDomesticScheduled2.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
                         (String tppId) -> {
                             //Modify the status of the payment
-                            LOGGER.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
+                            log.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
                             OBScheduledPayment1 scheduledPayment = new OBScheduledPayment1()
                                     .accountId(payment.getAccountId())
                                     .creditorAccount(toOBCashAccount3(payment.getInitiation().getCreditorAccount()))
@@ -156,38 +126,24 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                             scheduledPaymentService.createSchedulePayment(scheduledPayment, pispId);
 
                             payment.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
-                            LOGGER.info("Updating payment");
+                            log.info("Updating payment");
                             paymentsService.updatePayment(payment);
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticScheduledResponse2.class, obWriteDomesticScheduled2Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticScheduledResponse2.class, obWriteDomesticScheduled2);
                         }
                 );
     }
 
     public ResponseEntity<OBWriteDomesticScheduledResponse3> getDomesticScheduledPaymentsDomesticScheduledPaymentId(
-            @ApiParam(value = "DomesticScheduledPaymentId", required = true)
-            @PathVariable("DomesticScheduledPaymentId") String domesticScheduledPaymentId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            String domesticScheduledPaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
         return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()
@@ -203,27 +159,13 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     }
 
     public ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticScheduledPaymentsDomesticScheduledPaymentIdPaymentDetails(
-            @ApiParam(value = "DomesticScheduledPaymentId", required = true)
-            @PathVariable("DomesticScheduledPaymentId") String domesticScheduledPaymentId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            String domesticScheduledPaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
         // Optional endpoint - not implemented

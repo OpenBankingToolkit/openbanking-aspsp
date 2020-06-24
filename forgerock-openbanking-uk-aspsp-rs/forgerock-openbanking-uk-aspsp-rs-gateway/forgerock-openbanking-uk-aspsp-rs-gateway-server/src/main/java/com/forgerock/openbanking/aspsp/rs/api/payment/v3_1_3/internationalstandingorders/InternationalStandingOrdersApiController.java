@@ -34,18 +34,12 @@ import com.forgerock.openbanking.common.services.store.account.standingorder.Sta
 import com.forgerock.openbanking.common.services.store.payment.InternationalStandingOrderService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
 import uk.org.openbanking.datamodel.account.OBStandingOrder5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4;
@@ -54,29 +48,31 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderRes
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount5;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
 @Controller("InternationalStandingOrdersApiV3.1.3")
+@Slf4j
 public class InternationalStandingOrdersApiController implements InternationalStandingOrdersApi {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(InternationalStandingOrdersApiController.class);
+    private final InternationalStandingOrderService paymentsService;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
+    private final StandingOrderService standingOrderService;
+    private final FrequencyService frequencyService;
+    private final TppStoreService tppStoreService;
 
-    private InternationalStandingOrderService paymentsService;
-    private RSEndpointWrapperService rsEndpointWrapperService;
-    private RsStoreGateway rsStoreGateway;
-    private StandingOrderService standingOrderService;
-    private FrequencyService frequencyService;
-    private TppStoreService tppStoreService;
-
-    public InternationalStandingOrdersApiController(InternationalStandingOrderService paymentsService, RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway, StandingOrderService standingOrderService, FrequencyService frequencyService, TppStoreService tppStoreService) {
+    public InternationalStandingOrdersApiController(InternationalStandingOrderService paymentsService,
+                                                    RSEndpointWrapperService rsEndpointWrapperService,
+                                                    RsStoreGateway rsStoreGateway,
+                                                    StandingOrderService standingOrderService,
+                                                    FrequencyService frequencyService,
+                                                    TppStoreService tppStoreService) {
         this.paymentsService = paymentsService;
         this.rsEndpointWrapperService = rsEndpointWrapperService;
         this.rsStoreGateway = rsStoreGateway;
@@ -86,37 +82,18 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     }
 
     public ResponseEntity<OBWriteInternationalStandingOrderResponse5> createInternationalStandingOrders(
-            @ApiParam(value = "Default", required = true)
-            @Valid
-            @RequestBody OBWriteInternationalStandingOrder4 obWriteInternationalStandingOrder4Param,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true)
-            @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
-
-            @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
-            @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            OBWriteInternationalStandingOrder4 obWriteInternationalStandingOrder4,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteInternationalStandingOrder4Param.getData().getConsentId();
+        String consentId = obWriteInternationalStandingOrder4.getData().getConsentId();
         FRInternationalStandingOrderConsent4 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
@@ -128,17 +105,17 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(obWriteInternationalStandingOrder4Param.getData().getInitiation(), obWriteInternationalStandingOrder4Param.getRisk());
+                    f.verifyRiskAndInitiation(obWriteInternationalStandingOrder4.getData().getInitiation(), obWriteInternationalStandingOrder4.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
 
                 })
                 .execute(
                         (String tppId) -> {
                             //Modify the status of the payment
-                            LOGGER.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
+                            log.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
 
                             payment.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
-                            LOGGER.info("Updating payment");
+                            log.info("Updating payment");
                             paymentsService.updatePayment(payment);
 
                             OBWriteInternationalStandingOrder4DataInitiation initiation = payment.getInitiation();
@@ -161,34 +138,19 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteInternationalStandingOrderResponse5.class, obWriteInternationalStandingOrder4Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteInternationalStandingOrderResponse5.class, obWriteInternationalStandingOrder4);
                         }
                 );
     }
 
     public ResponseEntity<OBWriteInternationalStandingOrderResponse5> getInternationalStandingOrdersInternationalStandingOrderPaymentId(
-
-            @ApiParam(value = "InternationalStandingOrderPaymentId", required = true)
-            @PathVariable("InternationalStandingOrderPaymentId") String internationalStandingOrderPaymentId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            String internationalStandingOrderPaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
         return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()
@@ -204,28 +166,13 @@ public class InternationalStandingOrdersApiController implements InternationalSt
     }
 
     public ResponseEntity<OBWritePaymentDetailsResponse1> getInternationalStandingOrdersInternationalStandingOrderPaymentIdPaymentDetails(
-
-            @ApiParam(value = "InternationalStandingOrderPaymentId", required = true)
-            @PathVariable("InternationalStandingOrderPaymentId") String internationalStandingOrderPaymentId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value = "x-fapi-auth-date", required = false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            String internationalStandingOrderPaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) throws OBErrorResponseException {
         // Optional endpoint - not implemented
