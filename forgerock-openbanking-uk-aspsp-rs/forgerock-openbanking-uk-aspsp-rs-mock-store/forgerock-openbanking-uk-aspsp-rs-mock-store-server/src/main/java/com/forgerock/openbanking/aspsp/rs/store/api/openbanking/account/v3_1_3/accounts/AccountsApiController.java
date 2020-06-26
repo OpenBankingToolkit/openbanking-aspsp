@@ -20,15 +20,18 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_3.accounts;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBAccount6;
+import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import uk.org.openbanking.datamodel.account.OBReadAccount5;
+import uk.org.openbanking.datamodel.account.OBReadAccount5Data;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,10 +41,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AccountsApiController implements AccountsApi {
 
-    private final FRAccount3Repository frAccount3Repository;
+    private final FRAccount4Repository frAccount4Repository;
 
-    public AccountsApiController(FRAccount3Repository frAccount3Repository) {
-        this.frAccount3Repository = frAccount3Repository;
+    public AccountsApiController(FRAccount4Repository frAccount4Repository) {
+        this.frAccount4Repository = frAccount4Repository;
     }
 
     @Override
@@ -54,9 +57,9 @@ public class AccountsApiController implements AccountsApi {
                                                      List<OBExternalPermissions1Code> permissions,
                                                      String httpUrl) throws OBErrorResponseException {
         log.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount3 response = frAccount3Repository.byAccountId(accountId, permissions);
+        FRAccount4 response = frAccount4Repository.byAccountId(accountId, permissions);
 
-        List<OBAccount6> obAccounts = Collections.singletonList(toOBAccount6(response.getAccount()));
+        List<OBAccount6> obAccounts = Collections.singletonList(response.getAccount());
         return ResponseEntity.ok(new OBReadAccount5()
                 .data(new OBReadAccount5Data().account(obAccounts))
                 .links(PaginationUtil.generateLinksOnePager(httpUrl))
@@ -75,10 +78,10 @@ public class AccountsApiController implements AccountsApi {
                                                       String httpUrl) throws OBErrorResponseException {
         log.info("Accounts from account ids {}", accountIds);
 
-        List<FRAccount3> frAccounts = frAccount3Repository.byAccountIds(accountIds, permissions);
+        List<FRAccount4> frAccounts = frAccount4Repository.byAccountIds(accountIds, permissions);
         List<OBAccount6> obAccounts = frAccounts
                 .stream()
-                .map(frAccount -> toOBAccount6(frAccount.getAccount()))
+                .map(frAccount -> frAccount.getAccount())
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new OBReadAccount5()
@@ -87,42 +90,4 @@ public class AccountsApiController implements AccountsApi {
                 .meta(PaginationUtil.generateMetaData(1)));
     }
 
-    // TODO #232 - move to uk-datamodel repo
-    public static OBAccount6 toOBAccount6(OBAccount3 account) {
-        DateTime now = DateTime.now();
-        return account == null ? null : (new OBAccount6())
-                .accountId(account.getAccountId())
-                .status(OBAccountStatus1Code.ENABLED) // TODO #232 - populate this field from the datasource?
-                .statusUpdateDateTime(now) // TODO #232 - populate this field from the datasource?
-                .currency(account.getCurrency())
-                .accountType(account.getAccountType())
-                .accountSubType(account.getAccountSubType())
-                .description(account.getDescription())
-                .nickname(account.getNickname())
-                .openingDate(now) // TODO #232 - populate this field from the datasource?
-                .maturityDate(now) // TODO #232 - populate this field from the datasource?
-                .account(toOBAccount3Accounts(account.getAccount()))
-                .servicer(toOBBranchAndFinancialInstitutionIdentification50(account.getServicer()));
-    }
-
-    public static List<OBAccount3Account> toOBAccount3Accounts(List<OBCashAccount5> accounts) {
-        return accounts == null ? null : accounts
-                .stream()
-                .map(a -> toOBAccount3Account(a))
-                .collect(Collectors.toList());
-    }
-
-    public static OBAccount3Account toOBAccount3Account(OBCashAccount5 obCashAccount5) {
-        return obCashAccount5 == null ? null : (new OBAccount3Account())
-                .schemeName(obCashAccount5.getSchemeName())
-                .identification(obCashAccount5.getIdentification())
-                .name(obCashAccount5.getName())
-                .secondaryIdentification(obCashAccount5.getSecondaryIdentification());
-    }
-
-    public static OBBranchAndFinancialInstitutionIdentification50 toOBBranchAndFinancialInstitutionIdentification50(OBBranchAndFinancialInstitutionIdentification5 obBranchAndFinancialInstitutionIdentification5) {
-        return obBranchAndFinancialInstitutionIdentification5 == null ? null : (new OBBranchAndFinancialInstitutionIdentification50())
-                .schemeName(obBranchAndFinancialInstitutionIdentification5.getSchemeName())
-                .identification(obBranchAndFinancialInstitutionIdentification5.getIdentification());
-    }
 }
