@@ -20,10 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.beneficiaries;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.beneficiaries.FRBeneficiary3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.beneficiaries.FRBeneficiary4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRBeneficiary3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRBeneficiary4;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.OBBeneficiaryConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +55,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
     private int PAGE_LIMIT_BENEFICIARIES;
 
     @Autowired
-    private FRBeneficiary3Repository frBeneficiary3Repository;
+    private FRBeneficiary4Repository frBeneficiaryRepository;
 
     @Autowired
     private AccountDataInternalIdFilter accountDataInternalIdFilter;
@@ -90,14 +91,15 @@ public class BeneficiariesApiController implements BeneficiariesApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl)
             throws OBErrorResponseException {
         log.info("Read beneficiaries for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FRBeneficiary3> beneficiaries = frBeneficiary3Repository.byAccountIdWithPermissions(accountId, permissions,
+        Page<FRBeneficiary4> beneficiaries = frBeneficiaryRepository.byAccountIdWithPermissions(accountId, permissions,
                 PageRequest.of(page, PAGE_LIMIT_BENEFICIARIES));
         int totalPages = beneficiaries.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBeneficiary3().data(new OBReadBeneficiary3Data().beneficiary(
                 beneficiaries.getContent()
                         .stream()
-                        .map(FRBeneficiary3::getBeneficiary)
+                        .map(FRBeneficiary4::getBeneficiary)
+                        .map(OBBeneficiaryConverter::toOBBeneficiary3)
                         .map(b -> accountDataInternalIdFilter.apply(b))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
@@ -136,14 +138,15 @@ public class BeneficiariesApiController implements BeneficiariesApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Beneficaries from account ids {}", accountIds);
-        Page<FRBeneficiary3> beneficiaries = frBeneficiary3Repository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRBeneficiary4> beneficiaries = frBeneficiaryRepository.byAccountIdInWithPermissions(accountIds, permissions,
                 PageRequest.of(page, PAGE_LIMIT_BENEFICIARIES));
         int totalPages = beneficiaries.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBeneficiary3().data(new OBReadBeneficiary3Data().beneficiary(
                 beneficiaries.getContent()
                         .stream()
-                        .map(FRBeneficiary3::getBeneficiary)
+                        .map(FRBeneficiary4::getBeneficiary)
+                        .map(OBBeneficiaryConverter::toOBBeneficiary3)
                         .map(b -> accountDataInternalIdFilter.apply(b))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

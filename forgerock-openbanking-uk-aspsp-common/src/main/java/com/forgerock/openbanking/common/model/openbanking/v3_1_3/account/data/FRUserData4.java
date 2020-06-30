@@ -18,30 +18,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.forgerock;
+package com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.data;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.account.OBCashBalance1;
+import uk.org.openbanking.datamodel.account.OBParty2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FRAccountWithBalance extends FRAccount4 {
+public class FRUserData4 {
 
-    private List<OBCashBalance1> balances;
+    private String userName;
+    private OBParty2 party;
+    private List<FRAccountData4> accountDatas = new ArrayList<>();
 
-    public FRAccountWithBalance(FRAccount4 account, List<OBCashBalance1> balances) {
-        this.id = account.id;
-        this.userID = account.userID;
-        this.account = account.account;
-        this.latestStatementId = account.latestStatementId;
-        this.created = account.created;
-        this.updated = account.updated;
-        this.balances = balances;
+    public FRUserData4(String userName) {
+        this.userName = userName;
+    }
+
+    public void addAccountData(FRAccountData4 accountData) {
+        accountDatas.add(accountData);
     }
 }

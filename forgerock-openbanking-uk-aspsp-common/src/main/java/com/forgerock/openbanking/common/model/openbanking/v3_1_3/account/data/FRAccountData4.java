@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.data;
+package com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,33 +35,32 @@ import java.util.List;
 @AllArgsConstructor
 public class FRAccountData4 {
 
-    public OBAccount3 account;
-    public List<OBCashBalance1> balances = new ArrayList<>();
-    public OBReadProduct2DataProduct product;
-    public OBParty2 party;
-    public List<OBBeneficiary3> beneficiaries = new ArrayList<>();
-    public List<OBDirectDebit1> directDebits = new ArrayList<>();
-    public List<OBStandingOrder5> standingOrders = new ArrayList<>();
-    public List<OBTransaction5> transactions = new ArrayList<>();
-    public List<OBStatement1> statements = new ArrayList<>();
-    public List<OBScheduledPayment2> scheduledPayments = new ArrayList<>();
-    public List<OBOffer1> offers =new ArrayList<>();
+    private OBAccount6 account;
+    private List<OBCashBalance1> balances = new ArrayList<>();
+    private OBReadProduct2DataProduct product;
+    private OBParty2 party;
+    private List<OBBeneficiary4> beneficiaries = new ArrayList<>();
+    private List<OBReadDirectDebit2DataDirectDebit> directDebits = new ArrayList<>();
+    private List<OBStandingOrder5> standingOrders = new ArrayList<>();
+    private List<OBTransaction5> transactions = new ArrayList<>();
+    private List<OBStatement2> statements = new ArrayList<>();
+    private List<OBScheduledPayment3> scheduledPayments = new ArrayList<>();
+    private List<OBOffer1> offers = new ArrayList<>();
 
     public FRAccountData4 addBalance(OBCashBalance1 balance) {
         balances.add(balance);
         return this;
     }
 
-    public FRAccountData4 addBeneficiary(OBBeneficiary3 beneficiary) {
+    public FRAccountData4 addBeneficiary(OBBeneficiary4 beneficiary) {
         beneficiaries.add(beneficiary);
         return this;
     }
 
-    public FRAccountData4 addDirectDebit(OBDirectDebit1 directDebit1) {
+    public FRAccountData4 addDirectDebit(OBReadDirectDebit2DataDirectDebit directDebit1) {
         directDebits.add(directDebit1);
         return this;
     }
-
 
     public FRAccountData4 addStandingOrder(OBStandingOrder5 standingOrder) {
         standingOrders.add(standingOrder);
@@ -73,12 +72,12 @@ public class FRAccountData4 {
         return this;
     }
 
-    public FRAccountData4 addStatement(OBStatement1 statement1) {
+    public FRAccountData4 addStatement(OBStatement2 statement1) {
         statements.add(statement1);
         return this;
     }
 
-    public FRAccountData4 addScheduledPayment(OBScheduledPayment2 scheduledPayment1) {
+    public FRAccountData4 addScheduledPayment(OBScheduledPayment3 scheduledPayment1) {
         scheduledPayments.add(scheduledPayment1);
         return this;
     }

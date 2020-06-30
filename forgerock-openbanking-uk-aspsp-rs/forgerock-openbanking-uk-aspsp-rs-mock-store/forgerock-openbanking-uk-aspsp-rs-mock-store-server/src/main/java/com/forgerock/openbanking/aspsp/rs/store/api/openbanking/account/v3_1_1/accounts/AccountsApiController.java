@@ -20,10 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.accounts;
 
-
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter.toOBAccount3;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("AccountsApiV3.1.1")
@@ -51,7 +52,7 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE
 public class AccountsApiController implements AccountsApi {
 
     @Autowired
-    private FRAccount3Repository frAccount3Repository;
+    private FRAccount4Repository frAccountRepository;
 
     public ResponseEntity<OBReadAccount3> getAccount(
             @ApiParam(value = "A unique identifier used to identify the account resource.",required=true )
@@ -80,8 +81,8 @@ public class AccountsApiController implements AccountsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount3 response = frAccount3Repository.byAccountId(accountId, permissions);
-        final List<OBAccount3> obAccounts = Collections.singletonList(response.getAccount());
+        FRAccount4 response = frAccountRepository.byAccountId(accountId, permissions);
+        final List<OBAccount3> obAccounts = Collections.singletonList(toOBAccount3(response.getAccount()));
 
         return ResponseEntity.ok(new OBReadAccount3()
                 .data(new OBReadAccount3Data().account(obAccounts))
@@ -119,9 +120,10 @@ public class AccountsApiController implements AccountsApi {
     ) throws OBErrorResponseException {
         log.info("Accounts from account ids {}", accountIds);
 
-        List<OBAccount3> accounts = frAccount3Repository.byAccountIds(accountIds, permissions)
+        List<OBAccount3> accounts = frAccountRepository.byAccountIds(accountIds, permissions)
                 .stream()
-                .map(FRAccount3::getAccount)
+                .map(FRAccount4::getAccount)
+                .map(FRAccountConverter::toOBAccount3)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new OBReadAccount3()

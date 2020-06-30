@@ -25,7 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FilePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -39,16 +39,20 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBAccount3;
+import uk.org.openbanking.datamodel.account.OBAccount3Account;
+import uk.org.openbanking.datamodel.account.OBAccount6;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
-import uk.org.openbanking.datamodel.account.OBCashAccount5;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.payment.OBFile2;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent2;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -57,7 +61,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
 
 @RunWith(MockitoJUnitRunner.class)
 public class RCSFilePaymentDetailsApiTest {
@@ -68,10 +71,10 @@ public class RCSFilePaymentDetailsApiTest {
     private static final String PISP_NAME = "MyApp";
     private static final String CONSENT_ID = "PFC_123";
 
-    private static final FRAccountWithBalance DEBTOR_ACCOUNT = new FRAccountWithBalance(FRAccount3.builder()
+    private static final FRAccountWithBalance DEBTOR_ACCOUNT = new FRAccountWithBalance(FRAccount4.builder()
             .id("111")
-            .account(new OBAccount3().account(Collections.singletonList(
-                    new OBCashAccount5().identification("123")
+            .account(new OBAccount6().account(Collections.singletonList(
+                    new OBAccount3Account().identification("123")
             )))
             .build(), Collections.EMPTY_LIST);
 

@@ -24,6 +24,7 @@ import com.forgerock.openbanking.common.services.openbanking.converter.FRModelMa
 import uk.org.openbanking.datamodel.account.OBCashAccount1;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.account.OBCashAccount5;
+import uk.org.openbanking.datamodel.account.OBCashAccount50;
 import uk.org.openbanking.datamodel.account.OBCashAccount6;
 import uk.org.openbanking.datamodel.payment.OBCashAccountCreditor3;
 import uk.org.openbanking.datamodel.payment.OBCashAccountDebtor4;
@@ -33,20 +34,28 @@ public class OBCashAccountConverter {
         return FRModelMapper.map(obCashAccount6, OBCashAccount3.class);
     }
 
-    public static OBCashAccount3 toOBCashAccount3(OBCashAccountCreditor3 creditorAccount) {
-        return FRModelMapper.map(creditorAccount, OBCashAccount3.class);
+    public static OBCashAccount3 toOBCashAccount3(OBCashAccountCreditor3 obCashAccountCreditor3) {
+        return FRModelMapper.map(obCashAccountCreditor3, OBCashAccount3.class);
     }
 
-    public static OBCashAccount3 toOBCashAccount3(OBCashAccountDebtor4 creditorAccount) {
-        return FRModelMapper.map(creditorAccount, OBCashAccount3.class);
+    public static OBCashAccount3 toOBCashAccount3(OBCashAccountDebtor4 obCashAccountDebtor4) {
+        return FRModelMapper.map(obCashAccountDebtor4, OBCashAccount3.class);
     }
 
     public static OBCashAccount3 toOBCashAccount3(OBCashAccount5 obCashAccount5) {
         return FRModelMapper.map(obCashAccount5, OBCashAccount3.class);
     }
 
+    public static OBCashAccount3 toOBCashAccount3(OBCashAccount50 obCashAccount50) {
+        return FRModelMapper.map(obCashAccount50, OBCashAccount3.class);
+    }
+
     public static OBCashAccount5 toOBCashAccount5(OBCashAccount3 obCashAccount3) {
         return FRModelMapper.map(obCashAccount3, OBCashAccount5.class);
+    }
+
+    public static OBCashAccount5 toOBCashAccount5(OBCashAccount50 obCashAccount50Û) {
+        return FRModelMapper.map(obCashAccount50Û, OBCashAccount5.class);
     }
 
     public static OBCashAccount6 toOBCashAccount6(OBCashAccount3 obCashAccount3) {
@@ -57,11 +66,15 @@ public class OBCashAccountConverter {
         return FRModelMapper.map(obCashAccount5, OBCashAccount1.class);
     }
 
-    public static OBCashAccountDebtor4 toOBCashAccountDebtor4(OBCashAccount3 debtorAccount) {
-        return FRModelMapper.map(debtorAccount, OBCashAccountDebtor4.class);
+    public static OBCashAccountDebtor4 toOBCashAccountDebtor4(OBCashAccount3 obCashAccount3) {
+        return FRModelMapper.map(obCashAccount3, OBCashAccountDebtor4.class);
     }
 
-    public static OBCashAccountCreditor3 toOBCashAccountCreditor3(OBCashAccount3 creditorAccount) {
-        return FRModelMapper.map(creditorAccount, OBCashAccountCreditor3.class);
+    public static OBCashAccountCreditor3 toOBCashAccountCreditor3(OBCashAccount3 obCashAccount3) {
+        return FRModelMapper.map(obCashAccount3, OBCashAccountCreditor3.class);
+    }
+
+    public static OBCashAccount1 toOBCashAccount1(OBCashAccount50 obCashAccount50) {
+        return FRModelMapper.map(obCashAccount50, OBCashAccount1.class);
     }
 }

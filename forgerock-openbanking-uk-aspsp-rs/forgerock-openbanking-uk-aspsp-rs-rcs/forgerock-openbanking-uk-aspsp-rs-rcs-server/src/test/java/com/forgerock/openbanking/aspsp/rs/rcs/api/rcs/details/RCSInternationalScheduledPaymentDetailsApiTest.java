@@ -38,16 +38,16 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBCashAccount5;
+import uk.org.openbanking.datamodel.account.OBAccount3Account;
 import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4DataExchangeRateInformation;
 
 import java.util.List;
 import java.util.Optional;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRateType2Code;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRateType2Code;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RCSInternationalScheduledPaymentDetailsApiTest {
@@ -85,7 +85,7 @@ public class RCSInternationalScheduledPaymentDetailsApiTest {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>(){});
         FRInternationalScheduledConsent4 consent = JMockData.mock(FRInternationalScheduledConsent4.class);
-        OBCashAccount5 firstAccount = accounts.get(0).getAccount().getAccount().get(0);
+        OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";
@@ -105,7 +105,7 @@ public class RCSInternationalScheduledPaymentDetailsApiTest {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>(){});
         FRInternationalScheduledConsent4 consent = JMockData.mock(FRInternationalScheduledConsent4.class);
-        OBCashAccount5 firstAccount = accounts.get(0).getAccount().getAccount().get(0);
+        OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";

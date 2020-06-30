@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.statement;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.statements.FRStatement1Repository;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStatement1;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements.FRStatement4Repository;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,14 +37,14 @@ public class StatementApiController implements StatementApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(StatementApiController.class);
 
     @Autowired
-    private FRStatement1Repository statementRepository;
+    private FRStatement4Repository statementRepository;
 
     @Override
     public ResponseEntity getStatement(
             @PathVariable("statementId") String statementId
     ) {
         LOGGER.debug("Read statement with id {}", statementId);
-        Optional<FRStatement1> byId = statementRepository.findById(statementId);
+        Optional<FRStatement4> byId = statementRepository.findById(statementId);
         if (!byId.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cant find statement with ID '" + statementId + "'");
         }

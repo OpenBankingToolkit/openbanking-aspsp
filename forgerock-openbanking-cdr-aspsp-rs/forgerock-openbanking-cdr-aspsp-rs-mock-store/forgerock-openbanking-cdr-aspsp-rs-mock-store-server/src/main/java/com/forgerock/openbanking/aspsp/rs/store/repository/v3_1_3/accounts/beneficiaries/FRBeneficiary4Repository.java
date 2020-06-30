@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.directdebits;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.beneficiaries;
 
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRDirectDebit1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRBeneficiary4;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -29,13 +29,12 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Set;
 
+public interface FRBeneficiary4Repository extends MongoRepository<FRBeneficiary4, String>, FRBeneficiary4RepositoryCustom {
 
-public interface FRDirectDebit1Repository extends MongoRepository<FRDirectDebit1, String>, FRDirectDebit1RepositoryCustom {
+    Page<FRBeneficiary4> findByAccountId(@Param("accountId") String accountId, Pageable pageable);
+    Page<FRBeneficiary4> findByAccountIdIn(@Param("accountIds") List<String> accountIds, Pageable pageable);
 
-    Page<FRDirectDebit1> findByAccountId(@Param("accountId") String accountId, Pageable pageable);
-    Page<FRDirectDebit1> findByAccountIdIn(@Param("accountIds") List<String> accountIds, Pageable pageable);
-
-    Long deleteDirectDebitByAccountId(@Param("accountId") String accountId);
+    Long deleteBeneficiaryByAccountId(@Param("accountId") String accountId);
 
     Long countByAccountIdIn(Set<String> accountIds);
 }

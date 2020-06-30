@@ -18,31 +18,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.data;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts;
 
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.query.Param;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.account.OBParty2;
+import java.util.Collection;
+import java.util.Optional;
 
-import java.util.ArrayList;
-import java.util.List;
+public interface FRAccount4Repository extends MongoRepository<FRAccount4, String>, FRAccount4RepositoryCustom {
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class FRUserData4 {
-
-    public String userName;
-    public OBParty2 party;
-    public List<FRAccountData4> accountDatas = new ArrayList<>();
-
-    public FRUserData4(String userName) {
-        this.userName = userName;
-    }
-
-    public void addAccountData(FRAccountData4 accountData) {
-        accountDatas.add(accountData);
-    }
+    Collection<FRAccount4> findByUserID(@Param("userID") String userID);
+    Optional<FRAccount4> findByAccountAccountIdentification(@Param("identification") String identification);
 }

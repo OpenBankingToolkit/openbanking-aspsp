@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,8 +34,8 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
-import uk.org.openbanking.datamodel.account.OBCashAccount5;
-import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification3Code;
+import uk.org.openbanking.datamodel.account.OBAccount3Account;
+import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification4Code;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.Collection;
@@ -49,24 +49,24 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.newA
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
 
 @Repository
-public class FRAccount3RepositoryImpl implements FRAccount3RepositoryCustom {
+public class FRAccount4RepositoryImpl implements FRAccount4RepositoryCustom {
+
     @Autowired
     @Lazy
-    private FRAccount3Repository accountsRepository;
-
+    private FRAccount4Repository accountsRepository;
 
     private MongoTemplate mongoTemplate;
 
-    public FRAccount3RepositoryImpl(MongoTemplate mongoTemplate) {
+    public FRAccount4RepositoryImpl(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
     }
 
     @Override
-    public Collection<FRAccount3> byUserIDWithPermissions(String userID, List<OBExternalPermissions1Code> permissions, Pageable
+    public Collection<FRAccount4> byUserIDWithPermissions(String userID, List<OBExternalPermissions1Code> permissions, Pageable
             pageable) {
-        Collection<FRAccount3> accounts = accountsRepository.findByUserID(userID);
+        Collection<FRAccount4> accounts = accountsRepository.findByUserID(userID);
         try {
-            for (FRAccount3 account : accounts) {
+            for (FRAccount4 account : accounts) {
                 filterAccount(account, permissions);
             }
             return accounts;
@@ -76,12 +76,12 @@ public class FRAccount3RepositoryImpl implements FRAccount3RepositoryCustom {
     }
 
     @Override
-    public FRAccount3 byAccountId(String accountId, List<OBExternalPermissions1Code> permissions) {
-        Optional<FRAccount3> isAccount = accountsRepository.findById(accountId);
+    public FRAccount4 byAccountId(String accountId, List<OBExternalPermissions1Code> permissions) {
+        Optional<FRAccount4> isAccount = accountsRepository.findById(accountId);
         if (!isAccount.isPresent()) {
             return null;
         }
-        FRAccount3 account = isAccount.get();
+        FRAccount4 account = isAccount.get();
         try {
             filterAccount(account, permissions);
             return account;
@@ -91,10 +91,10 @@ public class FRAccount3RepositoryImpl implements FRAccount3RepositoryCustom {
     }
 
     @Override
-    public List<FRAccount3> byAccountIds(List<String> accountIds, List<OBExternalPermissions1Code> permissions) {
-        Iterable<FRAccount3> accounts = accountsRepository.findAllById(accountIds);
+    public List<FRAccount4> byAccountIds(List<String> accountIds, List<OBExternalPermissions1Code> permissions) {
+        Iterable<FRAccount4> accounts = accountsRepository.findAllById(accountIds);
         try {
-            for (FRAccount3 account : accounts) {
+            for (FRAccount4 account : accounts) {
                 filterAccount(account, permissions);
             }
             return StreamSupport.stream(accounts.spliterator(), false).collect(Collectors.toList());
@@ -103,7 +103,7 @@ public class FRAccount3RepositoryImpl implements FRAccount3RepositoryCustom {
         }
     }
 
-    private void filterAccount(FRAccount3 account, List<OBExternalPermissions1Code> permissions) {
+    private void filterAccount(FRAccount4 account, List<OBExternalPermissions1Code> permissions) {
         for (OBExternalPermissions1Code permission: permissions) {
             switch (permission) {
 
@@ -113,9 +113,9 @@ public class FRAccount3RepositoryImpl implements FRAccount3RepositoryCustom {
                     break;
                 case READACCOUNTSDETAIL:
                     if (!CollectionUtils.isEmpty(account.getAccount().getAccount())) {
-                        for (OBCashAccount5 subAccount : account.getAccount().getAccount()) {
+                        for (OBAccount3Account subAccount : account.getAccount().getAccount()) {
                             if (!permissions.contains(OBExternalPermissions1Code.READPAN)
-                                    && OBExternalAccountIdentification3Code.PAN.toString().equals(subAccount.getSchemeName()))
+                                    && OBExternalAccountIdentification4Code.PAN.toString().equals(subAccount.getSchemeName()))
                             {
                                 subAccount.setIdentification("xxx");
                             }
@@ -140,7 +140,7 @@ public class FRAccount3RepositoryImpl implements FRAccount3RepositoryCustom {
         );
         //Convert the aggregation result into a List
         AggregationResults<UserIds> groupResults
-                = mongoTemplate.aggregate(aggregation, FRAccount3.class, UserIds.class);
+                = mongoTemplate.aggregate(aggregation, FRAccount4.class, UserIds.class);
         return groupResults.getMappedResults().stream().map(UserIds::getUserID).collect(Collectors.toList());
     }
 

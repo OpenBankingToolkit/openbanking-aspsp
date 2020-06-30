@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import uk.org.openbanking.datamodel.account.OBCashAccount5;
+import uk.org.openbanking.datamodel.account.OBAccount3Account;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -41,9 +41,9 @@ public class AccountService {
         }
         for (FRAccountWithBalance account : accounts) {
             if (!CollectionUtils.isEmpty(account.getAccount().getAccount())) {
-                for (OBCashAccount5 obCashAccount : account.getAccount().getAccount()) {
-                    if (identification.equals(obCashAccount.getIdentification())) {
-                        log.debug("Found matching user account to provided debtor account. Identification: {}. Account Id: {}", obCashAccount.getIdentification(),account.getId());
+                for (OBAccount3Account obAccount3Account : account.getAccount().getAccount()) {
+                    if (identification.equals(obAccount3Account.getIdentification())) {
+                        log.debug("Found matching user account to provided debtor account. Identification: {}. Account Id: {}", obAccount3Account.getIdentification(),account.getId());
                         return Optional.of(account);
                     }
                 }

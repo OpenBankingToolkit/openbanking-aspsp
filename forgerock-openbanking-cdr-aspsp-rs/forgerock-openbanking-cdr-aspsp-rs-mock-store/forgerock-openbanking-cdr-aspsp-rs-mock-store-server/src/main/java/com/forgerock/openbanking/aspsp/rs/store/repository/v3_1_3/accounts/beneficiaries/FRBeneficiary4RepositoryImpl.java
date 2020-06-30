@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.beneficiaries;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.beneficiaries;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRBeneficiary3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRBeneficiary4;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -31,29 +31,29 @@ import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import java.util.List;
 
 @Repository
-public class FRBeneficiary3RepositoryImpl implements FRBeneficiary3RepositoryCustom {
+public class FRBeneficiary4RepositoryImpl implements FRBeneficiary4RepositoryCustom {
     @Autowired
     @Lazy
-    private FRBeneficiary3Repository beneficiaryRepository;
+    private FRBeneficiary4Repository beneficiaryRepository;
 
     @Override
-    public Page<FRBeneficiary3> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions,
+    public Page<FRBeneficiary4> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions,
                                                            Pageable pageable) {
         return filter(beneficiaryRepository.findByAccountId(accountId, pageable), permissions);
     }
 
     @Override
-    public Page<FRBeneficiary3> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions,
+    public Page<FRBeneficiary4> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions,
                                                             Pageable pageable) {
         return filter(beneficiaryRepository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FRBeneficiary3> filter(Page<FRBeneficiary3> beneficiaries, List<OBExternalPermissions1Code> permissions) {
+    private Page<FRBeneficiary4> filter(Page<FRBeneficiary4> beneficiaries, List<OBExternalPermissions1Code> permissions) {
         for (OBExternalPermissions1Code permission : permissions) {
             switch (permission) {
 
                 case READBENEFICIARIESBASIC:
-                    for (FRBeneficiary3 beneficiary: beneficiaries) {
+                    for (FRBeneficiary4 beneficiary: beneficiaries) {
                         beneficiary.getBeneficiary().creditorAccount(null);
                     }
                     break;
