@@ -33,6 +33,7 @@ public class VersionPathExtractorTest {
         assertThat(VersionPathExtractor.getVersionFromPath("/open-banking/v3.1/aisp/account-consent/1")).isEqualTo(OBVersion.v3_1);
         assertThat(VersionPathExtractor.getVersionFromPath("/open-banking/v3.1.2/pisp/domestic-payment-consent/1")).isEqualTo(OBVersion.v3_1_2);
         assertThat(VersionPathExtractor.getVersionFromPath("/open-banking/v3.1.3/pisp/domestic-payment-consent/1")).isEqualTo(OBVersion.v3_1_3);
+        assertThat(VersionPathExtractor.getVersionFromPath("/open-banking/v3.1.4/pisp/domestic-payment-consent/1")).isEqualTo(OBVersion.v3_1_4);
 
         assertThat(VersionPathExtractor.getVersionFromPath("/open-banking/discovery")).isNull();
     }
