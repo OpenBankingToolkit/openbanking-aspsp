@@ -21,26 +21,31 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.directdebits.FRDirectDebit1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.offers.FROffer1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.products.FRProduct2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.statements.FRStatement1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.beneficiaries.FRBeneficiary3Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party.FRParty2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.scheduledpayments.FRScheduledPayment2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.standingorders.FRStandingOrder5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.transactions.FRTransaction5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.beneficiaries.FRBeneficiary4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.directdebits.FRDirectDebit4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.scheduledpayments.FRScheduledPayment4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements.FRStatement4Repository;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRDirectDebit1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FROffer1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRProduct2;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStatement1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.*;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.data.FRAccountData4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.data.FRUserData4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRParty2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRBeneficiary4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRDirectDebit4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRScheduledPayment4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.data.FRAccountData4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.data.FRUserData4;
 import com.google.common.collect.ImmutableList;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,31 +55,36 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import uk.org.openbanking.datamodel.account.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 @Service
 @NoArgsConstructor
 public class DataUpdater {
 
-    private FRAccount3Repository accountsRepository;
+    private FRAccount4Repository accountsRepository;
     private FRBalance1Repository balanceRepository;
-    private FRBeneficiary3Repository beneficiaryRepository;
-    private FRDirectDebit1Repository directDebitRepository;
+    private FRBeneficiary4Repository beneficiaryRepository;
+    private FRDirectDebit4Repository directDebitRepository;
     private FRProduct2Repository productRepository;
     private FRStandingOrder5Repository standingOrderRepository;
     private FRTransaction5Repository transactionRepository;
-    private FRStatement1Repository statementRepository;
-    private FRScheduledPayment2Repository scheduledPaymentRepository;
+    private FRStatement4Repository statementRepository;
+    private FRScheduledPayment4Repository scheduledPaymentRepository;
     private FRParty2Repository partyRepository;
     private FROffer1Repository offerRepository;
     private int documentLimit;
 
     @Autowired
-    public DataUpdater(FRAccount3Repository accountsRepository, FRBalance1Repository balanceRepository,
-                       FRBeneficiary3Repository beneficiaryRepository, FRDirectDebit1Repository directDebitRepository,
+    public DataUpdater(FRAccount4Repository accountsRepository, FRBalance1Repository balanceRepository,
+                       FRBeneficiary4Repository beneficiaryRepository, FRDirectDebit4Repository directDebitRepository,
                        FRProduct2Repository productRepository, FRStandingOrder5Repository standingOrderRepository,
-                       FRTransaction5Repository transactionRepository, FRStatement1Repository statementRepository,
-                       FRScheduledPayment2Repository scheduledPaymentRepository, FRParty2Repository partyRepository,
+                       FRTransaction5Repository transactionRepository, FRStatement4Repository statementRepository,
+                       FRScheduledPayment4Repository scheduledPaymentRepository, FRParty2Repository partyRepository,
                        FROffer1Repository offerRepository, @Value("${rs.data.upload.limit.documents}") Integer documentLimit) {
         this.accountsRepository = accountsRepository;
         this.balanceRepository = balanceRepository;
@@ -126,8 +136,8 @@ public class DataUpdater {
         partyRepository.save(party1);
     }
 
-    void updateAccount(FRAccountData4 accountDataDiff, FRAccount3 account, Set<String> accountIds) {
-        OBAccount3 accountDiff = accountDataDiff.getAccount();
+    void updateAccount(FRAccountData4 accountDataDiff, FRAccount4 account, Set<String> accountIds) {
+        OBAccount6 accountDiff = accountDataDiff.getAccount();
         if (accountDiff.getCurrency() != null) {
             account.getAccount().setCurrency(accountDiff.getCurrency());
         }
@@ -277,9 +287,9 @@ public class DataUpdater {
     void updateBeneficiaries(FRAccountData4 accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Beneficiaries
-        List<FRBeneficiary3> beneficiariesToSave = new ArrayList<>();
-        List<FRBeneficiary3> newBeneficiariesToSave = new ArrayList<>();
-        for (OBBeneficiary3 obBeneficiaryDiff : accountDataDiff.getBeneficiaries()) {
+        List<FRBeneficiary4> beneficiariesToSave = new ArrayList<>();
+        List<FRBeneficiary4> newBeneficiariesToSave = new ArrayList<>();
+        for (OBBeneficiary4 obBeneficiaryDiff : accountDataDiff.getBeneficiaries()) {
 
             if (obBeneficiaryDiff.getAccountId() != null && !obBeneficiaryDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
@@ -288,18 +298,18 @@ public class DataUpdater {
             if (obBeneficiaryDiff.getBeneficiaryId() == null) {
                 obBeneficiaryDiff.setAccountId(accountId);
                 obBeneficiaryDiff.setBeneficiaryId(UUID.randomUUID().toString());
-                FRBeneficiary3 beneficiary = new FRBeneficiary3();
+                FRBeneficiary4 beneficiary = new FRBeneficiary4();
                 beneficiary.setAccountId(accountId);
                 beneficiary.setBeneficiary(obBeneficiaryDiff);
                 beneficiary.setId(obBeneficiaryDiff.getBeneficiaryId());
                 newBeneficiariesToSave.add(beneficiary);
             } else {
-                Optional<FRBeneficiary3> isBeneficiary = beneficiaryRepository.findById(obBeneficiaryDiff.getBeneficiaryId());
+                Optional<FRBeneficiary4> isBeneficiary = beneficiaryRepository.findById(obBeneficiaryDiff.getBeneficiaryId());
                 if (isBeneficiary.isEmpty() || !isBeneficiary.get().getAccountId().equals(obBeneficiaryDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The beneficiary id '"
                             + obBeneficiaryDiff.getBeneficiaryId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
-                OBBeneficiary3 beneficiary = isBeneficiary.get().getBeneficiary();
+                OBBeneficiary4 beneficiary = isBeneficiary.get().getBeneficiary();
                 if (obBeneficiaryDiff.getReference() != null) {
                     beneficiary.setReference(obBeneficiaryDiff.getReference());
                 }
@@ -314,7 +324,7 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add beneficiaries as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRBeneficiary3> allBeneficiaries = ImmutableList.<FRBeneficiary3>builder()
+        List<FRBeneficiary4> allBeneficiaries = ImmutableList.<FRBeneficiary4>builder()
                 .addAll(beneficiariesToSave)
                 .addAll(newBeneficiariesToSave)
                 .build();
@@ -324,9 +334,9 @@ public class DataUpdater {
     void updateDirectDebits(FRAccountData4 accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Direct Debits
-        List<FRDirectDebit1> directDebitsToSave = new ArrayList<>();
-        List<FRDirectDebit1> newDirectDebitsToSave = new ArrayList<>();
-        for (OBDirectDebit1 obDirectDebitDiff : accountDataDiff.getDirectDebits()) {
+        List<FRDirectDebit4> directDebitsToSave = new ArrayList<>();
+        List<FRDirectDebit4> newDirectDebitsToSave = new ArrayList<>();
+        for (OBReadDirectDebit2DataDirectDebit obDirectDebitDiff : accountDataDiff.getDirectDebits()) {
 
             if (obDirectDebitDiff.getAccountId() != null && !obDirectDebitDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
@@ -335,18 +345,18 @@ public class DataUpdater {
             if (obDirectDebitDiff.getDirectDebitId() == null) {
                 obDirectDebitDiff.setAccountId(accountId);
                 obDirectDebitDiff.setDirectDebitId(UUID.randomUUID().toString());
-                FRDirectDebit1 directDebit = new FRDirectDebit1();
+                FRDirectDebit4 directDebit = new FRDirectDebit4();
                 directDebit.setAccountId(accountId);
                 directDebit.setDirectDebit(obDirectDebitDiff);
                 directDebit.setId(obDirectDebitDiff.getDirectDebitId());
                 newDirectDebitsToSave.add(directDebit);
             } else {
-                Optional<FRDirectDebit1> isDirectDebit = directDebitRepository.findById(obDirectDebitDiff.getDirectDebitId());
+                Optional<FRDirectDebit4> isDirectDebit = directDebitRepository.findById(obDirectDebitDiff.getDirectDebitId());
                 if (isDirectDebit.isEmpty() || !isDirectDebit.get().getAccountId().equals(obDirectDebitDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The direct debit id '"
                             + obDirectDebitDiff.getDirectDebitId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
-                OBDirectDebit1 directDebit = isDirectDebit.get().getDirectDebit();
+                OBReadDirectDebit2DataDirectDebit directDebit = isDirectDebit.get().getDirectDebit();
                 if (obDirectDebitDiff.getName() != null) {
                     directDebit.setName(obDirectDebitDiff.getName());
                 }
@@ -369,7 +379,7 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add direct debits as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRDirectDebit1> allDirectDebits = ImmutableList.<FRDirectDebit1>builder()
+        List<FRDirectDebit4> allDirectDebits = ImmutableList.<FRDirectDebit4>builder()
                 .addAll(directDebitsToSave)
                 .addAll(newDirectDebitsToSave)
                 .build();
@@ -520,9 +530,9 @@ public class DataUpdater {
     void updateStatements(FRAccountData4 accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Statements
-        List<FRStatement1> statementsToSave = new ArrayList<>();
-        List<FRStatement1> newStatementsToSave = new ArrayList<>();
-        for (OBStatement1 obStatement1Diff : accountDataDiff.getStatements()) {
+        List<FRStatement4> statementsToSave = new ArrayList<>();
+        List<FRStatement4> newStatementsToSave = new ArrayList<>();
+        for (OBStatement2 obStatement1Diff : accountDataDiff.getStatements()) {
 
             if (obStatement1Diff.getAccountId() != null && !obStatement1Diff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
@@ -531,19 +541,19 @@ public class DataUpdater {
             if (obStatement1Diff.getStatementId() == null) {
                 obStatement1Diff.setAccountId(accountId);
                 obStatement1Diff.setStatementId(UUID.randomUUID().toString());
-                FRStatement1 statement1 = new FRStatement1();
-                statement1.setAccountId(accountId);
-                statement1.setStatement(obStatement1Diff);
-                statement1.setId(obStatement1Diff.getStatementId());
-                newStatementsToSave.add(statement1);
+                FRStatement4 statement4 = new FRStatement4();
+                statement4.setAccountId(accountId);
+                statement4.setStatement(obStatement1Diff);
+                statement4.setId(obStatement1Diff.getStatementId());
+                newStatementsToSave.add(statement4);
             } else {
-                Optional<FRStatement1> isStatement = statementRepository.findById(obStatement1Diff.getStatementId());
+                Optional<FRStatement4> isStatement = statementRepository.findById(obStatement1Diff.getStatementId());
                 if (isStatement.isEmpty() || !isStatement.get().getAccountId().equals(obStatement1Diff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The statement id '"
                             + obStatement1Diff.getStatementId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
 
-                OBStatement1 statement = isStatement.get().getStatement();
+                OBStatement2 statement = isStatement.get().getStatement();
                 if (obStatement1Diff.getEndDateTime() != null) {
                     statement.setEndDateTime(obStatement1Diff.getEndDateTime());
                     isStatement.get().setEndDateTime(obStatement1Diff.getEndDateTime());
@@ -592,7 +602,7 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add statements as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRStatement1> allStatements = ImmutableList.<FRStatement1>builder()
+        List<FRStatement4> allStatements = ImmutableList.<FRStatement4>builder()
                 .addAll(statementsToSave)
                 .addAll(newStatementsToSave)
                 .build();
@@ -602,48 +612,48 @@ public class DataUpdater {
     void updateScheduledPayments(FRAccountData4 accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Scheduled Payment
-        List<FRScheduledPayment2> scheduledPaymentToSave = new ArrayList<>();
-        List<FRScheduledPayment2> newScheduledPaymentToSave = new ArrayList<>();
-        for (OBScheduledPayment2 OBScheduledPayment2Diff : accountDataDiff.getScheduledPayments()) {
+        List<FRScheduledPayment4> scheduledPaymentToSave = new ArrayList<>();
+        List<FRScheduledPayment4> newScheduledPaymentToSave = new ArrayList<>();
+        for (OBScheduledPayment3 OBScheduledPayment3Diff : accountDataDiff.getScheduledPayments()) {
 
-            if (OBScheduledPayment2Diff.getAccountId() != null && !OBScheduledPayment2Diff.getAccountId().equals(accountId)) {
+            if (OBScheduledPayment3Diff.getAccountId() != null && !OBScheduledPayment3Diff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
-                        + OBScheduledPayment2Diff.getAccountId() + "' refers in a scheduled payment doesn't match the main account id '" + accountId + "'");
+                        + OBScheduledPayment3Diff.getAccountId() + "' refers in a scheduled payment doesn't match the main account id '" + accountId + "'");
             }
-            if (OBScheduledPayment2Diff.getScheduledPaymentId() == null) {
-                OBScheduledPayment2Diff.setAccountId(accountId);
-                OBScheduledPayment2Diff.setScheduledPaymentId(UUID.randomUUID().toString());
-                FRScheduledPayment2 scheduledPayment1 = new FRScheduledPayment2();
+            if (OBScheduledPayment3Diff.getScheduledPaymentId() == null) {
+                OBScheduledPayment3Diff.setAccountId(accountId);
+                OBScheduledPayment3Diff.setScheduledPaymentId(UUID.randomUUID().toString());
+                FRScheduledPayment4 scheduledPayment1 = new FRScheduledPayment4();
                 scheduledPayment1.setAccountId(accountId);
-                scheduledPayment1.setScheduledPayment(OBScheduledPayment2Diff);
-                scheduledPayment1.setId(OBScheduledPayment2Diff.getScheduledPaymentId());
+                scheduledPayment1.setScheduledPayment(OBScheduledPayment3Diff);
+                scheduledPayment1.setId(OBScheduledPayment3Diff.getScheduledPaymentId());
                 scheduledPayment1.setStatus(ScheduledPaymentStatus.PENDING);
                 newScheduledPaymentToSave.add(scheduledPayment1);
             } else {
-                Optional<FRScheduledPayment2> isScheduledPayment = scheduledPaymentRepository.findById(OBScheduledPayment2Diff.getScheduledPaymentId());
-                if (isScheduledPayment.isEmpty() || !isScheduledPayment.get().getAccountId().equals(OBScheduledPayment2Diff.getAccountId())) {
+                Optional<FRScheduledPayment4> isScheduledPayment = scheduledPaymentRepository.findById(OBScheduledPayment3Diff.getScheduledPaymentId());
+                if (isScheduledPayment.isEmpty() || !isScheduledPayment.get().getAccountId().equals(OBScheduledPayment3Diff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The scheduled payment id '"
-                            + OBScheduledPayment2Diff.getScheduledPaymentId() + "' doesn't exist or doesn't belongs to this account ID.");
+                            + OBScheduledPayment3Diff.getScheduledPaymentId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
 
-                OBScheduledPayment2 scheduledPayment = isScheduledPayment.get().getScheduledPayment();
-                if (OBScheduledPayment2Diff.getCreditorAccount() != null) {
-                    scheduledPayment.setCreditorAccount(OBScheduledPayment2Diff.getCreditorAccount());
+                OBScheduledPayment3 scheduledPayment = isScheduledPayment.get().getScheduledPayment();
+                if (OBScheduledPayment3Diff.getCreditorAccount() != null) {
+                    scheduledPayment.setCreditorAccount(OBScheduledPayment3Diff.getCreditorAccount());
                 }
-                if (OBScheduledPayment2Diff.getInstructedAmount() != null) {
-                    scheduledPayment.setInstructedAmount(OBScheduledPayment2Diff.getInstructedAmount());
+                if (OBScheduledPayment3Diff.getInstructedAmount() != null) {
+                    scheduledPayment.setInstructedAmount(OBScheduledPayment3Diff.getInstructedAmount());
                 }
-                if (OBScheduledPayment2Diff.getReference() != null) {
-                    scheduledPayment.setReference(OBScheduledPayment2Diff.getReference());
+                if (OBScheduledPayment3Diff.getReference() != null) {
+                    scheduledPayment.setReference(OBScheduledPayment3Diff.getReference());
                 }
-                if (OBScheduledPayment2Diff.getCreditorAgent() != null) {
-                    scheduledPayment.setCreditorAgent(OBScheduledPayment2Diff.getCreditorAgent());
+                if (OBScheduledPayment3Diff.getCreditorAgent() != null) {
+                    scheduledPayment.setCreditorAgent(OBScheduledPayment3Diff.getCreditorAgent());
                 }
-                if (OBScheduledPayment2Diff.getScheduledPaymentDateTime() != null) {
-                    scheduledPayment.setScheduledPaymentDateTime(OBScheduledPayment2Diff.getScheduledPaymentDateTime());
+                if (OBScheduledPayment3Diff.getScheduledPaymentDateTime() != null) {
+                    scheduledPayment.setScheduledPaymentDateTime(OBScheduledPayment3Diff.getScheduledPaymentDateTime());
                 }
-                if (OBScheduledPayment2Diff.getScheduledType() != null) {
-                    scheduledPayment.setScheduledType(OBScheduledPayment2Diff.getScheduledType());
+                if (OBScheduledPayment3Diff.getScheduledType() != null) {
+                    scheduledPayment.setScheduledType(OBScheduledPayment3Diff.getScheduledType());
                 }
                 scheduledPaymentToSave.add(isScheduledPayment.get());
             }
@@ -652,7 +662,7 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add schedule payments as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRScheduledPayment2> allScheduledPayments = ImmutableList.<FRScheduledPayment2>builder()
+        List<FRScheduledPayment4> allScheduledPayments = ImmutableList.<FRScheduledPayment4>builder()
                 .addAll(scheduledPaymentToSave)
                 .addAll(newScheduledPaymentToSave)
                 .build();

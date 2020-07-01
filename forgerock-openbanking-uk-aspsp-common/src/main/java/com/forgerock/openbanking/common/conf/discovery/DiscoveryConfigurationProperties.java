@@ -78,6 +78,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksAccount3 v_3_1;
         public OBDiscoveryAPILinksAccount3 v_3_1_1;
         public OBDiscoveryAPILinksAccount3 v_3_1_2;
+        public OBDiscoveryAPILinksAccount3 v_3_1_3;
     }
 
     @Data

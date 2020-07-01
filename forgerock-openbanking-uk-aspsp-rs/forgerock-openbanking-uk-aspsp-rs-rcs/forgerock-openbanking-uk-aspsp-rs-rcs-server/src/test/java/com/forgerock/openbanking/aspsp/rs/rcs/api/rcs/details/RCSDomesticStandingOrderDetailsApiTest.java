@@ -38,7 +38,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBCashAccount5;
+import uk.org.openbanking.datamodel.account.OBAccount3Account;
 
 import java.util.List;
 import java.util.Optional;
@@ -81,10 +81,9 @@ public class RCSDomesticStandingOrderDetailsApiTest {
     @Test
     public void shouldReturnRequestedAccountWhenDebtor() throws OBErrorException {
         // Given
-        List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<List<FRAccountWithBalance>>() {
-        });
+        List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
         FRDomesticStandingOrderConsent3 consent = JMockData.mock(FRDomesticStandingOrderConsent3.class);
-        OBCashAccount5 firstAccount = accounts.get(0).getAccount().getAccount().get(0);
+        OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";

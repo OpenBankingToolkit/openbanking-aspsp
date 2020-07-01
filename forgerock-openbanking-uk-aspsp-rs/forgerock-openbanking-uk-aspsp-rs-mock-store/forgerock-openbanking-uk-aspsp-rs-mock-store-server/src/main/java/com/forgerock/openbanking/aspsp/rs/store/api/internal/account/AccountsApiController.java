@@ -20,12 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
-
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,17 +35,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 import uk.org.openbanking.datamodel.account.OBCashBalance1;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
 public class AccountsApiController implements AccountsApi {
-    private final FRAccount3Repository accountsRepository;
+    private final FRAccount4Repository accountsRepository;
     private final FRBalance1Repository balanceRepository;
 
     @Autowired
-    public AccountsApiController(FRAccount3Repository accountsRepository, FRBalance1Repository balanceRepository) {
+    public AccountsApiController(FRAccount4Repository accountsRepository, FRBalance1Repository balanceRepository) {
         this.accountsRepository = accountsRepository;
         this.balanceRepository = balanceRepository;
     }
@@ -57,7 +63,7 @@ public class AccountsApiController implements AccountsApi {
             @RequestParam(value = "withBalance", required = false, defaultValue = "false") Boolean withBalance
     ) {
         log.info("Read all accounts for user ID '{}', with Balances: {}", userId, withBalance);
-        Collection<FRAccount3> accountsByUserID = accountsRepository.findByUserID(Objects.requireNonNull(userId));
+        Collection<FRAccount4> accountsByUserID = accountsRepository.findByUserID(Objects.requireNonNull(userId));
         if (!withBalance || accountsByUserID.isEmpty()) {
             log.debug("No balances required so returning {} accounts for userId: {}", accountsByUserID.size(), userId);
             return ResponseEntity.ok(
@@ -68,7 +74,7 @@ public class AccountsApiController implements AccountsApi {
 
         final Map<String, List<FRBalance1>> balancesByAccountId  =
                 balanceRepository.findByAccountIdIn(accountsByUserID.stream()
-                        .map(FRAccount3::getId)
+                        .map(FRAccount4::getId)
                         .collect(Collectors.toList())
                 ).stream().collect(
                         Collectors.groupingBy(
@@ -87,7 +93,7 @@ public class AccountsApiController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<FRAccount3> findByAccountId(
+    public ResponseEntity<FRAccount4> findByAccountId(
             @PathVariable("accountId") String accountId,
             @RequestParam("permissions") List<String> permissions
     ) {
@@ -100,7 +106,7 @@ public class AccountsApiController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<Optional<FRAccount3>> findByIdentification(
+    public ResponseEntity<Optional<FRAccount4>> findByIdentification(
             @RequestParam("identification") String identification
     ) {
         log.debug("Find accounts by identification {}", identification);
@@ -108,14 +114,14 @@ public class AccountsApiController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<FRAccount3> getAccount(
+    public ResponseEntity<FRAccount4> getAccount(
             @PathVariable("accountId") String accountId
     ) {
         log.debug("Read accounts with id {}", accountId);
         return new ResponseEntity(accountsRepository.findById(accountId), HttpStatus.OK);
     }
 
-    private FRAccountWithBalance toFRAccountWithBalance(FRAccount3 account, Map<String, List<FRBalance1>> balanceMap) {
+    private FRAccountWithBalance toFRAccountWithBalance(FRAccount4 account, Map<String, List<FRBalance1>> balanceMap) {
         final List<OBCashBalance1> balances = Optional.ofNullable(balanceMap.get(account.getId()))
                 .orElse(Collections.emptyList())
                 .stream()

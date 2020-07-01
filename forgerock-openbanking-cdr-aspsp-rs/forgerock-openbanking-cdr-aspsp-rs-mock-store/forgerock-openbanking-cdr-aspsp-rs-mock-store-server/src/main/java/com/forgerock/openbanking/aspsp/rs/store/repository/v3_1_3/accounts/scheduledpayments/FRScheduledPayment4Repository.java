@@ -18,10 +18,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.scheduledpayments;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.scheduledpayments;
 
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRScheduledPayment2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRScheduledPayment4;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,15 +33,15 @@ import java.util.List;
 import java.util.Set;
 
 
-public interface FRScheduledPayment2Repository extends MongoRepository<FRScheduledPayment2, String>, FRScheduledPayment2RepositoryCustom {
+public interface FRScheduledPayment4Repository extends MongoRepository<FRScheduledPayment4, String>, FRScheduledPayment4RepositoryCustom {
 
-    Page<FRScheduledPayment2> findByAccountId(@Param("accountId") String accountId, Pageable pageable);
-    Page<FRScheduledPayment2> findByAccountIdIn(@Param("accountIds") List<String> accountIds, Pageable pageable);
+    Page<FRScheduledPayment4> findByAccountId(@Param("accountId") String accountId, Pageable pageable);
+    Page<FRScheduledPayment4> findByAccountIdIn(@Param("accountIds") List<String> accountIds, Pageable pageable);
 
     Long deleteFRScheduledPayment1ByAccountId(@Param("accountId") String accountId);
 
     @Query("{ 'status' : ?0 }, { 'scheduledPayment.ScheduledPaymentDateTime' : { $lt: ?1 } }")
-    List<FRScheduledPayment2> findByStatus(@Param("status") ScheduledPaymentStatus status, @Param("scheduledPayment.ScheduledPaymentDateTime") DateTime maxDateTime);
+    List<FRScheduledPayment4> findByStatus(@Param("status") ScheduledPaymentStatus status, @Param("scheduledPayment.ScheduledPaymentDateTime") DateTime maxDateTime);
 
     Long countByAccountIdIn(Set<String> accountIds);
 

@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.statements;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements;
 
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStatement1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,10 +29,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import java.util.List;
 import java.util.Set;
 
+public interface FRStatement4Repository extends MongoRepository<FRStatement4, String>, FRStatement4RepositoryCustom {
 
-public interface FRStatement1Repository extends MongoRepository<FRStatement1, String>, FRStatement1RepositoryCustom {
-
-    Page<FRStatement1> findByAccountIdAndStartDateTimeBetweenAndEndDateTimeBetween(
+    Page<FRStatement4> findByAccountIdAndStartDateTimeBetweenAndEndDateTimeBetween(
             String accountId,
             DateTime fromStartDateTime,
             DateTime toStartDateTime,
@@ -41,22 +40,22 @@ public interface FRStatement1Repository extends MongoRepository<FRStatement1, St
             Pageable pageable
     );
 
-    Page<FRStatement1> findByAccountId(
+    Page<FRStatement4> findByAccountId(
             String accountId,
             Pageable pageable
     );
 
-    List<FRStatement1> findByAccountIdAndId(
+    List<FRStatement4> findByAccountIdAndId(
             String accountId,
             String id
     );
 
-    Page<FRStatement1> findByAccountIdIn(
+    Page<FRStatement4> findByAccountIdIn(
             List<String> accountIds,
             Pageable pageable
     );
 
-    Long deleteFRStatement1ByAccountId(
+    Long deleteFRStatement4ByAccountId(
             String accountId
     );
 

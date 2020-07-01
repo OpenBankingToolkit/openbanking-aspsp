@@ -18,12 +18,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.statements;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements;
 
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStatement1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -32,15 +30,14 @@ import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.List;
 
-public class FRStatement1RepositoryImpl implements FRStatement1RepositoryCustom {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FRStatement1RepositoryImpl.class);
+public class FRStatement4RepositoryImpl implements FRStatement4RepositoryCustom {
 
     @Autowired
     @Lazy
-    private FRStatement1Repository statement1Repository;
+    private FRStatement4Repository statement1Repository;
 
     @Override
-    public Page<FRStatement1> byAccountIdWithPermissions(
+    public Page<FRStatement4> byAccountIdWithPermissions(
             String accountId,
             DateTime fromStatementDateTime,
             DateTime toStatementDateTime,
@@ -54,7 +51,7 @@ public class FRStatement1RepositoryImpl implements FRStatement1RepositoryCustom 
     }
 
     @Override
-    public List<FRStatement1> byAccountIdAndStatementIdWithPermissions(
+    public List<FRStatement4> byAccountIdAndStatementIdWithPermissions(
             String accountId,
             String statementId,
             List<OBExternalPermissions1Code> permissions) {
@@ -63,13 +60,13 @@ public class FRStatement1RepositoryImpl implements FRStatement1RepositoryCustom 
     }
 
     @Override
-    public Page<FRStatement1> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRStatement4> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
         return filter(statement1Repository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FRStatement1> filter(Page<FRStatement1> statements, List<OBExternalPermissions1Code> permissions) {
+    private Page<FRStatement4> filter(Page<FRStatement4> statements, List<OBExternalPermissions1Code> permissions) {
         for (OBExternalPermissions1Code permission : permissions) {
-            for (FRStatement1 statement : statements) {
+            for (FRStatement4 statement : statements) {
                 switch (permission) {
                     case READSTATEMENTSBASIC:
                         statement.getStatement().setStatementAmount(null);
@@ -80,9 +77,9 @@ public class FRStatement1RepositoryImpl implements FRStatement1RepositoryCustom 
         return statements;
     }
 
-    private List<FRStatement1> filter(List<FRStatement1> statements, List<OBExternalPermissions1Code> permissions) {
+    private List<FRStatement4> filter(List<FRStatement4> statements, List<OBExternalPermissions1Code> permissions) {
         for (OBExternalPermissions1Code permission : permissions) {
-            for (FRStatement1 statement : statements) {
+            for (FRStatement4 statement : statements) {
                 switch (permission) {
                     case READSTATEMENTSBASIC:
                         statement.getStatement().setStatementAmount(null);

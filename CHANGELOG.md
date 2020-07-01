@@ -19,6 +19,8 @@ Release/1.0.86 (#209)
 Controller interfaces and implementations for v3.1.3 of the accounts API. New fields not yet being returned. (#216)
 [0ee32fe1b6392e3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0ee32fe1b6392e3) Matt Wills *2020-06-18 15:32:18*
 Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
+[aa26278aac8b74d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/aa26278aac8b74d) Matt Wills *2020-06-24 15:05:13*
+Added new repositories and 'FR' document classes for new objects introduced in v3.1.3 of the Accounts API (#252)
 [499a9be21344a26](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/499a9be21344a26) Matt Wills *2020-06-18 15:25:44*
 Release candidate: prepare for next development iteration
 ## 1.0.85
@@ -70,6 +72,7 @@ Release/1.0.84 (#205)
 * Release candidate: prepare for next development iteration
 
 * changelog updated
+### GitHub [#216](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/216) New repositories and account data for v3.1.3 (#252)
 [22e91f504289040](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/22e91f504289040) Matt Wills *2020-06-18 14:27:05*
 Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
 [2a5d119633adb1a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2a5d119633adb1a) Matt Wills *2020-06-18 13:56:30*
@@ -124,6 +127,7 @@ use common utils/forms. https://github.com/OpenBankingToolkit/openbanking-toolki
 ### GitHub [#184](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/184) upgrade @forgerock/openbanking-ui-cli. https://github.com/OpenBanking…
 [f351e3229a4ea1e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f351e3229a4ea1e) Julien Renaux *2020-04-29 16:38:42*
 upgrade @forgerock/openbanking-ui-cli. https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/8 (#184)
+### GitHub [#216](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/216) New repositories and account data for v3.1.3 (#252)
 [ea2a27cb4d43ff9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ea2a27cb4d43ff9) Matt Wills *2020-06-12 15:52:31*
 Removed tests which have been moved to the uk-datamodel repo (#216)
 [4f937d0ec38fdbb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4f937d0ec38fdbb) Matt Wills *2020-06-12 15:41:03*

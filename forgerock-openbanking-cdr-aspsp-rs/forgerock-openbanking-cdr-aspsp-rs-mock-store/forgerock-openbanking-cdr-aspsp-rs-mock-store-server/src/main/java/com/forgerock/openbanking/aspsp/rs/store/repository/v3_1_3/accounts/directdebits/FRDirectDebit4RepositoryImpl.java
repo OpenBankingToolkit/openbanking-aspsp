@@ -18,12 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.directdebits;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.directdebits;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.standingorders.FRStandingOrder1RepositoryImpl;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRDirectDebit1;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRDirectDebit4;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -32,26 +29,24 @@ import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.List;
 
-public class FRDirectDebit1RepositoryImpl implements FRDirectDebit1RepositoryCustom {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(FRStandingOrder1RepositoryImpl.class);
+public class FRDirectDebit4RepositoryImpl implements FRDirectDebit4RepositoryCustom {
 
     @Autowired
     @Lazy
-    private FRDirectDebit1Repository directDebitRepository;
+    private FRDirectDebit4Repository directDebitRepository;
 
     @Override
-    public Page<FRDirectDebit1> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions,
+    public Page<FRDirectDebit4> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions,
                                                            Pageable pageable) {
         return filter(directDebitRepository.findByAccountId(accountId, pageable), permissions);
     }
 
     @Override
-    public Page<FRDirectDebit1> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRDirectDebit4> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
         return filter(directDebitRepository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FRDirectDebit1> filter(Page<FRDirectDebit1> directDebits, List<OBExternalPermissions1Code> permissions) {
+    private Page<FRDirectDebit4> filter(Page<FRDirectDebit4> directDebits, List<OBExternalPermissions1Code> permissions) {
         return directDebits;
     }
 }

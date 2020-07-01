@@ -21,9 +21,9 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -39,13 +39,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
+import uk.org.openbanking.datamodel.account.OBAccount3;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadAccount3;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -57,13 +55,11 @@ public class Accounts3ApiControllerIT {
     private SpringSecForTest springSecForTest;
 
     @Autowired
-    private FRAccount3Repository frAccountRepository;
+    private FRAccount4Repository frAccountRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
-
-
 
     @Before
     public void setUp() {
@@ -74,7 +70,7 @@ public class Accounts3ApiControllerIT {
     public void testGetAnAccount() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
-        FRAccount3 account = JMockData.mock(FRAccount3.class);
+        FRAccount4 account = JMockData.mock(FRAccount4.class);
         frAccountRepository.save(account);
 
         // When
@@ -87,7 +83,17 @@ public class Accounts3ApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getBody().getData().getAccount().get(0)).isEqualTo(account.getAccount());
+        OBAccount3 returnedAccount = response.getBody().getData().getAccount().get(0);
+        assertThat(returnedAccount).isNotNull();
+        assertThat(returnedAccount.getAccountId()).isEqualTo(account.getAccount().getAccountId());
+        assertThat(returnedAccount.getCurrency()).isEqualTo(account.getAccount().getCurrency());
+        assertThat(returnedAccount.getAccountType()).isEqualTo(account.getAccount().getAccountType());
+        assertThat(returnedAccount.getAccountSubType()).isEqualTo(account.getAccount().getAccountSubType());
+        assertThat(returnedAccount.getDescription()).isEqualTo(account.getAccount().getDescription());
+        assertThat(returnedAccount.getNickname()).isEqualTo(account.getAccount().getNickname());
+        assertThat(returnedAccount.getServicer().getSchemeName()).isEqualTo(account.getAccount().getServicer().getSchemeName());
+        assertThat(returnedAccount.getServicer().getIdentification()).isEqualTo(account.getAccount().getServicer().getIdentification());
+        assertThat(returnedAccount.getAccount().get(0).getIdentification()).isEqualTo(account.getAccount().getAccount().get(0).getIdentification());
     }
 
 }

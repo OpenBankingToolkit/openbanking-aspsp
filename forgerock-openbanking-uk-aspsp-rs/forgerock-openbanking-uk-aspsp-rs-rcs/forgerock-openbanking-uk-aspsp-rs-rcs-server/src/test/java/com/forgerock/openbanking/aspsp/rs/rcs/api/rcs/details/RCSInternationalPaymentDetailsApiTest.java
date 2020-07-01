@@ -38,7 +38,7 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBCashAccount5;
+import uk.org.openbanking.datamodel.account.OBAccount3Account;
 
 import java.util.List;
 import java.util.Objects;
@@ -84,7 +84,7 @@ public class RCSInternationalPaymentDetailsApiTest {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
         FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
-        OBCashAccount5 firstAccount = accounts.get(0).getAccount().getAccount().get(0);
+        OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment(any())).willReturn(consent);
         given(tppStoreService.findById(consent.getPispId())).willReturn(Optional.of(Tpp.builder().clientId(CLIENT_ID).build()));

@@ -18,26 +18,32 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.directdebits;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts;
 
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRDirectDebit1;
-import org.springframework.data.domain.Page;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import org.joda.time.DateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
+import java.util.Collection;
 import java.util.List;
 
-public interface FRDirectDebit1RepositoryCustom {
+public interface FRAccount4RepositoryCustom {
 
-    Page<FRDirectDebit1> byAccountIdWithPermissions(
+    Collection<FRAccount4> byUserIDWithPermissions(
+            @Param("userID") String userID,
+            @Param("permissions") List<OBExternalPermissions1Code> permissions,
+            Pageable pageable);
+
+    FRAccount4 byAccountId(
             @Param("accountId") String accountId,
-            @Param("permissions") List<OBExternalPermissions1Code> permissions,
-            Pageable pageable);
+            @Param("permissions") List<OBExternalPermissions1Code> permissions);
 
-    Page<FRDirectDebit1> byAccountIdInWithPermissions(
-            @Param("accountIds") List<String> accountIds,
-            @Param("permissions") List<OBExternalPermissions1Code> permissions,
-            Pageable pageable);
+    List<FRAccount4> byAccountIds(
+            @Param("accountId") List<String> accountIds,
+            @Param("permissions") List<OBExternalPermissions1Code> permissions);
+
+    List<String> getUserIds(DateTime from, DateTime to);
 
 }

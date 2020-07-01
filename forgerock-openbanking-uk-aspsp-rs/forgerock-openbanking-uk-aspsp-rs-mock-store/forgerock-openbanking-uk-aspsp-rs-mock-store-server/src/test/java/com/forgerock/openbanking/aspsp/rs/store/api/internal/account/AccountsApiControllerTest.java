@@ -21,10 +21,10 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class AccountsApiControllerTest {
     @Mock
-    private FRAccount3Repository accountsRepository;
+    private FRAccount4Repository accountsRepository;
     @Mock
     private FRBalance1Repository balanceRepository;
     @InjectMocks
@@ -55,7 +55,7 @@ public class AccountsApiControllerTest {
     public void getAccounts_noBalances() {
         // Given
         given(accountsRepository.findByUserID(any())).willReturn(Collections.singletonList(
-                FRAccount3.builder().id("111").build()
+                FRAccount4.builder().id("111").build()
         ));
         given(balanceRepository.findByAccountIdIn(any())).willReturn(Collections.emptyList());
 
@@ -84,7 +84,7 @@ public class AccountsApiControllerTest {
     public void getAccounts_balanceNotRequired() {
         // Given
         given(accountsRepository.findByUserID(any())).willReturn(Collections.singletonList(
-                FRAccount3.builder().id("111").build()
+                FRAccount4.builder().id("111").build()
         ));
 
         // When
@@ -101,7 +101,7 @@ public class AccountsApiControllerTest {
     public void getAccounts_withBalance() {
         // Given
         given(accountsRepository.findByUserID(any())).willReturn(Collections.singletonList(
-                FRAccount3.builder().id("111").build()
+                FRAccount4.builder().id("111").build()
         ));
         given(balanceRepository.findByAccountIdIn(any())).willReturn(Collections.singletonList(
                 FRBalance1.builder().accountId("111").balance(new OBCashBalance1().accountId("111")).build()

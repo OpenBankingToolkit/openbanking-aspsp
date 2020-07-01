@@ -26,11 +26,15 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.scheduledpayment;
 
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRScheduledPayment2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRScheduledPayment4;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -41,23 +45,23 @@ public interface ScheduledPaymentApi {
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<FRScheduledPayment2> create(
-            @RequestBody FRScheduledPayment2 scheduledPayment
+    ResponseEntity<FRScheduledPayment4> create(
+            @RequestBody FRScheduledPayment4 scheduledPayment
     );
 
     @RequestMapping(value = "/{id}",
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT)
-    ResponseEntity<FRScheduledPayment2> update(
-            @RequestBody FRScheduledPayment2 scheduledPayment,
+    ResponseEntity<FRScheduledPayment4> update(
+            @RequestBody FRScheduledPayment4 scheduledPayment,
             @PathVariable("id") String id
     );
 
     @RequestMapping(value = "/search/find",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<List<FRScheduledPayment2>> getAll(
+    ResponseEntity<List<FRScheduledPayment4>> getAll(
             @RequestParam("status") ScheduledPaymentStatus status,
             @RequestParam("toDateTime")
             @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZZ")

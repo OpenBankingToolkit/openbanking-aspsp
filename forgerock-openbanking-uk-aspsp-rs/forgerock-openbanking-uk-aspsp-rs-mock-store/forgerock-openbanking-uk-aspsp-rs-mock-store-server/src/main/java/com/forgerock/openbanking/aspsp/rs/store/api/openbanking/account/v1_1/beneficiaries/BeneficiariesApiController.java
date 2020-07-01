@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.beneficiaries;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.beneficiaries.FRBeneficiary3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.beneficiaries.FRBeneficiary4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRBeneficiary3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRBeneficiary4;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRBeneficiaryConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -56,7 +56,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
     @Value("${rs.page.default.beneficiaries.size}")
     private int PAGE_LIMIT_BENEFICIARIES;
     @Autowired
-    private FRBeneficiary3Repository frBeneficiary3Repository;
+    private FRBeneficiary4Repository frBeneficiaryRepository;
 
     @Override
     public ResponseEntity<OBReadBeneficiary1> getAccountBeneficiaries(
@@ -83,9 +83,12 @@ public class BeneficiariesApiController implements BeneficiariesApi {
     ) {
         LOGGER.info("Read beneficiaries for account  {} with minimumPermissions {}", accountId, permissions);
 
-        Page<FRBeneficiary3> beneficiariesResponse = frBeneficiary3Repository.byAccountIdWithPermissions(accountId, permissions,
+        Page<FRBeneficiary4> beneficiariesResponse = frBeneficiaryRepository.byAccountIdWithPermissions(accountId, permissions,
                 PageRequest.of(page, PAGE_LIMIT_BENEFICIARIES));
-        List<OBBeneficiary1> beneficiaries = beneficiariesResponse.stream().map(b -> FRBeneficiaryConverter.toBeneficiary1(b).getBeneficiary()).collect(Collectors.toList());
+        List<OBBeneficiary1> beneficiaries = beneficiariesResponse
+                .stream()
+                .map(b -> FRBeneficiaryConverter.toBeneficiary1(b).getBeneficiary())
+                .collect(Collectors.toList());
 
 
         int totalPages = beneficiariesResponse.getTotalPages();
@@ -129,7 +132,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
     ) throws OBErrorResponseException {
         LOGGER.info("Beneficaries from account ids {}", accountIds);
 
-        Page<FRBeneficiary3> beneficiariesResponse = frBeneficiary3Repository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRBeneficiary4> beneficiariesResponse = frBeneficiaryRepository.byAccountIdInWithPermissions(accountIds, permissions,
                 PageRequest.of(page, PAGE_LIMIT_BENEFICIARIES));
         List<OBBeneficiary1> beneficiaries = beneficiariesResponse.stream().map(b -> FRBeneficiaryConverter.toBeneficiary1(b).getBeneficiary()).collect(Collectors.toList());
 

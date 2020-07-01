@@ -20,8 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.account;
 
-
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccount1;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
@@ -52,7 +51,7 @@ public class AccountsApiController implements AccountsApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountsApiController.class);
 
     @Autowired
-    private FRAccount3Repository frAccount3Repository;
+    private FRAccount4Repository frAccountRepository;
     @Autowired
     private FRAccountConverter accountConverter;
 
@@ -78,7 +77,7 @@ public class AccountsApiController implements AccountsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
 
     ) {
-        FRAccount1 account = accountConverter.toAccount1(frAccount3Repository.byAccountId(accountId, permissions));
+        FRAccount1 account = accountConverter.toAccount1(frAccountRepository.byAccountId(accountId, permissions));
 
         return ResponseEntity.ok(new OBReadAccount1()
                 .data(new OBReadDataAccount1().account(Collections.singletonList(account.getAccount())))
@@ -113,7 +112,7 @@ public class AccountsApiController implements AccountsApi {
         LOGGER.info("Read all accounts {} with minimumPermissions {}", accountIds,
                 permissions);
 
-        List<OBAccount1> accounts = frAccount3Repository.byAccountIds(accountIds, permissions)
+        List<OBAccount1> accounts = frAccountRepository.byAccountIds(accountIds, permissions)
                 .stream().map(a -> accountConverter.toAccount1(a).getAccount()).collect(Collectors.toList());
 
         return ResponseEntity.ok(new OBReadAccount1()

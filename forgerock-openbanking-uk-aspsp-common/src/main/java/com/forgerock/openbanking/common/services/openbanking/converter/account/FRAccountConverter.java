@@ -23,36 +23,26 @@ package com.forgerock.openbanking.common.services.openbanking.converter.account;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccount1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.*;
 import uk.org.openbanking.datamodel.payment.OBCashAccountCreditor3;
 import uk.org.openbanking.datamodel.payment.OBExternalAccountIdentification2Code;
 import uk.org.openbanking.datamodel.service.converter.account.OBAccountConverter;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification5;
+import static java.util.Collections.emptyList;
 
 @Service
 public class FRAccountConverter {
 
-    public static OBCashAccount5 toOBCashAccount5(OBCashAccountCreditor3 creditorAccount) {
-        OBCashAccount5 obCashAccount5 = new OBCashAccount5()
-                .schemeName(creditorAccount.getSchemeName())
-                .identification(creditorAccount.getIdentification());
-
-        if (creditorAccount.getName() != null) {
-            obCashAccount5.name(creditorAccount.getName());
-        }
-
-        if (creditorAccount.getSecondaryIdentification() != null) {
-            obCashAccount5.secondaryIdentification(creditorAccount.getSecondaryIdentification());
-        }
-        return obCashAccount5;
-
-    }
-
     public FRAccount1 toAccount1(FRAccount2 account2) {
-        FRAccount1 frAccount1 =  new FRAccount1();
+        FRAccount1 frAccount1 = new FRAccount1();
         frAccount1.setId(account2.getId());
         frAccount1.setCreated(account2.getCreated());
         frAccount1.setUserID(account2.getUserID());
@@ -63,7 +53,7 @@ public class FRAccountConverter {
     }
 
     public FRAccount1 toAccount1(FRAccount3 account3) {
-        FRAccount1 frAccount1 =  new FRAccount1();
+        FRAccount1 frAccount1 = new FRAccount1();
         frAccount1.setId(account3.getId());
         frAccount1.setUserID(account3.getUserID());
         frAccount1.setAccount(toOBAccount1(account3.getAccount()));
@@ -72,8 +62,18 @@ public class FRAccountConverter {
         return frAccount1;
     }
 
+    public FRAccount1 toAccount1(FRAccount4 account4) {
+        FRAccount1 frAccount1 = new FRAccount1();
+        frAccount1.setId(account4.getId());
+        frAccount1.setUserID(account4.getUserID());
+        frAccount1.setAccount(toOBAccount1(account4.getAccount()));
+        frAccount1.setCreated(account4.getCreated());
+        frAccount1.setUpdated(account4.getUpdated());
+        return frAccount1;
+    }
+
     public FRAccount2 toAccount2(FRAccount1 account1) {
-        FRAccount2 frAccount2 =  new FRAccount2();
+        FRAccount2 frAccount2 = new FRAccount2();
         frAccount2.setId(account1.getId());
         frAccount2.setCreated(account1.getCreated());
         frAccount2.setUserID(account1.getUserID());
@@ -84,7 +84,7 @@ public class FRAccountConverter {
     }
 
     public static FRAccount3 toAccount3(FRAccount2 account2) {
-        FRAccount3 frAccount3 =  new FRAccount3();
+        FRAccount3 frAccount3 = new FRAccount3();
         frAccount3.setId(account2.getId());
         frAccount3.setUserID(account2.getUserID());
         frAccount3.setAccount(toOBAccount3(account2.getAccount()));
@@ -94,137 +94,187 @@ public class FRAccountConverter {
         return frAccount3;
     }
 
-    public static OBAccount3 toOBAccount3(OBAccount2 account2) {
-        OBAccount3 account3 =new OBAccount3()
-                .accountId(account2.getAccountId())
-                .currency(account2.getCurrency())
-                .accountSubType(OBExternalAccountSubType1Code.CURRENTACCOUNT)
-                .accountType(OBExternalAccountType1Code.PERSONAL);
-        if (account2.getNickname() != null) {
-            account3.nickname(account2.getNickname());
-        }
-
-        List<OBCashAccount5> obCashAccount5List = new ArrayList<>();
-        for (OBCashAccount3 cashAccount3 : account2.getAccount()) {
-            OBCashAccount5 account5Account = new OBCashAccount5()
-                    .schemeName(cashAccount3.getSchemeName())
-                    .identification(cashAccount3.getIdentification());
-            if (cashAccount3.getName() != null) {
-                account5Account.name(cashAccount3.getName());
-            }
-
-            if (cashAccount3.getSecondaryIdentification() != null) {
-                account5Account.secondaryIdentification(cashAccount3.getSecondaryIdentification());
-            }
-            obCashAccount5List.add(account5Account);
-        }
-        account3.account(obCashAccount5List);
-
-        if (account2.getServicer() != null) {
-            account3.servicer(
-                    new OBBranchAndFinancialInstitutionIdentification5()
-                            .schemeName(account2.getServicer().getSchemeName())
-                            .identification(account2.getServicer().getIdentification()));
-        }
-
-        return account3;
+    public static OBAccount1 toOBAccount1(OBAccount3 obAccount3) {
+        return obAccount3 == null ? null : (new OBAccount1())
+                .accountId(obAccount3.getAccountId())
+                .currency(obAccount3.getCurrency())
+                .nickname(obAccount3.getNickname())
+                .account(toOBCashAccount1(obAccount3.getAccount().get(0)))
+                .servicer(toOBBranchAndFinancialInstitutionIdentification2(obAccount3.getServicer()));
     }
 
-    public static OBCashAccount5 toOBCashAccount5(OBCashAccount3 obCashAccount3) {
-        OBCashAccount5 obCashAccount5 = new OBCashAccount5()
-                .schemeName(obCashAccount3.getSchemeName())
-                .identification(obCashAccount3.getIdentification());
+    public static OBAccount1 toOBAccount1(OBAccount4 obAccount4) {
+        return obAccount4 == null ? null : (new OBAccount1())
+                .accountId(obAccount4.getAccountId())
+                .currency(obAccount4.getCurrency())
+                .nickname(obAccount4.getNickname())
+                .account(toOBCashAccount1(obAccount4.getAccount().get(0)))
+                .servicer(toOBBranchAndFinancialInstitutionIdentification2(obAccount4.getServicer()));
+    }
 
-        if (obCashAccount3.getName() != null) {
-            obCashAccount5.name(obCashAccount3.getName());
-        }
+    public static OBAccount1 toOBAccount1(OBAccount6 obAccount6) {
+        return obAccount6 == null ? null : (new OBAccount1())
+                .accountId(obAccount6.getAccountId())
+                .currency(obAccount6.getCurrency())
+                .nickname(obAccount6.getNickname())
+                .account(toOBCashAccount1(obAccount6.getAccount().get(0)))
+                .servicer(toOBBranchAndFinancialInstitutionIdentification2(obAccount6.getServicer()));
+    }
 
-        if (obCashAccount3.getSecondaryIdentification() != null) {
-            obCashAccount5.secondaryIdentification(obCashAccount3.getSecondaryIdentification());
-        }
-        return obCashAccount5;
+    public static OBAccount2 toOBAccount2(OBAccount3 obAccount3) {
+        return obAccount3 == null ? null : (new OBAccount2())
+                .accountId(obAccount3.getAccountId())
+                .currency(obAccount3.getCurrency())
+                .accountType(obAccount3.getAccountType())
+                .accountSubType(obAccount3.getAccountSubType())
+                .description(obAccount3.getDescription())
+                .nickname(obAccount3.getNickname())
+                .account(fromOBCashAccount5ToOBCashAccount3List(obAccount3.getAccount()))
+                .servicer(toOBBranchAndFinancialInstitutionIdentification4(obAccount3.getServicer()));
+    }
+
+    public static OBAccount2 toOBAccount2(OBAccount6 obAccount6) {
+        return obAccount6 == null ? null : (new OBAccount2())
+                .accountId(obAccount6.getAccountId())
+                .currency(obAccount6.getCurrency())
+                .accountType(obAccount6.getAccountType())
+                .accountSubType(obAccount6.getAccountSubType())
+                .description(obAccount6.getDescription())
+                .nickname(obAccount6.getNickname())
+                .account(fromOBAccount3AccountToOBCashAccount3List(obAccount6.getAccount()))
+                .servicer(toOBBranchAndFinancialInstitutionIdentification4(obAccount6.getServicer()));
+    }
+
+    public static OBCashAccount1 toOBCashAccount1(OBCashAccount5 obCashAccount5) {
+        return obCashAccount5 == null ? null : (new OBCashAccount1())
+                .schemeName(OBExternalAccountIdentification2Code.valueOfReference(obCashAccount5.getSchemeName()))
+                .identification(obCashAccount5.getIdentification())
+                .name(obCashAccount5.getName())
+                .secondaryIdentification(obCashAccount5.getSecondaryIdentification());
+    }
+
+    public static OBCashAccount1 toOBCashAccount1(OBAccount3Account obAccount3Account) {
+        return obAccount3Account == null ? null : (new OBCashAccount1())
+                .schemeName(OBExternalAccountIdentification2Code.valueOfReference(obAccount3Account.getSchemeName()))
+                .identification(obAccount3Account.getIdentification())
+                .name(obAccount3Account.getName())
+                .secondaryIdentification(obAccount3Account.getSecondaryIdentification());
     }
 
     public static OBCashAccount3 toOBCashAccount3(OBCashAccount5 obCashAccount5) {
-        OBCashAccount3 account3Account = new OBCashAccount3()
+        return obCashAccount5 == null ? null : (new OBCashAccount3())
                 .schemeName(obCashAccount5.getSchemeName())
-                .identification(obCashAccount5.getIdentification());
-
-        if (obCashAccount5.getName() != null) {
-            account3Account.name(obCashAccount5.getName());
-        }
-
-        if (obCashAccount5.getSecondaryIdentification() != null) {
-            account3Account.secondaryIdentification(obCashAccount5.getSecondaryIdentification());
-        }
-        return account3Account;
+                .identification(obCashAccount5.getIdentification())
+                .name(obCashAccount5.getName())
+                .secondaryIdentification(obCashAccount5.getSecondaryIdentification());
     }
 
-
-    public static OBCashAccount1 toOBCashAccount1(OBCashAccount5 obCashAccount5) {
-        OBCashAccount1 account3Account = new OBCashAccount1()
-                .schemeName(OBExternalAccountIdentification2Code.valueOfReference(obCashAccount5.getSchemeName()))
-                .identification(obCashAccount5.getIdentification());
-
-        if (obCashAccount5.getName() != null) {
-            account3Account.name(obCashAccount5.getName());
-        }
-
-        if (obCashAccount5.getSecondaryIdentification() != null) {
-            account3Account.secondaryIdentification(obCashAccount5.getSecondaryIdentification());
-        }
-        return account3Account;
+    public static OBCashAccount3 toOBCashAccount3(OBAccount3Account obAccount3Account) {
+        return obAccount3Account == null ? null : (new OBCashAccount3())
+                .schemeName(obAccount3Account.getSchemeName())
+                .identification(obAccount3Account.getIdentification())
+                .name(obAccount3Account.getName())
+                .secondaryIdentification(obAccount3Account.getSecondaryIdentification());
     }
 
-    public static OBAccount2 toOBAccount2(OBAccount3 account3) {
-        OBAccount2 account2 =new OBAccount2()
-                .accountId(account3.getAccountId())
-                .currency(account3.getCurrency())
-                .accountSubType(account3.getAccountSubType())
-                .accountType(account3.getAccountType())
-                .description(account3.getDescription());
-        if (account3.getNickname() != null) {
-            account2.nickname(account3.getNickname());
-        }
-
-        List<OBCashAccount3> obCashAccount3List = new ArrayList<>();
-        for (OBCashAccount5 cashAccount5 : account3.getAccount()) {
-            obCashAccount3List.add(toOBCashAccount3(cashAccount5));
-        }
-        account2.account(obCashAccount3List);
-
-        if (account3.getServicer() != null) {
-            account2.servicer(
-                    new OBBranchAndFinancialInstitutionIdentification4()
-                            .schemeName(account3.getServicer().getSchemeName())
-                            .identification(account3.getServicer().getIdentification()));
-        }
-
-        return account2;
+    public static OBCashAccount3 toOBCashAccount3(OBCashAccount51 obCashAccount51) {
+        return obCashAccount51 == null ? null : (new OBCashAccount3())
+                .schemeName(obCashAccount51.getSchemeName())
+                .identification(obCashAccount51.getIdentification())
+                .name(obCashAccount51.getName())
+                .secondaryIdentification(obCashAccount51.getSecondaryIdentification());
     }
 
-    private OBAccount1 toOBAccount1(OBAccount3 account3) {
-        OBAccount1 account1 =new OBAccount1()
-                .accountId(account3.getAccountId())
-                .currency(account3.getCurrency());
-        if (account3.getNickname() != null) {
-            account1.nickname(account3.getNickname());
-        }
+    public static OBCashAccount5 toOBCashAccount5(OBCashAccount3 obCashAccount3) {
+        return obCashAccount3 == null ? null : (new OBCashAccount5())
+                .schemeName(obCashAccount3.getSchemeName())
+                .identification(obCashAccount3.getIdentification())
+                .name(obCashAccount3.getName())
+                .secondaryIdentification(obCashAccount3.getSecondaryIdentification());
+    }
 
-        List<OBCashAccount1> obCashAccountList = new ArrayList<>();
-        for (OBCashAccount5 cashAccount5 : account3.getAccount()) {
-            obCashAccountList.add(toOBCashAccount1(cashAccount5));
-        }
-        account1.account(obCashAccountList.get(0));
+    public static OBCashAccount5 toOBCashAccount5(OBCashAccountCreditor3 obCashAccountCreditor3) {
+        return obCashAccountCreditor3 == null ? null : (new OBCashAccount5())
+                .schemeName(obCashAccountCreditor3.getSchemeName())
+                .identification(obCashAccountCreditor3.getIdentification())
+                .name(obCashAccountCreditor3.getName())
+                .secondaryIdentification(obCashAccountCreditor3.getSecondaryIdentification());
+    }
 
-        if (account3.getServicer() != null) {
-            account1.servicer(
-                    new OBBranchAndFinancialInstitutionIdentification2()
-                            .schemeName(OBExternalFinancialInstitutionIdentification2Code.fromValue(account3.getServicer().getSchemeName()))
-                            .identification(account3.getServicer().getIdentification()));
-        }
+    public static OBCashAccount5 toOBCashAccount5(OBAccount3Account obAccount3Account) {
+        return obAccount3Account == null ? null : (new OBCashAccount5())
+                .schemeName(obAccount3Account.getSchemeName())
+                .identification(obAccount3Account.getIdentification())
+                .name(obAccount3Account.getName())
+                .secondaryIdentification(obAccount3Account.getSecondaryIdentification());
+    }
 
-        return account1;
+    public static OBCashAccount5 toOBCashAccount5(OBCashAccount51 obCashAccount51) {
+        return obCashAccount51 == null ? null : (new OBCashAccount5())
+                .schemeName(obCashAccount51.getSchemeName())
+                .identification(obCashAccount51.getIdentification())
+                .name(obCashAccount51.getName())
+                .secondaryIdentification(obCashAccount51.getSecondaryIdentification());
+    }
+
+    public static OBAccount3 toOBAccount3(OBAccount2 account2) {
+        return account2 == null ? null : (new OBAccount3())
+                .accountId(account2.getAccountId())
+                .currency(account2.getCurrency())
+                .accountType(account2.getAccountType())
+                .accountSubType(account2.getAccountSubType())
+                .description(account2.getDescription())
+                .nickname(account2.getNickname())
+                .account(fromOBCashAccount3ToOBCashAccount5List(account2.getAccount()))
+                .servicer(toOBBranchAndFinancialInstitutionIdentification5(account2.getServicer()));
+    }
+
+    public static OBAccount3 toOBAccount3(OBAccount6 obAccount6) {
+        return obAccount6 == null ? null : (new OBAccount3())
+                .accountId(obAccount6.getAccountId())
+                .currency(obAccount6.getCurrency())
+                .accountType(obAccount6.getAccountType())
+                .accountSubType(obAccount6.getAccountSubType())
+                .description(obAccount6.getDescription())
+                .nickname(obAccount6.getNickname())
+                .account(fromOBAccount3AccountToOBCashAccount5List(obAccount6.getAccount()))
+                .servicer(toOBBranchAndFinancialInstitutionIdentification5(obAccount6.getServicer()));
+    }
+
+    private static List<OBCashAccount3> fromOBAccount3AccountToOBCashAccount3List(List<OBAccount3Account> accounts) {
+        if (accounts == null) {
+            return emptyList();
+        }
+        return accounts.stream()
+                .map(FRAccountConverter::toOBCashAccount3)
+                .collect(Collectors.toList());
+    }
+
+    private static List<OBCashAccount3> fromOBCashAccount5ToOBCashAccount3List(List<OBCashAccount5> accounts) {
+        if (accounts == null) {
+            return emptyList();
+        }
+        return accounts.stream()
+                .map(FRAccountConverter::toOBCashAccount3)
+                .collect(Collectors.toList());
+    }
+
+    private static List<OBCashAccount5> fromOBCashAccount3ToOBCashAccount5List(List<OBCashAccount3> accounts) {
+        if (accounts == null) {
+            return emptyList();
+        }
+        return accounts.stream()
+                .map(FRAccountConverter::toOBCashAccount5)
+                .collect(Collectors.toList());
+    }
+
+    private static List<OBCashAccount5> fromOBAccount3AccountToOBCashAccount5List(List<OBAccount3Account> accounts) {
+        if (accounts == null) {
+            return emptyList();
+        }
+        return accounts.stream()
+                .map(FRAccountConverter::toOBCashAccount5)
+                .collect(Collectors.toList());
     }
 
 }

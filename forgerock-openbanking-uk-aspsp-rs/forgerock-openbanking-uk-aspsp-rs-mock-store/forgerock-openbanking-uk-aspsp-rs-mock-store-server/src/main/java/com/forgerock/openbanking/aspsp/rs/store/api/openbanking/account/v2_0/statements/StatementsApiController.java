@@ -20,11 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.statements;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.statements.FRStatement1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements.FRStatement4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.service.statement.StatementPDFService;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStatement1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRStatementConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -72,7 +73,7 @@ public class StatementsApiController implements StatementsApi {
     private int PAGE_LIMIT_STATEMENTS;
 
     @Autowired
-    private FRStatement1Repository frStatement1Repository;
+    private FRStatement4Repository frStatementRepository;
 
     @Autowired
     private AccountDataInternalIdFilter accountDataInternalIdFilter;
@@ -117,13 +118,14 @@ public class StatementsApiController implements StatementsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
-        List<FRStatement1> statements = frStatement1Repository.byAccountIdAndStatementIdWithPermissions(accountId, statementId, permissions);
+        List<FRStatement4> statements = frStatementRepository.byAccountIdAndStatementIdWithPermissions(accountId, statementId, permissions);
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadStatement1().data(new OBReadStatement1Data().statement(
                 statements
                         .stream()
-                        .map(FRStatement1::getStatement)
+                        .map(FRStatement4::getStatement)
+                        .map(FRStatementConverter::toOBStatement1)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
@@ -235,14 +237,15 @@ public class StatementsApiController implements StatementsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Reading statements from account ids {}", accountIds);
-        Page<FRStatement1> statements = frStatement1Repository.findByAccountIdIn(accountIds,
+        Page<FRStatement4> statements = frStatementRepository.findByAccountIdIn(accountIds,
                 PageRequest.of(page, PAGE_LIMIT_STATEMENTS, Sort.Direction.ASC, "startDateTime"));
         int totalPages = statements.getTotalPages();
 
         return ResponseEntity.ok(new OBReadStatement1().data(new OBReadStatement1Data().statement(
                 statements.getContent()
                         .stream()
-                        .map(FRStatement1::getStatement)
+                        .map(FRStatement4::getStatement)
+                        .map(FRStatementConverter::toOBStatement1)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
@@ -294,7 +297,7 @@ public class StatementsApiController implements StatementsApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FRStatement1> statements = frStatement1Repository.byAccountIdWithPermissions(accountId,
+        Page<FRStatement4> statements = frStatementRepository.byAccountIdWithPermissions(accountId,
                         fromStatementDateTime, toStatementDateTime,
                         permissions,
                         PageRequest.of(page, PAGE_LIMIT_STATEMENTS, Sort.Direction.ASC, "startDateTime"));
@@ -304,7 +307,8 @@ public class StatementsApiController implements StatementsApi {
         return ResponseEntity.ok(new OBReadStatement1().data(new OBReadStatement1Data().statement(
                 statements.getContent()
                         .stream()
-                        .map(FRStatement1::getStatement)
+                        .map(FRStatement4::getStatement)
+                        .map(FRStatementConverter::toOBStatement1)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
