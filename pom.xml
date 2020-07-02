@@ -47,7 +47,7 @@
         <ob-common.version>1.0.76</ob-common.version>
         <ob-auth.version>1.0.57</ob-auth.version>
         <ob-jwkms.version>1.1.67</ob-jwkms.version>
-        <ob-clients.version>1.0.32</ob-clients.version>
+        <ob-clients.version>1.0.35</ob-clients.version>
         <spring-security-multi-auth-starter.version>2.2.1.0.0.54</spring-security-multi-auth-starter.version>
     </properties>
 
