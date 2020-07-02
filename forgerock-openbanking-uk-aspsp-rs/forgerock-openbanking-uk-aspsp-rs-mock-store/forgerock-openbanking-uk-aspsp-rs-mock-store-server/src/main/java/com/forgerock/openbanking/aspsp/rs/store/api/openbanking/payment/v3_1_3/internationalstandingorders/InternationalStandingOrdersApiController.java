@@ -29,6 +29,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryA
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalStandingOrderConsent4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalStandingOrderPaymentSubmission4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderConsent4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderPaymentSubmission4;
@@ -41,6 +42,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse5Data;
@@ -153,8 +155,12 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                         .statusUpdateDateTime(FRInternationalStandingOrderConsent4.getStatusUpdate())
                         .status(toOBWriteInternationalStandingOrderResponse5DataStatus(FRInternationalStandingOrderConsent4.getStatus()))
                         .consentId(FRInternationalStandingOrderConsent4.getId()))
-                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetInternationalStandingOrder()))
+                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalStandingOrder()))
                 .meta(new Meta());
+    }
+
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_3();
     }
 
 }

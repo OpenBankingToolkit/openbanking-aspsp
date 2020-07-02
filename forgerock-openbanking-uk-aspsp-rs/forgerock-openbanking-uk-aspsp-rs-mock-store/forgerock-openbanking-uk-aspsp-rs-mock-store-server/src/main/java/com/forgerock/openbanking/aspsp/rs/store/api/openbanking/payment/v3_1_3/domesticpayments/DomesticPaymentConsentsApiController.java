@@ -32,6 +32,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticConsent2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
@@ -45,6 +46,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 import uk.org.openbanking.datamodel.payment.OBFundsAvailableResult1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
@@ -199,9 +201,13 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                         .consentId(domesticConsent.getId())
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(domesticConsent.getDomesticConsent().getData().getAuthorisation()))
                 )
-                .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> discovery.getV_3_1_3().getGetDomesticPaymentConsent()))
+                .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> getVersion(discovery).getGetDomesticPaymentConsent()))
                 .risk(domesticConsent.getRisk())
                 .meta(new Meta());
+    }
+
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_3();
     }
 
 }

@@ -29,6 +29,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryA
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FileConsent2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FilePaymentSubmission2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_1.report.PaymentReportFile2Service;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
@@ -42,6 +43,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFileResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteFile2;
 import uk.org.openbanking.datamodel.payment.OBWriteFileResponse2;
@@ -186,8 +188,12 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                 .statusUpdateDateTime(DateTime.now())
                 .status(frFileConsent.getStatus().toOBExternalStatusCode1())
                 .consentId(frFileConsent.getId()))
-                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetFilePayment()))
+                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetFilePayment()))
                 .meta(new Meta());
+    }
+
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_3();
     }
 
 }

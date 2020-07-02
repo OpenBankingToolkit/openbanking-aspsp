@@ -30,6 +30,7 @@ import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.DomesticScheduledConsent4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
@@ -43,6 +44,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse3Data;
@@ -147,9 +149,13 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                         .authorisation(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation())
                         .scASupportData(domesticScheduledConsent.getDomesticScheduledConsent().getData().getScASupportData())
                 )
-                .links(resourceLinkService.toSelfLink(domesticScheduledConsent, discovery -> discovery.getV_3_1_3().getGetDomesticScheduledPaymentConsent()))
+                .links(resourceLinkService.toSelfLink(domesticScheduledConsent, discovery -> getVersion(discovery).getGetDomesticScheduledPaymentConsent()))
                 .risk(domesticScheduledConsent.getRisk())
                 .meta(new Meta());
+    }
+
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_3();
     }
 
 }

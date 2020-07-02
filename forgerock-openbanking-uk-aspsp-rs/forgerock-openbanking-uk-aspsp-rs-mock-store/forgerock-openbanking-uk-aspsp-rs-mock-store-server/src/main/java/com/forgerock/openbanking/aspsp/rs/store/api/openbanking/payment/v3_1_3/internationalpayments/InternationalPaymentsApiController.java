@@ -29,6 +29,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryA
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalConsent4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalPaymentSubmission4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalPaymentSubmission4;
@@ -41,6 +42,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse4Data;
@@ -154,8 +156,12 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .status(toOBWriteInternationalResponse4DataStatus(frInternationalConsent.getStatus()))
                         .consentId(frInternationalConsent.getId())
                         .exchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate()))
-                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_1_3().getGetInternationalPayment()))
+                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalPayment()))
                 .meta(new Meta());
+    }
+
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_3();
     }
 
 }
