@@ -1,29 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
-### GitHub [#208](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/208) bumped the parent version 1.0.73
-[094f4025242a00e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/094f4025242a00e) Jorge Sanchez Perez *2020-06-23 17:38:32*
-bumped the parent version 1.0.73 (#208)
-
-Force the merge like as administrator to unlock work.
-### GitHub [#209](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/209) Release/1.0.86
-[d2be7b8b9c1b1eb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d2be7b8b9c1b1eb) Jorge Sanchez Perez *2020-06-23 18:13:50*
-Release/1.0.86 (#209)
-
-* Release candidate: prepare release 1.0.86
-
-* Release candidate: prepare for next development iteration
-
-* changelog updated
-[31df7829405d769](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/31df7829405d769) Matt Wills *2020-06-24 10:46:10*
-Controller interfaces and implementations for v3.1.3 of the accounts API. New fields not yet being returned. (#216)
-[0ee32fe1b6392e3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0ee32fe1b6392e3) Matt Wills *2020-06-18 15:32:18*
-Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
-[aa26278aac8b74d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/aa26278aac8b74d) Matt Wills *2020-06-24 15:05:13*
-Added new repositories and 'FR' document classes for new objects introduced in v3.1.3 of the Accounts API (#252)
-[499a9be21344a26](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/499a9be21344a26) Matt Wills *2020-06-18 15:25:44*
+[9fe3ef91242428d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9fe3ef91242428d) Matt Wills *2020-07-01 08:17:33*
 Release candidate: prepare for next development iteration
-## 1.0.85
+## 1.0.87
 ### GitHub [#203](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/203) Handler events (Data APIs /api/data/events)
 [954bec38b7eb2e3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/954bec38b7eb2e3) Jorge Sanchez Perez *2020-06-16 13:14:11*
 Handler events (Data APIs /api/data/events) (#203)
@@ -72,15 +52,46 @@ Release/1.0.84 (#205)
 * Release candidate: prepare for next development iteration
 
 * changelog updated
+### GitHub [#208](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/208) bumped the parent version 1.0.73
+[094f4025242a00e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/094f4025242a00e) Jorge Sanchez Perez *2020-06-23 17:38:32*
+bumped the parent version 1.0.73 (#208)
+
+Force the merge like as administrator to unlock work.
+### GitHub [#209](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/209) Release/1.0.86
+[d2be7b8b9c1b1eb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d2be7b8b9c1b1eb) Jorge Sanchez Perez *2020-06-23 18:13:50*
+Release/1.0.86 (#209)
+
+* Release candidate: prepare release 1.0.86
+
+* Release candidate: prepare for next development iteration
+
+* changelog updated
 ### GitHub [#216](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/216) New repositories and account data for v3.1.3 (#252)
+[6726d7a0f984360](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6726d7a0f984360) Matt Wills *2020-07-01 08:00:28*
+Migrated to new repositories for 3.1.3 model objects. Populating dummy account data using new objects. Added several converter methods (#216)
+[6c0ee34aeffe3e4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6c0ee34aeffe3e4) Matt Wills *2020-07-01 07:59:29*
+Brought v3.1.3 of the payment API controllers in-line with account API ones. Removed unnecessary/duplicate annotations (e.g. swagger @ApiParam) and using constructor injection instead of autowired fields (#216)
+[44dec8cf50dd414](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/44dec8cf50dd414) Matt Wills *2020-06-24 13:20:49*
+Brought v3.1.3 of the payment API controllers in-line with account API ones. Removed unnecessary/duplicate annotations (e.g. swagger @ApiParam) and using constructor injection instead of autowired fields (#216)
+[31df7829405d769](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/31df7829405d769) Matt Wills *2020-06-24 10:46:10*
+Controller interfaces and implementations for v3.1.3 of the accounts API. New fields not yet being returned. (#216)
+[0ee32fe1b6392e3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0ee32fe1b6392e3) Matt Wills *2020-06-18 15:32:18*
+Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
 [22e91f504289040](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/22e91f504289040) Matt Wills *2020-06-18 14:27:05*
 Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
 [2a5d119633adb1a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2a5d119633adb1a) Matt Wills *2020-06-18 13:56:30*
 Added required version for versions prior to 3.1.3 in the rs-store (#216)
-[30e9a9a542dd0d5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/30e9a9a542dd0d5) Matt Wills *2020-06-18 15:25:33*
-Release candidate: prepare release 1.0.85
+[aa26278aac8b74d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/aa26278aac8b74d) Matt Wills *2020-06-24 15:05:13*
+Added new repositories and 'FR' document classes for new objects introduced in v3.1.3 of the Accounts API (#252)
+[090f7754aa6ece2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/090f7754aa6ece2) Matt Wills *2020-07-01 08:17:22*
+Release candidate: prepare release 1.0.87
+[499a9be21344a26](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/499a9be21344a26) Matt Wills *2020-06-18 15:25:44*
+Release candidate: prepare for next development iteration
 [861981393939c0a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/861981393939c0a) JamieB *2020-06-15 11:27:45*
 Release candidate: prepare for next development iteration
+## 1.0.85
+[30e9a9a542dd0d5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/30e9a9a542dd0d5) Matt Wills *2020-06-18 15:25:33*
+Release candidate: prepare release 1.0.85
 ## 1.0.83
 [553440e6b90bbf9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/553440e6b90bbf9) JamieB *2020-06-15 11:27:36*
 Release candidate: prepare release 1.0.83

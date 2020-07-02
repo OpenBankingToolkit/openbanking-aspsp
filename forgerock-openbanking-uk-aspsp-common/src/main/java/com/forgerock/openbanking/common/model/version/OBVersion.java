@@ -34,7 +34,8 @@ public enum OBVersion {
     v3_1,
     v3_1_1,
     v3_1_2,
-    v3_1_3;
+    v3_1_3,
+    v3_1_4;
 
     public static OBVersion fromString(String version) {
         try {

@@ -67,6 +67,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksPayment4 v_3_1_1;
         public OBDiscoveryAPILinksPayment4 v_3_1_2;
         public OBDiscoveryAPILinksPayment4 v_3_1_3;
+        public OBDiscoveryAPILinksPayment4 v_3_1_4;
     }
 
     @Data
@@ -79,6 +80,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksAccount3 v_3_1_1;
         public OBDiscoveryAPILinksAccount3 v_3_1_2;
         public OBDiscoveryAPILinksAccount3 v_3_1_3;
+        public OBDiscoveryAPILinksAccount3 v_3_1_4;
     }
 
     @Data
