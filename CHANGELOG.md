@@ -1,6 +1,14 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#215](https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/215) Account data returned from 3.1 `/accounts` endpoint contains incorrect scheme name value
+[6c7b595d9d754cc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6c7b595d9d754cc) Matt Wills *2020-07-02 09:29:19*
+Fixed scheme name conversion (#215)
+### GitHub [#216](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/216) New repositories and account data for v3.1.3 (#252)
+[f1f0d38a300836f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f1f0d38a300836f) Matt Wills *2020-07-02 08:26:34*
+Fixed version in 'self' links for v3.1.4 (#216)
+[e00f885d81e9f3f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e00f885d81e9f3f) Matt Wills *2020-07-01 18:34:47*
+API interfaces and controllers for v3.1.4 of accounts and payments (#216)
 [9fe3ef91242428d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9fe3ef91242428d) Matt Wills *2020-07-01 08:17:33*
 Release candidate: prepare for next development iteration
 ## 1.0.87
@@ -162,6 +170,7 @@ Fixes to enable scheduled payments to work (#216)
 [9a86b147dbe5451](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9a86b147dbe5451) Matt Wills *2020-05-28 14:42:51*
 Changes for v3.1.3 of the Payment Initiation API.
 Many of the changes in the rsstore controllers need implementing - search for "TODO #216" statements (#232)
+### GitHub [#219](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/219) Fixed version in &#39;self&#39; links for v3.1.4 (#216)
 [fd08b064e6746e4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fd08b064e6746e4) Matt Wills *2020-05-05 12:50:27*
 Waiver 007 expiry - enabled detached JWT signature verification (#219)
 [30af22b186cb15b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/30af22b186cb15b) Matt Wills *2020-06-05 10:52:29*
