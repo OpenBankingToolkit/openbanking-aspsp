@@ -4,6 +4,11 @@ Changelog of Git Changelog Maven plugin.
 ### GitHub [#215](https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/215) Account data returned from 3.1 `/accounts` endpoint contains incorrect scheme name value
 [1464ec7eb469be1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1464ec7eb469be1) Matt Wills *2020-07-02 10:05:25*
 CHANGELOG.md (#215)
+### GitHub [#216](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/216) New repositories and account data for v3.1.3 (#252)
+[a55b6e5d5128ddc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a55b6e5d5128ddc) Matt Wills *2020-07-03 13:20:11*
+v3.1.4 of the events and funds confirmation APIs (#216)
+[6c24c6a2b770614](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6c24c6a2b770614) Matt Wills *2020-07-03 11:10:57*
+Added v3.1.3 of the events and funds confirmation APIs (#216)
 ### GitHub [#224](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/224) Bump ob-clients.version from 1.0.32 to 1.0.35
 [5e63b9b0bf71cbc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5e63b9b0bf71cbc) dependabot-preview[bot] *2020-07-02 15:32:52*
 Bump ob-clients.version from 1.0.32 to 1.0.35 (#224)
