@@ -5,6 +5,8 @@ Changelog of Git Changelog Maven plugin.
 [1464ec7eb469be1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1464ec7eb469be1) Matt Wills *2020-07-02 10:05:25*
 CHANGELOG.md (#215)
 ### GitHub [#216](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/216) New repositories and account data for v3.1.3 (#252)
+[a55b6e5d5128ddc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a55b6e5d5128ddc) Matt Wills *2020-07-03 13:20:11*
+v3.1.4 of the events and funds confirmation APIs (#216)
 [6c24c6a2b770614](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6c24c6a2b770614) Matt Wills *2020-07-03 11:10:57*
 Added v3.1.3 of the events and funds confirmation APIs (#216)
 ### GitHub [#224](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/224) Bump ob-clients.version from 1.0.32 to 1.0.35
