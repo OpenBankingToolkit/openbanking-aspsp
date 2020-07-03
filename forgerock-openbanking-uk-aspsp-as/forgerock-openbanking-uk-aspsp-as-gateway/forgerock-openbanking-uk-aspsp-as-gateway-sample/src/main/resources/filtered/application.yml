@@ -586,6 +586,11 @@ rs-discovery:
         getFundsConfirmationConsent: ${rs-discovery.base-url}/open-banking/v3.1.2/cbpii/funds-confirmation-consents/{ConsentId}
         createFundsConfirmation: ${rs-discovery.base-url}/open-banking/v3.1.2/cbpii/funds-confirmations
         deleteFundsConfirmationConsent: ${rs-discovery.base-url}/open-banking/v3.1.2/cbpii/funds-confirmations-consent
+      v_3_1_3:
+        createFundsConfirmationConsent: ${rs-discovery.base-url}/open-banking/v3.1.3/cbpii/funds-confirmation-consents
+        getFundsConfirmationConsent: ${rs-discovery.base-url}/open-banking/v3.1.3/cbpii/funds-confirmation-consents/{ConsentId}
+        createFundsConfirmation: ${rs-discovery.base-url}/open-banking/v3.1.3/cbpii/funds-confirmations
+        deleteFundsConfirmationConsent: ${rs-discovery.base-url}/open-banking/v3.1.3/cbpii/funds-confirmations-consent
     eventNotifications:
       v_3_0:
         createCallbackUrl: ${rs-discovery.base-url}/open-banking/v3.0/callback-urls
@@ -611,6 +616,15 @@ rs-discovery:
         getEventSubscription: ${rs-discovery.base-url}/open-banking/v3.1.2/event-subscriptions
         amendEventSubscription: ${rs-discovery.base-url}/open-banking/v3.1.2/event-subscriptions/{EventSubscriptionId}
         deleteEventSubscription: ${rs-discovery.base-url}/open-banking/v3.1.2/event-subscriptions/{EventSubscriptionId}
+      v_3_1_3:
+        createCallbackUrl: ${rs-discovery.base-url}/open-banking/v3.1.3/callback-urls
+        getCallbackUrls: ${rs-discovery.base-url}/open-banking/v3.1.3/callback-urls
+        amendCallbackUrl: ${rs-discovery.base-url}/open-banking/v3.1.3/callback-urls/{CallbackUrlId}
+        deleteCallbackUrl: ${rs-discovery.base-url}/open-banking/v3.1.3/callback-urls/{CallbackUrlId}
+        createEventSubscription: ${rs-discovery.base-url}/open-banking/v3.1.3/event-subscriptions
+        getEventSubscription: ${rs-discovery.base-url}/open-banking/v3.1.3/event-subscriptions
+        amendEventSubscription: ${rs-discovery.base-url}/open-banking/v3.1.3/event-subscriptions/{EventSubscriptionId}
+        deleteEventSubscription: ${rs-discovery.base-url}/open-banking/v3.1.3/event-subscriptions/{EventSubscriptionId}
 
 #Open Banking Directory info
 openbankingdirectory:
