@@ -47,6 +47,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_1;
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_2;
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_3;
+        public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_4;
     }
 
     @Data
@@ -57,6 +58,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksEventNotification3 v_3_1_1;
         public OBDiscoveryAPILinksEventNotification3 v_3_1_2;
         public OBDiscoveryAPILinksEventNotification3 v_3_1_3;
+        public OBDiscoveryAPILinksEventNotification3 v_3_1_4;
     }
 
     @Data
