@@ -2,6 +2,93 @@
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
 ### GitHub [#215](https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/215) Account data returned from 3.1 `/accounts` endpoint contains incorrect scheme name value
+[1464ec7eb469be1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1464ec7eb469be1) Matt Wills *2020-07-02 10:05:25*
+CHANGELOG.md (#215)
+### GitHub [#224](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/224) Bump ob-clients.version from 1.0.32 to 1.0.35
+[5e63b9b0bf71cbc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5e63b9b0bf71cbc) dependabot-preview[bot] *2020-07-02 15:32:52*
+Bump ob-clients.version from 1.0.32 to 1.0.35 (#224)
+
+Bumps `ob-clients.version` from 1.0.32 to 1.0.35.
+
+Updates `forgerock-openbanking-jwkms-client` from 1.0.32 to 1.0.35
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.32...1.0.35)
+
+Updates `forgerock-openbanking-analytics-client` from 1.0.32 to 1.0.35
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.32...1.0.35)
+
+Updates `forgerock-openbanking-analytics-webclient` from 1.0.32 to 1.0.35
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.32...1.0.35)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+
+Co-authored-by: dependabot-preview[bot] <27856297+dependabot-preview[bot]@users.noreply.github.com>
+Co-authored-by: Jorge Sanchez Perez <54277573+jorgesanchezperez@users.noreply.github.com>
+[5e63b9b0bf71cbc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5e63b9b0bf71cbc) dependabot-preview[bot] *2020-07-02 15:32:52*
+Bump ob-clients.version from 1.0.32 to 1.0.35 (#224)
+
+Bumps `ob-clients.version` from 1.0.32 to 1.0.35.
+
+Updates `forgerock-openbanking-jwkms-client` from 1.0.32 to 1.0.35
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.32...1.0.35)
+
+Updates `forgerock-openbanking-analytics-client` from 1.0.32 to 1.0.35
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.32...1.0.35)
+
+Updates `forgerock-openbanking-analytics-webclient` from 1.0.32 to 1.0.35
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/forgerock-openbanking-reference-implementation-clients-1.0.32...1.0.35)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+
+Co-authored-by: dependabot-preview[bot] <27856297+dependabot-preview[bot]@users.noreply.github.com>
+Co-authored-by: Jorge Sanchez Perez <54277573+jorgesanchezperez@users.noreply.github.com>
+[c493e48047f8f0f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c493e48047f8f0f) dependabot-preview[bot] *2020-07-02 15:01:06*
+Bump ob-common.version from 1.0.76 to 1.0.77
+
+Bumps `ob-common.version` from 1.0.76 to 1.0.77.
+
+Updates `forgerock-openbanking-model` from 1.0.76 to 1.0.77
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.76...1.0.77)
+
+Updates `forgerock-openbanking-am` from 1.0.76 to 1.0.77
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.76...1.0.77)
+
+Updates `forgerock-openbanking-jwt` from 1.0.76 to 1.0.77
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.76...1.0.77)
+
+Updates `forgerock-openbanking-oidc` from 1.0.76 to 1.0.77
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.76...1.0.77)
+
+Updates `forgerock-openbanking-upgrade` from 1.0.76 to 1.0.77
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.76...1.0.77)
+
+Updates `forgerock-openbanking-ssl` from 1.0.76 to 1.0.77
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-common/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-common/compare/forgerock-openbanking-starter-commons-1.0.76...1.0.77)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[522b942951e70d3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/522b942951e70d3) dependabot-preview[bot] *2020-07-02 15:16:30*
+Bump forgerock-openbanking-jwkms-embedded from 1.1.67 to 1.1.70
+
+Bumps [forgerock-openbanking-jwkms-embedded](https://github.com/OpenBankingToolkit/openbanking-jwkms) from 1.1.67 to 1.1.70.
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-jwkms/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-jwkms/compare/forgerock-openbanking-reference-implementation-jwkms-1.1.67...1.1.70)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[c49ad84133a90bb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c49ad84133a90bb) Matt Wills *2020-07-02 09:59:37*
+Release candidate: prepare for next development iteration
+## 1.0.88
+### GitHub [#215](https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/215) Account data returned from 3.1 `/accounts` endpoint contains incorrect scheme name value
 [6c7b595d9d754cc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6c7b595d9d754cc) Matt Wills *2020-07-02 09:29:19*
 Fixed scheme name conversion (#215)
 ### GitHub [#216](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/216) New repositories and account data for v3.1.3 (#252)
@@ -9,6 +96,8 @@ Fixed scheme name conversion (#215)
 Fixed version in 'self' links for v3.1.4 (#216)
 [e00f885d81e9f3f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e00f885d81e9f3f) Matt Wills *2020-07-01 18:34:47*
 API interfaces and controllers for v3.1.4 of accounts and payments (#216)
+[a00bb425f9e4236](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a00bb425f9e4236) Matt Wills *2020-07-02 09:59:27*
+Release candidate: prepare release 1.0.88
 [9fe3ef91242428d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9fe3ef91242428d) Matt Wills *2020-07-01 08:17:33*
 Release candidate: prepare for next development iteration
 ## 1.0.87
