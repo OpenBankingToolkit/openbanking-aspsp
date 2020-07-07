@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.domesticpayments;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
@@ -42,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
@@ -81,6 +81,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 .authorization(authorization)
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f ->
                         {
                             OBWriteDomesticConsent2 obWriteDomesticConsent2 = toOBWriteDomesticConsent2(obWriteDomesticConsent3);
@@ -117,6 +118,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 .authorization(authorization)
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
@@ -145,6 +147,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .payment(payment)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f -> {
                     f.verifyConsentStatusForConfirmationOfFund();
                 })

@@ -45,6 +45,7 @@ import java.io.File;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -78,6 +79,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                 .authorization(authorization)
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f -> {
                             f.verifyIdempotencyKeyLength(xIdempotencyKey);
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
@@ -114,6 +116,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                 .payment(consent)
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f -> {
                     f.verifyFileHash(fileParam);
                     f.verifyContentTypeHeader(contentTypeOfFile);
@@ -145,6 +148,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                 .authorization(authorization)
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
@@ -169,6 +173,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                 .authorization(authorization)
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
