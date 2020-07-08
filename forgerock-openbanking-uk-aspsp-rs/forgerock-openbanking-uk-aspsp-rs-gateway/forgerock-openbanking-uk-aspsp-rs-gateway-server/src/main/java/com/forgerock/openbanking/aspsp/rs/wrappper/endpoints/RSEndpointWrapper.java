@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.filter.MultiReadHttpServletRequest;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.IdempotencyService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
@@ -43,7 +44,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import uk.org.openbanking.OBConstants;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -54,7 +54,6 @@ import java.util.stream.Collectors;
 
 import static com.forgerock.openbanking.model.error.OBRIErrorType.SERVER_ERROR;
 
-
 @Slf4j
 public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
     protected RSEndpointWrapperService rsEndpointWrapperService;
@@ -64,7 +63,7 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
     protected SignedJWT accessToken;
     protected String tppId;
     protected AdditionalFilter additionalFilter;
-
+    protected OBVersion obVersion;
 
     public RSEndpointWrapper(RSEndpointWrapperService rsEndpointWrapperService) {
         this.rsEndpointWrapperService = rsEndpointWrapperService;
@@ -82,6 +81,11 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
 
     public T principal(Principal principal) {
         this.principal = principal;
+        return (T) this;
+    }
+
+    public T obVersion(OBVersion obVersion) {
+        this.obVersion = obVersion;
         return (T) this;
     }
 
@@ -104,15 +108,16 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
             ResponseEntity response = run(main);
             String jwsSignature = "";
 
+            SigningRequest.CustomHeaderClaims.CustomHeaderClaimsBuilder claimsBuilder = SigningRequest.CustomHeaderClaims.builder()
+                    .includeOBIss(true)
+                    .includeOBIat(true)
+                    .includeCrit(true)
+                    .tan(rsEndpointWrapperService.getTan());
+            if (obVersion == null || obVersion.isBeforeVersion(OBVersion.v3_1_4)) {
+                claimsBuilder.includeB64(true);
+            }
             SigningRequest signingRequest = SigningRequest.builder()
-                    .customHeaderClaims(
-                            SigningRequest.CustomHeaderClaims.builder()
-                                    .includeB64(true)
-                                    .includeOBIss(true)
-                                    .includeOBIat(true)
-                                    .includeCrit(true)
-                                    .tan(rsEndpointWrapperService.getTan())
-                                    .build())
+                    .customHeaderClaims(claimsBuilder.build())
                     .build();
             if (response.getBody() instanceof Resource) {
                 log.debug("JWT signing does not currently work for a file response which it just a file byte stream (currently XML or JSON)");

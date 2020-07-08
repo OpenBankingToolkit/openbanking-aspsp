@@ -55,6 +55,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder2;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -101,6 +102,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .payment(frDomesticStandingOrderConsentConverter.toFRDomesticConsent2(payment))
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f -> {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
@@ -161,6 +163,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .authorization(authorization)
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
                             return rsStoreGateway.toRsStore(request, new HttpHeaders(), OBWriteDomesticStandingOrderResponse2.class);

@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount5;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
 
@@ -101,6 +102,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .payment(payment)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f -> {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
@@ -157,6 +159,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .authorization(authorization)
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
