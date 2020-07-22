@@ -53,7 +53,7 @@ public class DiscoveryApiControllerTest {
     @Before
     public void setUp() {
         given(config.isDynamicRegistrationEnable()).willReturn(true);
-        discoveryApiController = new DiscoveryApiController(amGateway, config, "localhost", "8074", "", "443");
+        discoveryApiController = new DiscoveryApiController(amGateway, config, "localhost", "8074", "3.1.2", "3.2");
     }
 
     @Test
@@ -109,7 +109,7 @@ public class DiscoveryApiControllerTest {
     @Test
     public void testCustomAPIVersion() {
         // Given
-        discoveryApiController = new DiscoveryApiController(amGateway, config, "localhost", "443", "apiVersion", "443");
+        discoveryApiController = new DiscoveryApiController(amGateway, config, "localhost", "8074", "RWApiVersion", "CRApiVersion");
         MockHttpServletRequest req = new MockHttpServletRequest();
         OIDCDiscoveryResponse oidcDiscoveryResponse = JMockData.mock(OIDCDiscoveryResponse.class);
         ResponseEntity<OIDCDiscoveryResponse> response = new ResponseEntity<>(oidcDiscoveryResponse, HttpStatus.OK);
@@ -119,6 +119,7 @@ public class DiscoveryApiControllerTest {
         ResponseEntity<OIDCDiscoveryResponse> discovery = discoveryApiController.getDiscovery(req);
 
         // Then
-        assertThat(discovery.getBody().getVersion()).isEqualTo("apiVersion");
+        assertThat(discovery.getBody().getReadWriteApiVersion()).isEqualTo("RWApiVersion");
+        assertThat(discovery.getBody().getClientRegistrationApiVersion()).isEqualTo("CRApiVersion");
     }
 }

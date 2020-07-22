@@ -39,24 +39,23 @@ public class DiscoveryApiController implements DiscoveryApi {
 
     private AMASPSPGateway amGateway;
     private String dnsHostRoot;
-    private String apiVersion;
+    private String readWriteApiVersion;
+    private String clientRegistrationApiVersion;
     private String scgwPort;
-    private String amInternalPort;
     private DiscoveryConfig discoveryConfig;
 
     public DiscoveryApiController(AMASPSPGateway amGateway,
                                   DiscoveryConfig discoveryConfig,
                                   @Value("${dns.hosts.root}") String dnsHostRoot,
                                   @Value("${scgw.port}") String scgwPort,
-                                  @Value("${rs-discovery.apis.version}") String apiVersion,
-                                  @Value("${am.internal-port}") String amInternalPort
-                                  ) {
+                                  @Value("${rs-discovery.read-write-api.version:3.1.4}") String readWriteApiVersion,
+                                  @Value("${rs-discovery.client-registration-api.version:3.2.0}") String clientRegistrationApiVersion) {
         this.amGateway = amGateway;
         this.dnsHostRoot = dnsHostRoot;
         this.scgwPort = scgwPort;
         this.discoveryConfig = discoveryConfig;
-        this.apiVersion = apiVersion;
-        this.amInternalPort = amInternalPort;
+        this.readWriteApiVersion = readWriteApiVersion;
+        this.clientRegistrationApiVersion = clientRegistrationApiVersion;
     }
 
     @Override
@@ -64,7 +63,6 @@ public class DiscoveryApiController implements DiscoveryApi {
             HttpServletRequest request
     ) {
         String normalEndpoint = "https://as.aspsp." + dnsHostRoot;
-        String normalEndpointWithPort = "https://as.aspsp." + dnsHostRoot + ":" + amInternalPort;
         String matlsProtectedEndpoint = withPort("https://matls.as.aspsp." + dnsHostRoot);
 
         HttpHeaders additionalHttpHeaders = new HttpHeaders();
@@ -74,11 +72,9 @@ public class DiscoveryApiController implements DiscoveryApi {
         OIDCDiscoveryResponse discoveryResponse = Objects.requireNonNull(responseEntity.getBody());
         log.debug("Discovery response received by AM: {}", discoveryResponse);
 
-        if (apiVersion == null || "".equals(apiVersion)) {
-            discoveryResponse.setVersion(CURRENT_VERSION);
-        } else {
-            discoveryResponse.setVersion(apiVersion);
-        }
+        discoveryResponse.setVersion(readWriteApiVersion);
+        discoveryResponse.setReadWriteApiVersion(readWriteApiVersion);
+        discoveryResponse.setClientRegistrationApiVersion(clientRegistrationApiVersion);
 
         //Override the well-known
         discoveryResponse.setIssuer(switchToNonMatls(discoveryResponse.getIssuer()));

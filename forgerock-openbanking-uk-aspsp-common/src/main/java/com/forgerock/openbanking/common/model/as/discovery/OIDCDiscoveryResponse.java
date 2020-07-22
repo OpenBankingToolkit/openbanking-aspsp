@@ -34,8 +34,13 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class OIDCDiscoveryResponse {
 
+    @Deprecated // replaced by readWriteApiVersion and clientRegistrationApiVersion
     @JsonProperty("version")
     private String version;
+    @JsonProperty("readWriteApiVersion")
+    private String readWriteApiVersion;
+    @JsonProperty("clientRegistrationApiVersion")
+    private String clientRegistrationApiVersion;
     @JsonProperty("issuer")
     private String issuer;
     @JsonProperty("authorization_endpoint")
@@ -115,6 +120,4 @@ public class OIDCDiscoveryResponse {
     private String opTosUri;
     @JsonProperty("tls_client_auth_subject_dn")
     private String tlsClientAuthSubjectDn;
-
-
 }
