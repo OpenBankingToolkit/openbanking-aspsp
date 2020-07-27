@@ -1,6 +1,17 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#170](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/170) Bump forgerock-openbanking-starter-parent from 1.0.66 to 1.0.67
+[7cf1703eed6fe35](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7cf1703eed6fe35) Matt Wills *2020-07-22 13:52:02*
+Separated the reporting of the API versions, so that the read/write API and client registration API can be specified separately (#170)
+[961727b0f223e9a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/961727b0f223e9a) dependabot-preview[bot] *2020-07-27 08:41:17*
+Bump forgerock-openbanking-auth from 1.0.57 to 1.0.58
+
+Bumps [forgerock-openbanking-auth](https://github.com/OpenBankingToolkit/openbanking-auth) from 1.0.57 to 1.0.58.
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-auth/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-auth/compare/forgerock-openbanking-starter-auth-1.0.57...1.0.58)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
 [83395b4746927a3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/83395b4746927a3) Matt Wills *2020-07-08 13:13:56*
 Release candidate: prepare for next development iteration
 ## 1.0.90

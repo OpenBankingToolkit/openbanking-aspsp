@@ -25,12 +25,12 @@
     <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>forgerock-openbanking-uk-aspsp-common</artifactId>
     <packaging>jar</packaging>
-    <name>analytics-client</name>
+    <name>uk-aspsp-client</name>
 
     <parent>
         <groupId>com.forgerock.openbanking.aspsp</groupId>
         <artifactId>forgerock-openbanking-aspsp</artifactId>
-        <version>1.0.91-SNAPSHOT</version>
+        <version>1.0.92-SNAPSHOT</version>
     </parent>
 
     <dependencies>
