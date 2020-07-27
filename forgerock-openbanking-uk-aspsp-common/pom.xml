@@ -25,7 +25,7 @@
     <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>forgerock-openbanking-uk-aspsp-common</artifactId>
     <packaging>jar</packaging>
-    <name>analytics-client</name>
+    <name>uk-aspsp-client</name>
 
     <parent>
         <groupId>com.forgerock.openbanking.aspsp</groupId>
