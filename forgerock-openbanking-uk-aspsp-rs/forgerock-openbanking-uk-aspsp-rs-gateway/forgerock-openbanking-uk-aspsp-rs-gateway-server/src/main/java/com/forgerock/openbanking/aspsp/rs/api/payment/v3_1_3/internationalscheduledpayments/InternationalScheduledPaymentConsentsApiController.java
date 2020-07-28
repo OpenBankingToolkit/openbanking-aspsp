@@ -39,7 +39,6 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse4;
 
 import javax.servlet.http.HttpServletRequest;
@@ -123,10 +122,10 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
-                            ParameterizedTypeReference<OBWriteInternationalScheduledConsentResponse2> ptr = new ParameterizedTypeReference<OBWriteInternationalScheduledConsentResponse2>() {
+                            ParameterizedTypeReference<OBWriteInternationalScheduledConsentResponse4> ptr = new ParameterizedTypeReference<OBWriteInternationalScheduledConsentResponse4>() {
                             };
 
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteInternationalScheduledConsentResponse2.class);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteInternationalScheduledConsentResponse4.class);
                         }
                 );
     }

@@ -43,7 +43,6 @@ import org.springframework.util.StringUtils;
 import uk.org.openbanking.datamodel.account.OBExternalScheduleType1Code;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse3;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
@@ -133,7 +132,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticScheduledResponse2.class, obWriteDomesticScheduled2);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticScheduledResponse3.class, obWriteDomesticScheduled2);
                         }
                 );
     }
@@ -156,7 +155,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticScheduledResponse2.class);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticScheduledResponse3.class);
                         }
                 );
     }

@@ -33,7 +33,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse3;
 
 import javax.servlet.http.HttpServletRequest;
@@ -83,7 +82,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
 
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticScheduledConsentResponse2.class, obWriteDomesticScheduledConsent3);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticScheduledConsentResponse3.class, obWriteDomesticScheduledConsent3);
                         }
                 );
     }
@@ -108,7 +107,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
 
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticScheduledConsentResponse2.class);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticScheduledConsentResponse3.class);
                         }
                 );
     }

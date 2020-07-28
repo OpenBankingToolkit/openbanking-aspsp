@@ -4,6 +4,17 @@ Changelog of Git Changelog Maven plugin.
 ### GitHub [#170](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/170) Bump forgerock-openbanking-starter-parent from 1.0.66 to 1.0.67
 [7cf1703eed6fe35](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7cf1703eed6fe35) Matt Wills *2020-07-22 13:52:02*
 Separated the reporting of the API versions, so that the read/write API and client registration API can be specified separately (#170)
+### GitHub [#233](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/233) Release/1.0.91
+[0333770b7b00d05](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0333770b7b00d05) Jorge Sanchez Perez *2020-07-27 13:26:33*
+Release/1.0.91 (#233)
+
+* bumped the latest version of openbanking clients 1.0.36, jwkms 1.1.71 auth 1.0.59
+
+* Release candidate: prepare release 1.0.91
+
+* Release candidate: prepare for next development iteration
+
+* changelog updated
 [961727b0f223e9a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/961727b0f223e9a) dependabot-preview[bot] *2020-07-27 08:41:17*
 Bump forgerock-openbanking-auth from 1.0.57 to 1.0.58
 
@@ -289,6 +300,7 @@ Many of the changes in the rsstore controllers need implementing - search for "T
 ### GitHub [#219](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/219) Fixed version in &#39;self&#39; links for v3.1.4 (#216)
 [fd08b064e6746e4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fd08b064e6746e4) Matt Wills *2020-05-05 12:50:27*
 Waiver 007 expiry - enabled detached JWT signature verification (#219)
+### GitHub [#232](https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/232) Version string in OIDC well-known endpoint should provide version of Dynamic Client Registration OB specification implemented
 [30af22b186cb15b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/30af22b186cb15b) Matt Wills *2020-06-05 10:52:29*
 Converting back to OBDomesticStandingOrder2 for verification method (#232)
 [2035d40b22e24a2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2035d40b22e24a2) Matt Wills *2020-06-04 15:04:56*

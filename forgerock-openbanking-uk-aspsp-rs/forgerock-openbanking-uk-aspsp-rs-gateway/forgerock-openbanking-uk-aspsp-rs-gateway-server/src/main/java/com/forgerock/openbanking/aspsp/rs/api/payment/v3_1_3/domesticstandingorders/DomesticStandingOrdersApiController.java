@@ -47,7 +47,6 @@ import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
 import uk.org.openbanking.datamodel.account.OBStandingOrder5;
 import uk.org.openbanking.datamodel.payment.OBDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse4;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
@@ -144,7 +143,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticStandingOrderResponse2.class, obWriteDomesticStandingOrder3);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticStandingOrderResponse4.class, obWriteDomesticStandingOrder3);
                         }
                 );
     }
@@ -166,7 +165,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .obVersion(getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
-                            return rsStoreGateway.toRsStore(request, new HttpHeaders(), OBWriteDomesticStandingOrderResponse2.class);
+                            return rsStoreGateway.toRsStore(request, new HttpHeaders(), OBWriteDomesticStandingOrderResponse4.class);
                         }
                 );
     }

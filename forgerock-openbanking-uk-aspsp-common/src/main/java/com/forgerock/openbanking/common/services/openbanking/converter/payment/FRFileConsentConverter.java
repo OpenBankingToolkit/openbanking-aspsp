@@ -22,6 +22,7 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRFileConsent1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import org.springframework.stereotype.Service;
 
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent1;
@@ -63,5 +64,24 @@ public class FRFileConsentConverter {
         frFileConsent2.setPayments(frFileConsent1.getPayments());
 
         return frFileConsent1;
+    }
+
+    public static FRFileConsent2 toFRFileConsent2(FRFileConsent5 consent) {
+        return FRFileConsent2.builder()
+                .id(consent.getId())
+                .status(consent.getStatus())
+                .writeFileConsent(toOBWriteFileConsent2(consent.getWriteFileConsent()))
+                .accountId(consent.getAccountId())
+                .userId(consent.getUserId())
+                .pispId(consent.getPispId())
+                .pispName(consent.getPispName())
+                .idempotencyKey(consent.getIdempotencyKey())
+                .created(consent.getCreated())
+                .statusUpdate(consent.getStatusUpdate())
+                .updated(consent.getUpdated())
+                .payments(consent.getPayments())
+                .fileContent(consent.getFileContent())
+                .obVersion(consent.getObVersion())
+                .build();
     }
 }

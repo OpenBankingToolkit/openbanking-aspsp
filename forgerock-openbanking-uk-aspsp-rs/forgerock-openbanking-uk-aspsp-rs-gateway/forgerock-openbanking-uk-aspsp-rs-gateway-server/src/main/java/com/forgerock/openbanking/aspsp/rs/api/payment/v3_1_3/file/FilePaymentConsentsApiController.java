@@ -37,7 +37,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse3;
 
 import javax.servlet.http.HttpServletRequest;
@@ -90,7 +89,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
 
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteFileConsentResponse2.class, obWriteFileConsent3);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteFileConsentResponse3.class, obWriteFileConsent3);
                         }
                 );
     }
@@ -154,7 +153,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
 
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteFileConsentResponse2.class);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteFileConsentResponse3.class);
                         }
                 );
     }
