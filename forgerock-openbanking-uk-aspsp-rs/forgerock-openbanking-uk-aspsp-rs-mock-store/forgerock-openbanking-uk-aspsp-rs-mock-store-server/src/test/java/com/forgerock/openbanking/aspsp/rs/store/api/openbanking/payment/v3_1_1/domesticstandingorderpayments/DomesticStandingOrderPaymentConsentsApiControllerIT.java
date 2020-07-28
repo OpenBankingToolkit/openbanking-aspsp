@@ -23,11 +23,11 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.DomesticStandingOrderConsent3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticStandingOrderConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticStandingOrderConsent2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -48,6 +48,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4DataAuthorisation.AuthorisationTypeEnum;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data.PermissionEnum;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -59,6 +61,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBWriteDomesticStandingOrder3DataInitiationCreditorAccount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBWriteDomesticStandingOrder3DataInitiationDebtorAccount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController}.
@@ -72,7 +79,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private DomesticStandingOrderConsent3Repository repository;
+    private DomesticStandingOrderConsent5Repository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -92,7 +99,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     public void testGetDomesticStandingOrderPaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticStandingOrderConsent3 consent =  JMockData.mock(FRDomesticStandingOrderConsent3.class);
+        FRDomesticStandingOrderConsent5 consent = JMockData.mock(FRDomesticStandingOrderConsent5.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         setupTestConsentInitiation(consent.getInitiation());
         repository.save(consent);
@@ -110,7 +117,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consent.getInitiation());
+        assertThat(toOBWriteDomesticStandingOrder3DataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
         assertThat(response.getBody().getData().getStatus()).isEqualTo(consent.getStatus().toOBExternalConsentStatus1Code());
     }
 
@@ -136,19 +143,19 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         PaymentTestHelper.setupMockTpp(tppRepository);
-        OBWriteDomesticStandingOrderConsent3 consentRequest = JMockData.mock(OBWriteDomesticStandingOrderConsent3.class);
+        OBWriteDomesticStandingOrderConsent5 consentRequest = JMockData.mock(OBWriteDomesticStandingOrderConsent5.class);
         setupTestConsentInitiation(consentRequest.getData().getInitiation());
-        consentRequest.getData().authorisation(new OBAuthorisation1().authorisationType(OBExternalAuthorisation1Code.ANY).completionDateTime(DateTime.now()));
+        consentRequest.getData().authorisation(new OBWriteDomesticConsent4DataAuthorisation().authorisationType(AuthorisationTypeEnum.ANY).completionDateTime(DateTime.now()));
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
                 .countrySubDivision(Arrays.asList("Wessex"))
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
-        consentRequest.getData().permission(OBExternalPermissions2Code.CREATE);
+        consentRequest.getData().permission(PermissionEnum.CREATE);
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        Set<ConstraintViolation<OBWriteDomesticStandingOrderConsent3>> errors = validator.validate(consentRequest);
+        Set<ConstraintViolation<OBWriteDomesticStandingOrderConsent5>> errors = validator.validate(consentRequest);
         assertThat(errors.isEmpty()).isTrue();
 
         // When
@@ -170,14 +177,14 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteDomesticStandingOrderConsentResponse3 consentResponse = response.getBody();
-        FRDomesticStandingOrderConsent3 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRDomesticStandingOrderConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getPispName()).isEqualTo(PaymentTestHelper.MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(consentResponse.getData().getInitiation());
+        assertThat(consent.getInitiation()).isEqualTo(toOBWriteDomesticStandingOrder3DataInitiation(consentResponse.getData().getInitiation()));
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
         assertThat(consent.getRisk()).isEqualTo(consentResponse.getRisk());
-        assertThat(consent.getDomesticStandingOrderConsent().getData().getPermission()).isEqualTo(consentResponse.getData().getPermission());
+        assertThat(consent.getDomesticStandingOrderConsent().getData().getPermission()).isEqualTo(PermissionEnum.valueOf(consentResponse.getData().getPermission().name()));
         assertThat(consent.getObVersion()).isEqualTo(OBVersion.v3_1_1);
     }
 
@@ -186,15 +193,15 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         PaymentTestHelper.setupMockTpp(tppRepository);
-        OBWriteDomesticStandingOrderConsent3 consentRequest = JMockData.mock(OBWriteDomesticStandingOrderConsent3.class);
+        OBWriteDomesticStandingOrderConsent5 consentRequest = JMockData.mock(OBWriteDomesticStandingOrderConsent5.class);
         setupTestConsentInitiation(consentRequest.getData().getInitiation());
-        consentRequest.getData().authorisation(new OBAuthorisation1().authorisationType(OBExternalAuthorisation1Code.ANY).completionDateTime(DateTime.now()));
+        consentRequest.getData().authorisation(new OBWriteDomesticConsent4DataAuthorisation().authorisationType(AuthorisationTypeEnum.ANY).completionDateTime(DateTime.now()));
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
                 .countrySubDivision(Arrays.asList("Wessex"))
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
-        consentRequest.getData().permission(OBExternalPermissions2Code.CREATE);
+        consentRequest.getData().permission(PermissionEnum.CREATE);
 
         // Ensure optional fields are null
         consentRequest.getData().getInitiation().setDebtorAccount(null);
@@ -205,7 +212,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
-        Set<ConstraintViolation<OBWriteDomesticStandingOrderConsent3>> errors = validator.validate(consentRequest);
+        Set<ConstraintViolation<OBWriteDomesticStandingOrderConsent5>> errors = validator.validate(consentRequest);
         assertThat(errors.isEmpty()).isTrue();
 
         // When
@@ -228,20 +235,36 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(201);
     }
 
-    private static void setupTestConsentInitiation(OBDomesticStandingOrder3 initiation ) {
-        initiation.setRecurringPaymentAmount(new OBDomesticStandingOrder3RecurringPaymentAmount().amount("100.0").currency("GBP"));
+    private static void setupTestConsentInitiation(OBWriteDomesticStandingOrder3DataInitiation initiation) {
+        initiation.setRecurringPaymentAmount(new OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount().amount("100.0").currency("GBP"));
         initiation.recurringPaymentDateTime(DateTime.now().withMillisOfSecond(0));
-        initiation.setFirstPaymentAmount(new OBDomesticStandingOrder3FirstPaymentAmount().amount("120.0").currency("GBP"));
+        initiation.setFirstPaymentAmount(new OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount().amount("120.0").currency("GBP"));
         initiation.firstPaymentDateTime(DateTime.now().withMillisOfSecond(0));
-        initiation.setFinalPaymentAmount(new OBDomesticStandingOrder3FinalPaymentAmount().amount("90.0").currency("GBP"));
+        initiation.setFinalPaymentAmount(new OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount().amount("90.0").currency("GBP"));
         initiation.finalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
         initiation.frequency("EvryDay");
         initiation.reference("123");
         initiation.numberOfPayments("12");
         initiation.supplementaryData(new OBSupplementaryData1());
-        initiation.setDebtorAccount(new OBCashAccountDebtor4().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber"));
-        initiation.setCreditorAccount(new OBCashAccountCreditor3().identification("321").name("test2").schemeName("UK.OBIE.SortCodeAccountNumber"));
+        initiation.setDebtorAccount(new OBWriteDomesticStandingOrder3DataInitiationDebtorAccount().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber"));
+        initiation.setCreditorAccount(new OBWriteDomesticStandingOrder3DataInitiationCreditorAccount().identification("321").name("test2").schemeName("UK.OBIE.SortCodeAccountNumber"));
     }
 
+    // TODO #277 - move to uk-datamodel
+    public static OBWriteDomesticStandingOrder3DataInitiation toOBWriteDomesticStandingOrder3DataInitiation(OBDomesticStandingOrder3 initiation) {
+        return new OBWriteDomesticStandingOrder3DataInitiation()
+                .frequency(initiation.getFrequency())
+                .reference(initiation.getReference())
+                .numberOfPayments(initiation.getNumberOfPayments())
+                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
+                .recurringPaymentDateTime(initiation.getRecurringPaymentDateTime())
+                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
+                .firstPaymentAmount(toOBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount(initiation.getFirstPaymentAmount()))
+                .recurringPaymentAmount(toOBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount(initiation.getRecurringPaymentAmount()))
+                .finalPaymentAmount(toOBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount(initiation.getFinalPaymentAmount()))
+                .debtorAccount(toOBWriteDomesticStandingOrder3DataInitiationDebtorAccount(initiation.getDebtorAccount()))
+                .creditorAccount(toOBWriteDomesticStandingOrder3DataInitiationCreditorAccount(initiation.getCreditorAccount()))
+                .supplementaryData(initiation.getSupplementaryData());
+    }
 
 }

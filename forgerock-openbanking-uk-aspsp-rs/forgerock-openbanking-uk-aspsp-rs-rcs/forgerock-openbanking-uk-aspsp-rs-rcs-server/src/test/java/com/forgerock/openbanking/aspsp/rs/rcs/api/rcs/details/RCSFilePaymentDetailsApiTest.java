@@ -24,8 +24,8 @@ import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FilePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -41,11 +41,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.org.openbanking.datamodel.account.OBAccount3Account;
 import uk.org.openbanking.datamodel.account.OBAccount6;
-import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationDebtorAccount;
+import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -94,15 +94,13 @@ public class RCSFilePaymentDetailsApiTest {
     public void setup() throws Exception{
     }
 
-
-    private OBFile2 getValidOBFile() {
-        return new OBFile2()
+    private OBWriteFile2DataInitiation getValidOBFile() {
+        return new OBWriteFile2DataInitiation()
                 .fileHash("ksjkjsahd")
                 .fileReference("UnitTest")
                 .fileType("OBIE-Test")
                 .controlSum(new BigDecimal("101.0"))
-                .numberOfTransactions("19")
-                ;
+                .numberOfTransactions("19");
     }
 
     @Test
@@ -110,9 +108,9 @@ public class RCSFilePaymentDetailsApiTest {
         // Given
         List<FRAccountWithBalance> accounts = Collections.singletonList(DEBTOR_ACCOUNT);
         given(paymentService.getPayment(eq(CONSENT_ID))).willReturn(
-                FRFileConsent2.builder()
+                FRFileConsent5.builder()
                         .id(CONSENT_ID)
-                        .writeFileConsent(new OBWriteFileConsent2().data(new OBWriteDataFileConsent2().initiation(getValidOBFile())))
+                        .writeFileConsent(new OBWriteFileConsent3().data(new OBWriteFileConsent3Data().initiation(getValidOBFile())))
                         .pispId(PISP_ID)
                         .pispName(PISP_NAME)
                         .payments(Arrays.asList(FRFilePayment.builder().instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().currency("GBP")).build()))
@@ -138,12 +136,12 @@ public class RCSFilePaymentDetailsApiTest {
     public void validFilePayment_accountSpecifiedAndFound_createConsentDetailsWithAllAccounts() throws Exception{
         // Given
         List<FRAccountWithBalance> accounts = Collections.singletonList(DEBTOR_ACCOUNT);
-        final OBFile2 validOBFileWithAccount = getValidOBFile()
-                .debtorAccount(new OBCashAccount3().identification("123"));
+        final OBWriteFile2DataInitiation validOBFileWithAccount = getValidOBFile()
+                .debtorAccount(new OBWriteDomestic2DataInitiationDebtorAccount().identification("123"));
         given(paymentService.getPayment(eq(CONSENT_ID))).willReturn(
-                FRFileConsent2.builder()
+                FRFileConsent5.builder()
                         .id(CONSENT_ID)
-                        .writeFileConsent(new OBWriteFileConsent2().data(new OBWriteDataFileConsent2().initiation(validOBFileWithAccount)))
+                        .writeFileConsent(new OBWriteFileConsent3().data(new OBWriteFileConsent3Data().initiation(validOBFileWithAccount)))
                         .pispId(PISP_ID)
                         .pispName(PISP_NAME)
                         .payments(Arrays.asList(FRFilePayment.builder().instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().currency("GBP")).build()))
@@ -171,12 +169,12 @@ public class RCSFilePaymentDetailsApiTest {
         // Given
         List<FRAccountWithBalance> accounts = Collections.emptyList();
 
-        final OBFile2 validOBFileWithAccount = getValidOBFile()
-                .debtorAccount(new OBCashAccount3().identification("123"));
+        final OBWriteFile2DataInitiation validOBFileWithAccount = getValidOBFile()
+                .debtorAccount(new OBWriteDomestic2DataInitiationDebtorAccount().identification("123"));
         given(paymentService.getPayment(eq(CONSENT_ID))).willReturn(
-                FRFileConsent2.builder()
+                FRFileConsent5.builder()
                         .id(CONSENT_ID)
-                        .writeFileConsent(new OBWriteFileConsent2().data(new OBWriteDataFileConsent2().initiation(validOBFileWithAccount)))
+                        .writeFileConsent(new OBWriteFileConsent3().data(new OBWriteFileConsent3Data().initiation(validOBFileWithAccount)))
                         .pispId(PISP_ID)
                         .pispName(PISP_NAME)
                         .build()
@@ -196,9 +194,9 @@ public class RCSFilePaymentDetailsApiTest {
     public void validFilePayment_tppNotFound() throws Exception {
         // Given
         given(paymentService.getPayment(eq(CONSENT_ID))).willReturn(
-                FRFileConsent2.builder()
+                FRFileConsent5.builder()
                         .id(CONSENT_ID)
-                        .writeFileConsent(new OBWriteFileConsent2().data(new OBWriteDataFileConsent2().initiation(getValidOBFile())))
+                        .writeFileConsent(new OBWriteFileConsent3().data(new OBWriteFileConsent3Data().initiation(getValidOBFile())))
                         .pispId(PISP_ID)
                         .pispName(PISP_NAME)
                         .build()
@@ -217,9 +215,9 @@ public class RCSFilePaymentDetailsApiTest {
     public void validFilePayment_wrongPisp() throws Exception {
         // Given
         given(paymentService.getPayment(eq(CONSENT_ID))).willReturn(
-                FRFileConsent2.builder()
+                FRFileConsent5.builder()
                         .id(CONSENT_ID)
-                        .writeFileConsent(new OBWriteFileConsent2().data(new OBWriteDataFileConsent2().initiation(getValidOBFile())))
+                        .writeFileConsent(new OBWriteFileConsent3().data(new OBWriteFileConsent3Data().initiation(getValidOBFile())))
                         .pispId(PISP_ID)
                         .pispName(PISP_NAME)
                         .build()

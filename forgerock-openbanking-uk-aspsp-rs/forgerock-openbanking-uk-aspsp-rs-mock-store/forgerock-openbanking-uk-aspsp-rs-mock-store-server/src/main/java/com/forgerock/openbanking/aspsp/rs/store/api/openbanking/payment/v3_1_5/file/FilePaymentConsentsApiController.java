@@ -256,7 +256,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
     }
 
     // TODO #272 - move to uk-datamodel
-    private OBWriteDomesticConsent4DataAuthorisation toOBWriteDomesticConsent4DataAuthorisation(OBWriteDomesticConsent3DataAuthorisation authorisation) {
+    public static OBWriteDomesticConsent4DataAuthorisation toOBWriteDomesticConsent4DataAuthorisation(OBWriteDomesticConsent3DataAuthorisation authorisation) {
         return authorisation == null ? null : (new OBWriteDomesticConsent4DataAuthorisation())
                 .authorisationType(OBWriteDomesticConsent4DataAuthorisation.AuthorisationTypeEnum.valueOf(authorisation.getAuthorisationType().name()))
                 .completionDateTime(authorisation.getCompletionDateTime());

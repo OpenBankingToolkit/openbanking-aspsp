@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticStandingOrderPaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.DomesticStandingOrderService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -63,7 +63,7 @@ public class RCSDomesticStandingOrderDetailsApiTest {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<List<FRAccountWithBalance>>() {
         });
-        FRDomesticStandingOrderConsent3 consent = JMockData.mock(FRDomesticStandingOrderConsent3.class);
+        FRDomesticStandingOrderConsent5 consent = JMockData.mock(FRDomesticStandingOrderConsent5.class);
         consent.getInitiation().setDebtorAccount(null);
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";
@@ -82,7 +82,7 @@ public class RCSDomesticStandingOrderDetailsApiTest {
     public void shouldReturnRequestedAccountWhenDebtor() throws OBErrorException {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
-        FRDomesticStandingOrderConsent3 consent = JMockData.mock(FRDomesticStandingOrderConsent3.class);
+        FRDomesticStandingOrderConsent5 consent = JMockData.mock(FRDomesticStandingOrderConsent5.class);
         OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);

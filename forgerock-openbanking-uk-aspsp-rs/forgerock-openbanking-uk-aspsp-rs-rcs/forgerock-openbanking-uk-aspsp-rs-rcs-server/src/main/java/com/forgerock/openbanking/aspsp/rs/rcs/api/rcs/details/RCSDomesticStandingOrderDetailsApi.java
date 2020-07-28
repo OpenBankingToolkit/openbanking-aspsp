@@ -23,10 +23,10 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticStandingOrderPaymentConsentDetails;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.common.services.store.payment.DomesticStandingOrderService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBStandingOrder5;
-import uk.org.openbanking.datamodel.payment.OBDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +65,7 @@ public class RCSDomesticStandingOrderDetailsApi implements RCSDetailsApi {
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRDomesticStandingOrderConsent3 domesticConsent = paymentService.getPayment(consentId);
+        FRDomesticStandingOrderConsent5 domesticConsent = paymentService.getPayment(consentId);
 
         // Only show the debtor account if specified in consent
         if (domesticConsent.getInitiation().getDebtorAccount() != null) {
@@ -94,7 +94,7 @@ public class RCSDomesticStandingOrderDetailsApi implements RCSDetailsApi {
         domesticConsent.setUserId(username);
         paymentService.updatePayment(domesticConsent);
 
-        OBDomesticStandingOrder3 domesticStandingOrder = domesticConsent.getInitiation();
+        OBWriteDomesticStandingOrder3DataInitiation domesticStandingOrder = domesticConsent.getInitiation();
         OBStandingOrder5 standingOrder = new OBStandingOrder5()
                 .accountId(domesticConsent.getAccountId())
                 .standingOrderId(domesticConsent.getId())

@@ -28,13 +28,13 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.DomesticScheduledConsent4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticScheduledConsent5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3DataSCASupportData;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4DataSCASupportData;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3Data;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse3Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse3Data.PermissionEnum;
@@ -54,6 +59,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticpayments.DomesticPaymentConsentsApiController.toOBWriteDomesticConsent3DataAuthorisation;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticpayments.DomesticPaymentConsentsApiController.toOBWriteDomesticConsent4DataSCASupportData;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.file.FilePaymentConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticScheduledConsentResponse3DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 
@@ -63,13 +71,13 @@ import static com.forgerock.openbanking.common.services.openbanking.IdempotencyS
 @Slf4j
 public class DomesticScheduledPaymentConsentsApiController implements DomesticScheduledPaymentConsentsApi {
 
-    private final DomesticScheduledConsent4Repository domesticScheduledConsentRepository;
+    private final DomesticScheduledConsent5Repository domesticScheduledConsentRepository;
     private final TppRepository tppRepository;
     private final ResourceLinkService resourceLinkService;
     private final ConsentMetricService consentMetricService;
 
     @Autowired
-    public DomesticScheduledPaymentConsentsApiController(ConsentMetricService consentMetricService, DomesticScheduledConsent4Repository domesticScheduledConsentRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
+    public DomesticScheduledPaymentConsentsApiController(ConsentMetricService consentMetricService, DomesticScheduledConsent5Repository domesticScheduledConsentRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         this.domesticScheduledConsentRepository = domesticScheduledConsentRepository;
         this.tppRepository = tppRepository;
         this.resourceLinkService = resourceLinkService;
@@ -93,7 +101,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
 
         Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        Optional<FRDomesticScheduledConsent4> consentByIdempotencyKey = domesticScheduledConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRDomesticScheduledConsent5> consentByIdempotencyKey = domesticScheduledConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, obWriteDomesticScheduledConsent3, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticScheduledConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
@@ -101,10 +109,10 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent...");
 
-        FRDomesticScheduledConsent4 domesticScheduledConsent = FRDomesticScheduledConsent4.builder()
+        FRDomesticScheduledConsent5 domesticScheduledConsent = FRDomesticScheduledConsent5.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticScheduledConsent(obWriteDomesticScheduledConsent3)
+                .domesticScheduledConsent(toOBWriteDomesticScheduledConsent4(obWriteDomesticScheduledConsent3))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -128,16 +136,16 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
             HttpServletRequest request,
             Principal principal) throws OBErrorResponseException {
 
-        Optional<FRDomesticScheduledConsent4> isDomesticScheduledConsent = domesticScheduledConsentRepository.findById(consentId);
+        Optional<FRDomesticScheduledConsent5> isDomesticScheduledConsent = domesticScheduledConsentRepository.findById(consentId);
         if (!isDomesticScheduledConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic scheduled consent '" + consentId + "' can't be found");
         }
-        FRDomesticScheduledConsent4 domesticScheduledConsent = isDomesticScheduledConsent.get();
+        FRDomesticScheduledConsent5 domesticScheduledConsent = isDomesticScheduledConsent.get();
 
         return ResponseEntity.ok(packageResponse(domesticScheduledConsent));
     }
 
-    private OBWriteDomesticScheduledConsentResponse3 packageResponse(FRDomesticScheduledConsent4 domesticScheduledConsent) {
+    private OBWriteDomesticScheduledConsentResponse3 packageResponse(FRDomesticScheduledConsent5 domesticScheduledConsent) {
         return new OBWriteDomesticScheduledConsentResponse3()
                 .data(new OBWriteDomesticScheduledConsentResponse3Data()
                         .initiation(domesticScheduledConsent.getInitiation())
@@ -146,8 +154,8 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                         .statusUpdateDateTime(domesticScheduledConsent.getStatusUpdate())
                         .consentId(domesticScheduledConsent.getId())
                         .permission(PermissionEnum.valueOf(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission().name()))
-                        .authorisation(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation())
-                        .scASupportData(domesticScheduledConsent.getDomesticScheduledConsent().getData().getScASupportData())
+                        .authorisation(toOBWriteDomesticConsent3DataAuthorisation(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation()))
+                        .scASupportData(toOBWriteDomesticConsent3DataSCASupportData(domesticScheduledConsent.getDomesticScheduledConsent().getData().getScASupportData()))
                 )
                 .links(resourceLinkService.toSelfLink(domesticScheduledConsent, discovery -> getVersion(discovery).getGetDomesticScheduledPaymentConsent()))
                 .risk(domesticScheduledConsent.getRisk())
@@ -158,4 +166,26 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
         return discovery.getV_3_1_3();
     }
 
+    // TODO #272 - move to uk-datamodel
+    public static OBWriteDomesticScheduledConsent4 toOBWriteDomesticScheduledConsent4(OBWriteDomesticScheduledConsent3 obWriteDomesticScheduledConsent3) {
+        return obWriteDomesticScheduledConsent3 == null ? null : (new OBWriteDomesticScheduledConsent4())
+                .data(toOBWriteDomesticScheduledConsent4Data(obWriteDomesticScheduledConsent3.getData()))
+                .risk(obWriteDomesticScheduledConsent3.getRisk());
+    }
+
+    public static OBWriteDomesticScheduledConsent4Data toOBWriteDomesticScheduledConsent4Data(OBWriteDomesticScheduledConsent3Data data) {
+        return data == null ? null : (new OBWriteDomesticScheduledConsent4Data())
+                .permission(OBWriteDomesticScheduledConsent4Data.PermissionEnum.valueOf(data.getPermission().name()))
+                .readRefundAccount(null)
+                .initiation(data.getInitiation())
+                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
+                .scASupportData(toOBWriteDomesticConsent4DataSCASupportData(data.getScASupportData()));
+    }
+
+    public static OBWriteDomesticConsent3DataSCASupportData toOBWriteDomesticConsent3DataSCASupportData(OBWriteDomesticConsent4DataSCASupportData scASupportData) {
+        return scASupportData == null ? null : (new OBWriteDomesticConsent3DataSCASupportData())
+                .requestedSCAExemptionType(OBWriteDomesticConsent3DataSCASupportData.RequestedSCAExemptionTypeEnum.valueOf(scASupportData.getRequestedSCAExemptionType().name()))
+                .appliedAuthenticationApproach(OBWriteDomesticConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.valueOf(scASupportData.getAppliedAuthenticationApproach().name()))
+                .referencePaymentOrderId(scASupportData.getReferencePaymentOrderId());
+    }
 }

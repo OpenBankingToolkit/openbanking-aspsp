@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticSchedulePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -63,7 +63,7 @@ public class RCSDomesticSchedulePaymentDetailsApiTest {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<List<FRAccountWithBalance>>() {
         });
-        FRDomesticScheduledConsent4 consent = JMockData.mock(FRDomesticScheduledConsent4.class);
+        FRDomesticScheduledConsent5 consent = JMockData.mock(FRDomesticScheduledConsent5.class);
         consent.getDomesticScheduledConsent().getData().getInitiation().setDebtorAccount(null);
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";
@@ -82,7 +82,7 @@ public class RCSDomesticSchedulePaymentDetailsApiTest {
     public void shouldReturnRequestedAccountWhenDebtor() throws OBErrorException {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
-        FRDomesticScheduledConsent4 consent = JMockData.mock(FRDomesticScheduledConsent4.class);
+        FRDomesticScheduledConsent5 consent = JMockData.mock(FRDomesticScheduledConsent5.class);
         OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getDomesticScheduledConsent().getData().getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);

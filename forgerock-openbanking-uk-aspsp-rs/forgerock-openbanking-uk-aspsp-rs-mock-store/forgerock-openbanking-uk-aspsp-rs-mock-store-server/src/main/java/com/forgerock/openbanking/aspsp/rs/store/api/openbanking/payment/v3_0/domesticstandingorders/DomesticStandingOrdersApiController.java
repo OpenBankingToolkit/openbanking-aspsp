@@ -21,12 +21,12 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.domesticstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.DomesticStandingOrderConsent3Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.DomesticStandingOrderPaymentSubmission3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticStandingOrderConsent5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderPaymentSubmission3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -42,9 +42,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,18 +57,17 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder2;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder3;
 
 @Controller("DomesticStandingOrdersApiV3.0")
 @Slf4j
 public class DomesticStandingOrdersApiController implements DomesticStandingOrdersApi {
-    private DomesticStandingOrderConsent3Repository domesticStandingOrderConsentRepository;
+    private DomesticStandingOrderConsent5Repository domesticStandingOrderConsentRepository;
     private DomesticStandingOrderPaymentSubmission3Repository domesticStandingOrderPaymentSubmissionRepository;
     private ResourceLinkService resourceLinkService;
 
     @Autowired
-    public DomesticStandingOrdersApiController(DomesticStandingOrderConsent3Repository domesticStandingOrderConsentRepository, DomesticStandingOrderPaymentSubmission3Repository domesticStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public DomesticStandingOrdersApiController(DomesticStandingOrderConsent5Repository domesticStandingOrderConsentRepository, DomesticStandingOrderPaymentSubmission3Repository domesticStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
         this.domesticStandingOrderConsentRepository = domesticStandingOrderConsentRepository;
         this.domesticStandingOrderPaymentSubmissionRepository = domesticStandingOrderPaymentSubmissionRepository;
         this.resourceLinkService = resourceLinkService;
@@ -76,7 +77,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     public ResponseEntity createDomesticStandingOrders(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteDomesticStandingOrder1 obWriteDomesticStandingOrder1Param,
+            @RequestBody OBWriteDomesticStandingOrder1 obWriteDomesticStandingOrder1,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -107,12 +108,12 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomesticStandingOrder1Param);
-        OBWriteDomesticStandingOrder2 payment = toOBWriteDomesticStandingOrder2(obWriteDomesticStandingOrder1Param);
+        log.debug("Received payment submission: {}", obWriteDomesticStandingOrder1);
+        OBWriteDomesticStandingOrder3 payment = toOBWriteDomesticStandingOrder3(obWriteDomesticStandingOrder1);
         log.trace("Converted to OBWriteDomesticStandingOrder2: {}", payment);
 
         String paymentId = payment.getData().getConsentId();
-        FRDomesticStandingOrderConsent3 paymentConsent = domesticStandingOrderConsentRepository.findById(paymentId)
+        FRDomesticStandingOrderConsent5 paymentConsent = domesticStandingOrderConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -122,7 +123,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
         FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission3.builder()
                 .id(paymentId)
-                .domesticStandingOrder(toOBWriteDomesticStandingOrder3(payment))
+                .domesticStandingOrder(payment)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -167,16 +168,16 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         }
         FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRDomesticStandingOrderConsent3> isPaymentSetup = domesticStandingOrderConsentRepository.findById(domesticStandingOrderId);
+        Optional<FRDomesticStandingOrderConsent5> isPaymentSetup = domesticStandingOrderConsentRepository.findById(domesticStandingOrderId);
         if (!isPaymentSetup.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + domesticStandingOrderId + "' can't be found");
         }
-        FRDomesticStandingOrderConsent3 frPaymentSetup = isPaymentSetup.get();
+        FRDomesticStandingOrderConsent5 frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
     private OBWriteDomesticStandingOrderResponse1 packagePayment(FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission,
-                                                                 FRDomesticStandingOrderConsent3 frDomesticStandingOrderConsent1) {
+                                                                 FRDomesticStandingOrderConsent5 frDomesticStandingOrderConsent1) {
         return new OBWriteDomesticStandingOrderResponse1().data(new OBWriteDataDomesticStandingOrderResponse1()
                 .domesticStandingOrderId(frPaymentSubmission.getId())
                 .initiation(toOBDomesticStandingOrder1(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))
@@ -186,6 +187,19 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .consentId(frDomesticStandingOrderConsent1.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_0().getGetDomesticStandingOrder()))
                 .meta(new Meta());
+    }
+
+    // TODO #272 - move to uk-datamodel
+    public static OBWriteDomesticStandingOrder3 toOBWriteDomesticStandingOrder3(OBWriteDomesticStandingOrder1 obWriteDomesticStandingOrder1) {
+        return (new OBWriteDomesticStandingOrder3())
+                .data(toOBWriteDataDomesticStandingOrder3(obWriteDomesticStandingOrder1.getData()))
+                .risk(obWriteDomesticStandingOrder1.getRisk());
+    }
+
+    public static OBWriteDataDomesticStandingOrder3 toOBWriteDataDomesticStandingOrder3(OBWriteDataDomesticStandingOrder1 data) {
+        return data == null ? null : (new OBWriteDataDomesticStandingOrder3())
+                .consentId(data.getConsentId())
+                .initiation(toOBDomesticStandingOrder3(data.getInitiation()));
     }
 
 }

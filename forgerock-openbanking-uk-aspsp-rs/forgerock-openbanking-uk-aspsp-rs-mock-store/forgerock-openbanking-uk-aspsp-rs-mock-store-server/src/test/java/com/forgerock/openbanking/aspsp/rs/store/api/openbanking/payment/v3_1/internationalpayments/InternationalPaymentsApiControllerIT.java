@@ -22,12 +22,12 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.in
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalPaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalConsent4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -53,9 +53,9 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse2;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBInternational2;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBInternational2;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments.InternationalPaymentsApiController}.
@@ -68,7 +68,7 @@ public class InternationalPaymentsApiControllerIT {
     private int port;
 
     @Autowired
-    private InternationalConsent4Repository consentRepository;
+    private InternationalConsent5Repository consentRepository;
     @Autowired
     private InternationalPaymentSubmission2Repository submissionRepository;
     @Autowired
@@ -88,7 +88,7 @@ public class InternationalPaymentsApiControllerIT {
     public void testGetInternationalPaymentSubmission() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent4 consent = saveConsent();
+        FRInternationalConsent5 consent = saveConsent();
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -110,7 +110,7 @@ public class InternationalPaymentsApiControllerIT {
     public void testGetMissingInternationalPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent4 consent = saveConsent();
+        FRInternationalConsent5 consent = saveConsent();
         OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
         FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
                 .id(consent.getId())
@@ -131,7 +131,7 @@ public class InternationalPaymentsApiControllerIT {
     public void testGetInternationalPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
+        FRInternationalConsent5 consent = JMockData.mock(FRInternationalConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -149,7 +149,7 @@ public class InternationalPaymentsApiControllerIT {
     public void testCreateInternationalPaymentSubmission() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent4 consent = saveConsent();
+        FRInternationalConsent5 consent = saveConsent();
         OBWriteInternational2 submissionRequest = new OBWriteInternational2();
         submissionRequest.setData((new OBWriteDataInternational2())
                 .consentId(consent.getId())
@@ -179,7 +179,7 @@ public class InternationalPaymentsApiControllerIT {
     public void testDuplicatePaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent4 consent = saveConsent();
+        FRInternationalConsent5 consent = saveConsent();
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
 
         OBWriteInternational2 obWriteInternational2 = new OBWriteInternational2();
@@ -206,7 +206,7 @@ public class InternationalPaymentsApiControllerIT {
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
+        FRInternationalConsent5 consent = JMockData.mock(FRInternationalConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consent.getRisk().merchantCategoryCode("ABCD").getDeliveryAddress()
@@ -240,7 +240,7 @@ public class InternationalPaymentsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(400);
     }
 
-    private FRInternationalPaymentSubmission2 savePaymentSubmission(FRInternationalConsent4 consent) {
+    private FRInternationalPaymentSubmission2 savePaymentSubmission(FRInternationalConsent5 consent) {
         OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
         submissionRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
         FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
@@ -251,8 +251,8 @@ public class InternationalPaymentsApiControllerIT {
         return submission;
     }
 
-    private FRInternationalConsent4 saveConsent() {
-        FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
+    private FRInternationalConsent5 saveConsent() {
+        FRInternationalConsent5 consent = JMockData.mock(FRInternationalConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consent.getInitiation().getCreditor().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));

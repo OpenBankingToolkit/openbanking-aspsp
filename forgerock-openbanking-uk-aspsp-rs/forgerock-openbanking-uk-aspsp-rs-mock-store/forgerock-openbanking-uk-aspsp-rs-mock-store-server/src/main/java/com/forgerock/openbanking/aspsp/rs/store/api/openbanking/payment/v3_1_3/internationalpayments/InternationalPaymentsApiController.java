@@ -26,13 +26,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.internationalpayments;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalConsent4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalPaymentSubmission4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalConsent5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalPaymentSubmission4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -53,6 +53,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.internationalpayments.InternationalPaymentConsentsApiController.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalResponse4DataStatus;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -61,11 +62,11 @@ import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converte
 @Slf4j
 public class InternationalPaymentsApiController implements InternationalPaymentsApi {
 
-    private final InternationalConsent4Repository internationalConsentRepository;
+    private final InternationalConsent5Repository internationalConsentRepository;
     private final InternationalPaymentSubmission4Repository internationalPaymentSubmissionRepository;
     private final ResourceLinkService resourceLinkService;
 
-    public InternationalPaymentsApiController(InternationalConsent4Repository internationalConsentRepository, InternationalPaymentSubmission4Repository internationalPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public InternationalPaymentsApiController(InternationalConsent5Repository internationalConsentRepository, InternationalPaymentSubmission4Repository internationalPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
         this.internationalConsentRepository = internationalConsentRepository;
         this.internationalPaymentSubmissionRepository = internationalPaymentSubmissionRepository;
         this.resourceLinkService = resourceLinkService;
@@ -86,7 +87,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
         log.debug("Received payment submission: {}", obWriteInternational3);
 
         String paymentId = obWriteInternational3.getData().getConsentId();
-        FRInternationalConsent4 paymentConsent = internationalConsentRepository.findById(paymentId)
+        FRInternationalConsent5 paymentConsent = internationalConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -123,11 +124,11 @@ public class InternationalPaymentsApiController implements InternationalPayments
         }
         FRInternationalPaymentSubmission4 frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRInternationalConsent4> isPaymentSetup = internationalConsentRepository.findById(internationalPaymentId);
+        Optional<FRInternationalConsent5> isPaymentSetup = internationalConsentRepository.findById(internationalPaymentId);
         if (!isPaymentSetup.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + internationalPaymentId + "' can't be found");
         }
-        FRInternationalConsent4 frPaymentSetup = isPaymentSetup.get();
+        FRInternationalConsent5 frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
@@ -146,7 +147,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
         return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    private OBWriteInternationalResponse4 packagePayment(FRInternationalPaymentSubmission4 frPaymentSubmission, FRInternationalConsent4 frInternationalConsent) {
+    private OBWriteInternationalResponse4 packagePayment(FRInternationalPaymentSubmission4 frPaymentSubmission, FRInternationalConsent5 frInternationalConsent) {
         return new OBWriteInternationalResponse4()
                 .data(new OBWriteInternationalResponse4Data()
                         .internationalPaymentId(frPaymentSubmission.getId())
@@ -155,7 +156,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .statusUpdateDateTime(frInternationalConsent.getStatusUpdate())
                         .status(toOBWriteInternationalResponse4DataStatus(frInternationalConsent.getStatus()))
                         .consentId(frInternationalConsent.getId())
-                        .exchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate()))
+                        .exchangeRateInformation(toOBWriteInternationalConsentResponse4DataExchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate())))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalPayment()))
                 .meta(new Meta());
     }

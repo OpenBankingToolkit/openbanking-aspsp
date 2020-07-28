@@ -26,8 +26,8 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatu
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
@@ -40,7 +40,11 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
+import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
+import uk.org.openbanking.datamodel.account.OBEntryStatus1Code;
+import uk.org.openbanking.datamodel.account.OBTransaction5;
+import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.util.ArrayList;
@@ -74,9 +78,9 @@ public class AcceptFilePaymentTask {
     @SchedulerLock(name = "filePayment")
     public void autoAcceptPayment() {
         log.info("Auto-accept file payment task waking up. The time is now {}.", format.print(DateTime.now()));
-        final Collection<FRFileConsent2> allPaymentsInProcess = filePaymentService.getAllPaymentFilesInProcess();
+        final Collection<FRFileConsent5> allPaymentsInProcess = filePaymentService.getAllPaymentFilesInProcess();
 
-        for (FRFileConsent2 consent: allPaymentsInProcess) {
+        for (FRFileConsent5 consent: allPaymentsInProcess) {
             log.info("Processing file consent {}", consent);
             try {
                 int paymentNo = 0;

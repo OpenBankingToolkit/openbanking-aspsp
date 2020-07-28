@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
-public class InternationalStandingOrderService implements PaymentService<FRInternationalStandingOrderConsent4> {
+public class InternationalStandingOrderService implements PaymentService<FRInternationalStandingOrderConsent5> {
     private static final String BASE_RESOURCE_PATH = "/api/international-standing-orders/";
 
     private String rsStoreRoot;
@@ -42,14 +42,14 @@ public class InternationalStandingOrderService implements PaymentService<FRInter
         this.rsStoreRoot = rsStoreRoot;
     }
 
-    public void updatePayment(FRInternationalStandingOrderConsent4 consent) {
+    public void updatePayment(FRInternationalStandingOrderConsent5 consent) {
         log.debug("Update the consent in the store. {}", consent);
         restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH, consent);
     }
 
-    public FRInternationalStandingOrderConsent4 getPayment(String consentId) {
+    public FRInternationalStandingOrderConsent5 getPayment(String consentId) {
         log.debug("Getting consent for {}", consentId);
         return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId,
-                FRInternationalStandingOrderConsent4.class);
+                FRInternationalStandingOrderConsent5.class);
     }
 }

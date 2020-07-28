@@ -22,10 +22,10 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.do
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticConsent2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
@@ -52,6 +52,7 @@ import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
@@ -60,6 +61,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.domesticpayments.DomesticPaymentConsentsApiController.toOBWriteDomesticConsent4;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_CLIENT_ID;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_PISP_ID;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_PISP_NAME;
@@ -67,7 +69,8 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBDomestic2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBWriteDomestic2DataInitiation;
 
 /**
  * Spring Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.domesticpayments.DomesticPaymentConsentsApiController}.
@@ -81,7 +84,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private DomesticConsent2Repository repository;
+    private DomesticConsent5Repository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -108,7 +111,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     public void testGetDomesticPaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
+        FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
@@ -123,7 +126,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(consent.getInitiation());
+        assertThat(response.getBody().getData().getInitiation()).isEqualTo(toOBDomestic2(consent.getInitiation()));
         assertThat(response.getBody().getData().getStatus()).isEqualTo(consent.getStatus().toOBExternalConsentStatus1Code());
         Assertions.assertThat(response.getBody().getData().getCreationDateTime()).isEqualToIgnoringMillis(consent.getCreated());
         Assertions.assertThat(response.getBody().getData().getStatusUpdateDateTime()).isEqualToIgnoringMillis(consent.getStatusUpdate());
@@ -133,7 +136,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     public void testGetDomesticPaymentConsentFunds() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
+        FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
         repository.save(consent);
@@ -157,7 +160,7 @@ public class DomesticPaymentConsentsApiControllerIT {
     public void testGetDomesticPaymentConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticConsent2 consent = JMockData.mock(FRDomesticConsent2.class);
+        FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
 
         // When
@@ -200,11 +203,11 @@ public class DomesticPaymentConsentsApiControllerIT {
         log.error("The response: {}", response);
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteDomesticConsentResponse2 consentResponse = response.getBody();
-        FRDomesticConsent2 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRDomesticConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getPispName()).isEqualTo(MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(consentResponse.getData().getInitiation());
+        assertThat(consent.getInitiation()).isEqualTo(toOBWriteDomestic2DataInitiation(consentResponse.getData().getInitiation()));
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
         assertThat(consent.getRisk()).isEqualTo(consentResponse.getRisk());
         assertThat(consent.getObVersion()).isEqualTo(OBVersion.v3_1);
@@ -216,7 +219,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         final String idempotencyKey = UUID.randomUUID().toString();
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         setupMockTpp(tppRepository);
-        OBWriteDomesticConsent2 consentRequest = JMockData.mock(OBWriteDomesticConsent2.class);
+        OBWriteDomesticConsent4 consentRequest = JMockData.mock(OBWriteDomesticConsent4.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consentRequest.getData().getInitiation().getCreditorPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
         consentRequest.getData().getInitiation().supplementaryData(null);
@@ -224,7 +227,7 @@ public class DomesticPaymentConsentsApiControllerIT {
                 .getDeliveryAddress().addressLine(Collections.singletonList("3 Queens Square")).country("GP").countrySubDivision(Collections.singletonList("aaa"));
         consentRequest.getData().getAuthorisation().completionDateTime(null);
 
-        FRDomesticConsent2 existingConsent = JMockData.mock(FRDomesticConsent2.class);
+        FRDomesticConsent5 existingConsent = JMockData.mock(FRDomesticConsent5.class);
         existingConsent.setId(UUID.randomUUID().toString());
         existingConsent.setStatus(ConsentStatusCode.AUTHORISED);
         existingConsent.setDomesticConsent(consentRequest);
@@ -245,9 +248,9 @@ public class DomesticPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteDomesticConsentResponse2 consentResponse = response.getBody();
-        FRDomesticConsent2 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRDomesticConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(consentResponse.getData().getInitiation());
+        assertThat(consent.getInitiation()).isEqualTo(toOBWriteDomestic2DataInitiation(consentResponse.getData().getInitiation()));
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
     }
 
@@ -264,10 +267,10 @@ public class DomesticPaymentConsentsApiControllerIT {
         consentRequest.getRisk().merchantCategoryCode("ABCD").getDeliveryAddress().addressLine(Collections.singletonList("3 Queens Square")).country("GP");
         consentRequest.getData().getAuthorisation().completionDateTime(null);
 
-        FRDomesticConsent2 existingConsent = JMockData.mock(FRDomesticConsent2.class);
+        FRDomesticConsent5 existingConsent = JMockData.mock(FRDomesticConsent5.class);
         existingConsent.setId(UUID.randomUUID().toString());
         existingConsent.setStatus(ConsentStatusCode.AUTHORISED);
-        existingConsent.setDomesticConsent(toOBWriteDomesticConsent2(consentRequest));
+        existingConsent.setDomesticConsent(toOBWriteDomesticConsent4(consentRequest));
         existingConsent.setIdempotencyKey(idempotencyKey);
         existingConsent = repository.save(existingConsent);
 

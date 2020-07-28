@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.InternationalSchedulePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.InternationalScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -40,14 +40,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.org.openbanking.datamodel.account.OBAccount3Account;
 import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4DataExchangeRateInformation;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6DataExchangeRateInformation;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRateType2Code;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RCSInternationalScheduledPaymentDetailsApiTest {
@@ -65,7 +65,7 @@ public class RCSInternationalScheduledPaymentDetailsApiTest {
     public void shouldReturnAllAccountsWhenNoDebtor() throws OBErrorException {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>(){});
-        FRInternationalScheduledConsent4 consent = JMockData.mock(FRInternationalScheduledConsent4.class);
+        FRInternationalScheduledConsent5 consent = JMockData.mock(FRInternationalScheduledConsent5.class);
         consent.getInitiation().setDebtorAccount(null);
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";
@@ -84,7 +84,7 @@ public class RCSInternationalScheduledPaymentDetailsApiTest {
     public void shouldReturnRequestedAccountWhenDebtor() throws OBErrorException {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>(){});
-        FRInternationalScheduledConsent4 consent = JMockData.mock(FRInternationalScheduledConsent4.class);
+        FRInternationalScheduledConsent5 consent = JMockData.mock(FRInternationalScheduledConsent5.class);
         OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);
@@ -104,13 +104,13 @@ public class RCSInternationalScheduledPaymentDetailsApiTest {
     public void shouldReturnExchangeRate() throws OBErrorException {
         // Given
         List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>(){});
-        FRInternationalScheduledConsent4 consent = JMockData.mock(FRInternationalScheduledConsent4.class);
+        FRInternationalScheduledConsent5 consent = JMockData.mock(FRInternationalScheduledConsent5.class);
         OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";
         given(tppStoreService.findById(consent.getPispId())).willReturn(Optional.of(Tpp.builder().clientId(clientId).build()));
-        OBWriteInternationalConsentResponse4DataExchangeRateInformation exchangeRateInformation = consent.getCalculatedExchangeRate();
+        OBWriteInternationalConsentResponse6DataExchangeRateInformation exchangeRateInformation = consent.getCalculatedExchangeRate();
 
         // When
         ResponseEntity responseEntity = api.consentDetails("", accounts, "", "", clientId);
@@ -123,5 +123,9 @@ public class RCSInternationalScheduledPaymentDetailsApiTest {
                 .rateType(toOBExchangeRateType2Code(exchangeRateInformation.getRateType()))
                 .contractIdentification(exchangeRateInformation.getContractIdentification())
                 .unitCurrency(exchangeRateInformation.getUnitCurrency()));
+    }
+
+    private OBExchangeRateType2Code toOBExchangeRateType2Code(OBWriteInternationalConsentResponse6DataExchangeRateInformation.RateTypeEnum rateType) {
+        return rateType == null ? null : OBExchangeRateType2Code.valueOf(rateType.name());
     }
 }

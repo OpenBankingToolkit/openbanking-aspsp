@@ -21,14 +21,13 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.file;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -160,7 +159,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             Principal principal
     ) throws OBErrorResponseException {
         final String contentTypeOfFile = request.getHeader(CONTENT_TYPE);
-        FRFileConsent2 consent = filePaymentService.getPayment(consentId);
+        FRFileConsent5 consent = filePaymentService.getPayment(consentId);
 
         return rsEndpointWrapperService.filePaymentEndpoint()
                 .authorization(authorization)

@@ -22,13 +22,13 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.in
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalScheduledPaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalScheduledConsent4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalScheduledConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -69,7 +69,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     private int port;
 
     @Autowired
-    private InternationalScheduledConsent4Repository consentRepository;
+    private InternationalScheduledConsent5Repository consentRepository;
     @Autowired
     private InternationalScheduledPaymentSubmission2Repository submissionRepository;
     @Autowired
@@ -89,7 +89,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     public void testGetInternationalScheduledPaymentSubmission() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalScheduledConsent4 consent = saveConsent();
+        FRInternationalScheduledConsent5 consent = saveConsent();
         FRInternationalScheduledPaymentSubmission2 submission = savePaymentSubmission(consent);
 
         // When
@@ -110,7 +110,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     public void testGetMissingInternationalScheduledPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalScheduledConsent4 consent = saveConsent();
+        FRInternationalScheduledConsent5 consent = saveConsent();
         OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
         FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
                 .id(consent.getId())
@@ -131,7 +131,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     public void testGetInternationalScheduledPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalScheduledConsent4 consent = JMockData.mock(FRInternationalScheduledConsent4.class);
+        FRInternationalScheduledConsent5 consent = JMockData.mock(FRInternationalScheduledConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         FRInternationalScheduledPaymentSubmission2 submission = savePaymentSubmission(consent);
 
@@ -149,7 +149,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     public void testCreateInternationalScheduledPaymentSubmission() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalScheduledConsent4 consent = saveConsent();
+        FRInternationalScheduledConsent5 consent = saveConsent();
         OBWriteDataInternationalScheduled2 data = (new OBWriteDataInternationalScheduled2())
                 .consentId(consent.getId())
                 .initiation(toOBInternationalScheduled2(consent.getInitiation()));
@@ -179,7 +179,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     public void testDuplicateScheduledPaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalScheduledConsent4 consent = saveConsent();
+        FRInternationalScheduledConsent5 consent = saveConsent();
         FRInternationalScheduledPaymentSubmission2 submission = savePaymentSubmission(consent);
 
         OBWriteInternationalScheduled2 obWriteInternational2 = new OBWriteInternationalScheduled2();
@@ -206,7 +206,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     public void testMissingConsentOnScheduledPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalScheduledConsent4 consent = JMockData.mock(FRInternationalScheduledConsent4.class);
+        FRInternationalScheduledConsent5 consent = JMockData.mock(FRInternationalScheduledConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consent.getInitiation().getCreditorAgent().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
@@ -243,7 +243,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(400);
     }
 
-    private FRInternationalScheduledPaymentSubmission2 savePaymentSubmission(FRInternationalScheduledConsent4 consent) {
+    private FRInternationalScheduledPaymentSubmission2 savePaymentSubmission(FRInternationalScheduledConsent5 consent) {
         OBWriteInternationalScheduled2 submissionRequest = JMockData.mock(OBWriteInternationalScheduled2.class);
         submissionRequest.getData().initiation(toOBInternationalScheduled2(consent.getInitiation()));
         FRInternationalScheduledPaymentSubmission2 submission = FRInternationalScheduledPaymentSubmission2.builder()
@@ -254,8 +254,8 @@ public class InternationalScheduledPaymentsApiControllerIT {
         return submission;
     }
 
-    private FRInternationalScheduledConsent4 saveConsent() {
-        FRInternationalScheduledConsent4 consent = JMockData.mock(FRInternationalScheduledConsent4.class);
+    private FRInternationalScheduledConsent5 saveConsent() {
+        FRInternationalScheduledConsent5 consent = JMockData.mock(FRInternationalScheduledConsent5.class);
         consent.setId(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT.generateIntentId());
         consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consent.getInitiation().getCreditor().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));

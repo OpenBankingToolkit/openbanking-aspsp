@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticPaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -33,11 +33,13 @@ import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.payment.OBRemittanceInformation1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j
@@ -62,7 +64,7 @@ public class RCSDomesticPaymentDetailsApi implements RCSDetailsApi {
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRDomesticConsent2 domesticConsent = paymentService.getPayment(consentId);
+        FRDomesticConsent5 domesticConsent = paymentService.getPayment(consentId);
 
         // Only show the debtor account if specified in consent
         if (domesticConsent.getInitiation().getDebtorAccount() != null) {
@@ -92,7 +94,7 @@ public class RCSDomesticPaymentDetailsApi implements RCSDetailsApi {
         paymentService.updatePayment(domesticConsent);
 
         return ResponseEntity.ok(DomesticPaymentConsentDetails.builder()
-                .instructedAmount(domesticConsent.getInitiation().getInstructedAmount())
+                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(domesticConsent.getInitiation().getInstructedAmount()))
                 .accounts(accounts)
                 .username(username)
                 .logo(tpp.getLogo())
@@ -100,7 +102,7 @@ public class RCSDomesticPaymentDetailsApi implements RCSDetailsApi {
                 .clientId(clientId)
                 .paymentReference(Optional.ofNullable(
                         domesticConsent.getInitiation().getRemittanceInformation())
-                        .map(OBRemittanceInformation1::getReference)
+                        .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
     }

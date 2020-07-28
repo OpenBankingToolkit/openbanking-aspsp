@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalScheduledConsent4Repository;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledConsent4;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalScheduledConsent5Repository;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.when;
 public class InternationalScheduledPaymentApiControllerTest {
 
     @Mock
-    private InternationalScheduledConsent4Repository repository;
+    private InternationalScheduledConsent5Repository repository;
 
     @InjectMocks
     private InternationalScheduledPaymentApiController controller;
@@ -49,7 +49,7 @@ public class InternationalScheduledPaymentApiControllerTest {
     @Test
     public void getInternationalScheduledPaymentConsent() {
         // Given
-        FRInternationalScheduledConsent4 expectedConsent = new FRInternationalScheduledConsent4();
+        FRInternationalScheduledConsent5 expectedConsent = new FRInternationalScheduledConsent5();
         expectedConsent.id = "expectedId123";
         when(repository.findById(eq("pay123"))).thenReturn(Optional.of(expectedConsent));
 
@@ -58,7 +58,7 @@ public class InternationalScheduledPaymentApiControllerTest {
 
         // Then
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(((FRInternationalScheduledConsent4) Objects.requireNonNull(resp.getBody())).id).isEqualTo("expectedId123");
+        assertThat(((FRInternationalScheduledConsent5) Objects.requireNonNull(resp.getBody())).id).isEqualTo("expectedId123");
     }
 
     @Test

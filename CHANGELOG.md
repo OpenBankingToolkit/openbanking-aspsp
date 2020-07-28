@@ -15,6 +15,8 @@ Release/1.0.91 (#233)
 * Release candidate: prepare for next development iteration
 
 * changelog updated
+[0b001c4e8833477](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0b001c4e8833477) Matt Wills *2020-07-29 18:26:26*
+Added controllers and their (mostly) generated interfaces to the rs-store and rs-gateway modules for 3.1.5 of the payment API. Added new repository and FR documents for new model objects (#272)
 [961727b0f223e9a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/961727b0f223e9a) dependabot-preview[bot] *2020-07-27 08:41:17*
 Bump forgerock-openbanking-auth from 1.0.57 to 1.0.58
 

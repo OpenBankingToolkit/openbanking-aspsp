@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.fi
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FileConsent2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.aspsp.rs.store.validator.ControlSumValidator;
 import com.forgerock.openbanking.aspsp.rs.store.validator.FileTransactionCountValidator;
@@ -32,7 +32,7 @@ import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFileFactory;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
@@ -52,11 +52,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.payment.OBFile1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsentResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent1;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse1;
-import uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -67,18 +70,23 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBRemittanceInformationConverter.toOBRemittanceInformation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBRemittanceInformationConverter.toOBWriteDomestic2DataInitiationRemittanceInformation;
 
 @Controller("FilePaymentConsentsApiV3.0")
 @Slf4j
 public class FilePaymentConsentsApiController implements FilePaymentConsentsApi {
     private final TppRepository tppRepository;
-    private final FileConsent2Repository fileConsentRepository;
+    private final FileConsent5Repository fileConsentRepository;
     private final ResourceLinkService resourceLinkService;
     private ConsentMetricService consentMetricService;
 
     @Autowired
-    public FilePaymentConsentsApiController(ConsentMetricService consentMetricService, TppRepository tppRepository, FileConsent2Repository fileConsentRepository, ResourceLinkService resourceLinkService) {
+    public FilePaymentConsentsApiController(ConsentMetricService consentMetricService, TppRepository tppRepository, FileConsent5Repository fileConsentRepository, ResourceLinkService resourceLinkService) {
         this.tppRepository = tppRepository;
         this.fileConsentRepository = fileConsentRepository;
         this.resourceLinkService = resourceLinkService;
@@ -89,7 +97,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
     public ResponseEntity<OBWriteFileConsentResponse1> createFilePaymentConsents(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteFileConsent1 obWriteFileConsent1Param,
+            @RequestBody OBWriteFileConsent1 obWriteFileConsent1,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -104,7 +112,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -123,9 +131,9 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received '{}'.", obWriteFileConsent1Param);
-        OBWriteFileConsent2 consent2 = toOBWriteFileConsent2(obWriteFileConsent1Param);
-        log.debug("Converted to OBWriteFileConsent2: {}", consent2);
+        log.debug("Received '{}'.", obWriteFileConsent1);
+        OBWriteFileConsent3 consent3 = toOBWriteFileConsent3(obWriteFileConsent1);
+        log.debug("Converted to OBWriteFileConsent2: {}", consent3);
 
         final Tpp tpp = Optional.ofNullable(tppRepository.findByClientId(clientId))
                 .orElseThrow(() -> new OBErrorResponseException(
@@ -135,17 +143,17 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                         Collections.singletonList(OBRIErrorType.REQUEST_INVALID_HEADER.toOBError1("x-ob-client-id"))
                 ));
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        Optional<FRFileConsent2> consentByIdempotencyKey = fileConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRFileConsent5> consentByIdempotencyKey = fileConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, consent2, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getWriteFileConsent());
+            validateIdempotencyRequest(xIdempotencyKey, consent3, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getWriteFileConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
-        FRFileConsent2 fileConsent = FRFileConsent2.builder().id(IntentType.PAYMENT_FILE_CONSENT.generateIntentId())
+        FRFileConsent5 fileConsent = FRFileConsent5.builder().id(IntentType.PAYMENT_FILE_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGUPLOAD)
-                .writeFileConsent(consent2)
+                .writeFileConsent(consent3)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .created(DateTime.now())
@@ -183,7 +191,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -201,13 +209,13 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
     ) throws OBErrorResponseException {
         log.trace("Received '{}'.", fileParam);
 
-        final FRFileConsent2 fileConsent = fileConsentRepository.findById(consentId)
+        final FRFileConsent5 fileConsent = fileConsentRepository.findById(consentId)
                 .orElseThrow(() -> new OBErrorResponseException(
-                HttpStatus.BAD_REQUEST,
-                OBRIErrorResponseCategory.REQUEST_INVALID,
-                OBRIErrorType.PAYMENT_ID_NOT_FOUND
-                        .toOBError1()
-        ));
+                        HttpStatus.BAD_REQUEST,
+                        OBRIErrorResponseCategory.REQUEST_INVALID,
+                        OBRIErrorType.PAYMENT_ID_NOT_FOUND
+                                .toOBError1()
+                ));
 
         // If file already exists it could be idempotent request
         if (!StringUtils.isEmpty(fileConsent.getFileContent())) {
@@ -218,10 +226,10 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             } else {
                 log.debug("This consent already has a file uploaded and the idempotency key does not match the previous upload so rejecting.");
                 throw new OBErrorResponseException(
-                    HttpStatus.FORBIDDEN,
-                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.PAYMENT_ALREADY_SUBMITTED
-                            .toOBError1(fileConsent.getStatus().toOBExternalConsentStatus2Code())
+                        HttpStatus.FORBIDDEN,
+                        OBRIErrorResponseCategory.REQUEST_INVALID,
+                        OBRIErrorType.PAYMENT_ALREADY_SUBMITTED
+                                .toOBError1(fileConsent.getStatus().toOBExternalConsentStatus2Code())
                 );
             }
         }
@@ -258,7 +266,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -296,7 +304,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -313,7 +321,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             Principal principal
     ) throws OBErrorResponseException {
         return fileConsentRepository.findById(consentId)
-                .map(FRFileConsent2::getFileContent)
+                .map(FRFileConsent5::getFileContent)
                 .map(fileStr -> new ByteArrayResource(fileStr.getBytes()))
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new OBErrorResponseException(
@@ -325,18 +333,58 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
     }
 
-    private OBWriteFileConsentResponse1 packageResponse(FRFileConsent2 fileConsent) {
+    private OBWriteFileConsentResponse1 packageResponse(FRFileConsent5 fileConsent) {
         return new OBWriteFileConsentResponse1()
                 .data(new OBWriteDataFileConsentResponse1()
                         .consentId(fileConsent.getId())
                         .status(fileConsent.getStatus().toOBExternalConsentStatus2Code())
                         .creationDateTime(fileConsent.getCreated())
                         .statusUpdateDateTime(fileConsent.getStatusUpdate())
-                        .initiation(OBFileConverter.toOBFile1(fileConsent.getInitiation()))
-                        .authorisation(fileConsent.getWriteFileConsent().getData().getAuthorisation())
+                        .initiation(toOBFile1(fileConsent.getInitiation()))
+                        .authorisation(toOBAuthorisation1(fileConsent.getWriteFileConsent().getData().getAuthorisation()))
                 )
                 .links(resourceLinkService.toSelfLink(fileConsent, discovery -> discovery.getV_3_0().getGetFilePaymentConsent()))
                 .meta(new Meta());
+    }
+
+    // TODO #272 - move to uk-datamodel
+    public static OBWriteFileConsent3 toOBWriteFileConsent3(OBWriteFileConsent1 obWriteFileConsent1) {
+        return obWriteFileConsent1 == null ? null : (new OBWriteFileConsent3())
+                .data(toOBWriteFileConsent3Data(obWriteFileConsent1.getData()));
+    }
+
+    public static OBWriteFileConsent3Data toOBWriteFileConsent3Data(OBWriteDataFileConsent1 data) {
+        return data == null ? null : (new OBWriteFileConsent3Data())
+                .initiation(toOBWriteFile2DataInitiation(data.getInitiation()))
+                .authorisation(toOBWriteDomesticConsent3DataAuthorisation(data.getAuthorisation()))
+                .scASupportData(null);
+    }
+
+    public static OBWriteFile2DataInitiation toOBWriteFile2DataInitiation(OBFile1 initiation) {
+        return initiation == null ? null : (new OBWriteFile2DataInitiation())
+                .fileType(initiation.getFileType())
+                .fileHash(initiation.getFileHash())
+                .fileReference(initiation.getFileReference())
+                .numberOfTransactions(initiation.getNumberOfTransactions())
+                .controlSum(initiation.getControlSum())
+                .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
+                .localInstrument(initiation.getLocalInstrument())
+                .debtorAccount(toOBWriteDomestic2DataInitiationDebtorAccount(initiation.getDebtorAccount()))
+                .remittanceInformation(toOBWriteDomestic2DataInitiationRemittanceInformation(initiation.getRemittanceInformation()))
+                .supplementaryData(null);
+    }
+
+    public static OBFile1 toOBFile1(OBWriteFile2DataInitiation initiation) {
+        return initiation == null ? null : (new OBFile1())
+                .fileType(initiation.getFileType())
+                .fileHash(initiation.getFileHash())
+                .fileReference(initiation.getFileReference())
+                .numberOfTransactions(initiation.getNumberOfTransactions())
+                .controlSum(initiation.getControlSum())
+                .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
+                .localInstrument(initiation.getLocalInstrument())
+                .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
+                .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()));
     }
 
 }

@@ -21,13 +21,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.file;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FileConsent2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FilePaymentSubmission2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_1.report.PaymentReportFile2Service;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFilePaymentSubmission2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -55,19 +55,20 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRFileConsentConverter.toFRFileConsent2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFile2;
 
 @Controller("FilePaymentsApiV3.0")
 @Slf4j
 public class FilePaymentsApiController implements FilePaymentsApi {
-    private final FileConsent2Repository fileConsentRepository;
+    private final FileConsent5Repository fileConsentRepository;
     private final FilePaymentSubmission2Repository filePaymentSubmissionRepository;
     private final PaymentReportFile2Service paymentReportFile1Service;
     private final ResourceLinkService resourceLinkService;
 
     @Autowired
-    public FilePaymentsApiController(FileConsent2Repository fileConsentRepository, FilePaymentSubmission2Repository filePaymentSubmissionRepository, PaymentReportFile2Service paymentReportFile1Service, ResourceLinkService resourceLinkService) {
+    public FilePaymentsApiController(FileConsent5Repository fileConsentRepository, FilePaymentSubmission2Repository filePaymentSubmissionRepository, PaymentReportFile2Service paymentReportFile1Service, ResourceLinkService resourceLinkService) {
         this.fileConsentRepository = fileConsentRepository;
         this.filePaymentSubmissionRepository = filePaymentSubmissionRepository;
         this.paymentReportFile1Service = paymentReportFile1Service;
@@ -78,7 +79,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     public ResponseEntity createFilePayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteFile1 obWriteFile1Param,
+            @RequestBody OBWriteFile1 obWriteFile1,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -108,12 +109,12 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             HttpServletRequest request,
 
             Principal principal) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteFile1Param);
-        OBWriteFile2 payment = toOBWriteFile2(obWriteFile1Param);
+        log.debug("Received payment submission: {}", obWriteFile1);
+        OBWriteFile2 payment = toOBWriteFile2(obWriteFile1);
         log.trace("Converted to: {}", payment.getClass());
 
         String paymentId = payment.getData().getConsentId();
-        FRFileConsent2 paymentConsent = fileConsentRepository.findById(paymentId)
+        FRFileConsent5 paymentConsent = fileConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -172,7 +173,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         }
         FRFilePaymentSubmission2 frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRFileConsent2> isPaymentSetup = fileConsentRepository.findById(filePaymentId);
+        Optional<FRFileConsent5> isPaymentSetup = fileConsentRepository.findById(filePaymentId);
         if (!isPaymentSetup.isPresent()) {
             throw new OBErrorResponseException(
                     HttpStatus.BAD_REQUEST,
@@ -180,7 +181,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                     OBRIErrorType.PAYMENT_CONSENT_BEHIND_SUBMISSION_NOT_FOUND
                             .toOBError1(filePaymentId));
         }
-        FRFileConsent2 frPaymentSetup = isPaymentSetup.get();
+        FRFileConsent5 frPaymentSetup = isPaymentSetup.get();
 
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
@@ -213,7 +214,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        FRFileConsent2 consent = fileConsentRepository.findById(filePaymentId)
+        FRFileConsent5 consent = fileConsentRepository.findById(filePaymentId)
                 .orElseThrow(() ->
                         new OBErrorResponseException(
                                 HttpStatus.BAD_REQUEST,
@@ -222,12 +223,12 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                                         .toOBError1(filePaymentId))
                 );
         log.debug("Consent '{}' exists with status: {} so generating a report file for type: {}", consent.getId(), consent.getStatus(), consent.getFileType());
-        final String reportFile = paymentReportFile1Service.createPaymentReport(consent);
+        final String reportFile = paymentReportFile1Service.createPaymentReport(toFRFileConsent2(consent));
         log.debug("Generated report file for consent: {}", consent.getId());
         return ResponseEntity.ok(reportFile);
     }
 
-    private OBWriteFileResponse1 packagePayment(FRFilePaymentSubmission2 frPaymentSubmission, FRFileConsent2 frFileConsent) {
+    private OBWriteFileResponse1 packagePayment(FRFilePaymentSubmission2 frPaymentSubmission, FRFileConsent5 frFileConsent) {
         return new OBWriteFileResponse1().data(new OBWriteDataFileResponse1()
                 .filePaymentId(frPaymentSubmission.getId())
                 .initiation(OBFileConverter.toOBFile1(frPaymentSubmission.getFilePayment().getData().getInitiation()))

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.InternationalScheduledPaymentConsentDecision;
 import com.forgerock.openbanking.common.services.store.payment.InternationalScheduledPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -39,9 +39,9 @@ class InternationalScheduledPaymentConsentDecisionDelegate implements ConsentDec
     private PaymentConsentDecisionUpdater paymentConsentDecisionUpdater;
     private InternationalScheduledPaymentService paymentsService;
     private ObjectMapper objectMapper;
-    private FRInternationalScheduledConsent4 payment;
+    private FRInternationalScheduledConsent5 payment;
 
-    InternationalScheduledPaymentConsentDecisionDelegate(PaymentConsentDecisionUpdater paymentConsentDecisionUpdater, InternationalScheduledPaymentService paymentsService, ObjectMapper objectMapper, FRInternationalScheduledConsent4 consent) {
+    InternationalScheduledPaymentConsentDecisionDelegate(PaymentConsentDecisionUpdater paymentConsentDecisionUpdater, InternationalScheduledPaymentService paymentsService, ObjectMapper objectMapper, FRInternationalScheduledConsent5 consent) {
         this.paymentConsentDecisionUpdater = paymentConsentDecisionUpdater;
         this.paymentsService = paymentsService;
         this.objectMapper = objectMapper;

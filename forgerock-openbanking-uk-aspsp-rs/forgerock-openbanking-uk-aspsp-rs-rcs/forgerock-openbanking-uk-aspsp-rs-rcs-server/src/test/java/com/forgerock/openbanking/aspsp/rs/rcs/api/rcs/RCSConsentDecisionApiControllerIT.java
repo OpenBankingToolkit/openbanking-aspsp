@@ -26,7 +26,7 @@ import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticPaymentConsentDetails;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.SinglePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
@@ -50,13 +50,23 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.payment.OBInitiation1;
+import uk.org.openbanking.datamodel.payment.OBPaymentDataSetup1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
 import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetup1;
 
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.JwtTestHelper.*;
+import static com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.JwtTestHelper.claimsSetToRsa256Jwt;
+import static com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.JwtTestHelper.jsonStringToClaimsSet;
+import static com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.JwtTestHelper.serializeJwt;
+import static com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.JwtTestHelper.signJwt;
+import static com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.JwtTestHelper.utf8FileToString;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -142,13 +152,13 @@ public class RCSConsentDecisionApiControllerIT {
     @Test
     public void getConsentDetailsForDomesticPayment() throws Exception {
         // Given
-        FRDomesticConsent2 payment = FRDomesticConsent2.builder()
+        FRDomesticConsent5 payment = FRDomesticConsent5.builder()
                 .pispId(PISP_ID)
                 .pispName(PISP_NAME)
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticConsent(new OBWriteDomesticConsent2().data(new OBWriteDataDomesticConsent2().initiation(new OBDomestic2())))
+                .domesticConsent(new OBWriteDomesticConsent4().data(new OBWriteDomesticConsent4Data().initiation(new OBWriteDomestic2DataInitiation())))
                 .build();
-        payment.getInitiation().setInstructedAmount(new OBActiveOrHistoricCurrencyAndAmount());
+        payment.getInitiation().setInstructedAmount(new OBWriteDomestic2DataInitiationInstructedAmount());
         when(domesticPaymentService.getPayment(any())).thenReturn(payment);
         String signedJwtEncoded = toEncodedSignedTestJwt("jwt/domesticPaymentConsentRequestPayload.json");
 

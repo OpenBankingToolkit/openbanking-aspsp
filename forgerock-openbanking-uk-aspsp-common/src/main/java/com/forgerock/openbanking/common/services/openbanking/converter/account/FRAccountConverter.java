@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.*;
 import uk.org.openbanking.datamodel.payment.OBCashAccountCreditor3;
 import uk.org.openbanking.datamodel.payment.OBExternalAccountIdentification2Code;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiationCreditorAccount;
 import uk.org.openbanking.datamodel.service.converter.account.OBAccountConverter;
 
 import java.util.List;
@@ -215,6 +216,14 @@ public class FRAccountConverter {
                 .identification(obCashAccount51.getIdentification())
                 .name(obCashAccount51.getName())
                 .secondaryIdentification(obCashAccount51.getSecondaryIdentification());
+    }
+
+    public static OBCashAccount5 toOBCashAccount5(OBWriteDomesticStandingOrder3DataInitiationCreditorAccount creditorAccount) {
+        return creditorAccount == null ? null : (new OBCashAccount5())
+                .schemeName(creditorAccount.getSchemeName())
+                .identification(creditorAccount.getIdentification())
+                .name(creditorAccount.getName())
+                .secondaryIdentification(creditorAccount.getSecondaryIdentification());
     }
 
     public static OBAccount3 toOBAccount3(OBAccount2 account2) {

@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
-public class DomesticStandingOrderService implements PaymentService<FRDomesticStandingOrderConsent3> {
+public class DomesticStandingOrderService implements PaymentService<FRDomesticStandingOrderConsent5> {
     private static final String BASE_RESOURCE_PATH = "/api/domestic-standing-orders/";
 
     private String rsStoreRoot;
@@ -42,15 +42,15 @@ public class DomesticStandingOrderService implements PaymentService<FRDomesticSt
         this.rsStoreRoot = rsStoreRoot;
     }
 
-    public void updatePayment(FRDomesticStandingOrderConsent3 consent) {
+    public void updatePayment(FRDomesticStandingOrderConsent5 consent) {
         log.debug("Update the consent in the store. {}", consent);
         restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH, consent);
     }
 
-    public FRDomesticStandingOrderConsent3 getPayment(String consentId) {
+    public FRDomesticStandingOrderConsent5 getPayment(String consentId) {
         log.debug("Getting consent for {}", consentId);
         return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId,
-                FRDomesticStandingOrderConsent3.class);
+                FRDomesticStandingOrderConsent5.class);
     }
 
 }
