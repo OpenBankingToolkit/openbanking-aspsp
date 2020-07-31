@@ -55,7 +55,6 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticScheduledResponse3DataStatus;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBWriteDomesticScheduled2DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
@@ -152,7 +151,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     private OBWriteDomesticScheduledResponse3 packagePayment(FRDomesticScheduledPayment frPaymentSubmission, FRDomesticScheduledConsent4 frDomesticScheduledConsent2) {
         return new OBWriteDomesticScheduledResponse3().data(new OBWriteDomesticScheduledResponse3Data()
                 .domesticScheduledPaymentId(frPaymentSubmission.getId())
-                .initiation(toOBWriteDomesticScheduled2DataInitiation(frPaymentSubmission.getDomesticScheduledPayment().getData().getInitiation()))
+                .initiation(frDomesticScheduledConsent2.getDomesticScheduledConsent().getData().getInitiation())
                 .creationDateTime(frDomesticScheduledConsent2.getCreated())
                 .statusUpdateDateTime(frDomesticScheduledConsent2.getStatusUpdate())
                 .status(toOBWriteDomesticScheduledResponse3DataStatus(frDomesticScheduledConsent2.getStatus()))

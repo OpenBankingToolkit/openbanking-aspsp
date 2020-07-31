@@ -33,7 +33,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse4;
 
 import javax.servlet.http.HttpServletRequest;
@@ -84,7 +83,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
 
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticStandingOrderConsentResponse2.class, obWriteDomesticStandingOrderConsent4);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticStandingOrderConsentResponse4.class, obWriteDomesticStandingOrderConsent4);
                         }
                 );
     }
@@ -109,7 +108,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
 
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticStandingOrderConsentResponse2.class);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticStandingOrderConsentResponse4.class);
                         }
                 );
     }

@@ -38,7 +38,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse4;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
@@ -126,7 +125,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            return rsStoreGateway.toRsStore(request, new HttpHeaders(), OBWriteInternationalResponse2.class);
+                            return rsStoreGateway.toRsStore(request, new HttpHeaders(), OBWriteInternationalResponse4.class);
                         }
                 );
     }

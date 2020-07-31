@@ -33,7 +33,6 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 
@@ -124,7 +123,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
 
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticConsentResponse2.class);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticConsentResponse3.class);
                         }
                 );
     }

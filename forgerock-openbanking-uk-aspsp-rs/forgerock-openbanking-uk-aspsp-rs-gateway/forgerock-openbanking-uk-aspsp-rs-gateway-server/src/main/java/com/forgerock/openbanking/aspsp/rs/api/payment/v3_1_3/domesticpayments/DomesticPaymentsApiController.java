@@ -103,7 +103,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticResponse2.class, obWriteDomestic2);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticResponse3.class, obWriteDomestic2);
                         }
                 );
     }

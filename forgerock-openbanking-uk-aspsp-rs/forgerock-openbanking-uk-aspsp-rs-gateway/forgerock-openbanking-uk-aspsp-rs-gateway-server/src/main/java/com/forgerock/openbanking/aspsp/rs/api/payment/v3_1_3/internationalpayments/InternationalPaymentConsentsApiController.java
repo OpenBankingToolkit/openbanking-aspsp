@@ -38,7 +38,6 @@ import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4;
 
 import javax.servlet.http.HttpServletRequest;
@@ -122,7 +121,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
 
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteInternationalConsentResponse2.class);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteInternationalConsentResponse4.class);
                         }
                 );
     }

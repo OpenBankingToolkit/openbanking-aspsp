@@ -48,6 +48,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_2;
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_3;
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_4;
+        public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_5;
     }
 
     @Data
@@ -59,6 +60,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksEventNotification3 v_3_1_2;
         public OBDiscoveryAPILinksEventNotification3 v_3_1_3;
         public OBDiscoveryAPILinksEventNotification3 v_3_1_4;
+        public OBDiscoveryAPILinksEventNotification3 v_3_1_5;
     }
 
     @Data
@@ -72,6 +74,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksPayment4 v_3_1_2;
         public OBDiscoveryAPILinksPayment4 v_3_1_3;
         public OBDiscoveryAPILinksPayment4 v_3_1_4;
+        public OBDiscoveryAPILinksPayment4 v_3_1_5;
     }
 
     @Data
@@ -85,6 +88,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksAccount3 v_3_1_2;
         public OBDiscoveryAPILinksAccount3 v_3_1_3;
         public OBDiscoveryAPILinksAccount3 v_3_1_4;
+        public OBDiscoveryAPILinksAccount3 v_3_1_5;
     }
 
     @Data
