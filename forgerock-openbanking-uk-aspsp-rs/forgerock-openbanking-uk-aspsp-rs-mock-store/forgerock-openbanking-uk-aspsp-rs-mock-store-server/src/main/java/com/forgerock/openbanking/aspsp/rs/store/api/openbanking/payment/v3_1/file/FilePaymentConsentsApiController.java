@@ -337,7 +337,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                 .meta(new Meta());
     }
 
-    // TODO #277 - move to uk-datamodel
+    // TODO #272 - move to uk-datamodel
     public static OBWriteFileConsent3 toOBWriteFileConsent3(OBWriteFileConsent2 obWriteFileConsent2) {
         return (new OBWriteFileConsent3())
                 .data(toOBWriteFileConsent3Data(obWriteFileConsent2.getData()));

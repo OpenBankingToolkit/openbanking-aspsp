@@ -190,7 +190,8 @@ public class AcceptInternationalPaymentTask {
                 .contractIdentification(exchangeRateInformation.getContractIdentification());
     }
 
-    private OBExchangeRate2 toOBExchangeRate2(OBWriteInternationalConsentResponse6DataExchangeRateInformation calculatedExchangeRate) {
+    // TODO #272 - move to uk-datamodel
+    public static OBExchangeRate2 toOBExchangeRate2(OBWriteInternationalConsentResponse6DataExchangeRateInformation calculatedExchangeRate) {
         return calculatedExchangeRate == null ? null : (new OBExchangeRate2())
                 .unitCurrency(calculatedExchangeRate.getUnitCurrency())
                 .exchangeRate(calculatedExchangeRate.getExchangeRate())

@@ -195,7 +195,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
                 .meta(new Meta());
     }
 
-    // TODO #277 - move to uk-datamodel
+    // TODO #272 - move to uk-datamodel
     public static OBWriteDomesticStandingOrderConsent5 toOBWriteDomesticStandingOrderConsent5(OBWriteDomesticStandingOrderConsent2 obWriteDomesticStandingOrderConsent2) {
         return (new OBWriteDomesticStandingOrderConsent5())
                 .data(toOBWriteDomesticStandingOrderConsent5Data(obWriteDomesticStandingOrderConsent2.getData()))

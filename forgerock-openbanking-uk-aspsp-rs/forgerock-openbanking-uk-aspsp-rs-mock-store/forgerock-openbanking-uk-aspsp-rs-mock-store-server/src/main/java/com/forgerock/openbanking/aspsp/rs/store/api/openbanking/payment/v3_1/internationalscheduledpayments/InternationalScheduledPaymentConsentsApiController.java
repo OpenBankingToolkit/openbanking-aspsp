@@ -257,7 +257,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                 .meta(new Meta());
     }
 
-    // TOSO #277 - move to uk-datamodel
+    // TODO #272 - move to uk-datamodel
     public static OBWriteInternationalScheduledConsent5 toOBWriteInternationalScheduledConsent5(OBWriteInternationalScheduledConsent2 obWriteInternationalScheduledConsent2) {
         return (new OBWriteInternationalScheduledConsent5())
                 .data(toOBWriteInternationalScheduledConsent5Data(obWriteInternationalScheduledConsent2.getData()))

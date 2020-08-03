@@ -199,7 +199,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
                 .meta(new Meta());
     }
 
-    // TODO #277 - move to uk-datamodel
+    // TODO #272 - move to uk-datamodel
     public static OBWriteInternationalStandingOrderConsent6 toOBWriteInternationalStandingOrderConsent6(OBWriteInternationalStandingOrderConsent2 obWriteInternationalStandingOrderConsent2) {
         return (new OBWriteInternationalStandingOrderConsent6())
                 .data(toOBWriteInternationalStandingOrderConsent6Data(obWriteInternationalStandingOrderConsent2.getData()))

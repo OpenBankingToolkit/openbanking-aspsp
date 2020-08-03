@@ -24,12 +24,18 @@ import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRDomesti
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import org.springframework.stereotype.Service;
+import uk.org.openbanking.datamodel.payment.OBDomestic1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticConsent1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
 import uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBRemittanceInformationConverter.toOBRemittanceInformation1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
 
 @Service
@@ -91,6 +97,20 @@ public class FRDomesticConsentConverter {
     }
 
     public static OBWriteDataDomesticConsent1 toOBWriteDataDomesticConsent1(OBWriteDomesticConsent4Data data) {
-        return null;
+        return data == null ? null : (new OBWriteDataDomesticConsent1())
+                .initiation(toOBDomestic1(data.getInitiation()))
+                .authorisation(toOBAuthorisation1(data.getAuthorisation()));
+    }
+
+    public static OBDomestic1 toOBDomestic1(OBWriteDomestic2DataInitiation initiation) {
+        return initiation == null ? null : (new OBDomestic1())
+                .instructionIdentification(initiation.getInstructionIdentification())
+                .endToEndIdentification(initiation.getEndToEndIdentification())
+                .localInstrument(initiation.getLocalInstrument())
+                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
+                .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
+                .creditorAccount(toOBCashAccount3(initiation.getCreditorAccount()))
+                .creditorPostalAddress(initiation.getCreditorPostalAddress())
+                .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()));
     }
 }

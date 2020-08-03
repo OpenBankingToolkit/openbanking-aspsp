@@ -203,6 +203,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                 .meta(new Meta());
     }
 
+    // TODO #272 - move to uk-datamodel
     public static OBWriteDomesticScheduledConsent4 toOBWriteDomesticScheduledConsent4(OBWriteDomesticScheduledConsent1 obWriteDomesticScheduledConsent1) {
         return (new OBWriteDomesticScheduledConsent4())
                 .data(toOBWriteDomesticScheduledConsent4Data(obWriteDomesticScheduledConsent1.getData()))

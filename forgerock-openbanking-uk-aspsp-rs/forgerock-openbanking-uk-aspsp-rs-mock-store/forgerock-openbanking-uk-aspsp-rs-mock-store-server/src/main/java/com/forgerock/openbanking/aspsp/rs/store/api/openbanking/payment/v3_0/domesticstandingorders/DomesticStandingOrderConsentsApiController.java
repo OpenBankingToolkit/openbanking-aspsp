@@ -224,7 +224,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
                 .scASupportData(null);
     }
 
-    private static OBWriteDomesticStandingOrder3DataInitiation toOBWriteDomesticStandingOrder3DataInitiation(OBDomesticStandingOrder1 initiation) {
+    public static OBWriteDomesticStandingOrder3DataInitiation toOBWriteDomesticStandingOrder3DataInitiation(OBDomesticStandingOrder1 initiation) {
         return initiation == null ? null : (new OBWriteDomesticStandingOrder3DataInitiation())
                 .frequency(initiation.getFrequency())
                 .reference(initiation.getReference())

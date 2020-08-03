@@ -252,7 +252,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 .meta(new Meta());
     }
 
-    // TODO #277 - move to uk-datamodel
+    // TODO #272 - move to uk-datamodel
     public static OBWriteInternationalConsent5 toOBWriteInternationalConsent5(OBWriteInternationalConsent2 obWriteInternationalConsent2) {
         return (new OBWriteInternationalConsent5())
                 .data(toOBWriteInternationalConsent5Data(obWriteInternationalConsent2.getData()))

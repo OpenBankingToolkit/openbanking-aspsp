@@ -124,7 +124,7 @@ public class FRFileConsentConverter {
                 .authorisation(toOBAuthorisation1(data.getAuthorisation()));
     }
 
-    private static OBFile1 toOBFile1(OBWriteFile2DataInitiation initiation) {
+    public static OBFile1 toOBFile1(OBWriteFile2DataInitiation initiation) {
         return initiation == null ? null : (new OBFile1())
                 .fileType(initiation.getFileType())
                 .fileHash(initiation.getFileHash())
