@@ -41,10 +41,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.OBInternationalStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBInternationalStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrderResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder3;
@@ -57,11 +53,8 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccountCreditor3;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccountDebtor4;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBDomestic2InstructedAmount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalIdentifierConverter.toOBBranchAndFinancialInstitutionIdentification6;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrder3;
 
 @Controller("InternationalStandingOrdersApiV3.0")
 @Slf4j
@@ -176,7 +169,6 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
-
     private OBWriteInternationalStandingOrderResponse1 packagePayment(FRInternationalStandingOrderPaymentSubmission3 frPaymentSubmission, FRInternationalStandingOrderConsent5 FRInternationalStandingOrderConsent5) {
         return new OBWriteInternationalStandingOrderResponse1()
                 .data(new OBWriteDataInternationalStandingOrderResponse1()
@@ -189,36 +181,5 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 )
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_0().getGetInternationalStandingOrder()))
                 .meta(new Meta());
-    }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteInternationalStandingOrder3 toOBWriteInternationalStandingOrder3(OBWriteInternationalStandingOrder1 obWriteInternationalStandingOrder1) {
-        return (new OBWriteInternationalStandingOrder3())
-                .data(toOBWriteDataInternationalStandingOrder3(obWriteInternationalStandingOrder1.getData()))
-                .risk(obWriteInternationalStandingOrder1.getRisk());
-    }
-
-    public static OBWriteDataInternationalStandingOrder3 toOBWriteDataInternationalStandingOrder3(OBWriteDataInternationalStandingOrder1 data) {
-        return data == null ? null : (new OBWriteDataInternationalStandingOrder3())
-                .consentId(data.getConsentId())
-                .initiation(toOBInternationalStandingOrder3(data.getInitiation()));
-    }
-
-    public static OBInternationalStandingOrder3 toOBInternationalStandingOrder3(OBInternationalStandingOrder1 initiation) {
-        return initiation == null ? null : (new OBInternationalStandingOrder3())
-                .frequency(initiation.getFrequency())
-                .reference(initiation.getReference())
-                .numberOfPayments(initiation.getNumberOfPayments())
-                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
-                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
-                .purpose(initiation.getPurpose())
-                .chargeBearer(initiation.getChargeBearer())
-                .currencyOfTransfer(initiation.getCurrencyOfTransfer())
-                .instructedAmount(toOBDomestic2InstructedAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toOBCashAccountDebtor4(initiation.getDebtorAccount()))
-                .creditor(initiation.getCreditor())
-                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(initiation.getCreditorAgent()))
-                .creditorAccount(toOBCashAccountCreditor3(initiation.getCreditorAccount()))
-                .supplementaryData(null);
     }
 }

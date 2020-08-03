@@ -25,15 +25,9 @@ import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInterna
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledConsent4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduledConsent1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5Data;
 import uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalScheduledConsentConverter;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBInternationalScheduled1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent1;
 
 @Service
 public class FRInternationalScheduledConsentConverter {
@@ -60,7 +54,7 @@ public class FRInternationalScheduledConsentConverter {
         frInternationalScheduledConsent1.setUserId(frInternationalScheduledConsent2.getUserId());
         frInternationalScheduledConsent1.setAccountId(frInternationalScheduledConsent2.getAccountId());
         frInternationalScheduledConsent1.setCreated(frInternationalScheduledConsent2.getCreated());
-        frInternationalScheduledConsent1.setInternationalScheduledConsent(OBWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent1(frInternationalScheduledConsent2.getInternationalScheduledConsent()));
+        frInternationalScheduledConsent1.setInternationalScheduledConsent(toOBWriteInternationalScheduledConsent1(frInternationalScheduledConsent2.getInternationalScheduledConsent()));
         frInternationalScheduledConsent1.setPispId(frInternationalScheduledConsent2.getPispId());
         frInternationalScheduledConsent1.setPispName(frInternationalScheduledConsent2.getPispName());
         frInternationalScheduledConsent1.setStatusUpdate(frInternationalScheduledConsent2.getStatusUpdate());
@@ -75,7 +69,7 @@ public class FRInternationalScheduledConsentConverter {
         frInternationalScheduledConsent1.setUserId(frInternationalScheduledConsent4.getUserId());
         frInternationalScheduledConsent1.setAccountId(frInternationalScheduledConsent4.getAccountId());
         frInternationalScheduledConsent1.setCreated(frInternationalScheduledConsent4.getCreated());
-        frInternationalScheduledConsent1.setInternationalScheduledConsent(OBWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent1(frInternationalScheduledConsent4.getInternationalScheduledConsent()));
+        frInternationalScheduledConsent1.setInternationalScheduledConsent(toOBWriteInternationalScheduledConsent1(frInternationalScheduledConsent4.getInternationalScheduledConsent()));
         frInternationalScheduledConsent1.setPispId(frInternationalScheduledConsent4.getPispId());
         frInternationalScheduledConsent1.setPispName(frInternationalScheduledConsent4.getPispName());
         frInternationalScheduledConsent1.setStatusUpdate(frInternationalScheduledConsent4.getStatusUpdate());
@@ -96,19 +90,5 @@ public class FRInternationalScheduledConsentConverter {
         frInternationalScheduledConsent1.setStatusUpdate(frInternationalScheduledConsent5.getStatusUpdate());
         frInternationalScheduledConsent1.setUpdated(frInternationalScheduledConsent5.getUpdated());
         return frInternationalScheduledConsent1;
-    }
-
-    // TODO #272 move to uk-datamodel
-    public static OBWriteInternationalScheduledConsent1 toOBWriteInternationalScheduledConsent1(OBWriteInternationalScheduledConsent5 obWriteInternationalScheduledConsent5) {
-        return obWriteInternationalScheduledConsent5 == null ? null : (new OBWriteInternationalScheduledConsent1())
-                .data(toOBWriteDataInternationalScheduledConsent1(obWriteInternationalScheduledConsent5.getData()))
-                .risk(obWriteInternationalScheduledConsent5.getRisk());
-    }
-
-    public static OBWriteDataInternationalScheduledConsent1 toOBWriteDataInternationalScheduledConsent1(OBWriteInternationalScheduledConsent5Data data) {
-        return data == null ? null : (new OBWriteDataInternationalScheduledConsent1())
-                .permission(OBExternalPermissions2Code.valueOf(data.getPermission().name()))
-                .initiation(toOBInternationalScheduled1(data.getInitiation()))
-                .authorisation(toOBAuthorisation1(data.getAuthorisation()));
     }
 }

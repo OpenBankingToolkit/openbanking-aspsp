@@ -50,7 +50,6 @@ import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.payment.OBExchangeRate1;
 import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
 import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6DataExchangeRateInformation;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,6 +59,7 @@ import java.util.UUID;
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
 
 @Slf4j
 @Component
@@ -188,15 +188,5 @@ public class AcceptInternationalPaymentTask {
                 .unitCurrency(exchangeRateInformation.getUnitCurrency())
                 .instructedAmount(amount)
                 .contractIdentification(exchangeRateInformation.getContractIdentification());
-    }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBExchangeRate2 toOBExchangeRate2(OBWriteInternationalConsentResponse6DataExchangeRateInformation calculatedExchangeRate) {
-        return calculatedExchangeRate == null ? null : (new OBExchangeRate2())
-                .unitCurrency(calculatedExchangeRate.getUnitCurrency())
-                .exchangeRate(calculatedExchangeRate.getExchangeRate())
-                .rateType(OBExchangeRateType2Code.valueOf(calculatedExchangeRate.getRateType().name()))
-                .contractIdentification(calculatedExchangeRate.getContractIdentification())
-                .expirationDateTime(calculatedExchangeRate.getExpirationDateTime());
     }
 }

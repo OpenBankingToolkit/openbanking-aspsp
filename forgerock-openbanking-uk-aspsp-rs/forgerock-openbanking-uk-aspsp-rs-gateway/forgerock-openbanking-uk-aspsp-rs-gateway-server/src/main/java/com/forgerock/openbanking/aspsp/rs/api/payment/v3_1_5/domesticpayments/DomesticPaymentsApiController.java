@@ -46,6 +46,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBWriteDomestic2DataInitiation;
 
 @Controller("DomesticPaymentsApiV3.1.5")
 @Slf4j
@@ -86,7 +87,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(obWriteDomestic2.getData().getInitiation(), obWriteDomestic2.getRisk());
+                    f.verifyRiskAndInitiation(toOBWriteDomestic2DataInitiation(obWriteDomestic2.getData().getInitiation()), obWriteDomestic2.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(

@@ -46,6 +46,7 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse5Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse5Data.PermissionEnum;
@@ -143,13 +144,17 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                         .creationDateTime(domesticScheduledConsent.getCreated())
                         .statusUpdateDateTime(domesticScheduledConsent.getStatusUpdate())
                         .consentId(domesticScheduledConsent.getId())
-                        .permission(PermissionEnum.valueOf(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission().name()))
+                        .permission(toPermission(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission()))
                         .authorisation(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation())
                         .scASupportData(domesticScheduledConsent.getDomesticScheduledConsent().getData().getScASupportData())
                 )
                 .links(resourceLinkService.toSelfLink(domesticScheduledConsent, discovery -> getVersion(discovery).getGetDomesticScheduledPaymentConsent()))
                 .risk(domesticScheduledConsent.getRisk())
                 .meta(new Meta());
+    }
+
+    private PermissionEnum toPermission(OBWriteDomesticScheduledConsent4Data.PermissionEnum permission) {
+        return permission == null ? null : PermissionEnum.valueOf(permission.name());
     }
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {

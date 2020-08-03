@@ -54,8 +54,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3DataAuthorisation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4DataAuthorisation;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse4Data;
@@ -68,6 +66,7 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteFileConsentResponse4DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
 
 @Controller("FilePaymentConsentsApiV3.1.5")
 @Slf4j
@@ -253,13 +252,6 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
         return discovery.getV_3_1_5();
-    }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteDomesticConsent4DataAuthorisation toOBWriteDomesticConsent4DataAuthorisation(OBWriteDomesticConsent3DataAuthorisation authorisation) {
-        return authorisation == null ? null : (new OBWriteDomesticConsent4DataAuthorisation())
-                .authorisationType(OBWriteDomesticConsent4DataAuthorisation.AuthorisationTypeEnum.valueOf(authorisation.getAuthorisationType().name()))
-                .completionDateTime(authorisation.getCompletionDateTime());
     }
 
 }

@@ -45,12 +45,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBFundsAvailableResult1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 
@@ -59,12 +57,11 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBDomestic2;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBWriteDomestic2DataInitiation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent4;
 
 @Controller("DomesticPaymentConsentsApiV3.1")
 @Slf4j
@@ -262,21 +259,6 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> discovery.getV_3_1().getGetDomesticPaymentConsent()))
                 .risk(domesticConsent.getRisk())
                 .meta(new Meta());
-    }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteDomesticConsent4 toOBWriteDomesticConsent4(OBWriteDomesticConsent2 obWriteDomesticConsent2) {
-        return (new OBWriteDomesticConsent4())
-                .data(toOBWriteDomesticConsent4Data(obWriteDomesticConsent2.getData()))
-                .risk(obWriteDomesticConsent2.getRisk());
-    }
-
-    public static OBWriteDomesticConsent4Data toOBWriteDomesticConsent4Data(OBWriteDataDomesticConsent2 data) {
-        return data == null ? null : (new OBWriteDomesticConsent4Data())
-                .readRefundAccount(null)
-                .initiation(toOBWriteDomestic2DataInitiation(data.getInitiation()))
-                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
-                .scASupportData(null);
     }
 
 }

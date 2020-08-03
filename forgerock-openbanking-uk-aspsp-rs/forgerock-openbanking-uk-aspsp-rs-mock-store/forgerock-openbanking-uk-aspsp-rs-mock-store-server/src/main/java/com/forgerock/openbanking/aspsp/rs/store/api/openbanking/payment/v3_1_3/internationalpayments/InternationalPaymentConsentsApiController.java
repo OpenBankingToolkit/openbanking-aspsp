@@ -46,17 +46,22 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBFundsAvailableResult1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4Data;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticpayments.DomesticPaymentConsentsApiController.toOBWriteDomesticConsent3DataAuthorisation;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticpayments.DomesticPaymentConsentsApiController.toOBWriteDomesticConsent4DataSCASupportData;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.file.FilePaymentConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalConsentResponse4DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent5;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
@@ -192,29 +197,5 @@ public class InternationalPaymentConsentsApiController implements InternationalP
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
         return discovery.getV_3_1_3();
-    }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteInternationalConsent5 toOBWriteInternationalConsent5(OBWriteInternationalConsent4 obWriteInternationalConsent4) {
-        return (new OBWriteInternationalConsent5())
-                .data(toOBWriteInternationalConsent5Data(obWriteInternationalConsent4.getData()))
-                .risk(obWriteInternationalConsent4.getRisk());
-    }
-
-    public static OBWriteInternationalConsent5Data toOBWriteInternationalConsent5Data(OBWriteInternationalConsent4Data data) {
-        return data == null ? null : (new OBWriteInternationalConsent5Data())
-                .initiation(data.getInitiation())
-                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
-                .readRefundAccount(null)
-                .scASupportData(toOBWriteDomesticConsent4DataSCASupportData(data.getScASupportData()));
-    }
-
-    public static OBWriteInternationalConsentResponse4DataExchangeRateInformation toOBWriteInternationalConsentResponse4DataExchangeRateInformation(OBWriteInternationalConsentResponse6DataExchangeRateInformation calculatedExchangeRate) {
-        return calculatedExchangeRate == null ? null : (new OBWriteInternationalConsentResponse4DataExchangeRateInformation())
-                .unitCurrency(calculatedExchangeRate.getUnitCurrency())
-                .exchangeRate(calculatedExchangeRate.getExchangeRate())
-                .rateType(OBWriteInternationalConsentResponse4DataExchangeRateInformation.RateTypeEnum.valueOf(calculatedExchangeRate.getRateType().name()))
-                .contractIdentification(calculatedExchangeRate.getContractIdentification())
-                .expirationDateTime(calculatedExchangeRate.getExpirationDateTime());
     }
 }

@@ -51,8 +51,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5Data;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse6;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse6Data;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse6Data.PermissionEnum;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -186,13 +188,17 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                         .statusUpdateDateTime(internationalScheduledConsent.getStatusUpdate())
                         .consentId(internationalScheduledConsent.getId())
                         .exchangeRateInformation(internationalScheduledConsent.getCalculatedExchangeRate())
-                        .permission(OBWriteInternationalScheduledConsentResponse6Data.PermissionEnum.valueOf(internationalScheduledConsent.internationalScheduledConsent.getData().getPermission().name()))
+                        .permission(toPermission(internationalScheduledConsent.internationalScheduledConsent.getData().getPermission()))
                         .expectedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                         .authorisation(internationalScheduledConsent.getInternationalScheduledConsent().getData().getAuthorisation())
                 )
                 .risk(internationalScheduledConsent.getRisk())
                 .links(resourceLinkService.toSelfLink(internationalScheduledConsent, discovery -> getVersion(discovery).getGetInternationalScheduledPaymentConsent()))
                 .meta(new Meta());
+    }
+
+    private PermissionEnum toPermission(OBWriteInternationalScheduledConsent5Data.PermissionEnum permission) {
+        return permission == null ? null : PermissionEnum.valueOf(permission.name());
     }
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
