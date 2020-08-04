@@ -24,8 +24,17 @@ import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRFileCon
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import org.springframework.stereotype.Service;
+import uk.org.openbanking.datamodel.payment.OBFile1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsent1;
+import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent1;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
+import uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBRemittanceInformationConverter.toOBRemittanceInformation1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent2;
 
 @Service
@@ -56,7 +65,7 @@ public class FRFileConsentConverter {
         frFileConsent1.setUserId(frFileConsent2.getUserId());
         frFileConsent1.setAccountId(frFileConsent2.getAccountId());
         frFileConsent1.setCreated(frFileConsent2.getCreated());
-        frFileConsent1.setWriteFileConsent(toOBWriteFileConsent1(frFileConsent2.getWriteFileConsent()));
+        frFileConsent1.setWriteFileConsent(OBWriteFileConsentConverter.toOBWriteFileConsent1(frFileConsent2.getWriteFileConsent()));
         frFileConsent1.setPispId(frFileConsent2.getPispId());
         frFileConsent1.setPispName(frFileConsent2.getPispName());
         frFileConsent1.setStatusUpdate(frFileConsent2.getStatusUpdate());
@@ -83,5 +92,48 @@ public class FRFileConsentConverter {
                 .fileContent(consent.getFileContent())
                 .obVersion(consent.getObVersion())
                 .build();
+    }
+
+    public FRFileConsent1 toFRFileConsent1(FRFileConsent5 consent) {
+        return FRFileConsent1.builder()
+                .id(consent.getId())
+                .status(consent.getStatus())
+                .writeFileConsent(toOBWriteFileConsent1(consent.getWriteFileConsent()))
+                .accountId(consent.getAccountId())
+                .userId(consent.getUserId())
+                .pispId(consent.getPispId())
+                .pispName(consent.getPispName())
+                .created(consent.getCreated())
+                .statusUpdate(consent.getStatusUpdate())
+                .updated(consent.getUpdated())
+                .payments(consent.getPayments())
+                .fileContent(consent.getFileContent())
+                .version(consent.getObVersion())
+                .build();
+    }
+
+    // TODO #272 - move to uk-datamodel
+    public static OBWriteFileConsent1 toOBWriteFileConsent1(OBWriteFileConsent3 writeFileConsent) {
+        return (new OBWriteFileConsent1())
+                .data(toOBWriteDataFileConsent1(writeFileConsent.getData()));
+    }
+
+    public static OBWriteDataFileConsent1 toOBWriteDataFileConsent1(OBWriteFileConsent3Data data) {
+        return data == null ? null : (new OBWriteDataFileConsent1())
+                .initiation(toOBFile1(data.getInitiation()))
+                .authorisation(toOBAuthorisation1(data.getAuthorisation()));
+    }
+
+    public static OBFile1 toOBFile1(OBWriteFile2DataInitiation initiation) {
+        return initiation == null ? null : (new OBFile1())
+                .fileType(initiation.getFileType())
+                .fileHash(initiation.getFileHash())
+                .fileReference(initiation.getFileReference())
+                .numberOfTransactions(initiation.getNumberOfTransactions())
+                .controlSum(initiation.getControlSum())
+                .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
+                .localInstrument(initiation.getLocalInstrument())
+                .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
+                .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()));
     }
 }

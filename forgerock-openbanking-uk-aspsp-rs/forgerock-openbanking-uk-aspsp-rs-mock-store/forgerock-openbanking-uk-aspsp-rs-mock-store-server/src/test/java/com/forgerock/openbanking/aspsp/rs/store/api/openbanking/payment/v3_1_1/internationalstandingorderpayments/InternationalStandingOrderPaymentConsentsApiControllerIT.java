@@ -23,10 +23,10 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalStandingOrderConsent4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -44,7 +44,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBPostalAddress6;
+import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationCreditor;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiationCreditorAgent;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse3;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -70,7 +77,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private InternationalStandingOrderConsent4Repository repository;
+    private InternationalStandingOrderConsent5Repository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -90,7 +97,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
     public void testGetInternationalStandingOrderPaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalStandingOrderConsent4 consent = JMockData.mock(FRInternationalStandingOrderConsent4.class);
+        FRInternationalStandingOrderConsent5 consent = JMockData.mock(FRInternationalStandingOrderConsent5.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         setupTestConsentInitiation(consent.getInitiation());
         repository.save(consent);
@@ -112,7 +119,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
     public void testGetInternationalStandingOrderPaymentConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalStandingOrderConsent4 consent = JMockData.mock(FRInternationalStandingOrderConsent4.class);
+        FRInternationalStandingOrderConsent5 consent = JMockData.mock(FRInternationalStandingOrderConsent5.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
         // When
@@ -154,7 +161,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteInternationalStandingOrderConsentResponse3 consentResponse = response.getBody();
-        FRInternationalStandingOrderConsent4 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRInternationalStandingOrderConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
         assertThat(consent.getInitiation()).isEqualTo(toOBWriteInternationalStandingOrder4DataInitiation(consentResponse.getData().getInitiation()));
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());

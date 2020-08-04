@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticSchedulePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -67,7 +67,7 @@ public class RCSDomesticSchedulePaymentDetailsApi implements RCSDetailsApi {
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRDomesticScheduledConsent4 domesticConsent = paymentService.getPayment(consentId);
+        FRDomesticScheduledConsent5 domesticConsent = paymentService.getPayment(consentId);
 
         // Only show the debtor account if specified in consent
         if (domesticConsent.getInitiation().getDebtorAccount() != null) {

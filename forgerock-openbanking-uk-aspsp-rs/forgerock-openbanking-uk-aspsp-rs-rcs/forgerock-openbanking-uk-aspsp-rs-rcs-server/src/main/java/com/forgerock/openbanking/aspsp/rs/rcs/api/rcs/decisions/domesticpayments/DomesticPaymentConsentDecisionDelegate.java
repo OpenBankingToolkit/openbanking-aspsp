@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.DomesticPaymentConsentDecision;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -39,9 +39,9 @@ class DomesticPaymentConsentDecisionDelegate implements ConsentDecisionDelegate 
     private PaymentConsentDecisionUpdater paymentConsentDecisionUpdater;
     private DomesticPaymentService paymentsService;
     private ObjectMapper objectMapper;
-    private FRDomesticConsent2 payment;
+    private FRDomesticConsent5 payment;
 
-    DomesticPaymentConsentDecisionDelegate(PaymentConsentDecisionUpdater paymentConsentDecisionUpdater, DomesticPaymentService paymentsService, ObjectMapper objectMapper, FRDomesticConsent2 payment) {
+    DomesticPaymentConsentDecisionDelegate(PaymentConsentDecisionUpdater paymentConsentDecisionUpdater, DomesticPaymentService paymentsService, ObjectMapper objectMapper, FRDomesticConsent5 payment) {
         this.paymentConsentDecisionUpdater = paymentConsentDecisionUpdater;
         this.paymentsService = paymentsService;
         this.objectMapper = objectMapper;

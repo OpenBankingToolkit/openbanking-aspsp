@@ -28,13 +28,13 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.DomesticStandingOrderConsent3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticStandingOrderConsent5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +45,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent4Data;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse4Data.PermissionEnum;
@@ -54,11 +58,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticpayments.DomesticPaymentConsentsApiController.toOBWriteDomesticConsent3DataAuthorisation;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticpayments.DomesticPaymentConsentsApiController.toOBWriteDomesticConsent4DataSCASupportData;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.file.FilePaymentConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticStandingOrderConsentResponse4DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrder3DataInitiation;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent3;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
@@ -66,13 +70,13 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDome
 @Slf4j
 public class DomesticStandingOrderConsentsApiController implements DomesticStandingOrderConsentsApi {
 
-    private final DomesticStandingOrderConsent3Repository domesticStandingOrderConsentRepository;
+    private final DomesticStandingOrderConsent5Repository domesticStandingOrderConsentRepository;
     private final TppRepository tppRepository;
     private final ResourceLinkService resourceLinkService;
     private final ConsentMetricService consentMetricService;
 
     @Autowired
-    public DomesticStandingOrderConsentsApiController(ConsentMetricService consentMetricService, DomesticStandingOrderConsent3Repository domesticStandingOrderConsentRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
+    public DomesticStandingOrderConsentsApiController(ConsentMetricService consentMetricService, DomesticStandingOrderConsent5Repository domesticStandingOrderConsentRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         this.domesticStandingOrderConsentRepository = domesticStandingOrderConsentRepository;
         this.tppRepository = tppRepository;
         this.resourceLinkService = resourceLinkService;
@@ -96,7 +100,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
 
         Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        Optional<FRDomesticStandingOrderConsent3> consentByIdempotencyKey = domesticStandingOrderConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRDomesticStandingOrderConsent5> consentByIdempotencyKey = domesticStandingOrderConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, obWriteDomesticStandingOrderConsent4, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticStandingOrderConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
@@ -104,10 +108,10 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent...");
 
-        FRDomesticStandingOrderConsent3 domesticStandingOrderConsent = FRDomesticStandingOrderConsent3.builder()
+        FRDomesticStandingOrderConsent5 domesticStandingOrderConsent = FRDomesticStandingOrderConsent5.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticStandingOrderConsent(toOBWriteDomesticStandingOrderConsent3(obWriteDomesticStandingOrderConsent4))
+                .domesticStandingOrderConsent(toOBWriteDomesticStandingOrderConsent5(obWriteDomesticStandingOrderConsent4))
                 .statusUpdate(DateTime.now())
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
@@ -130,16 +134,16 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRDomesticStandingOrderConsent3> isDomesticStandingOrderConsent = domesticStandingOrderConsentRepository.findById(consentId);
+        Optional<FRDomesticStandingOrderConsent5> isDomesticStandingOrderConsent = domesticStandingOrderConsentRepository.findById(consentId);
         if (!isDomesticStandingOrderConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic  consent '" + consentId + "' can't be found");
         }
-        FRDomesticStandingOrderConsent3 domesticStandingOrderConsent = isDomesticStandingOrderConsent.get();
+        FRDomesticStandingOrderConsent5 domesticStandingOrderConsent = isDomesticStandingOrderConsent.get();
 
         return ResponseEntity.ok(packageResponse(domesticStandingOrderConsent));
     }
 
-    private OBWriteDomesticStandingOrderConsentResponse4 packageResponse(FRDomesticStandingOrderConsent3 domesticStandingOrderConsent) {
+    private OBWriteDomesticStandingOrderConsentResponse4 packageResponse(FRDomesticStandingOrderConsent5 domesticStandingOrderConsent) {
         return new OBWriteDomesticStandingOrderConsentResponse4()
                 .data(new OBWriteDomesticStandingOrderConsentResponse4Data()
                         .initiation(toOBWriteDomesticStandingOrder3DataInitiation(domesticStandingOrderConsent.getInitiation()))
@@ -157,6 +161,38 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
         return discovery.getV_3_1_3();
+    }
+
+    // TODO #272 - move to uk-datamodel
+    public static OBWriteDomesticStandingOrderConsent5 toOBWriteDomesticStandingOrderConsent5(OBWriteDomesticStandingOrderConsent4 obWriteDomesticStandingOrderConsent4) {
+        return (new OBWriteDomesticStandingOrderConsent5())
+                .data(toOBWriteDomesticStandingOrderConsent5Data(obWriteDomesticStandingOrderConsent4.getData()))
+                .risk(obWriteDomesticStandingOrderConsent4.getRisk());
+    }
+
+    public static OBWriteDomesticStandingOrderConsent5Data toOBWriteDomesticStandingOrderConsent5Data(OBWriteDomesticStandingOrderConsent4Data data) {
+        return data == null ? null : (new OBWriteDomesticStandingOrderConsent5Data())
+                .permission(OBWriteDomesticStandingOrderConsent5Data.PermissionEnum.valueOf(data.getPermission().name()))
+                .readRefundAccount(null)
+                .initiation(data.getInitiation())
+                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
+                .scASupportData(toOBWriteDomesticConsent4DataSCASupportData(data.getScASupportData()));
+    }
+
+    public static OBWriteDomesticStandingOrder3DataInitiation toOBWriteDomesticStandingOrder3DataInitiation(OBWriteDomesticStandingOrder3DataInitiation initiation) {
+        return initiation == null ? null : (new OBWriteDomesticStandingOrder3DataInitiation())
+                .frequency(initiation.getFrequency())
+                .reference(initiation.getReference())
+                .numberOfPayments(initiation.getNumberOfPayments())
+                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
+                .recurringPaymentDateTime(initiation.getRecurringPaymentDateTime())
+                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
+                .firstPaymentAmount(initiation.getFirstPaymentAmount())
+                .recurringPaymentAmount(initiation.getRecurringPaymentAmount())
+                .finalPaymentAmount(initiation.getFinalPaymentAmount())
+                .debtorAccount(initiation.getDebtorAccount())
+                .creditorAccount(initiation.getCreditorAccount())
+                .supplementaryData(initiation.getSupplementaryData());
     }
 
 }

@@ -23,13 +23,13 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.do
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticConsent2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticConsent5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
@@ -44,26 +44,38 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBFundsAvailableResult1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticConsentResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBDomestic2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBWriteDomestic2DataInitiation;
 
 @Controller("DomesticPaymentConsentsApiV3.1")
 @Slf4j
 public class DomesticPaymentConsentsApiController implements DomesticPaymentConsentsApi {
-    private final DomesticConsent2Repository domesticConsentRepository;
+    private final DomesticConsent5Repository domesticConsentRepository;
     private final TppRepository tppRepository;
     private final FundsAvailabilityService fundsAvailabilityService;
     private final ResourceLinkService resourceLinkService;
     private ConsentMetricService consentMetricService;
 
-    public DomesticPaymentConsentsApiController(DomesticConsent2Repository domesticConsentRepository,
+    public DomesticPaymentConsentsApiController(DomesticConsent5Repository domesticConsentRepository,
                                                 TppRepository tppRepository,
                                                 FundsAvailabilityService fundsAvailabilityService,
                                                 ResourceLinkService resourceLinkService,
@@ -79,7 +91,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     public ResponseEntity<OBWriteDomesticConsentResponse2> createDomesticPaymentConsents(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteDomesticConsent2 obWriteDomesticConsent2Param,
+            @RequestBody OBWriteDomesticConsent2 obWriteDomesticConsent2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -94,7 +106,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -113,23 +125,25 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received '{}'.", obWriteDomesticConsent2Param);
+        log.debug("Received '{}'.", obWriteDomesticConsent2);
+        OBWriteDomesticConsent4 consent1 = toOBWriteDomesticConsent4(obWriteDomesticConsent2);
+        log.trace("Converted request body to {}", consent1.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
 
-        Optional<FRDomesticConsent2> consentByIdempotencyKey = domesticConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRDomesticConsent5> consentByIdempotencyKey = domesticConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, obWriteDomesticConsent2Param, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticConsent());
+            validateIdempotencyRequest(xIdempotencyKey, obWriteDomesticConsent2, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
-        FRDomesticConsent2 domesticConsent = FRDomesticConsent2.builder()
+        FRDomesticConsent5 domesticConsent = FRDomesticConsent5.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticConsent(obWriteDomesticConsent2Param)
+                .domesticConsent(consent1)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -155,7 +169,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
@@ -171,39 +185,39 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRDomesticConsent2> isDomesticConsent = domesticConsentRepository.findById(consentId);
+        Optional<FRDomesticConsent5> isDomesticConsent = domesticConsentRepository.findById(consentId);
         if (!isDomesticConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic consent '" + consentId + "' can't be found");
         }
-        FRDomesticConsent2 domesticConsent = isDomesticConsent.get();
+        FRDomesticConsent5 domesticConsent = isDomesticConsent.get();
 
         return ResponseEntity.ok(packageResponse(domesticConsent));
     }
 
     @Override
     public ResponseEntity getDomesticPaymentConsentsConsentIdFundsConfirmation(
-            @ApiParam(value = "ConsentId",required=true)
+            @ApiParam(value = "ConsentId", required = true)
             @PathVariable("ConsentId") String consentId,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
-            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are " +
-                    "represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC" )
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+                    "represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
-            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
 
-            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
-            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
-            @ApiParam(value = "Indicates the user-agent that the PSU is using." )
-            @RequestHeader(value="x-customer-user-agent", required=false) String xCustomerUserAgent,
+            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
+            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl,
 
@@ -211,11 +225,11 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRDomesticConsent2> isDomesticConsent = domesticConsentRepository.findById(consentId);
+        Optional<FRDomesticConsent5> isDomesticConsent = domesticConsentRepository.findById(consentId);
         if (!isDomesticConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic consent '" + consentId + "' can't be found");
         }
-        FRDomesticConsent2 domesticConsent = isDomesticConsent.get();
+        FRDomesticConsent5 domesticConsent = isDomesticConsent.get();
 
         // Check if funds are available on the account selected in consent
         boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(
@@ -235,19 +249,34 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 );
     }
 
-    private OBWriteDomesticConsentResponse2 packageResponse(FRDomesticConsent2 domesticConsent) {
+    private OBWriteDomesticConsentResponse2 packageResponse(FRDomesticConsent5 domesticConsent) {
         return new OBWriteDomesticConsentResponse2()
                 .data(new OBWriteDataDomesticConsentResponse2()
-                        .initiation(domesticConsent.getInitiation())
+                        .initiation(toOBDomestic2(domesticConsent.getInitiation()))
                         .status(domesticConsent.getStatus().toOBExternalConsentStatus1Code())
                         .creationDateTime(domesticConsent.getCreated())
                         .statusUpdateDateTime(domesticConsent.getStatusUpdate())
                         .consentId(domesticConsent.getId())
-                        .authorisation(domesticConsent.getDomesticConsent().getData().getAuthorisation())
+                        .authorisation(toOBAuthorisation1(domesticConsent.getDomesticConsent().getData().getAuthorisation()))
                 )
                 .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> discovery.getV_3_1().getGetDomesticPaymentConsent()))
                 .risk(domesticConsent.getRisk())
                 .meta(new Meta());
+    }
+
+    // TODO #272 - move to uk-datamodel
+    public static OBWriteDomesticConsent4 toOBWriteDomesticConsent4(OBWriteDomesticConsent2 obWriteDomesticConsent2) {
+        return (new OBWriteDomesticConsent4())
+                .data(toOBWriteDomesticConsent4Data(obWriteDomesticConsent2.getData()))
+                .risk(obWriteDomesticConsent2.getRisk());
+    }
+
+    public static OBWriteDomesticConsent4Data toOBWriteDomesticConsent4Data(OBWriteDataDomesticConsent2 data) {
+        return data == null ? null : (new OBWriteDomesticConsent4Data())
+                .readRefundAccount(null)
+                .initiation(toOBWriteDomestic2DataInitiation(data.getInitiation()))
+                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
+                .scASupportData(null);
     }
 
 }

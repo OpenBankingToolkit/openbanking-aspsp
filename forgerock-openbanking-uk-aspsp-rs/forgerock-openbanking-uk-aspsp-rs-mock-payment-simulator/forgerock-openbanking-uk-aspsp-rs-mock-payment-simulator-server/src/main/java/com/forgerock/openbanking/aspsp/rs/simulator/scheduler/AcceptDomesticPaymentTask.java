@@ -25,8 +25,8 @@ import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationF
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
@@ -39,7 +39,11 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
+import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
+import uk.org.openbanking.datamodel.account.OBEntryStatus1Code;
+import uk.org.openbanking.datamodel.account.OBTransaction5;
+import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.util.ArrayList;
@@ -49,6 +53,7 @@ import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @Slf4j
 @Component
@@ -73,8 +78,8 @@ public class AcceptDomesticPaymentTask {
     @SchedulerLock(name = "domesticPayment")
     public void autoAcceptPayment() {
         log.info("Auto-accept payment task waking up. The time is now {}.", format.print(DateTime.now()));
-        Collection<FRDomesticConsent2> allPaymentsInProcess = domesticPaymentsService.getAllPaymentsInProcess();
-        for (FRDomesticConsent2 payment: allPaymentsInProcess) {
+        Collection<FRDomesticConsent5> allPaymentsInProcess = domesticPaymentsService.getAllPaymentsInProcess();
+        for (FRDomesticConsent5 payment: allPaymentsInProcess) {
             log.info("Processing payment {}", payment);
             try {
                 String identificationTo = moveDebitPayment(payment);
@@ -106,10 +111,10 @@ public class AcceptDomesticPaymentTask {
                 format.print(DateTime.now()));
     }
 
-    private String moveDebitPayment(FRDomesticConsent2 payment) throws CurrencyConverterException {
+    private String moveDebitPayment(FRDomesticConsent5 payment) throws CurrencyConverterException {
         FRAccount accountFrom = accountStoreService.getAccount(payment.getAccountId());
         log.info("We are going to pay from this account: {}", accountFrom);
-        moneyService.moveMoney(accountFrom, payment.getInitiation().getInstructedAmount(),
+        moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
                 OBCreditDebitCode.DEBIT, payment, this::createTransaction);
 
         String identificationFrom = payment.getInitiation().getCreditorAccount().getIdentification();
@@ -117,14 +122,14 @@ public class AcceptDomesticPaymentTask {
         return identificationFrom;
     }
 
-    private void moveCreditPayment(FRDomesticConsent2 payment, String identificationTo, FRAccount accountFrom) throws CurrencyConverterException {
+    private void moveCreditPayment(FRDomesticConsent5 payment, String identificationTo, FRAccount accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationTo, accountFrom);
         log.info("Move the money to this account");
-        moneyService.moveMoney(accountFrom, payment.getInitiation().getInstructedAmount(),
+        moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
                 OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction5 createTransaction(FRAccount account, FRDomesticConsent2 payment, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction5 createTransaction(FRAccount account, FRDomesticConsent5 payment, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());

@@ -24,9 +24,17 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRDomesticScheduledConsent1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRDomesticScheduledConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
 import org.springframework.stereotype.Service;
+import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduledConsent1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
+import uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticScheduledConsentConverter;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent2;
 
 @Service
@@ -54,7 +62,7 @@ public class FRDomesticScheduledConsentConverter {
         frDomesticScheduledConsent1.setUserId(frDomesticScheduledConsent2.getUserId());
         frDomesticScheduledConsent1.setAccountId(frDomesticScheduledConsent2.getAccountId());
         frDomesticScheduledConsent1.setCreated(frDomesticScheduledConsent2.getCreated());
-        frDomesticScheduledConsent1.setDomesticScheduledConsent(toOBWriteDomesticScheduledConsent1(frDomesticScheduledConsent2.getDomesticScheduledConsent()));
+        frDomesticScheduledConsent1.setDomesticScheduledConsent(OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent1(frDomesticScheduledConsent2.getDomesticScheduledConsent()));
         frDomesticScheduledConsent1.setPispId(frDomesticScheduledConsent2.getPispId());
         frDomesticScheduledConsent1.setPispName(frDomesticScheduledConsent2.getPispName());
         frDomesticScheduledConsent1.setStatusUpdate(frDomesticScheduledConsent2.getStatusUpdate());
@@ -69,11 +77,40 @@ public class FRDomesticScheduledConsentConverter {
         frDomesticScheduledConsent1.setUserId(frDomesticScheduledConsent4.getUserId());
         frDomesticScheduledConsent1.setAccountId(frDomesticScheduledConsent4.getAccountId());
         frDomesticScheduledConsent1.setCreated(frDomesticScheduledConsent4.getCreated());
-        frDomesticScheduledConsent1.setDomesticScheduledConsent(toOBWriteDomesticScheduledConsent1(frDomesticScheduledConsent4.getDomesticScheduledConsent()));
+        frDomesticScheduledConsent1.setDomesticScheduledConsent(OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent1(frDomesticScheduledConsent4.getDomesticScheduledConsent()));
         frDomesticScheduledConsent1.setPispId(frDomesticScheduledConsent4.getPispId());
         frDomesticScheduledConsent1.setPispName(frDomesticScheduledConsent4.getPispName());
         frDomesticScheduledConsent1.setStatusUpdate(frDomesticScheduledConsent4.getStatusUpdate());
         frDomesticScheduledConsent1.setUpdated(frDomesticScheduledConsent4.getUpdated());
         return frDomesticScheduledConsent1;
+    }
+
+    public FRDomesticScheduledConsent1 toFRDomesticConsent1(FRDomesticScheduledConsent5 frDomesticScheduledConsent5) {
+        FRDomesticScheduledConsent1 frDomesticScheduledConsent1 = new FRDomesticScheduledConsent1();
+        frDomesticScheduledConsent1.setStatus(frDomesticScheduledConsent5.getStatus());
+        frDomesticScheduledConsent1.setId(frDomesticScheduledConsent5.getId());
+        frDomesticScheduledConsent1.setUserId(frDomesticScheduledConsent5.getUserId());
+        frDomesticScheduledConsent1.setAccountId(frDomesticScheduledConsent5.getAccountId());
+        frDomesticScheduledConsent1.setCreated(frDomesticScheduledConsent5.getCreated());
+        frDomesticScheduledConsent1.setDomesticScheduledConsent(toOBWriteDomesticScheduledConsent1(frDomesticScheduledConsent5.getDomesticScheduledConsent()));
+        frDomesticScheduledConsent1.setPispId(frDomesticScheduledConsent5.getPispId());
+        frDomesticScheduledConsent1.setPispName(frDomesticScheduledConsent5.getPispName());
+        frDomesticScheduledConsent1.setStatusUpdate(frDomesticScheduledConsent5.getStatusUpdate());
+        frDomesticScheduledConsent1.setUpdated(frDomesticScheduledConsent5.getUpdated());
+        return frDomesticScheduledConsent1;
+    }
+
+    // TODO #272 - move to uk-datamodel
+    public static OBWriteDomesticScheduledConsent1 toOBWriteDomesticScheduledConsent1(OBWriteDomesticScheduledConsent4 domesticScheduledConsent4) {
+        return domesticScheduledConsent4 == null ? null : (new OBWriteDomesticScheduledConsent1())
+                .data(toOBWriteDataDomesticScheduledConsent1(domesticScheduledConsent4.getData()))
+                .risk(domesticScheduledConsent4.getRisk());
+    }
+
+    public static OBWriteDataDomesticScheduledConsent1 toOBWriteDataDomesticScheduledConsent1(OBWriteDomesticScheduledConsent4Data data) {
+        return data == null ? null : (new OBWriteDataDomesticScheduledConsent1())
+                .permission(OBExternalPermissions2Code.valueOf(data.getPermission().name()))
+                .initiation(toOBDomesticScheduled1(data.getInitiation()))
+                .authorisation(toOBAuthorisation1(data.getAuthorisation()));
     }
 }

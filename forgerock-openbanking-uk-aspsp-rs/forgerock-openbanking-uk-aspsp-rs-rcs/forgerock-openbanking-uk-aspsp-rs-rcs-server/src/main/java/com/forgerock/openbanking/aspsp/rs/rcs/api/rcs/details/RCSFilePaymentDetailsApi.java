@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FilePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -35,8 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBFile2;
-import uk.org.openbanking.datamodel.payment.OBRemittanceInformation1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
+import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
@@ -64,7 +64,7 @@ public class RCSFilePaymentDetailsApi implements RCSDetailsApi {
         log.debug("=> The payment id '{}'", consentId);
         log.debug("Populate the model with the payment and consent data");
 
-        FRFileConsent2 consent = paymentService.getPayment(consentId);
+        FRFileConsent5 consent = paymentService.getPayment(consentId);
 
         checkValidPisp(consent, clientId);
 
@@ -91,7 +91,7 @@ public class RCSFilePaymentDetailsApi implements RCSDetailsApi {
         }
         Tpp tpp = isTpp.get();
 
-        final OBFile2 initiation = consent.getWriteFileConsent().getData().getInitiation();
+        final OBWriteFile2DataInitiation initiation = consent.getWriteFileConsent().getData().getInitiation();
         return ResponseEntity.ok(FilePaymentConsentDetails.builder()
                 .accounts(accounts)
                 .username(username)
@@ -107,12 +107,12 @@ public class RCSFilePaymentDetailsApi implements RCSDetailsApi {
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .paymentReference(Optional.ofNullable(
                         initiation.getRemittanceInformation())
-                        .map(OBRemittanceInformation1::getReference)
+                        .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
     }
 
-    private void associatePaymentToUser(FRFileConsent2 consent, String username) {
+    private void associatePaymentToUser(FRFileConsent5 consent, String username) {
         consent.setUserId(username);
         paymentService.updatePayment(consent);
     }

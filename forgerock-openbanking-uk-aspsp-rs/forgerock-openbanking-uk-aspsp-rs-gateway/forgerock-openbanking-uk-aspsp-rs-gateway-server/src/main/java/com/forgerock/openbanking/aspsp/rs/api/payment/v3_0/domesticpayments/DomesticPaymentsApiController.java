@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.domesticpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticConsentConverter;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
@@ -102,7 +102,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             Principal principal
     ) throws OBErrorResponseException {
         String consentId = obWriteDomestic1Param.getData().getConsentId();
-        FRDomesticConsent2 payment = paymentsService.getPayment(consentId);
+        FRDomesticConsent5 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)

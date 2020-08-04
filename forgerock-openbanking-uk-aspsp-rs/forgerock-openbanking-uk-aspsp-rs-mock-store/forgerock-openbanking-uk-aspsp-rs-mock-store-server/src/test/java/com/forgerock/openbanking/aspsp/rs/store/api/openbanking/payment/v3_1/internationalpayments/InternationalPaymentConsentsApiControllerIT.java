@@ -23,10 +23,10 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.in
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalConsent4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
@@ -56,10 +56,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBInternational2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBInternational2;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments.InternationalPaymentConsentsApiController}.
@@ -72,7 +72,7 @@ public class InternationalPaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private InternationalConsent4Repository repository;
+    private InternationalConsent5Repository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -99,7 +99,7 @@ public class InternationalPaymentConsentsApiControllerIT {
     public void testGetInternationalPaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
+        FRInternationalConsent5 consent = JMockData.mock(FRInternationalConsent5.class);
         consent.getInitiation().supplementaryData(new OBSupplementaryData1());
         consent.setStatus(ConsentStatusCode.CONSUMED);
         repository.save(consent);
@@ -123,7 +123,7 @@ public class InternationalPaymentConsentsApiControllerIT {
     public void testGetInternationalPaymentConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
+        FRInternationalConsent5 consent = JMockData.mock(FRInternationalConsent5.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
         // When
@@ -168,7 +168,7 @@ public class InternationalPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteInternationalConsentResponse2 consentResponse = response.getBody();
-        FRInternationalConsent4 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRInternationalConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getPispName()).isEqualTo(PaymentTestHelper.MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
@@ -209,7 +209,7 @@ public class InternationalPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteInternationalConsentResponse2 consentResponse = response.getBody();
-        FRInternationalConsent4 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRInternationalConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getInitiation().getExchangeRateInformation()).isNull();
     }
 
@@ -217,7 +217,7 @@ public class InternationalPaymentConsentsApiControllerIT {
     public void testGetDomesticPaymentConsentFunds() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalConsent4 consent = JMockData.mock(FRInternationalConsent4.class);
+        FRInternationalConsent5 consent = JMockData.mock(FRInternationalConsent5.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
         repository.save(consent);

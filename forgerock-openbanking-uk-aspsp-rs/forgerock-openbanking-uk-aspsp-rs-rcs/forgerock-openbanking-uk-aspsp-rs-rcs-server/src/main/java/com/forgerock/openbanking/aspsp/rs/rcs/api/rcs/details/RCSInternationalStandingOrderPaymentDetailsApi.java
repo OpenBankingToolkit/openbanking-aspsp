@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.InternationalStandingOrderPaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.InternationalStandingOrderService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -66,7 +66,7 @@ public class RCSInternationalStandingOrderPaymentDetailsApi implements RCSDetail
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRInternationalStandingOrderConsent4 payment = paymentService.getPayment(consentId);
+        FRInternationalStandingOrderConsent5 payment = paymentService.getPayment(consentId);
 
         Optional<Tpp> isTpp = tppStoreService.findById(payment.getPispId());
         if (!isTpp.isPresent()) {

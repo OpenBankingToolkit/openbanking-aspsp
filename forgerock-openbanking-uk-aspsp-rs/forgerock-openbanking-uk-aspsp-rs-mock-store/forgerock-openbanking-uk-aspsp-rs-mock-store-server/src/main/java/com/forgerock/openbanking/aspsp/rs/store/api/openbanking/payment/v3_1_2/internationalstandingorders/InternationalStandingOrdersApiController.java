@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_2.internationalstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.InternationalStandingOrderPaymentSubmission3Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalStandingOrderConsent4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class InternationalStandingOrdersApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.internationalstandingorders.InternationalStandingOrdersApiController implements InternationalStandingOrdersApi {
 
-    public InternationalStandingOrdersApiController(InternationalStandingOrderConsent4Repository internationalStandingOrderConsentRepository, InternationalStandingOrderPaymentSubmission3Repository internationalStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public InternationalStandingOrdersApiController(InternationalStandingOrderConsent5Repository internationalStandingOrderConsentRepository, InternationalStandingOrderPaymentSubmission3Repository internationalStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
         super(internationalStandingOrderConsentRepository, internationalStandingOrderPaymentSubmissionRepository, resourceLinkService);
     }
 }

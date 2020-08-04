@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalsc
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledConsent4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 import com.forgerock.openbanking.common.services.store.payment.InternationalScheduledPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Before;
@@ -41,13 +41,13 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class InternationalScheduledPaymentConsentDecisionDelegateTest extends AbstractDecisionDelegateTest {
     private InternationalScheduledPaymentService paymentService;
-    private FRInternationalScheduledConsent4 consent;
+    private FRInternationalScheduledConsent5 consent;
     private InternationalScheduledPaymentConsentDecisionDelegate decisionDelegate;
 
     @Before
     public void setup() {
         paymentService = mock(InternationalScheduledPaymentService.class);
-        consent = FRInternationalScheduledConsent4.builder()
+        consent = FRInternationalScheduledConsent5.builder()
                 .id(CONSENT_ID)
                 .pispId(PISP_ID)
                 .userId(USER_ID)

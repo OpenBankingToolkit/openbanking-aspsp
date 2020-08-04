@@ -24,12 +24,12 @@ import uk.org.openbanking.datamodel.payment.*;
 
 public final class OBActiveOrHistoricCurrencyAndAmountConverter {
 
-    public static OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount instructedAmount) {
-        return FRModelMapper.map(instructedAmount, OBActiveOrHistoricCurrencyAndAmount.class);
+    public static OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount amount) {
+        return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount.class);
     }
 
-    public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(OBActiveOrHistoricCurrencyAndAmount instructedAmount) {
-        return FRModelMapper.map(instructedAmount, uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount.class);
+    public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(OBActiveOrHistoricCurrencyAndAmount amount) {
+        return FRModelMapper.map(amount, uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount.class);
     }
 
     public static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(OBDomesticStandingOrder3FinalPaymentAmount amount) {
@@ -59,11 +59,23 @@ public final class OBActiveOrHistoricCurrencyAndAmountConverter {
         return FRModelMapper.map(instructedAmount, OBActiveOrHistoricCurrencyAndAmount.class);
     }
 
-    public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(OBDomestic2InstructedAmount instructedAmount) {
-        return FRModelMapper.map(instructedAmount, uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount.class);
+    public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(OBDomestic2InstructedAmount amount) {
+        return FRModelMapper.map(amount, uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount.class);
     }
 
     public static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount amount) {
         return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount.class);
+    }
+
+    public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount amount) {
+        return FRModelMapper.map(amount, uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount.class);
+    }
+
+    public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount amount) {
+        return FRModelMapper.map(amount, uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount.class);
+    }
+
+    public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount amount) {
+        return FRModelMapper.map(amount, uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount.class);
     }
 }

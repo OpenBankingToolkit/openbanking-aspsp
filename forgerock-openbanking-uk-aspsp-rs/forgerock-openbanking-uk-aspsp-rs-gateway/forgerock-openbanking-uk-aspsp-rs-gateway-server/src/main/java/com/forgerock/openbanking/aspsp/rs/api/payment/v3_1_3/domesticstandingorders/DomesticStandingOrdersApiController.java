@@ -27,7 +27,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.domesticstandingor
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter;
@@ -45,8 +45,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
 import uk.org.openbanking.datamodel.account.OBStandingOrder5;
-import uk.org.openbanking.datamodel.payment.OBDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse4;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
@@ -94,7 +94,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             Principal principal
     ) throws OBErrorResponseException {
         String consentId = obWriteDomesticStandingOrder3.getData().getConsentId();
-        FRDomesticStandingOrderConsent3 payment = paymentsService.getPayment(consentId);
+        FRDomesticStandingOrderConsent5 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -114,7 +114,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                             //Modify the status of the payment
                             log.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
 
-                            OBDomesticStandingOrder3 initiation = payment.getInitiation();
+                            OBWriteDomesticStandingOrder3DataInitiation initiation = payment.getInitiation();
 
                             DateTime firstPaymentDateTime = initiation.getFirstPaymentDateTime();
 
