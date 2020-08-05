@@ -67,7 +67,7 @@ import static com.forgerock.openbanking.common.services.openbanking.IdempotencyS
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter.toOBFile2;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent3Data;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent3;
 
 @Controller("FilePaymentConsentsApiV3.1")
 @Slf4j
@@ -336,11 +336,4 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                 .links(resourceLinkService.toSelfLink(fileConsent, discovery -> discovery.getV_3_1().getGetFilePaymentConsent()))
                 .meta(new Meta());
     }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteFileConsent3 toOBWriteFileConsent3(OBWriteFileConsent2 obWriteFileConsent2) {
-        return (new OBWriteFileConsent3())
-                .data(toOBWriteFileConsent3Data(obWriteFileConsent2.getData()));
-    }
-
 }

@@ -44,20 +44,27 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
+import uk.org.openbanking.datamodel.payment.OBFundsAvailableResult1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduledConsentResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments.InternationalPaymentConsentsApiController.toOBExchangeRate2;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBInternationalScheduled2;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent5;
 
 @Controller("InternationalScheduledPaymentConsentsApiV3.1")
 @Slf4j
@@ -256,20 +263,4 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                 .links(resourceLinkService.toSelfLink(internationalScheduledConsent, discovery -> discovery.getV_3_1().getGetInternationalScheduledPaymentConsent()))
                 .meta(new Meta());
     }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteInternationalScheduledConsent5 toOBWriteInternationalScheduledConsent5(OBWriteInternationalScheduledConsent2 obWriteInternationalScheduledConsent2) {
-        return (new OBWriteInternationalScheduledConsent5())
-                .data(toOBWriteInternationalScheduledConsent5Data(obWriteInternationalScheduledConsent2.getData()))
-                .risk(obWriteInternationalScheduledConsent2.getRisk());
-    }
-    public static OBWriteInternationalScheduledConsent5Data toOBWriteInternationalScheduledConsent5Data(OBWriteDataInternationalScheduledConsent2 data) {
-        return data == null ? null : (new OBWriteInternationalScheduledConsent5Data())
-                .permission(OBWriteInternationalScheduledConsent5Data.PermissionEnum.valueOf(data.getPermission().name()))
-                .readRefundAccount(null)
-                .initiation(toOBWriteInternationalScheduled3DataInitiation(data.getInitiation()))
-                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
-                .scASupportData(null);
-    }
-
 }

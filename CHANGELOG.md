@@ -15,6 +15,18 @@ Release/1.0.91 (#233)
 * Release candidate: prepare for next development iteration
 
 * changelog updated
+[993af400372191d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/993af400372191d) Matt Wills *2020-08-04 10:14:39*
+Added controllers and their (mostly) generated interfaces to the rs-store and rs-gateway modules for 3.1.5 of the payment API. Added new repository and FR documents for new model objects (#272)
+[70514dd73e1bff1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/70514dd73e1bff1) dependabot-preview[bot] *2020-08-03 19:26:53*
+Bump forgerock-openbanking-starter-parent from 1.0.74 to 1.0.75
+
+Bumps [forgerock-openbanking-starter-parent](https://github.com/OpenBankingToolkit/openbanking-parent) from 1.0.74 to 1.0.75.
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-parent/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-parent/compare/1.0.74...1.0.75)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+
+Added new repositories and document classes for v3.1.5. Migrated controllers and services to new repositories (#272)
 [0b001c4e8833477](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0b001c4e8833477) Matt Wills *2020-07-29 18:26:26*
 Added controllers and their (mostly) generated interfaces to the rs-store and rs-gateway modules for 3.1.5 of the payment API. Added new repository and FR documents for new model objects (#272)
 [961727b0f223e9a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/961727b0f223e9a) dependabot-preview[bot] *2020-07-27 08:41:17*

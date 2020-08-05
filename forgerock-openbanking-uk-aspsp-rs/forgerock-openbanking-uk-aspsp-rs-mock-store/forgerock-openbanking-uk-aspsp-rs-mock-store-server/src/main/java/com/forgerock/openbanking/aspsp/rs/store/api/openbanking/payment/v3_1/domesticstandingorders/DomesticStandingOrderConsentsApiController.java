@@ -43,20 +43,22 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.account.OBCashAccount3;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderConsentResponse2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBWriteDomesticStandingOrder3DataInitiationDebtorAccount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent5;
 
 @Controller("DomesticStandingOrderConsentsApiV3.1")
 @Slf4j
@@ -193,63 +195,5 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
                 .links(resourceLinkService.toSelfLink(domesticStandingOrderConsent, discovery -> discovery.getV_3_1().getGetDomesticStandingOrderConsent()))
                 .risk(domesticStandingOrderConsent.getRisk())
                 .meta(new Meta());
-    }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteDomesticStandingOrderConsent5 toOBWriteDomesticStandingOrderConsent5(OBWriteDomesticStandingOrderConsent2 obWriteDomesticStandingOrderConsent2) {
-        return (new OBWriteDomesticStandingOrderConsent5())
-                .data(toOBWriteDomesticStandingOrderConsent5Data(obWriteDomesticStandingOrderConsent2.getData()))
-                .risk(obWriteDomesticStandingOrderConsent2.getRisk());
-    }
-
-    public static OBWriteDomesticStandingOrderConsent5Data toOBWriteDomesticStandingOrderConsent5Data(OBWriteDataDomesticStandingOrderConsent2 data) {
-        return data == null ? null : (new OBWriteDomesticStandingOrderConsent5Data())
-                .permission(OBWriteDomesticStandingOrderConsent5Data.PermissionEnum.valueOf(data.getPermission().name()))
-                .readRefundAccount(null)
-                .initiation(toOBWriteDomesticStandingOrder3DataInitiation(data.getInitiation()))
-                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
-                .scASupportData(null);
-    }
-
-    public static OBWriteDomesticStandingOrder3DataInitiation toOBWriteDomesticStandingOrder3DataInitiation(OBDomesticStandingOrder2 initiation) {
-        return initiation == null ? null : (new OBWriteDomesticStandingOrder3DataInitiation())
-                .frequency(initiation.getFrequency())
-                .reference(initiation.getReference())
-                .numberOfPayments(initiation.getNumberOfPayments())
-                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
-                .recurringPaymentDateTime(initiation.getRecurringPaymentDateTime())
-                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
-                .firstPaymentAmount(toOBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount(initiation.getFirstPaymentAmount()))
-                .recurringPaymentAmount(toOBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount(initiation.getRecurringPaymentAmount()))
-                .finalPaymentAmount(toOBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toOBWriteDomesticStandingOrder3DataInitiationDebtorAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toOBWriteDomesticStandingOrder3DataInitiationCreditorAccount(initiation.getCreditorAccount()))
-                .supplementaryData(initiation.getSupplementaryData());
-    }
-
-    public static OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount toOBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount(OBActiveOrHistoricCurrencyAndAmount amount) {
-        return amount == null ? null : (new OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
-    }
-
-    public static OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount toOBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount(OBActiveOrHistoricCurrencyAndAmount amount) {
-        return amount == null ? null : (new OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
-    }
-
-    public static OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount toOBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount(OBActiveOrHistoricCurrencyAndAmount amount) {
-        return amount == null ? null : (new OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
-    }
-
-    public static OBWriteDomesticStandingOrder3DataInitiationCreditorAccount toOBWriteDomesticStandingOrder3DataInitiationCreditorAccount(OBCashAccount3 creditorAccount) {
-        return creditorAccount == null ? null : (new OBWriteDomesticStandingOrder3DataInitiationCreditorAccount())
-                .schemeName(creditorAccount.getSchemeName())
-                .identification(creditorAccount.getIdentification())
-                .name(creditorAccount.getName())
-                .secondaryIdentification(creditorAccount.getSecondaryIdentification());
     }
 }

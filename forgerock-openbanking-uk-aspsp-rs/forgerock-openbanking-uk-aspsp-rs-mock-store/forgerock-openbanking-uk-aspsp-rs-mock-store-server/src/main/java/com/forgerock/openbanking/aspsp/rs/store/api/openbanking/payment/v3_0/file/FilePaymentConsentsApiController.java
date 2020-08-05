@@ -52,13 +52,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.OBFile1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsentResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,12 +66,9 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBRemittanceInformationConverter.toOBRemittanceInformation1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBRemittanceInformationConverter.toOBWriteDomestic2DataInitiationRemittanceInformation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter.toOBFile1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent3;
 
 @Controller("FilePaymentConsentsApiV3.0")
 @Slf4j
@@ -346,45 +339,4 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                 .links(resourceLinkService.toSelfLink(fileConsent, discovery -> discovery.getV_3_0().getGetFilePaymentConsent()))
                 .meta(new Meta());
     }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteFileConsent3 toOBWriteFileConsent3(OBWriteFileConsent1 obWriteFileConsent1) {
-        return obWriteFileConsent1 == null ? null : (new OBWriteFileConsent3())
-                .data(toOBWriteFileConsent3Data(obWriteFileConsent1.getData()));
-    }
-
-    public static OBWriteFileConsent3Data toOBWriteFileConsent3Data(OBWriteDataFileConsent1 data) {
-        return data == null ? null : (new OBWriteFileConsent3Data())
-                .initiation(toOBWriteFile2DataInitiation(data.getInitiation()))
-                .authorisation(toOBWriteDomesticConsent3DataAuthorisation(data.getAuthorisation()))
-                .scASupportData(null);
-    }
-
-    public static OBWriteFile2DataInitiation toOBWriteFile2DataInitiation(OBFile1 initiation) {
-        return initiation == null ? null : (new OBWriteFile2DataInitiation())
-                .fileType(initiation.getFileType())
-                .fileHash(initiation.getFileHash())
-                .fileReference(initiation.getFileReference())
-                .numberOfTransactions(initiation.getNumberOfTransactions())
-                .controlSum(initiation.getControlSum())
-                .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
-                .localInstrument(initiation.getLocalInstrument())
-                .debtorAccount(toOBWriteDomestic2DataInitiationDebtorAccount(initiation.getDebtorAccount()))
-                .remittanceInformation(toOBWriteDomestic2DataInitiationRemittanceInformation(initiation.getRemittanceInformation()))
-                .supplementaryData(null);
-    }
-
-    public static OBFile1 toOBFile1(OBWriteFile2DataInitiation initiation) {
-        return initiation == null ? null : (new OBFile1())
-                .fileType(initiation.getFileType())
-                .fileHash(initiation.getFileHash())
-                .fileReference(initiation.getFileReference())
-                .numberOfTransactions(initiation.getNumberOfTransactions())
-                .controlSum(initiation.getControlSum())
-                .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
-                .localInstrument(initiation.getLocalInstrument())
-                .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
-                .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()));
-    }
-
 }

@@ -54,7 +54,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse3Data;
@@ -119,7 +118,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
         FRFileConsent5 fileConsent = FRFileConsent5.builder().id(IntentType.PAYMENT_FILE_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGUPLOAD)
-                .writeFileConsent(toOBWriteFileConsent2(obWriteFileConsent3))
+                .writeFileConsent(obWriteFileConsent3)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -245,7 +244,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                         .status(toOBWriteFileConsentResponse3DataStatus(fileConsent.getStatus()))
                         .creationDateTime(fileConsent.getCreated())
                         .statusUpdateDateTime(fileConsent.getStatusUpdate())
-                        .initiation(toOBWriteFile2DataInitiation(fileConsent.getInitiation()))
+                        .initiation(fileConsent.getInitiation())
                         .authorisation(fileConsent.getWriteFileConsent().getData().getAuthorisation())
                 )
                 .links(resourceLinkService.toSelfLink(fileConsent, discovery -> getVersion(discovery).getGetFilePaymentConsent()))
@@ -254,26 +253,6 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
         return discovery.getV_3_1_3();
-    }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteFileConsent3 toOBWriteFileConsent2(OBWriteFileConsent3 obWriteFileConsent3) {
-        return (new OBWriteFileConsent3())
-                .data(obWriteFileConsent3.getData());
-    }
-
-    public static OBWriteFile2DataInitiation toOBWriteFile2DataInitiation(OBWriteFile2DataInitiation initiation) {
-        return initiation == null ? null : (new OBWriteFile2DataInitiation())
-                .fileType(initiation.getFileType())
-                .fileHash(initiation.getFileHash())
-                .fileReference(initiation.getFileReference())
-                .numberOfTransactions(initiation.getNumberOfTransactions())
-                .controlSum(initiation.getControlSum())
-                .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
-                .localInstrument(initiation.getLocalInstrument())
-                .debtorAccount(initiation.getDebtorAccount())
-                .remittanceInformation(initiation.getRemittanceInformation())
-                .supplementaryData(initiation.getSupplementaryData());
     }
 
 }

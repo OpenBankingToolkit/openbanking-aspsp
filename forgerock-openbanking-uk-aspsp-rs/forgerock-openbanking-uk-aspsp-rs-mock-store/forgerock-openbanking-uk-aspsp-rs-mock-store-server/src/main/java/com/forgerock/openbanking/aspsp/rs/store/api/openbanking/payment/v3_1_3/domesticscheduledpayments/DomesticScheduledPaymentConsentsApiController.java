@@ -45,11 +45,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3DataSCASupportData;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4DataSCASupportData;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent3Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse3Data;
@@ -59,11 +55,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticpayments.DomesticPaymentConsentsApiController.toOBWriteDomesticConsent3DataAuthorisation;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticpayments.DomesticPaymentConsentsApiController.toOBWriteDomesticConsent4DataSCASupportData;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.file.FilePaymentConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticScheduledConsentResponse3DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent3DataSCASupportData;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticScheduledConsent4;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
@@ -153,7 +149,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                         .creationDateTime(domesticScheduledConsent.getCreated())
                         .statusUpdateDateTime(domesticScheduledConsent.getStatusUpdate())
                         .consentId(domesticScheduledConsent.getId())
-                        .permission(PermissionEnum.valueOf(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission().name()))
+                        .permission(toPermission(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission()))
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation()))
                         .scASupportData(toOBWriteDomesticConsent3DataSCASupportData(domesticScheduledConsent.getDomesticScheduledConsent().getData().getScASupportData()))
                 )
@@ -162,30 +158,11 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                 .meta(new Meta());
     }
 
+    private PermissionEnum toPermission(OBWriteDomesticScheduledConsent4Data.PermissionEnum permission) {
+        return permission == null ? null : PermissionEnum.valueOf(permission.name());
+    }
+
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
         return discovery.getV_3_1_3();
-    }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteDomesticScheduledConsent4 toOBWriteDomesticScheduledConsent4(OBWriteDomesticScheduledConsent3 obWriteDomesticScheduledConsent3) {
-        return obWriteDomesticScheduledConsent3 == null ? null : (new OBWriteDomesticScheduledConsent4())
-                .data(toOBWriteDomesticScheduledConsent4Data(obWriteDomesticScheduledConsent3.getData()))
-                .risk(obWriteDomesticScheduledConsent3.getRisk());
-    }
-
-    public static OBWriteDomesticScheduledConsent4Data toOBWriteDomesticScheduledConsent4Data(OBWriteDomesticScheduledConsent3Data data) {
-        return data == null ? null : (new OBWriteDomesticScheduledConsent4Data())
-                .permission(OBWriteDomesticScheduledConsent4Data.PermissionEnum.valueOf(data.getPermission().name()))
-                .readRefundAccount(null)
-                .initiation(data.getInitiation())
-                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
-                .scASupportData(toOBWriteDomesticConsent4DataSCASupportData(data.getScASupportData()));
-    }
-
-    public static OBWriteDomesticConsent3DataSCASupportData toOBWriteDomesticConsent3DataSCASupportData(OBWriteDomesticConsent4DataSCASupportData scASupportData) {
-        return scASupportData == null ? null : (new OBWriteDomesticConsent3DataSCASupportData())
-                .requestedSCAExemptionType(OBWriteDomesticConsent3DataSCASupportData.RequestedSCAExemptionTypeEnum.valueOf(scASupportData.getRequestedSCAExemptionType().name()))
-                .appliedAuthenticationApproach(OBWriteDomesticConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.valueOf(scASupportData.getAppliedAuthenticationApproach().name()))
-                .referencePaymentOrderId(scASupportData.getReferencePaymentOrderId());
     }
 }

@@ -42,13 +42,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.OBDomestic1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticConsentResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,17 +52,11 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBWriteDomestic2DataInitiationCreditorAccount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBWriteDomestic2DataInitiationInstructedAmount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBRemittanceInformationConverter.toOBRemittanceInformation1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBRemittanceInformationConverter.toOBWriteDomestic2DataInitiationRemittanceInformation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBDomestic1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent4;
 
 @Controller("DomesticPaymentConsentsApiV3.0")
 @Slf4j
@@ -204,45 +194,4 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 .risk(domesticConsent.getRisk())
                 .meta(new Meta());
     }
-
-    // TODO #272 move to uk-datamodel
-    public static OBWriteDomesticConsent4 toOBWriteDomesticConsent4(OBWriteDomesticConsent1 obWriteDomesticConsent1) {
-        return (new OBWriteDomesticConsent4())
-                .data(toOBWriteDomesticConsent4Data(obWriteDomesticConsent1.getData()))
-                .risk(obWriteDomesticConsent1.getRisk());
-    }
-
-    public static OBWriteDomesticConsent4Data toOBWriteDomesticConsent4Data(OBWriteDataDomesticConsent1 data) {
-        return data == null ? null : (new OBWriteDomesticConsent4Data())
-                .readRefundAccount(null)
-                .initiation(toOBWriteDomestic2DataInitiation(data.getInitiation()))
-                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
-                .scASupportData(null);
-    }
-
-    public static OBWriteDomestic2DataInitiation toOBWriteDomestic2DataInitiation(OBDomestic1 initiation) {
-        return initiation == null ? null : (new OBWriteDomestic2DataInitiation())
-                .instructionIdentification(initiation.getInstructionIdentification())
-                .endToEndIdentification(initiation.getEndToEndIdentification())
-                .localInstrument(initiation.getLocalInstrument())
-                .instructedAmount(toOBWriteDomestic2DataInitiationInstructedAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toOBWriteDomestic2DataInitiationDebtorAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toOBWriteDomestic2DataInitiationCreditorAccount(initiation.getCreditorAccount()))
-                .creditorPostalAddress(initiation.getCreditorPostalAddress())
-                .remittanceInformation(toOBWriteDomestic2DataInitiationRemittanceInformation(initiation.getRemittanceInformation()))
-                .supplementaryData(null);
-    }
-
-    public static OBDomestic1 toOBDomestic1(OBWriteDomestic2DataInitiation initiation) {
-        return initiation == null ? null : (new OBDomestic1())
-                .instructionIdentification(initiation.getInstructionIdentification())
-                .endToEndIdentification(initiation.getEndToEndIdentification())
-                .localInstrument(initiation.getLocalInstrument())
-                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
-                .creditorAccount(toOBCashAccount3(initiation.getCreditorAccount()))
-                .creditorPostalAddress(initiation.getCreditorPostalAddress())
-                .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()));
-    }
-
 }

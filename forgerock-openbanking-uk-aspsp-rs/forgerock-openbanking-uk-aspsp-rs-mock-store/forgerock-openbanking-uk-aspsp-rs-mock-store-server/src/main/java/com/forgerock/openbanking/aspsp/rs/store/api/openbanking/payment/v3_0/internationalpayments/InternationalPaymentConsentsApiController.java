@@ -42,11 +42,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalConsentResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5Data;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,13 +52,12 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments.InternationalPaymentConsentsApiController.toOBExchangeRate2;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBInternational1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBWriteInternational3DataInitiation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent5;
 
 @Controller("InternationalPaymentConsentsApiV3.0")
 @Slf4j
@@ -198,20 +195,5 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 .risk(internationalConsent.getRisk())
                 .links(resourceLinkService.toSelfLink(internationalConsent, discovery -> discovery.getV_3_0().getGetInternationalPaymentConsent()))
                 .meta(new Meta());
-    }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteInternationalConsent5 toOBWriteInternationalConsent5(OBWriteInternationalConsent1 obWriteInternationalConsent1) {
-        return new OBWriteInternationalConsent5()
-                .data(toOBWriteInternationalConsent5Data(obWriteInternationalConsent1.getData()))
-                .risk(obWriteInternationalConsent1.getRisk());
-    }
-
-    public static OBWriteInternationalConsent5Data toOBWriteInternationalConsent5Data(OBWriteDataInternationalConsent1 data) {
-        return data == null ? null : (new OBWriteInternationalConsent5Data())
-                .readRefundAccount(null)
-                .initiation(toOBWriteInternational3DataInitiation(data.getInitiation()))
-                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
-                .scASupportData(null);
     }
 }

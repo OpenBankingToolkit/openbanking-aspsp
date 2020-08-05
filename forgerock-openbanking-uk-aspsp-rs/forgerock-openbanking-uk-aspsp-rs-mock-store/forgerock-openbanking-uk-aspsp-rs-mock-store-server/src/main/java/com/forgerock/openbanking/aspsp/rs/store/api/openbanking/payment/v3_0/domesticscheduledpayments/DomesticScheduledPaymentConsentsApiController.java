@@ -43,11 +43,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduledConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduledConsentResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,12 +53,11 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBWriteDomesticScheduled2DataInitiation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent4;
 
 @Controller("DomesticScheduledPaymentConsentsApiV3.0")
 @Slf4j
@@ -202,21 +199,4 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                 .risk(domesticScheduledConsent.getRisk())
                 .meta(new Meta());
     }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteDomesticScheduledConsent4 toOBWriteDomesticScheduledConsent4(OBWriteDomesticScheduledConsent1 obWriteDomesticScheduledConsent1) {
-        return (new OBWriteDomesticScheduledConsent4())
-                .data(toOBWriteDomesticScheduledConsent4Data(obWriteDomesticScheduledConsent1.getData()))
-                .risk(obWriteDomesticScheduledConsent1.getRisk());
-    }
-
-    public static OBWriteDomesticScheduledConsent4Data toOBWriteDomesticScheduledConsent4Data(OBWriteDataDomesticScheduledConsent1 data) {
-        return data == null ? null : (new OBWriteDomesticScheduledConsent4Data())
-                .permission(OBWriteDomesticScheduledConsent4Data.PermissionEnum.valueOf(data.getPermission().name()))
-                .readRefundAccount(null)
-                .initiation(toOBWriteDomesticScheduled2DataInitiation(data.getInitiation()))
-                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
-                .scASupportData(null);
-    }
-
 }

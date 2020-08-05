@@ -43,14 +43,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.OBAuthorisation1;
 import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderConsentResponse3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4DataAuthorisation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse3;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,10 +54,10 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter.toOBAuthorisation1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder3;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrder3DataInitiation;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent5;
 
 @Controller("DomesticStandingOrderConsentsApiV3.1.1")
 @Slf4j
@@ -197,27 +192,5 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
                 .links(resourceLinkService.toSelfLink(domesticStandingOrderConsent, discovery -> discovery.getV_3_1_1().getGetDomesticStandingOrderConsent()))
                 .risk(domesticStandingOrderConsent.getRisk())
                 .meta(new Meta());
-    }
-
-    // TODO #272 move to uk-datamodel
-    public static OBWriteDomesticStandingOrderConsent5 toOBWriteDomesticStandingOrderConsent5(OBWriteDomesticStandingOrderConsent3 obWriteDomesticStandingOrderConsent3) {
-        return (new OBWriteDomesticStandingOrderConsent5())
-                .data(toOBWriteDomesticStandingOrderConsent5Data(obWriteDomesticStandingOrderConsent3.getData()))
-                .risk(obWriteDomesticStandingOrderConsent3.getRisk());
-    }
-
-    public static OBWriteDomesticStandingOrderConsent5Data toOBWriteDomesticStandingOrderConsent5Data(OBWriteDataDomesticStandingOrderConsent3 data) {
-        return data == null ? null : (new OBWriteDomesticStandingOrderConsent5Data())
-                .permission(OBWriteDomesticStandingOrderConsent5Data.PermissionEnum.valueOf(data.getPermission().name()))
-                .readRefundAccount(null)
-                .initiation(toOBWriteDomesticStandingOrder3DataInitiation(data.getInitiation()))
-                .authorisation(toOBWriteDomesticConsent4DataAuthorisation(data.getAuthorisation()))
-                . scASupportData(null);
-    }
-
-    public static OBWriteDomesticConsent4DataAuthorisation toOBWriteDomesticConsent4DataAuthorisation(OBAuthorisation1 authorisation) {
-        return authorisation == null ? null : (new OBWriteDomesticConsent4DataAuthorisation())
-                .authorisationType(OBWriteDomesticConsent4DataAuthorisation.AuthorisationTypeEnum.valueOf(authorisation.getAuthorisationType().name()))
-                .completionDateTime(authorisation.getCompletionDateTime());
     }
 }

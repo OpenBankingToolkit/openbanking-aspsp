@@ -54,6 +54,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 
 
 @Controller("DomesticStandingOrdersApiV3.1.1")
@@ -81,7 +82,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     public ResponseEntity<OBWriteDomesticStandingOrderResponse3> createDomesticStandingOrders(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteDomesticStandingOrder3 obWriteDomesticStandingOrder3Param,
+            @RequestBody OBWriteDomesticStandingOrder3 obWriteDomesticStandingOrder3,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -112,7 +113,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteDomesticStandingOrder3Param.getData().getConsentId();
+        String consentId = obWriteDomesticStandingOrder3.getData().getConsentId();
         FRDomesticStandingOrderConsent5 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
@@ -124,7 +125,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(obWriteDomesticStandingOrder3Param.getData().getInitiation(), obWriteDomesticStandingOrder3Param.getRisk());
+                    f.verifyRiskAndInitiation(toOBWriteDomesticStandingOrder3DataInitiation(obWriteDomesticStandingOrder3.getData().getInitiation()), obWriteDomesticStandingOrder3.getRisk());
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -159,7 +160,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticStandingOrderResponse3.class, obWriteDomesticStandingOrder3Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticStandingOrderResponse3.class, obWriteDomesticStandingOrder3);
                         }
                 );
     }

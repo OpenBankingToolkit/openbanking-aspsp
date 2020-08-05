@@ -42,8 +42,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
@@ -57,7 +55,7 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3;
 
 @Controller("DomesticStandingOrdersApiV3.0")
 @Slf4j
@@ -188,18 +186,4 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_0().getGetDomesticStandingOrder()))
                 .meta(new Meta());
     }
-
-    // TODO #272 - move to uk-datamodel
-    public static OBWriteDomesticStandingOrder3 toOBWriteDomesticStandingOrder3(OBWriteDomesticStandingOrder1 obWriteDomesticStandingOrder1) {
-        return (new OBWriteDomesticStandingOrder3())
-                .data(toOBWriteDataDomesticStandingOrder3(obWriteDomesticStandingOrder1.getData()))
-                .risk(obWriteDomesticStandingOrder1.getRisk());
-    }
-
-    public static OBWriteDataDomesticStandingOrder3 toOBWriteDataDomesticStandingOrder3(OBWriteDataDomesticStandingOrder1 data) {
-        return data == null ? null : (new OBWriteDataDomesticStandingOrder3())
-                .consentId(data.getConsentId())
-                .initiation(toOBDomesticStandingOrder3(data.getInitiation()));
-    }
-
 }

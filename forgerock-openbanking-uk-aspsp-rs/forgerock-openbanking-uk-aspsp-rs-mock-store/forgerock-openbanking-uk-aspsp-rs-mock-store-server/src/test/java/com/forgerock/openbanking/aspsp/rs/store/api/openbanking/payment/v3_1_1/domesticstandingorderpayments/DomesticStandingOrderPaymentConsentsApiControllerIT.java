@@ -61,11 +61,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBWriteDomesticStandingOrder3DataInitiationCreditorAccount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBWriteDomesticStandingOrder3DataInitiationDebtorAccount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController}.
@@ -248,23 +244,6 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         initiation.supplementaryData(new OBSupplementaryData1());
         initiation.setDebtorAccount(new OBWriteDomesticStandingOrder3DataInitiationDebtorAccount().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber"));
         initiation.setCreditorAccount(new OBWriteDomesticStandingOrder3DataInitiationCreditorAccount().identification("321").name("test2").schemeName("UK.OBIE.SortCodeAccountNumber"));
-    }
-
-    // TODO #277 - move to uk-datamodel
-    public static OBWriteDomesticStandingOrder3DataInitiation toOBWriteDomesticStandingOrder3DataInitiation(OBDomesticStandingOrder3 initiation) {
-        return new OBWriteDomesticStandingOrder3DataInitiation()
-                .frequency(initiation.getFrequency())
-                .reference(initiation.getReference())
-                .numberOfPayments(initiation.getNumberOfPayments())
-                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
-                .recurringPaymentDateTime(initiation.getRecurringPaymentDateTime())
-                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
-                .firstPaymentAmount(toOBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount(initiation.getFirstPaymentAmount()))
-                .recurringPaymentAmount(toOBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount(initiation.getRecurringPaymentAmount()))
-                .finalPaymentAmount(toOBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toOBWriteDomesticStandingOrder3DataInitiationDebtorAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toOBWriteDomesticStandingOrder3DataInitiationCreditorAccount(initiation.getCreditorAccount()))
-                .supplementaryData(initiation.getSupplementaryData());
     }
 
 }

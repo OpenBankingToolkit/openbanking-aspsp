@@ -49,6 +49,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter.toOBWriteFile2DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -71,7 +72,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     public ResponseEntity<OBWriteFileResponse1> createFilePayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteFile1 obWriteFile1Param,
+            @RequestBody OBWriteFile1 obWriteFile1,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -101,7 +102,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             HttpServletRequest request,
 
             Principal principal) throws OBErrorResponseException {
-        String consentId = obWriteFile1Param.getData().getConsentId();
+        String consentId = obWriteFile1.getData().getConsentId();
         FRFileConsent5 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
@@ -113,7 +114,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyInitiation(obWriteFile1Param.getData().getInitiation());
+                    f.verifyInitiation(toOBWriteFile2DataInitiation(obWriteFile1.getData().getInitiation()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -127,7 +128,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteFileResponse1.class, obWriteFile1Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteFileResponse1.class, obWriteFile1);
                         }
                 );
     }
