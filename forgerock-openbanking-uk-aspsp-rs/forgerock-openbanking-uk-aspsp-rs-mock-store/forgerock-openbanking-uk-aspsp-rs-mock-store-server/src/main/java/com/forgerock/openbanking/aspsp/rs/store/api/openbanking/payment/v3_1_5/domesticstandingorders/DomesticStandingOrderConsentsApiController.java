@@ -56,6 +56,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticStandingOrderConsentResponse6DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 
 @Controller("DomesticStandingOrderConsentsApiV3.1.5")
@@ -145,6 +146,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
                         .consentId(domesticStandingOrderConsent.getId())
                         .permission(toPermission(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getPermission()))
                         .authorisation(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getAuthorisation())
+                        .debtor(toDebtorIdentification1(domesticStandingOrderConsent.getInitiation().getDebtorAccount()))
                 )
                 .links(resourceLinkService.toSelfLink(domesticStandingOrderConsent, discovery -> getVersion(discovery).getGetDomesticStandingOrderConsent()))
                 .risk(domesticStandingOrderConsent.getRisk())

@@ -54,6 +54,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalResponse5DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 
 @Controller("InternationalPaymentsApiV3.1.5")
 @Slf4j
@@ -153,6 +154,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .statusUpdateDateTime(frInternationalConsent.getStatusUpdate())
                         .status(toOBWriteInternationalResponse5DataStatus(frInternationalConsent.getStatus()))
                         .consentId(frInternationalConsent.getId())
+                        .debtor(toDebtorIdentification1(frInternationalConsent.getInitiation().getDebtorAccount()))
                         .exchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalPayment()))
                 .meta(new Meta());

@@ -54,6 +54,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticResponse5DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 
 @Controller("DomesticPaymentsApiV3.1.5")
 @Slf4j
@@ -145,13 +146,15 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     }
 
     private OBWriteDomesticResponse5 packagePayment(FRDomesticPaymentSubmission2 frPaymentSubmission, FRDomesticConsent5 frDomesticConsent5) {
-        return new OBWriteDomesticResponse5().data(new OBWriteDomesticResponse5Data()
-                .domesticPaymentId(frPaymentSubmission.getId())
-                .initiation(frDomesticConsent5.getDomesticConsent().getData().getInitiation())
-                .creationDateTime(frDomesticConsent5.getCreated())
-                .statusUpdateDateTime(frDomesticConsent5.getStatusUpdate())
-                .status(toOBWriteDomesticResponse5DataStatus(frDomesticConsent5.getStatus()))
-                .consentId(frDomesticConsent5.getId()))
+        return new OBWriteDomesticResponse5()
+                .data(new OBWriteDomesticResponse5Data()
+                        .domesticPaymentId(frPaymentSubmission.getId())
+                        .initiation(frDomesticConsent5.getDomesticConsent().getData().getInitiation())
+                        .creationDateTime(frDomesticConsent5.getCreated())
+                        .statusUpdateDateTime(frDomesticConsent5.getStatusUpdate())
+                        .status(toOBWriteDomesticResponse5DataStatus(frDomesticConsent5.getStatus()))
+                        .consentId(frDomesticConsent5.getId())
+                        .debtor(toDebtorIdentification1(frDomesticConsent5.getDomesticConsent().getData().getInitiation().getDebtorAccount())))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetDomesticPayment()))
                 .meta(new Meta());
     }

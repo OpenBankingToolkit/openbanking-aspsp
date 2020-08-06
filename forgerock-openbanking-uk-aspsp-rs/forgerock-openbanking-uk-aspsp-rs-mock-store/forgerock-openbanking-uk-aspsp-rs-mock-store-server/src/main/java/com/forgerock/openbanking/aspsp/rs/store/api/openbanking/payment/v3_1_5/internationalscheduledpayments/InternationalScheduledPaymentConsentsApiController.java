@@ -61,6 +61,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalScheduledConsentResponse6DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 
 @Controller("InternationalScheduledPaymentConsentsApiV3.1.5")
@@ -191,6 +192,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                         .permission(toPermission(internationalScheduledConsent.internationalScheduledConsent.getData().getPermission()))
                         .expectedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                         .authorisation(internationalScheduledConsent.getInternationalScheduledConsent().getData().getAuthorisation())
+                        .debtor(toDebtorIdentification1(internationalScheduledConsent.getInitiation().getDebtorAccount()))
                 )
                 .risk(internationalScheduledConsent.getRisk())
                 .links(resourceLinkService.toSelfLink(internationalScheduledConsent, discovery -> getVersion(discovery).getGetInternationalScheduledPaymentConsent()))

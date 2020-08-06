@@ -58,6 +58,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticConsentResponse5DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 
 @Controller("DomesticPaymentConsentsApiV3.1.5")
@@ -192,6 +193,8 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                         .statusUpdateDateTime(domesticConsent.getStatusUpdate())
                         .consentId(domesticConsent.getId())
                         .authorisation(domesticConsent.getDomesticConsent().getData().getAuthorisation())
+                        .scASupportData(domesticConsent.getDomesticConsent().getData().getScASupportData())
+                        .debtor(toDebtorIdentification1(domesticConsent.getInitiation().getDebtorAccount()))
                 )
                 .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> getVersion(discovery).getGetDomesticPaymentConsent()))
                 .risk(domesticConsent.getRisk())

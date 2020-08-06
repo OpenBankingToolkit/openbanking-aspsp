@@ -55,6 +55,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticScheduledResponse5DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 
 @Controller("DomesticScheduledPaymentsApiV3.1.5")
 @Slf4j
@@ -147,13 +148,15 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     }
 
     private OBWriteDomesticScheduledResponse5 packagePayment(FRDomesticScheduledPayment frPaymentSubmission, FRDomesticScheduledConsent5 frDomesticScheduledConsent) {
-        return new OBWriteDomesticScheduledResponse5().data(new OBWriteDomesticScheduledResponse5Data()
-                .domesticScheduledPaymentId(frPaymentSubmission.getId())
-                .initiation(frDomesticScheduledConsent.getDomesticScheduledConsent().getData().getInitiation())
-                .creationDateTime(frDomesticScheduledConsent.getCreated())
-                .statusUpdateDateTime(frDomesticScheduledConsent.getStatusUpdate())
-                .status(toOBWriteDomesticScheduledResponse5DataStatus(frDomesticScheduledConsent.getStatus()))
-                .consentId(frDomesticScheduledConsent.getId()))
+        return new OBWriteDomesticScheduledResponse5()
+                .data(new OBWriteDomesticScheduledResponse5Data()
+                        .domesticScheduledPaymentId(frPaymentSubmission.getId())
+                        .initiation(frDomesticScheduledConsent.getInitiation())
+                        .creationDateTime(frDomesticScheduledConsent.getCreated())
+                        .statusUpdateDateTime(frDomesticScheduledConsent.getStatusUpdate())
+                        .status(toOBWriteDomesticScheduledResponse5DataStatus(frDomesticScheduledConsent.getStatus()))
+                        .debtor(toDebtorIdentification1(frDomesticScheduledConsent.getInitiation().getDebtorAccount()))
+                        .consentId(frDomesticScheduledConsent.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetDomesticScheduledPayment()))
                 .meta(new Meta());
     }

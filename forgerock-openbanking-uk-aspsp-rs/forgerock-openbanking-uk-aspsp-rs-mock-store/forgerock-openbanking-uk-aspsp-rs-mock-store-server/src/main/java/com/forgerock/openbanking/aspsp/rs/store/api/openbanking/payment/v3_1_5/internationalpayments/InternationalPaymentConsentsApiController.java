@@ -58,6 +58,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalConsentResponse6DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 
 @Controller("InternationalPaymentConsentsApiV3.1.5")
@@ -184,6 +185,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                         .exchangeRateInformation(internationalConsent.getCalculatedExchangeRate())
                         .consentId(internationalConsent.getId())
                         .authorisation(internationalConsent.getInternationalConsent().getData().getAuthorisation())
+                        .debtor(toDebtorIdentification1(internationalConsent.getInitiation().getDebtorAccount()))
                 )
                 .risk(internationalConsent.getRisk())
                 .links(resourceLinkService.toSelfLink(internationalConsent, discovery -> getVersion(discovery).getGetInternationalPaymentConsent()))
