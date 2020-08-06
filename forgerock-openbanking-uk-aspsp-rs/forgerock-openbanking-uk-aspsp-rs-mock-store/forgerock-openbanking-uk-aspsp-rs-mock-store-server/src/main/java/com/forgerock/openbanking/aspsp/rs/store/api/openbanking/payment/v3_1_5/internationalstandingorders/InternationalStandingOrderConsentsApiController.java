@@ -55,6 +55,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalStandingOrderConsentResponse7DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 
 @Controller("InternationalStandingOrderConsentsApiV3.1.5")
@@ -144,6 +145,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
                         .consentId(internationalStandingOrderConsent.getId())
                         .permission(toPermission(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getPermission()))
                         .authorisation(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getAuthorisation())
+                        .debtor(toDebtorIdentification1(internationalStandingOrderConsent.getInitiation().getDebtorAccount()))
                 ).risk(internationalStandingOrderConsent.getRisk())
                 .links(resourceLinkService.toSelfLink(internationalStandingOrderConsent, discovery -> getVersion(discovery).getGetInternationalStandingOrderConsent()))
                 .meta(new Meta());

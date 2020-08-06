@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[1789644675d4e15](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1789644675d4e15) Matt Wills *2020-08-05 17:10:41*
+Release candidate: prepare for next development iteration
+## 1.0.92
 ### GitHub [#170](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/170) Bump forgerock-openbanking-starter-parent from 1.0.66 to 1.0.67
 [7cf1703eed6fe35](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7cf1703eed6fe35) Matt Wills *2020-07-22 13:52:02*
 Separated the reporting of the API versions, so that the read/write API and client registration API can be specified separately (#170)
@@ -15,6 +18,8 @@ Release/1.0.91 (#233)
 * Release candidate: prepare for next development iteration
 
 * changelog updated
+[982978849a240fa](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/982978849a240fa) Matt Wills *2020-08-05 16:19:47*
+Switched to new converters within uk-datamodel. Applied a small number of fixes (#272)
 [993af400372191d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/993af400372191d) Matt Wills *2020-08-04 10:14:39*
 Added controllers and their (mostly) generated interfaces to the rs-store and rs-gateway modules for 3.1.5 of the payment API. Added new repository and FR documents for new model objects (#272)
 [70514dd73e1bff1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/70514dd73e1bff1) dependabot-preview[bot] *2020-08-03 19:26:53*
@@ -37,6 +42,8 @@ Bumps [forgerock-openbanking-auth](https://github.com/OpenBankingToolkit/openban
 - [Commits](https://github.com/OpenBankingToolkit/openbanking-auth/compare/forgerock-openbanking-starter-auth-1.0.57...1.0.58)
 
 Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[7b4e262fb1cfa7e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7b4e262fb1cfa7e) Matt Wills *2020-08-05 17:10:32*
+Release candidate: prepare release 1.0.92
 [fd03ab6808ccdc2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fd03ab6808ccdc2) dependabot-preview[bot] *2020-08-03 09:22:23*
 Bump forgerock-openbanking-starter-parent from 1.0.74 to 1.0.75
 

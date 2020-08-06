@@ -55,6 +55,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteFileResponse3DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRFileConsentConverter.toFRFileConsent2;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter.toOBWriteFile2DataInitiation;
 
@@ -183,13 +184,15 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     }
 
     private OBWriteFileResponse3 packagePayment(FRFilePaymentSubmission2 frPaymentSubmission, FRFileConsent5 frFileConsent) {
-        return new OBWriteFileResponse3().data(new OBWriteFileResponse3Data()
-                .filePaymentId(frPaymentSubmission.getId())
-                .initiation(toOBWriteFile2DataInitiation(frPaymentSubmission.getFilePayment().getData().getInitiation()))
-                .creationDateTime(frFileConsent.getCreated())
-                .statusUpdateDateTime(DateTime.now())
-                .status(toOBWriteFileResponse3DataStatus(frFileConsent.getStatus()))
-                .consentId(frFileConsent.getId()))
+        return new OBWriteFileResponse3()
+                .data(new OBWriteFileResponse3Data()
+                        .filePaymentId(frPaymentSubmission.getId())
+                        .initiation(toOBWriteFile2DataInitiation(frPaymentSubmission.getFilePayment().getData().getInitiation()))
+                        .creationDateTime(frFileConsent.getCreated())
+                        .statusUpdateDateTime(DateTime.now())
+                        .status(toOBWriteFileResponse3DataStatus(frFileConsent.getStatus()))
+                        .debtor(toDebtorIdentification1(frFileConsent.getInitiation().getDebtorAccount()))
+                        .consentId(frFileConsent.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetFilePayment()))
                 .meta(new Meta());
     }

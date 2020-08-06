@@ -56,6 +56,7 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticScheduledConsentResponse5DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 
 @Controller("DomesticScheduledPaymentConsentsApiV3.1.5")
@@ -147,18 +148,19 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                         .permission(toPermission(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission()))
                         .authorisation(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation())
                         .scASupportData(domesticScheduledConsent.getDomesticScheduledConsent().getData().getScASupportData())
+                        .debtor(toDebtorIdentification1(domesticScheduledConsent.getInitiation().getDebtorAccount()))
                 )
                 .links(resourceLinkService.toSelfLink(domesticScheduledConsent, discovery -> getVersion(discovery).getGetDomesticScheduledPaymentConsent()))
                 .risk(domesticScheduledConsent.getRisk())
                 .meta(new Meta());
     }
 
-    private PermissionEnum toPermission(OBWriteDomesticScheduledConsent4Data.PermissionEnum permission) {
-        return permission == null ? null : PermissionEnum.valueOf(permission.name());
-    }
-
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
         return discovery.getV_3_1_5();
+    }
+
+    private PermissionEnum toPermission(OBWriteDomesticScheduledConsent4Data.PermissionEnum permission) {
+        return permission == null ? null : PermissionEnum.valueOf(permission.name());
     }
 
 }

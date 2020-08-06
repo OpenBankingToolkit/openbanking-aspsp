@@ -54,6 +54,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalStandingOrderResponse7DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 
 @Controller("InternationalStandingOrdersApiV3.1.5")
 @Slf4j
@@ -144,15 +145,16 @@ public class InternationalStandingOrdersApiController implements InternationalSt
         return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    private OBWriteInternationalStandingOrderResponse7 packagePayment(FRInternationalStandingOrderPaymentSubmission4 frPaymentSubmission, FRInternationalStandingOrderConsent5 FRInternationalStandingOrderConsent5) {
+    private OBWriteInternationalStandingOrderResponse7 packagePayment(FRInternationalStandingOrderPaymentSubmission4 frPaymentSubmission, FRInternationalStandingOrderConsent5 internationalStandingOrderConsent5) {
         return new OBWriteInternationalStandingOrderResponse7()
                 .data(new OBWriteInternationalStandingOrderResponse7Data()
                         .internationalStandingOrderId(frPaymentSubmission.getId())
                         .initiation(frPaymentSubmission.getInternationalStandingOrder().getData().getInitiation())
-                        .creationDateTime(FRInternationalStandingOrderConsent5.getCreated())
-                        .statusUpdateDateTime(FRInternationalStandingOrderConsent5.getStatusUpdate())
-                        .status(toOBWriteInternationalStandingOrderResponse7DataStatus(FRInternationalStandingOrderConsent5.getStatus()))
-                        .consentId(FRInternationalStandingOrderConsent5.getId()))
+                        .creationDateTime(internationalStandingOrderConsent5.getCreated())
+                        .statusUpdateDateTime(internationalStandingOrderConsent5.getStatusUpdate())
+                        .status(toOBWriteInternationalStandingOrderResponse7DataStatus(internationalStandingOrderConsent5.getStatus()))
+                        .debtor(toDebtorIdentification1(internationalStandingOrderConsent5.getInitiation().getDebtorAccount()))
+                        .consentId(internationalStandingOrderConsent5.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalStandingOrder()))
                 .meta(new Meta());
     }
