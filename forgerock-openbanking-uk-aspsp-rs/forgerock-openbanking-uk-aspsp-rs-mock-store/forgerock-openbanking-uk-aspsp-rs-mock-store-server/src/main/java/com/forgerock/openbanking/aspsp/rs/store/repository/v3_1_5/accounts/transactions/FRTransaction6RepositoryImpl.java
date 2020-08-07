@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.transactions;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,15 +36,15 @@ import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import java.util.Collections;
 import java.util.List;
 
-public class FRTransaction5RepositoryImpl implements FRTransaction5RepositoryCustom {
-    private static final Logger LOGGER = LoggerFactory.getLogger(FRTransaction5RepositoryImpl.class);
+public class FRTransaction6RepositoryImpl implements FRTransaction6RepositoryCustom {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FRTransaction6RepositoryImpl.class);
 
     @Autowired
     @Lazy
-    private FRTransaction5Repository transactionRepository;
+    private FRTransaction6Repository transactionRepository;
 
     @Override
-    public Page<FRTransaction5> byAccountIdAndBookingDateTimeBetweenWithPermissions(String accountId, DateTime
+    public Page<FRTransaction6> byAccountIdAndBookingDateTimeBetweenWithPermissions(String accountId, DateTime
             fromBookingDateTime, DateTime toBookingDateTime, List<OBExternalPermissions1Code> permissions,
                                                                                     Pageable pageable) {
 
@@ -71,7 +71,7 @@ public class FRTransaction5RepositoryImpl implements FRTransaction5RepositoryCus
     }
 
     @Override
-    public Page<FRTransaction5> byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(
+    public Page<FRTransaction6> byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(
             String accountId,
             String statementId,
             DateTime fromBookingDateTime,
@@ -102,7 +102,7 @@ public class FRTransaction5RepositoryImpl implements FRTransaction5RepositoryCus
     }
 
     @Override
-    public Page<FRTransaction5> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code>
+    public Page<FRTransaction6> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code>
             permissions, Pageable pageable) {
 
         if (permissions.contains(OBExternalPermissions1Code.READTRANSACTIONSCREDITS)
@@ -130,7 +130,7 @@ public class FRTransaction5RepositoryImpl implements FRTransaction5RepositoryCus
 
 
     @Override
-    public Page<FRTransaction5> byAccountIdInAndBookingDateTimeBetweenWithPermissions(List<String> accountIds,
+    public Page<FRTransaction6> byAccountIdInAndBookingDateTimeBetweenWithPermissions(List<String> accountIds,
                                                                                       DateTime fromBookingDateTime, DateTime toBookingDateTime, List<OBExternalPermissions1Code> permissions,
                                                                                       Pageable pageable) {
 
@@ -157,8 +157,8 @@ public class FRTransaction5RepositoryImpl implements FRTransaction5RepositoryCus
         }
     }
 
-    private Page<FRTransaction5> filterTransition(Page<FRTransaction5> transactions, List<OBExternalPermissions1Code> permissions) {
-        for (FRTransaction5 transaction: transactions) {
+    private Page<FRTransaction6> filterTransition(Page<FRTransaction6> transactions, List<OBExternalPermissions1Code> permissions) {
+        for (FRTransaction6 transaction: transactions) {
             for (OBExternalPermissions1Code permission: permissions) {
                 switch (permission) {
                     case READTRANSACTIONSBASIC:

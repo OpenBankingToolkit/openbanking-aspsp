@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.transactions;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,9 +34,9 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TI
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.TO_BOOKING_DATE_TIME;
 
-public interface FRTransaction5RepositoryCustom {
+public interface FRTransaction6RepositoryCustom {
 
-    Page<FRTransaction5> byAccountIdAndBookingDateTimeBetweenWithPermissions(
+    Page<FRTransaction6> byAccountIdAndBookingDateTimeBetweenWithPermissions(
             @Param("accountId") String accountId,
             @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
             @Param(TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime
@@ -44,7 +44,7 @@ public interface FRTransaction5RepositoryCustom {
             @Param("permissions") List<OBExternalPermissions1Code> permissions,
             Pageable pageable);
 
-    Page<FRTransaction5> byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(
+    Page<FRTransaction6> byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(
             @Param("accountId") String accountId,
             @Param("statementId") String statementId,
             @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
@@ -54,10 +54,10 @@ public interface FRTransaction5RepositoryCustom {
             Pageable pageable);
 
 
-    Page<FRTransaction5> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code>
+    Page<FRTransaction6> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code>
             permissions, Pageable pageable);
 
-    Page<FRTransaction5> byAccountIdInAndBookingDateTimeBetweenWithPermissions(List<String> accountIds,
+    Page<FRTransaction6> byAccountIdInAndBookingDateTimeBetweenWithPermissions(List<String> accountIds,
                                                                                DateTime fromBookingDateTime, DateTime toBookingDateTime, List<OBExternalPermissions1Code> permissions,
                                                                                Pageable pageable);
 }

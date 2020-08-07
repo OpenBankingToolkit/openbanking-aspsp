@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.CallbackF
 import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.EventNotificationService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
 import com.forgerock.openbanking.common.services.notification.EventSubject;
 import com.forgerock.openbanking.common.services.notification.EventType;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -69,7 +69,7 @@ public class PaymentNotificationFacade {
         createAndSendNotification(scheduledPayment.getId(), scheduledPayment.getPispId());
     }
 
-    public void paymentStatusChanged(FRStandingOrder5 frStandingOrder) {
+    public void paymentStatusChanged(FRStandingOrder6 frStandingOrder) {
         if (frStandingOrder.getPispId()==null) {
             // Some old standing orders may have been created without pisp ids so ignore them for notifications
             log.warn("Cannot send a notification for standing order payment id: '{}' because the pisp id on the payment is null", frStandingOrder.getId());

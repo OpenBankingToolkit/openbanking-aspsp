@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.data.FRAccountData4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.data.FRUserData4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.data.FRAccountData5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.data.FRUserData5;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface DataApi {
 
     @RequestMapping(value = "/account", method = RequestMethod.GET)
-    ResponseEntity<Page<FRAccountData4>> exportAccountData(
+    ResponseEntity<Page<FRAccountData5>> exportAccountData(
             @PageableDefault Pageable pageable
     );
 
@@ -45,18 +45,18 @@ public interface DataApi {
     );
 
     @RequestMapping(value = "/user", method = RequestMethod.GET)
-    ResponseEntity<FRUserData4> exportUserData(
+    ResponseEntity<FRUserData5> exportUserData(
             @RequestParam("userId") String userId
     );
 
     @RequestMapping(value = "/user", method = RequestMethod.PUT)
     ResponseEntity updateUserData(
-            @RequestBody FRUserData4 userData
+            @RequestBody FRUserData5 userData
     );
 
     @RequestMapping(value = "/user", method = RequestMethod.POST)
     ResponseEntity importUserData(
-            @RequestBody FRUserData4 userData
+            @RequestBody FRUserData5 userData
     );
 
     @RequestMapping(value = "/user", method = RequestMethod.DELETE)

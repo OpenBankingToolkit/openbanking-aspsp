@@ -20,11 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1.transactions;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.transactions.FRTransaction5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions.FRTransaction6Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.account.FRTransaction4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import com.forgerock.openbanking.common.services.openbanking.converter.transaction.FRTransactionConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -61,7 +61,7 @@ public class TransactionsApiController implements TransactionsApi {
     @Value("${rs.page.default.transaction.size}")
     private int PAGE_LIMIT_TRANSACTIONS;
     @Autowired
-    private FRTransaction5Repository frTransaction5Repository;
+    private FRTransaction6Repository FRTransaction6Repository;
     @Autowired
     private AccountDataInternalIdFilter accountDataInternalIdFilter;
 
@@ -122,7 +122,7 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
-        Page<FRTransaction5> response = frTransaction5Repository.byAccountIdAndBookingDateTimeBetweenWithPermissions(accountId,
+        Page<FRTransaction6> response = FRTransaction6Repository.byAccountIdAndBookingDateTimeBetweenWithPermissions(accountId,
                 fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction4> transactions = response.getContent()
@@ -200,7 +200,7 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
-        Page<FRTransaction5> body = frTransaction5Repository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(accountIds,
+        Page<FRTransaction6> body = FRTransaction6Repository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(accountIds,
                 fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction4> transactions = body.getContent()
@@ -281,7 +281,7 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
-        Page<FRTransaction5> response = frTransaction5Repository.byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(accountId, statementId,
+        Page<FRTransaction6> response = FRTransaction6Repository.byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(accountId, statementId,
                 fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction4> transactions = response.getContent()

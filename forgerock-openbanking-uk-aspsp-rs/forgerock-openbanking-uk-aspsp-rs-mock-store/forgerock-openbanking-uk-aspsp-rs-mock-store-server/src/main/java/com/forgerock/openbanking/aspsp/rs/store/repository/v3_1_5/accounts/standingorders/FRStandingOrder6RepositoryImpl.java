@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.standingorders;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.standingorders;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -29,28 +29,28 @@ import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.List;
 
-public class FRStandingOrder5RepositoryImpl implements FRStandingOrder5RepositoryCustom {
+public class FRStandingOrder6RepositoryImpl implements FRStandingOrder6RepositoryCustom {
 
     @Autowired
     @Lazy
-    private FRStandingOrder5Repository standingOrderRepository;
+    private FRStandingOrder6Repository standingOrderRepository;
 
     @Override
-    public Page<FRStandingOrder5> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRStandingOrder6> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
         return filter(standingOrderRepository.findByAccountId(accountId, pageable), permissions);
     }
 
     @Override
-    public Page<FRStandingOrder5> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRStandingOrder6> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
         return filter(standingOrderRepository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FRStandingOrder5> filter(Page<FRStandingOrder5> standingOrders, List<OBExternalPermissions1Code> permissions) {
+    private Page<FRStandingOrder6> filter(Page<FRStandingOrder6> standingOrders, List<OBExternalPermissions1Code> permissions) {
         for (OBExternalPermissions1Code permission : permissions) {
             switch (permission) {
 
                 case READSTANDINGORDERSBASIC:
-                    for (FRStandingOrder5 standingOrder: standingOrders) {
+                    for (FRStandingOrder6 standingOrder: standingOrders) {
                         standingOrder.getStandingOrder().creditorAccount(null);
                     }
                     break;

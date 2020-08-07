@@ -24,27 +24,27 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balance
 import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.offers.FROffer1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.products.FRProduct2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party.FRParty2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.standingorders.FRStandingOrder5Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.transactions.FRTransaction5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.beneficiaries.FRBeneficiary4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.directdebits.FRDirectDebit4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.scheduledpayments.FRScheduledPayment4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements.FRStatement4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.beneficiaries.FRBeneficiary5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.standingorders.FRStandingOrder6Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions.FRTransaction6Repository;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FROffer1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRProduct2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRParty2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRBeneficiary4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRDirectDebit4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRScheduledPayment4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.data.FRAccountData4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRBeneficiary5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.data.FRAccountData5;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,11 +67,11 @@ public class DataCreator {
 
     private FRAccount4Repository accountsRepository;
     private FRBalance1Repository balanceRepository;
-    private FRBeneficiary4Repository beneficiaryRepository;
+    private FRBeneficiary5Repository beneficiaryRepository;
     private FRDirectDebit4Repository directDebitRepository;
     private FRProduct2Repository productRepository;
-    private FRStandingOrder5Repository standingOrderRepository;
-    private FRTransaction5Repository transactionRepository;
+    private FRStandingOrder6Repository standingOrderRepository;
+    private FRTransaction6Repository transactionRepository;
     private FRStatement4Repository statementRepository;
     private FRScheduledPayment4Repository scheduledPaymentRepository;
     private FRParty2Repository partyRepository;
@@ -81,9 +81,9 @@ public class DataCreator {
 
     @Autowired
     public DataCreator(FRAccount4Repository accountsRepository, FRBalance1Repository balanceRepository,
-                       FRBeneficiary4Repository beneficiaryRepository, FRDirectDebit4Repository directDebitRepository,
-                       FRProduct2Repository productRepository, FRStandingOrder5Repository standingOrderRepository,
-                       FRTransaction5Repository transactionRepository, FRStatement4Repository statementRepository,
+                       FRBeneficiary5Repository beneficiaryRepository, FRDirectDebit4Repository directDebitRepository,
+                       FRProduct2Repository productRepository, FRStandingOrder6Repository standingOrderRepository,
+                       FRTransaction6Repository transactionRepository, FRStatement4Repository statementRepository,
                        FRScheduledPayment4Repository scheduledPaymentRepository, FRParty2Repository partyRepository,
                        FROffer1Repository offerRepository,
                        @Value("${rs.data.upload.limit.documents}") Integer documentLimit,
@@ -103,7 +103,7 @@ public class DataCreator {
         this.accountLimit = accountLimit;
     }
 
-    List<FROffer1> createOffers(FRAccountData4 accountData, Set<String> accountIds) {
+    List<FROffer1> createOffers(FRAccountData5 accountData, Set<String> accountIds) {
         List<FROffer1> offers = new ArrayList<>();
         for (OBOffer1 obOffer: accountData.getOffers()) {
             String accountId = obOffer.getAccountId() != null ? obOffer.getAccountId() : accountData.getAccount().getAccountId();
@@ -125,7 +125,7 @@ public class DataCreator {
         return offerRepository.saveAll(offers);
     }
 
-    List<FRScheduledPayment4> createScheduledPayments(FRAccountData4 accountData, Set<String> accountIds) {
+    List<FRScheduledPayment4> createScheduledPayments(FRAccountData5 accountData, Set<String> accountIds) {
         List<FRScheduledPayment4> scheduledPayments = new ArrayList<>();
         for (OBScheduledPayment3 obScheduledPayment: accountData.getScheduledPayments()) {
             String accountId = obScheduledPayment.getAccountId() != null ? obScheduledPayment.getAccountId() : accountData.getAccount().getAccountId();
@@ -148,7 +148,7 @@ public class DataCreator {
         return scheduledPaymentRepository.saveAll(scheduledPayments);
     }
 
-    List<FRStatement4> createStatements(FRAccountData4 accountData, Set<String> accountIds) {
+    List<FRStatement4> createStatements(FRAccountData5 accountData, Set<String> accountIds) {
         List<FRStatement4> statements = new ArrayList<>();
         for (OBStatement2 obStatement: accountData.getStatements()) {
             String accountId = obStatement.getAccountId() != null ? obStatement.getAccountId() : accountData.getAccount().getAccountId();
@@ -172,16 +172,16 @@ public class DataCreator {
         return statementRepository.saveAll(statements);
     }
 
-    List<FRTransaction5> createTransactions(FRAccountData4 accountData, Set<String> accountIds) {
-        List<FRTransaction5> transactions = new ArrayList<>();
-        for (OBTransaction5 obTransaction: accountData.getTransactions()) {
+    List<FRTransaction6> createTransactions(FRAccountData5 accountData, Set<String> accountIds) {
+        List<FRTransaction6> transactions = new ArrayList<>();
+        for (OBTransaction6 obTransaction: accountData.getTransactions()) {
             String accountId = obTransaction.getAccountId() != null ? obTransaction.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
             }
             obTransaction.setAccountId(accountId);
             obTransaction.setTransactionId(UUID.randomUUID().toString());
-            FRTransaction5 transaction = new FRTransaction5();
+            FRTransaction6 transaction = new FRTransaction6();
             transaction.setAccountId(obTransaction.getAccountId());
             transaction.setBookingDateTime(obTransaction.getBookingDateTime());
             transaction.setTransaction(obTransaction);
@@ -195,16 +195,16 @@ public class DataCreator {
         return transactionRepository.saveAll(transactions);
     }
 
-    List<FRStandingOrder5> createStandingOrders(FRAccountData4 accountData, Set<String> accountIds) {
-        List<FRStandingOrder5> standingOrders = new ArrayList<>();
-        for (OBStandingOrder5 obStandingOrder: accountData.getStandingOrders()) {
+    List<FRStandingOrder6> createStandingOrders(FRAccountData5 accountData, Set<String> accountIds) {
+        List<FRStandingOrder6> standingOrders = new ArrayList<>();
+        for (OBStandingOrder6 obStandingOrder: accountData.getStandingOrders()) {
             String accountId = obStandingOrder.getAccountId() != null ? obStandingOrder.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
             }
             obStandingOrder.setAccountId(accountId);
             obStandingOrder.setStandingOrderId(UUID.randomUUID().toString());
-            FRStandingOrder5 standingOrder = new FRStandingOrder5();
+            FRStandingOrder6 standingOrder = new FRStandingOrder6();
             standingOrder.setAccountId(obStandingOrder.getAccountId());
             standingOrder.setStandingOrder(obStandingOrder);
             standingOrder.setId(obStandingOrder.getStandingOrderId());
@@ -218,7 +218,7 @@ public class DataCreator {
         return standingOrderRepository.saveAll(standingOrders);
     }
 
-    List<FRDirectDebit4> createDirectDebits(FRAccountData4 accountData, Set<String> accountIds) {
+    List<FRDirectDebit4> createDirectDebits(FRAccountData5 accountData, Set<String> accountIds) {
         List<FRDirectDebit4> directDebits = new ArrayList<>();
         for (OBReadDirectDebit2DataDirectDebit obDirectDebit: accountData.getDirectDebits()) {
             String accountId = obDirectDebit.getAccountId() != null ? obDirectDebit.getAccountId() : accountData.getAccount().getAccountId();
@@ -240,16 +240,16 @@ public class DataCreator {
         return directDebitRepository.saveAll(directDebits);
     }
 
-    List<FRBeneficiary4> createBeneficiaries(FRAccountData4 accountData, Set<String> accountIds) {
-        List<FRBeneficiary4> beneficiaries = new ArrayList<>();
-        for (OBBeneficiary4 obBeneficiary: accountData.getBeneficiaries()) {
+    List<FRBeneficiary5> createBeneficiaries(FRAccountData5 accountData, Set<String> accountIds) {
+        List<FRBeneficiary5> beneficiaries = new ArrayList<>();
+        for (OBBeneficiary5 obBeneficiary: accountData.getBeneficiaries()) {
             String accountId = obBeneficiary.getAccountId() != null ? obBeneficiary.getAccountId() : accountData.getAccount().getAccountId();
             if (!accountIds.contains(accountId)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Must specify and own the account ID to update");
             }
             obBeneficiary.setAccountId(accountId);
             obBeneficiary.setBeneficiaryId(UUID.randomUUID().toString());
-            FRBeneficiary4 beneficiary = new FRBeneficiary4();
+            FRBeneficiary5 beneficiary = new FRBeneficiary5();
             beneficiary.setAccountId(obBeneficiary.getAccountId());
             beneficiary.setBeneficiary(obBeneficiary);
             beneficiary.setId(obBeneficiary.getBeneficiaryId());
@@ -262,7 +262,7 @@ public class DataCreator {
         return beneficiaryRepository.saveAll(beneficiaries);
     }
 
-    Optional<OBParty2> createParty(FRAccountData4 accountData) {
+    Optional<OBParty2> createParty(FRAccountData5 accountData) {
         if (accountData.getParty() == null) {
             return Optional.empty();
         }
@@ -274,7 +274,7 @@ public class DataCreator {
         return Optional.of(partyRepository.save(party).getParty());
     }
 
-    Optional<OBReadProduct2DataProduct> createProducts(FRAccountData4 accountData, Set<String> accountIds) {
+    Optional<OBReadProduct2DataProduct> createProducts(FRAccountData5 accountData, Set<String> accountIds) {
         OBReadProduct2DataProduct obProduct = accountData.getProduct();
         if (obProduct == null) {
             return Optional.empty();
@@ -292,7 +292,7 @@ public class DataCreator {
         return Optional.of(productRepository.save(product).getProduct());
     }
 
-    List<FRBalance1> createBalances(FRAccountData4 accountData, Set<String> accountIds) {
+    List<FRBalance1> createBalances(FRAccountData5 accountData, Set<String> accountIds) {
         List<FRBalance1> balances = new ArrayList<>();
         for (OBCashBalance1 obBalance: accountData.getBalances()) {
             String accountId = obBalance.getAccountId() != null ? obBalance.getAccountId() : accountData.getAccount().getAccountId();
@@ -319,7 +319,7 @@ public class DataCreator {
         return balanceRepository.saveAll(balances);
     }
 
-    FRAccount4 createAccount(FRAccountData4 accountData, String username) {
+    FRAccount4 createAccount(FRAccountData5 accountData, String username) {
         FRAccount4 account = new FRAccount4();
         account.setCreated(new Date());
         account.setId(UUID.randomUUID().toString());

@@ -20,10 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_3.beneficiaries;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.beneficiaries.FRBeneficiary4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.beneficiaries.FRBeneficiary5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRBeneficiary4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRBeneficiary5;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.OBBeneficiaryConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -45,15 +46,15 @@ public class BeneficiariesApiController implements BeneficiariesApi {
 
     private final int pageLimitBeneficiaries;
 
-    private final FRBeneficiary4Repository frBeneficiary4Repository;
+    private final FRBeneficiary5Repository FRBeneficiary5Repository;
 
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
     public BeneficiariesApiController(@Value("${rs.page.default.beneficiaries.size}") int pageLimitBeneficiaries,
-                                      FRBeneficiary4Repository frBeneficiary4Repository,
+                                      FRBeneficiary5Repository FRBeneficiary5Repository,
                                       AccountDataInternalIdFilter accountDataInternalIdFilter) {
         this.pageLimitBeneficiaries = pageLimitBeneficiaries;
-        this.frBeneficiary4Repository = frBeneficiary4Repository;
+        this.FRBeneficiary5Repository = FRBeneficiary5Repository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
     }
 
@@ -69,7 +70,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                                                                       String httpUrl) throws OBErrorResponseException {
         log.info("Read beneficiaries for account {} with minimumPermissions {}", accountId, permissions);
 
-        Page<FRBeneficiary4> beneficiaries = frBeneficiary4Repository.byAccountIdWithPermissions(accountId, permissions, PageRequest.of(page, pageLimitBeneficiaries));
+        Page<FRBeneficiary5> beneficiaries = FRBeneficiary5Repository.byAccountIdWithPermissions(accountId, permissions, PageRequest.of(page, pageLimitBeneficiaries));
         return packageResponse(page, httpUrl, beneficiaries);
     }
 
@@ -85,17 +86,18 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                                                                String httpUrl) throws OBErrorResponseException {
         log.info("Beneficaries from account ids {}", accountIds);
 
-        Page<FRBeneficiary4> beneficiaries = frBeneficiary4Repository.byAccountIdInWithPermissions(accountIds, permissions, PageRequest.of(page, pageLimitBeneficiaries));
+        Page<FRBeneficiary5> beneficiaries = FRBeneficiary5Repository.byAccountIdInWithPermissions(accountIds, permissions, PageRequest.of(page, pageLimitBeneficiaries));
         return packageResponse(page, httpUrl, beneficiaries);
     }
 
-    private ResponseEntity<OBReadBeneficiary4> packageResponse(int page, String httpUrl, Page<FRBeneficiary4> beneficiaries) {
+    private ResponseEntity<OBReadBeneficiary4> packageResponse(int page, String httpUrl, Page<FRBeneficiary5> beneficiaries) {
         int totalPages = beneficiaries.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBeneficiary4().data(new OBReadBeneficiary4Data().beneficiary(
                 beneficiaries.getContent()
                         .stream()
-                        .map(FRBeneficiary4::getBeneficiary)
+                        .map(FRBeneficiary5::getBeneficiary)
+                        .map(OBBeneficiaryConverter::toOBBeneficiary4)
                         .map(b -> accountDataInternalIdFilter.apply(b))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

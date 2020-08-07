@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.transactions;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,55 +36,55 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TI
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.TO_BOOKING_DATE_TIME;
 
-public interface FRTransaction5Repository extends MongoRepository<FRTransaction5, String>, FRTransaction5RepositoryCustom {
+public interface FRTransaction6Repository extends MongoRepository<FRTransaction6, String>, FRTransaction6RepositoryCustom {
 
-    Page<FRTransaction5> findByAccountIdAndTransactionCreditDebitIndicator(
+    Page<FRTransaction6> findByAccountIdAndTransactionCreditDebitIndicator(
             @Param("accountId") String accountId,
             @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
             Pageable pageable
     );
 
-    Page<FRTransaction5> findByAccountIdAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(
+    Page<FRTransaction6> findByAccountIdAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(
             @Param("accountId") String accountId,
-            @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
-            @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
-            @Param(TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime toBookingDateTime,
-            Pageable pageable);
-
-    Page<FRTransaction5> findByAccountId(
-            @Param("accountId") String accountId,
-            Pageable pageable
-    );
-
-    Page<FRTransaction5> findByAccountIdAndBookingDateTimeBetween(
-            @Param("accountId") String accountId,
-            @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
-            @Param(TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime
-                    toBookingDateTime,
-            Pageable pageable);
-
-    Page<FRTransaction5> findByAccountIdAndStatementIdsAndTransactionCreditDebitIndicator(
-            @Param("accountId") String accountId,
-            @Param("statementId") String statementId,
-            @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
-            Pageable pageable
-    );
-
-    Page<FRTransaction5> findByAccountIdAndStatementIdsAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(
-            @Param("accountId") String accountId,
-            @Param("statementId") String statementId,
             @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
             @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
             @Param(TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime toBookingDateTime,
             Pageable pageable);
 
-    Page<FRTransaction5> findByAccountIdAndStatementIds(
+    Page<FRTransaction6> findByAccountId(
+            @Param("accountId") String accountId,
+            Pageable pageable
+    );
+
+    Page<FRTransaction6> findByAccountIdAndBookingDateTimeBetween(
+            @Param("accountId") String accountId,
+            @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
+            @Param(TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime
+                    toBookingDateTime,
+            Pageable pageable);
+
+    Page<FRTransaction6> findByAccountIdAndStatementIdsAndTransactionCreditDebitIndicator(
+            @Param("accountId") String accountId,
+            @Param("statementId") String statementId,
+            @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
+            Pageable pageable
+    );
+
+    Page<FRTransaction6> findByAccountIdAndStatementIdsAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(
+            @Param("accountId") String accountId,
+            @Param("statementId") String statementId,
+            @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
+            @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
+            @Param(TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime toBookingDateTime,
+            Pageable pageable);
+
+    Page<FRTransaction6> findByAccountIdAndStatementIds(
             @Param("accountId") String accountId,
             @Param("statementId") String statementId,
             Pageable pageable
     );
 
-    Page<FRTransaction5> findByAccountIdAndStatementIdsAndBookingDateTimeBetween(
+    Page<FRTransaction6> findByAccountIdAndStatementIdsAndBookingDateTimeBetween(
             @Param("accountId") String accountId,
             @Param("statementId") String statementId,
             @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
@@ -92,13 +92,13 @@ public interface FRTransaction5Repository extends MongoRepository<FRTransaction5
                     toBookingDateTime,
             Pageable pageable);
 
-    Page<FRTransaction5> findByAccountIdInAndTransactionCreditDebitIndicator(
+    Page<FRTransaction6> findByAccountIdInAndTransactionCreditDebitIndicator(
             @Param("accountIds") List<String> accountIds,
             @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
             Pageable pageable
     );
 
-    Page<FRTransaction5> findByAccountIdInAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(
+    Page<FRTransaction6> findByAccountIdInAndTransactionCreditDebitIndicatorAndBookingDateTimeBetween(
             @Param("accountIds") List<String> accountIds,
             @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,
             @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
@@ -106,12 +106,12 @@ public interface FRTransaction5Repository extends MongoRepository<FRTransaction5
                     toBookingDateTime,
             Pageable pageable);
 
-    Page<FRTransaction5> findByAccountIdIn(
+    Page<FRTransaction6> findByAccountIdIn(
             @Param("accountIds") List<String> accountIds,
             Pageable pageable
     );
 
-    Page<FRTransaction5> findByAccountIdInAndBookingDateTimeBetween(
+    Page<FRTransaction6> findByAccountIdInAndBookingDateTimeBetween(
             @Param("accountIds") List<String> accountIds,
             @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
             @Param(TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime

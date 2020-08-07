@@ -26,9 +26,8 @@ import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatu
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
-import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
@@ -42,8 +41,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
+import uk.org.openbanking.datamodel.account.OBCreditDebitCode1;
 import uk.org.openbanking.datamodel.account.OBEntryStatus1Code;
-import uk.org.openbanking.datamodel.account.OBTransaction5;
+import uk.org.openbanking.datamodel.account.OBTransaction6;
 import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
@@ -53,6 +53,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 
 @Slf4j
@@ -151,18 +152,18 @@ public class AcceptFilePaymentTask {
                 OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction5 createTransaction(FRAccount account, FRFilePayment payment, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction6 createTransaction(FRAccount account, FRFilePayment payment, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());
 
-        OBTransaction5 obTransaction = new OBTransaction5()
+        OBTransaction6 obTransaction = new OBTransaction6()
                 .transactionId(transactionId)
                 .status(OBEntryStatus1Code.BOOKED)
                 .valueDateTime(DateTime.now())
                 .accountId(account.getId())
-                .amount(OBActiveOrHistoricCurrencyAndAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount(amount))
-                .creditDebitIndicator(OBTransaction5.CreditDebitIndicatorEnum.fromValue(creditDebitCode.toString()))
+                .amount(toOBActiveOrHistoricCurrencyAndAmount9(amount))
+                .creditDebitIndicator(creditDebitCode == null ? null : OBCreditDebitCode1.valueOf(creditDebitCode.name()))
                 .bookingDateTime(bookingDate)
                 .statementReference(new ArrayList<>())
                 .balance(new OBTransactionCashBalance()
@@ -174,7 +175,7 @@ public class AcceptFilePaymentTask {
                     .transactionReference(payment.getRemittanceReference())
                     .transactionInformation(payment.getRemittanceUnstructured());
 
-        FRTransaction5 transaction = FRTransaction5.builder()
+        FRTransaction6 transaction = FRTransaction6.builder()
                 .id(transactionId)
                 .bookingDateTime(bookingDate)
                 .accountId(account.getId())

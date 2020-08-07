@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import com.forgerock.openbanking.common.services.store.balance.BalanceStoreService;
 import com.forgerock.openbanking.common.services.store.transaction.TransactionStoreService;
 import com.tunyk.currencyconverter.BankUaCom;
@@ -63,7 +63,7 @@ public class MoneyService {
 
         updateBalance(balance, finalAmount);
 
-        FRTransaction5 transaction = createTransaction.createTransaction(account, payment, creditDebitCode, balance, amount);
+        FRTransaction6 transaction = createTransaction.createTransaction(account, payment, creditDebitCode, balance, amount);
 
         addTransactionToLatestStatement(account, transaction);
 
@@ -73,7 +73,7 @@ public class MoneyService {
         log.info("Balance updated {}", balance);
     }
 
-    private void addTransactionToLatestStatement(FRAccount account, FRTransaction5 transaction) {
+    private void addTransactionToLatestStatement(FRAccount account, FRTransaction6 transaction) {
         if (account.getLatestStatementId() != null) {
             log.info("Add the new transaction id '{}' to the latest statement id '{}'",
                     transaction.getId(), account.getLatestStatementId());

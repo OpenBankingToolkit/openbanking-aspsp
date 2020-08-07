@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.standingorder;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.standingorders.FRStandingOrder5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.standingorders.FRStandingOrder6Repository;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;
@@ -39,28 +39,28 @@ import java.util.Optional;
 @Controller
 @Slf4j
 public class StandingOrderApiController implements StandingOrderApi {
-    private FRStandingOrder5Repository standingOrderRepository;
+    private FRStandingOrder6Repository standingOrderRepository;
 
     @Autowired
-    public StandingOrderApiController(FRStandingOrder5Repository standingOrderRepository) {
+    public StandingOrderApiController(FRStandingOrder6Repository standingOrderRepository) {
         this.standingOrderRepository = standingOrderRepository;
     }
 
     @Override
-    public ResponseEntity<FRStandingOrder5> create(
-            @RequestBody FRStandingOrder5 standingOrder) {
+    public ResponseEntity<FRStandingOrder6> create(
+            @RequestBody FRStandingOrder6 standingOrder) {
         log.debug("Create standing order {}", standingOrder);
         return new ResponseEntity<>(standingOrderRepository.save(standingOrder), HttpStatus.CREATED);
     }
 
     @Override
     public ResponseEntity update(
-            @RequestBody FRStandingOrder5 standingOrder,
+            @RequestBody FRStandingOrder6 standingOrder,
             @PathVariable("id") String id) {
         Preconditions.checkArgument(id.equals(standingOrder.getId()), "id in URL does not match id in provided update");
         log.debug("Update standing order {}", standingOrder);
 
-        Optional<FRStandingOrder5> byId = standingOrderRepository.findById(id);
+        Optional<FRStandingOrder6> byId = standingOrderRepository.findById(id);
         if (byId.isPresent()) {
             standingOrder.setId(id);
             return ResponseEntity.ok(standingOrderRepository.save(standingOrder));
@@ -71,7 +71,7 @@ public class StandingOrderApiController implements StandingOrderApi {
     }
 
     @Override
-    public ResponseEntity<List<FRStandingOrder5>> getActive() {
+    public ResponseEntity<List<FRStandingOrder6>> getActive() {
         log.debug("Find Active Standing Orders");
         return ResponseEntity.ok(standingOrderRepository.findByStatusIn(ImmutableList.of(StandingOrderStatus.PENDING, StandingOrderStatus.ACTIVE)));
     }

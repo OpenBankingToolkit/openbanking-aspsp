@@ -24,14 +24,41 @@ import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRTransac
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRTransaction2;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRTransaction3;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.account.FRTransaction4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.transaction.OBTransactionConverter.toOBTransaction1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.transaction.OBTransactionConverter.toOBTransaction2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.transaction.OBTransactionConverter.toOBTransaction3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.transaction.OBTransactionConverter.toOBTransaction4;
+
 
 public class FRTransactionConverter {
 
-    // Upgrade methods
+    public static FRTransaction1 toTransaction1(FRTransaction6 transaction6) {
+        FRTransaction1 transaction1 = new FRTransaction1();
+        transaction1.setAccountId(transaction6.getAccountId());
+        transaction1.setId(transaction6.getId());
+        transaction1.setCreated(transaction6.getCreated());
+        transaction1.setUpdated(transaction6.getUpdated());
+        transaction1.setBookingDateTime(transaction6.getBookingDateTime());
+        transaction1.setTransaction(toOBTransaction1(transaction6.getTransaction()));
+        return transaction1;
+    }
+
+    public static FRTransaction2 toTransaction2(FRTransaction6 transaction6) {
+        FRTransaction2 frTransaction2 = new FRTransaction2();
+        frTransaction2.setAccountId(transaction6.getAccountId());
+        frTransaction2.setId(transaction6.getId());
+        frTransaction2.setCreated(transaction6.getCreated());
+        frTransaction2.setUpdated(transaction6.getUpdated());
+        frTransaction2.setBookingDateTime(transaction6.getBookingDateTime());
+        frTransaction2.setTransaction(toOBTransaction2(transaction6.getTransaction()));
+        frTransaction2.setStatementIds(transaction6.getStatementIds());
+        return frTransaction2;
+    }
 
     public static FRTransaction3 toTransaction3(FRTransaction2 transaction2) {
-        FRTransaction3 frTransaction3 =  new FRTransaction3();
+        FRTransaction3 frTransaction3 = new FRTransaction3();
         frTransaction3.setAccountId(transaction2.getAccountId());
         frTransaction3.setId(transaction2.getId());
         frTransaction3.setCreated(transaction2.getCreated());
@@ -42,8 +69,19 @@ public class FRTransactionConverter {
         return frTransaction3;
     }
 
+    public static FRTransaction3 toTransaction3(FRTransaction6 transaction6) {
+        FRTransaction3 transaction3 = new FRTransaction3();
+        transaction3.setAccountId(transaction6.getAccountId());
+        transaction3.setId(transaction6.getId());
+        transaction3.setCreated(transaction6.getCreated());
+        transaction3.setUpdated(transaction6.getUpdated());
+        transaction3.setBookingDateTime(transaction6.getBookingDateTime());
+        transaction3.setTransaction(toOBTransaction3(transaction6.getTransaction()));
+        return transaction3;
+    }
+
     public static FRTransaction4 toTransaction4(FRTransaction3 transaction3) {
-        FRTransaction4 frTransaction4 =  new FRTransaction4();
+        FRTransaction4 frTransaction4 = new FRTransaction4();
         frTransaction4.setAccountId(transaction3.getAccountId());
         frTransaction4.setId(transaction3.getId());
         frTransaction4.setCreated(transaction3.getCreated());
@@ -54,66 +92,14 @@ public class FRTransactionConverter {
         return frTransaction4;
     }
 
-
-    public static FRTransaction5 toTransaction5(FRTransaction4 frTransaction4) {
-        FRTransaction5 frTransaction5 =  new FRTransaction5();
-        frTransaction5.setAccountId(frTransaction4.getAccountId());
-        frTransaction5.setId(frTransaction4.getId());
-        frTransaction5.setCreated(frTransaction4.getCreated());
-        frTransaction5.setUpdated(frTransaction4.getUpdated());
-        frTransaction5.setBookingDateTime(frTransaction4.getBookingDateTime());
-        frTransaction5.setTransaction(OBTransactionConverter.toOBTransaction5(frTransaction4.getTransaction()));
-        frTransaction5.setStatementIds(frTransaction4.getStatementIds());
-        return frTransaction5;
+    public static FRTransaction4 toTransaction4(FRTransaction6 transaction6) {
+        FRTransaction4 transaction4 = new FRTransaction4();
+        transaction4.setAccountId(transaction6.getAccountId());
+        transaction4.setId(transaction6.getId());
+        transaction4.setCreated(transaction6.getCreated());
+        transaction4.setUpdated(transaction6.getUpdated());
+        transaction4.setBookingDateTime(transaction6.getBookingDateTime());
+        transaction4.setTransaction(toOBTransaction4(transaction6.getTransaction()));
+        return transaction4;
     }
-
-    // Backwards compatibility methods
-
-    public static FRTransaction4 toTransaction4(FRTransaction5 frTransaction5) {
-        FRTransaction4 frTransaction4 =  new FRTransaction4();
-        frTransaction4.setAccountId(frTransaction5.getAccountId());
-        frTransaction4.setId(frTransaction5.getId());
-        frTransaction4.setCreated(frTransaction5.getCreated());
-        frTransaction4.setUpdated(frTransaction5.getUpdated());
-        frTransaction4.setBookingDateTime(frTransaction5.getBookingDateTime());
-        frTransaction4.setTransaction(OBTransactionConverter.toOBTransaction4(frTransaction5.getTransaction()));
-        frTransaction4.setStatementIds(frTransaction5.getStatementIds());
-        return frTransaction4;
-    }
-
-    public static FRTransaction3 toTransaction3(FRTransaction5 transaction5) {
-        FRTransaction3 transaction3 =  new FRTransaction3();
-        transaction3.setAccountId(transaction5.getAccountId());
-        transaction3.setId(transaction5.getId());
-        transaction3.setCreated(transaction5.getCreated());
-        transaction3.setUpdated(transaction5.getUpdated());
-        transaction3.setBookingDateTime(transaction5.getBookingDateTime());
-        transaction3.setTransaction(OBTransactionConverter.toOBTransaction3(transaction5.getTransaction()));
-        transaction3.setStatementIds(transaction5.getStatementIds());
-        return transaction3;
-    }
-
-    public static FRTransaction2 toTransaction2(FRTransaction5 transaction5) {
-        FRTransaction2 transaction2 =  new FRTransaction2();
-        transaction2.setAccountId(transaction5.getAccountId());
-        transaction2.setId(transaction5.getId());
-        transaction2.setCreated(transaction5.getCreated());
-        transaction2.setUpdated(transaction5.getUpdated());
-        transaction2.setBookingDateTime(transaction5.getBookingDateTime());
-        transaction2.setTransaction(OBTransactionConverter.toOBTransaction2(transaction5.getTransaction()));
-        transaction2.setStatementIds(transaction5.getStatementIds());
-        return transaction2;
-    }
-
-    public static FRTransaction1 toTransaction1(FRTransaction5 transaction5) {
-        FRTransaction1 transaction1 =  new FRTransaction1();
-        transaction1.setAccountId(transaction5.getAccountId());
-        transaction1.setId(transaction5.getId());
-        transaction1.setCreated(transaction5.getCreated());
-        transaction1.setUpdated(transaction5.getUpdated());
-        transaction1.setBookingDateTime(transaction5.getBookingDateTime());
-        transaction1.setTransaction(OBTransactionConverter.toOBTransaction1(transaction5.getTransaction()));
-        return transaction1;
-    }
-
 }

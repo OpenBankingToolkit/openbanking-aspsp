@@ -25,6 +25,15 @@ import com.forgerock.openbanking.common.services.openbanking.converter.FRModelMa
 import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
 import uk.org.openbanking.datamodel.account.*;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification6;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount6;
+
 public final class OBTransactionConverter {
 
     public static OBTransaction1 toTransaction1(OBTransaction2 obTransaction2) {
@@ -325,6 +334,102 @@ public final class OBTransactionConverter {
         return transaction1;
     }
 
+    public static OBTransaction1 toOBTransaction1(OBTransaction6 obTransaction6) {
+        return obTransaction6 == null ? null : (new OBTransaction1())
+                .accountId(obTransaction6.getAccountId())
+                .transactionId(obTransaction6.getTransactionId())
+                .transactionReference(obTransaction6.getTransactionReference())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(obTransaction6.getAmount()))
+                .creditDebitIndicator(toOBCreditDebitCode(obTransaction6.getCreditDebitIndicator()))
+                .status(obTransaction6.getStatus())
+                .bookingDateTime(obTransaction6.getBookingDateTime())
+                .valueDateTime(obTransaction6.getValueDateTime())
+                .transactionInformation(obTransaction6.getTransactionInformation())
+                .addressLine(obTransaction6.getAddressLine())
+                .bankTransactionCode(obTransaction6.getBankTransactionCode())
+                .proprietaryBankTransactionCode(obTransaction6.getProprietaryBankTransactionCode())
+                .balance(obTransaction6.getBalance())
+                .merchantDetails(obTransaction6.getMerchantDetails());
+    }
+
+    public static OBTransaction2 toOBTransaction2(OBTransaction6 obTransaction6) {
+        return obTransaction6 == null ? null : (new OBTransaction2())
+                .accountId(obTransaction6.getAccountId())
+                .transactionId(obTransaction6.getTransactionId())
+                .transactionReference(obTransaction6.getTransactionReference())
+                .statementReference(obTransaction6.getStatementReference())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(obTransaction6.getAmount()))
+                .creditDebitIndicator(toOBCreditDebitCode(obTransaction6.getCreditDebitIndicator()))
+                .status(obTransaction6.getStatus())
+                .bookingDateTime(obTransaction6.getBookingDateTime())
+                .valueDateTime(obTransaction6.getValueDateTime())
+                .addressLine(obTransaction6.getAddressLine())
+                .bankTransactionCode(obTransaction6.getBankTransactionCode())
+                .proprietaryBankTransactionCode(obTransaction6.getProprietaryBankTransactionCode())
+                .equivalentAmount(null)
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification2(obTransaction6.getCreditorAgent()))
+                .debtorAgent(toOBBranchAndFinancialInstitutionIdentification2(obTransaction6.getDebtorAgent()))
+                .cardInstrument(obTransaction6.getCardInstrument())
+                .transactionInformation(obTransaction6.getTransactionInformation())
+                .balance(obTransaction6.getBalance())
+                .merchantDetails(obTransaction6.getMerchantDetails())
+                .creditorAccount(toOBCashAccount2(obTransaction6.getCreditorAccount()))
+                .debtorAccount(toOBBranchAndFinancialInstitutionIdentification2(obTransaction6.getDebtorAccount()));
+    }
+
+    public static OBTransaction3 toOBTransaction3(OBTransaction6 obTransaction6) {
+        return obTransaction6 == null ? null : (new OBTransaction3())
+                .accountId(obTransaction6.getAccountId())
+                .transactionId(obTransaction6.getTransactionId())
+                .transactionReference(obTransaction6.getTransactionReference())
+                .statementReference(obTransaction6.getStatementReference())
+                .creditDebitIndicator(toOBCreditDebitCode(obTransaction6.getCreditDebitIndicator()))
+                .status(obTransaction6.getStatus())
+                .bookingDateTime(obTransaction6.getBookingDateTime())
+                .valueDateTime(obTransaction6.getValueDateTime())
+                .addressLine(obTransaction6.getAddressLine())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(obTransaction6.getAmount()))
+                .chargeAmount(toOBActiveOrHistoricCurrencyAndAmount(obTransaction6.getChargeAmount()))
+                .currencyExchange(obTransaction6.getCurrencyExchange())
+                .bankTransactionCode(obTransaction6.getBankTransactionCode())
+                .proprietaryBankTransactionCode(toOBTransaction3ProprietaryBankTransactionCode(obTransaction6.getProprietaryBankTransactionCode()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification3(obTransaction6.getCreditorAgent()))
+                .debtorAgent(toOBBranchAndFinancialInstitutionIdentification3(obTransaction6.getDebtorAgent()))
+                .debtorAccount(toOBCashAccount3(obTransaction6.getDebtorAccount()))
+                .cardInstrument(obTransaction6.getCardInstrument())
+                .transactionInformation(obTransaction6.getTransactionInformation())
+                .balance(obTransaction6.getBalance())
+                .merchantDetails(obTransaction6.getMerchantDetails())
+                .creditorAccount(toOBCashAccount3(obTransaction6.getCreditorAccount()));
+    }
+
+    public static OBTransaction4 toOBTransaction4(OBTransaction6 obTransaction6) {
+        return obTransaction6 == null ? null : (new OBTransaction4())
+                .accountId(obTransaction6.getAccountId())
+                .transactionId(obTransaction6.getTransactionId())
+                .transactionReference(obTransaction6.getTransactionReference())
+                .statementReference(obTransaction6.getStatementReference())
+                .creditDebitIndicator(toOBCreditDebitCode(obTransaction6.getCreditDebitIndicator()))
+                .status(obTransaction6.getStatus())
+                .bookingDateTime(obTransaction6.getBookingDateTime())
+                .valueDateTime(obTransaction6.getValueDateTime())
+                .addressLine(obTransaction6.getAddressLine())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(obTransaction6.getAmount()))
+                .chargeAmount(toOBActiveOrHistoricCurrencyAndAmount(obTransaction6.getChargeAmount()))
+                .currencyExchange(obTransaction6.getCurrencyExchange())
+                .bankTransactionCode(obTransaction6.getBankTransactionCode())
+                .proprietaryBankTransactionCode(toOBTransaction3ProprietaryBankTransactionCode(obTransaction6.getProprietaryBankTransactionCode()))
+                .cardInstrument(obTransaction6.getCardInstrument())
+                .supplementaryData(obTransaction6.getSupplementaryData())
+                .transactionInformation(obTransaction6.getTransactionInformation())
+                .balance(obTransaction6.getBalance())
+                .merchantDetails(obTransaction6.getMerchantDetails())
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification3(obTransaction6.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount3(obTransaction6.getCreditorAccount()))
+                .debtorAgent(toOBBranchAndFinancialInstitutionIdentification3(obTransaction6.getDebtorAgent()))
+                .debtorAccount(toOBCashAccount3(obTransaction6.getDebtorAccount()));
+    }
+
     public static OBTransaction4 toOBTransaction4(OBTransaction5 transaction) {
         return new OBTransaction4()
                 .accountId(transaction.getAccountId())
@@ -349,8 +454,7 @@ public final class OBTransactionConverter {
                 .transactionInformation(transaction.getTransactionInformation())
                 .transactionReference(transaction.getTransactionReference())
                 .valueDateTime(transaction.getValueDateTime())
-                .supplementaryData(transaction.getSupplementaryData())
-                ;
+                .supplementaryData(transaction.getSupplementaryData());
     }
 
     public static OBTransaction5 toOBTransaction5(OBTransaction4 transaction) {
@@ -364,10 +468,10 @@ public final class OBTransactionConverter {
                 .cardInstrument(transaction.getCardInstrument())
                 .chargeAmount(OBActiveOrHistoricCurrencyAndAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount(transaction.getChargeAmount()))
                 .creditDebitIndicator(OBTransaction5.CreditDebitIndicatorEnum.valueOf(transaction.getCreditDebitIndicator().name()))
-                .creditorAccount(OBCashAccountConverter.toOBCashAccount6(transaction.getCreditorAccount()))
+                .creditorAccount(toOBCashAccount6(transaction.getCreditorAccount()))
                 .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(transaction.getCreditorAgent()))
                 .currencyExchange(transaction.getCurrencyExchange())
-                .debtorAccount(OBCashAccountConverter.toOBCashAccount6(transaction.getDebtorAccount()))
+                .debtorAccount(toOBCashAccount6(transaction.getDebtorAccount()))
                 .debtorAgent(toOBBranchAndFinancialInstitutionIdentification6(transaction.getDebtorAgent()))
                 .merchantDetails(transaction.getMerchantDetails())
                 .proprietaryBankTransactionCode(toOBTransaction5ProprietaryBankTransactionCode(transaction.getProprietaryBankTransactionCode()))
@@ -377,8 +481,46 @@ public final class OBTransactionConverter {
                 .transactionInformation(transaction.getTransactionInformation())
                 .transactionReference(transaction.getTransactionReference())
                 .valueDateTime(transaction.getValueDateTime())
-                .supplementaryData(transaction.getSupplementaryData())
-                ;
+                .supplementaryData(transaction.getSupplementaryData());
+    }
+
+    public static OBTransaction5 toOBTransaction5(OBTransaction6 transaction) {
+        return new OBTransaction5()
+                .accountId(transaction.getAccountId())
+                .amount(toAccountOBActiveOrHistoricCurrencyAndAmount(transaction.getAmount()))
+                .addressLine(transaction.getAddressLine())
+                .balance(transaction.getBalance()).bookingDateTime(transaction.getBookingDateTime())
+                .bookingDateTime(transaction.getBookingDateTime())
+                .bankTransactionCode(transaction.getBankTransactionCode())
+                .cardInstrument(transaction.getCardInstrument())
+                .chargeAmount(toAccountOBActiveOrHistoricCurrencyAndAmount(transaction.getChargeAmount()))
+                .creditDebitIndicator(OBTransaction5.CreditDebitIndicatorEnum.valueOf(transaction.getCreditDebitIndicator().name()))
+                .creditorAccount(toOBCashAccount6(transaction.getCreditorAccount()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(transaction.getCreditorAgent()))
+                .currencyExchange(transaction.getCurrencyExchange())
+                .debtorAccount(toOBCashAccount6(transaction.getDebtorAccount()))
+                .debtorAgent(toOBBranchAndFinancialInstitutionIdentification6(transaction.getDebtorAgent()))
+                .merchantDetails(transaction.getMerchantDetails())
+                .proprietaryBankTransactionCode(toOBTransaction5ProprietaryBankTransactionCode(transaction.getProprietaryBankTransactionCode()))
+                .statementReference(transaction.getStatementReference())
+                .status(transaction.getStatus())
+                .transactionId(transaction.getTransactionId())
+                .transactionInformation(transaction.getTransactionInformation())
+                .transactionReference(transaction.getTransactionReference())
+                .valueDateTime(transaction.getValueDateTime())
+                .supplementaryData(transaction.getSupplementaryData());
+    }
+
+    public static OBCreditDebitCode toOBCreditDebitCode(OBCreditDebitCode1 creditDebitIndicator) {
+        return FRModelMapper.map(creditDebitIndicator, OBCreditDebitCode.class);
+    }
+
+    public static OBTransaction3ProprietaryBankTransactionCode toOBTransaction3ProprietaryBankTransactionCode(ProprietaryBankTransactionCodeStructure1 proprietaryBankTransactionCode) {
+        return FRModelMapper.map(proprietaryBankTransactionCode, OBTransaction3ProprietaryBankTransactionCode.class);
+    }
+
+    private static OBTransaction5ProprietaryBankTransactionCode toOBTransaction5ProprietaryBankTransactionCode(ProprietaryBankTransactionCodeStructure1 proprietaryBankTransactionCode) {
+        return FRModelMapper.map(proprietaryBankTransactionCode, OBTransaction5ProprietaryBankTransactionCode.class);
     }
 
     private static OBTransaction3ProprietaryBankTransactionCode toOBTransaction3ProprietaryBankTransactionCode(OBTransaction5ProprietaryBankTransactionCode obTransaction5ProprietaryBankTransactionCode) {
@@ -388,14 +530,4 @@ public final class OBTransactionConverter {
     private static OBTransaction5ProprietaryBankTransactionCode toOBTransaction5ProprietaryBankTransactionCode(OBTransaction3ProprietaryBankTransactionCode obTransaction3ProprietaryBankTransactionCode) {
         return FRModelMapper.map(obTransaction3ProprietaryBankTransactionCode, OBTransaction5ProprietaryBankTransactionCode.class);
     }
-
-    private static OBBranchAndFinancialInstitutionIdentification3 toOBBranchAndFinancialInstitutionIdentification3(OBBranchAndFinancialInstitutionIdentification6 obBranchAndFinancialInstitutionIdentification6) {
-        return FRModelMapper.map(obBranchAndFinancialInstitutionIdentification6, OBBranchAndFinancialInstitutionIdentification3.class);
-    }
-
-    private static OBBranchAndFinancialInstitutionIdentification6 toOBBranchAndFinancialInstitutionIdentification6(OBBranchAndFinancialInstitutionIdentification3 obBranchAndFinancialInstitutionIdentification3) {
-        return FRModelMapper.map(obBranchAndFinancialInstitutionIdentification3, OBBranchAndFinancialInstitutionIdentification6.class);
-    }
-
-
 }

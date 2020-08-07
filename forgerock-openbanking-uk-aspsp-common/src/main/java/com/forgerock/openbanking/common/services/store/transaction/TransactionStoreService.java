@@ -20,10 +20,9 @@
  */
 package com.forgerock.openbanking.common.services.store.transaction;
 
-
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 
 public interface TransactionStoreService {
 
-    FRTransaction5 create(FRTransaction5 transaction);
+    FRTransaction6 create(FRTransaction6 transaction);
 }

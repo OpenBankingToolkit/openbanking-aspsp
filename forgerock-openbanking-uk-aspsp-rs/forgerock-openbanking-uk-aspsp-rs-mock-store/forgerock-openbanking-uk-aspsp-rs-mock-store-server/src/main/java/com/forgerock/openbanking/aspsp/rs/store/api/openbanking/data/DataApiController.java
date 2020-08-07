@@ -24,26 +24,26 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balance
 import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.offers.FROffer1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.products.FRProduct2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party.FRParty2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.standingorders.FRStandingOrder5Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.transactions.FRTransaction5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.beneficiaries.FRBeneficiary4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.directdebits.FRDirectDebit4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.scheduledpayments.FRScheduledPayment4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements.FRStatement4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.beneficiaries.FRBeneficiary5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.standingorders.FRStandingOrder6Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions.FRTransaction6Repository;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FROffer1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRProduct2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRParty2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRBeneficiary4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRDirectDebit4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRScheduledPayment4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.data.FRAccountData4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.data.FRUserData4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRBeneficiary5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.data.FRAccountData5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.data.FRUserData5;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -69,11 +69,11 @@ public class DataApiController implements DataApi {
 
     private final FRAccount4Repository accountsRepository;
     private final FRBalance1Repository balanceRepository;
-    private final FRBeneficiary4Repository beneficiaryRepository;
+    private final FRBeneficiary5Repository beneficiaryRepository;
     private final FRDirectDebit4Repository directDebitRepository;
     private final FRProduct2Repository productRepository;
-    private final FRStandingOrder5Repository standingOrderRepository;
-    private final FRTransaction5Repository transactionRepository;
+    private final FRStandingOrder6Repository standingOrderRepository;
+    private final FRTransaction6Repository transactionRepository;
     private final FRStatement4Repository statementRepository;
     private final FRScheduledPayment4Repository scheduledPayment1Repository;
     private final FRParty2Repository partyRepository;
@@ -82,9 +82,9 @@ public class DataApiController implements DataApi {
     private final DataCreator dataCreator;
 
     public DataApiController(FRDirectDebit4Repository directDebitRepository, FRAccount4Repository accountsRepository,
-                             FRBalance1Repository balanceRepository, FRBeneficiary4Repository beneficiaryRepository,
-                             FRProduct2Repository productRepository, FRStandingOrder5Repository standingOrderRepository,
-                             FRTransaction5Repository transactionRepository, FRStatement4Repository statementRepository,
+                             FRBalance1Repository balanceRepository, FRBeneficiary5Repository beneficiaryRepository,
+                             FRProduct2Repository productRepository, FRStandingOrder6Repository standingOrderRepository,
+                             FRTransaction6Repository transactionRepository, FRStatement4Repository statementRepository,
                              DataCreator dataCreator, FRScheduledPayment4Repository scheduledPayment1Repository,
                              FRParty2Repository partyRepository, DataUpdater dataUpdater, FROffer1Repository offerRepository) {
         this.directDebitRepository = directDebitRepository;
@@ -103,10 +103,10 @@ public class DataApiController implements DataApi {
     }
 
     @Override
-    public ResponseEntity<Page<FRAccountData4>> exportAccountData(
+    public ResponseEntity<Page<FRAccountData5>> exportAccountData(
             @PageableDefault Pageable pageable
     ) {
-        List<FRAccountData4> accountDatas = new ArrayList<>();
+        List<FRAccountData5> accountDatas = new ArrayList<>();
         Page<FRAccount4> page = accountsRepository.findAll(pageable);
         // process last page
         for (FRAccount4 account : page.getContent()) {
@@ -123,10 +123,10 @@ public class DataApiController implements DataApi {
     }
 
     @Override
-    public ResponseEntity<FRUserData4> exportUserData(
+    public ResponseEntity<FRUserData5> exportUserData(
             @RequestParam("userId") String userId
     ) {
-        FRUserData4 userData = new FRUserData4(userId);
+        FRUserData5 userData = new FRUserData5(userId);
         for (FRAccount4 account : accountsRepository.findByUserID(userId)) {
             userData.addAccountData(getAccount(account));
         }
@@ -140,7 +140,7 @@ public class DataApiController implements DataApi {
 
     @Override
     public ResponseEntity updateUserData(
-            @RequestBody FRUserData4 userData
+            @RequestBody FRUserData5 userData
     ) {
 
         dataUpdater.updateParty(userData);
@@ -149,7 +149,7 @@ public class DataApiController implements DataApi {
                 .stream()
                 .map(FRAccount4::getId)
                 .collect(Collectors.toSet());
-        for (FRAccountData4 accountDataDiff : userData.getAccountDatas()) {
+        for (FRAccountData5 accountDataDiff : userData.getAccountDatas()) {
 
             String accountId = accountDataDiff.getAccount().getAccountId();
             //Account
@@ -181,9 +181,9 @@ public class DataApiController implements DataApi {
 
     @Override
     public ResponseEntity importUserData(
-            @RequestBody FRUserData4 userData
+            @RequestBody FRUserData5 userData
     ) {
-        FRUserData4 userDataResponse = new FRUserData4(userData.getUserName());
+        FRUserData5 userDataResponse = new FRUserData5(userData.getUserName());
         if (userData.getParty() != null) {
             FRParty2 party1 = partyRepository.findByUserId(userData.getUserName());
 
@@ -205,8 +205,8 @@ public class DataApiController implements DataApi {
                 .map(FRAccount4::getId)
                 .collect(Collectors.toSet());
 
-        for (FRAccountData4 accountData : userData.getAccountDatas()) {
-            FRAccountData4 accountDataResponse = new FRAccountData4();
+        for (FRAccountData5 accountData : userData.getAccountDatas()) {
+            FRAccountData5 accountDataResponse = new FRAccountData5();
 
             //Account
             if (accountData.getAccount() != null) {
@@ -266,8 +266,8 @@ public class DataApiController implements DataApi {
 
     }
 
-    private FRAccountData4 getAccount(FRAccount4 account) {
-        FRAccountData4 accountData = new FRAccountData4();
+    private FRAccountData5 getAccount(FRAccount4 account) {
+        FRAccountData5 accountData = new FRAccountData5();
         accountData.setAccount(account.getAccount());
 
         Page<FRProduct2> products = productRepository.findByAccountId(account.getId(), (PageRequest.of(0, 1)));
@@ -292,15 +292,15 @@ public class DataApiController implements DataApi {
         {
             final int pageLimit = 300;
             int pageNumber = 0;
-            Page<FRBeneficiary4> page = beneficiaryRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
+            Page<FRBeneficiary5> page = beneficiaryRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
-                for (FRBeneficiary4 beneficiary : page.getContent()) {
+                for (FRBeneficiary5 beneficiary : page.getContent()) {
                     accountData.addBeneficiary(beneficiary.getBeneficiary());
                 }
                 page = beneficiaryRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
-            for (FRBeneficiary4 beneficiary : page.getContent()) {
+            for (FRBeneficiary5 beneficiary : page.getContent()) {
                 accountData.addBeneficiary(beneficiary.getBeneficiary());
             }
         }
@@ -322,30 +322,30 @@ public class DataApiController implements DataApi {
         {
             final int pageLimit = 300;
             int pageNumber = 0;
-            Page<FRStandingOrder5> page = standingOrderRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
+            Page<FRStandingOrder6> page = standingOrderRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
-                for (FRStandingOrder5 standingOrder : page.getContent()) {
+                for (FRStandingOrder6 standingOrder : page.getContent()) {
                     accountData.addStandingOrder(standingOrder.getStandingOrder());
                 }
                 page = standingOrderRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
-            for (FRStandingOrder5 standingOrder : page.getContent()) {
+            for (FRStandingOrder6 standingOrder : page.getContent()) {
                 accountData.addStandingOrder(standingOrder.getStandingOrder());
             }
         }
         {
             final int pageLimit = 300;
             int pageNumber = 0;
-            Page<FRTransaction5> page = transactionRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
+            Page<FRTransaction6> page = transactionRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
-                for (FRTransaction5 transaction : page.getContent()) {
+                for (FRTransaction6 transaction : page.getContent()) {
                     accountData.addTransaction(transaction.getTransaction());
                 }
                 page = transactionRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
-            for (FRTransaction5 transaction : page.getContent()) {
+            for (FRTransaction6 transaction : page.getContent()) {
                 accountData.addTransaction(transaction.getTransaction());
             }
         }

@@ -18,23 +18,30 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.standingorders;
+package com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.data;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.query.Param;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import uk.org.openbanking.datamodel.account.OBParty2;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public interface FRStandingOrder5RepositoryCustom {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class FRUserData5 {
 
-    Page<FRStandingOrder5> byAccountIdWithPermissions(
-            @Param("accountId") String accountId,
-            @Param("permission") List<OBExternalPermissions1Code> permissions,
-            Pageable pageable);
+    private String userName;
+    private OBParty2 party;
+    private List<FRAccountData5> accountDatas = new ArrayList<>();
 
-    Page<FRStandingOrder5> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable);
+    public FRUserData5(String userName) {
+        this.userName = userName;
+    }
 
+    public void addAccountData(FRAccountData5 accountData) {
+        accountDatas.add(accountData);
+    }
 }

@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.beneficiaries;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.beneficiaries;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRBeneficiary4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRBeneficiary5;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -28,12 +28,12 @@ import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.List;
 
-public interface FRBeneficiary4RepositoryCustom {
-    Page<FRBeneficiary4> byAccountIdWithPermissions(
+public interface FRBeneficiary5RepositoryCustom {
+    Page<FRBeneficiary5> byAccountIdWithPermissions(
             @Param("accountId") String accountId,
             @Param("permissions") List<OBExternalPermissions1Code> permissions,
             Pageable pageable);
 
-    Page<FRBeneficiary4> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions,
+    Page<FRBeneficiary5> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions,
                                                       Pageable pageable);
 }

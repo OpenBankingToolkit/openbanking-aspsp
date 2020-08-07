@@ -57,6 +57,10 @@ public class AccountDataInternalIdFilter {
         return apply(data, data::setTransactionId);
     }
 
+    public OBTransaction6 apply(final OBTransaction6 data) {
+        return apply(data, data::setTransactionId);
+    }
+
     public OBBeneficiary2 apply(final OBBeneficiary2 data) {
         return apply(data, data::setBeneficiaryId);
     }
@@ -66,6 +70,10 @@ public class AccountDataInternalIdFilter {
     }
 
     public OBBeneficiary4 apply(final OBBeneficiary4 data) {
+        return apply(data, data::setBeneficiaryId);
+    }
+
+    public OBBeneficiary5 apply(final OBBeneficiary5 data) {
         return apply(data, data::setBeneficiaryId);
     }
 
@@ -113,6 +121,10 @@ public class AccountDataInternalIdFilter {
         return apply(data, data::setStandingOrderId);
     }
 
+    public OBStandingOrder6 apply(OBStandingOrder6 data) {
+        return apply(data, data::setStandingOrderId);
+    }
+
     public OBStatement1 apply(OBStatement1 data) {
         return apply(data, data::setStatementId);
     }
@@ -133,5 +145,4 @@ public class AccountDataInternalIdFilter {
         }
         return data;
     }
-
 }

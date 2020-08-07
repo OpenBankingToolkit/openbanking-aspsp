@@ -18,28 +18,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.standingorders;
+package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.standingorders;
 
-import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
+import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-public interface FRStandingOrder5Repository extends MongoRepository<FRStandingOrder5, String>, FRStandingOrder5RepositoryCustom {
+public interface FRStandingOrder6RepositoryCustom {
 
-    Page<FRStandingOrder5> findByAccountId(@Param("accountId") String accountId, Pageable pageable);
+    Page<FRStandingOrder6> byAccountIdWithPermissions(
+            @Param("accountId") String accountId,
+            @Param("permission") List<OBExternalPermissions1Code> permissions,
+            Pageable pageable);
 
-    Page<FRStandingOrder5> findByAccountIdIn(@Param("accountIds") List<String> accountIds, Pageable pageable);
+    Page<FRStandingOrder6> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable);
 
-    Long deleteStandingOrderByAccountId(@Param("accountId") String accountId);
-
-    List<FRStandingOrder5> findByStatusIn(@Param("statuses") Collection<StandingOrderStatus> statuses);
-
-    Long countByAccountIdIn(Set<String> accountIds);
 }

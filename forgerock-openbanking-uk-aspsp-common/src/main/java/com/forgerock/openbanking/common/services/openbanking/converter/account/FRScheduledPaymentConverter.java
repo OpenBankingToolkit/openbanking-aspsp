@@ -23,14 +23,16 @@ package com.forgerock.openbanking.common.services.openbanking.converter.account;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRScheduledPayment2;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount1;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment2;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount5;
 
 public class FRScheduledPaymentConverter {
 
@@ -58,10 +60,10 @@ public class FRScheduledPaymentConverter {
                 .scheduledType(obScheduledPayment2.getScheduledType());
 
         if (obScheduledPayment2.getCreditorAccount() != null) {
-            obScheduledPayment1.setCreditorAccount(FRAccountConverter.toOBCashAccount3(obScheduledPayment2.getCreditorAccount()));
+            obScheduledPayment1.setCreditorAccount(toOBCashAccount3(obScheduledPayment2.getCreditorAccount()));
         }
         if (obScheduledPayment2.getInstructedAmount() != null) {
-            obScheduledPayment1.setInstructedAmount(toAccountPayment(obScheduledPayment2.getInstructedAmount()));
+            obScheduledPayment1.setInstructedAmount(toOBActiveOrHistoricCurrencyAndAmount(obScheduledPayment2.getInstructedAmount()));
         }
         if (obScheduledPayment2.getScheduledPaymentDateTime() != null) {
             obScheduledPayment1.setScheduledPaymentDateTime(DateTime.parse(obScheduledPayment2.getScheduledPaymentDateTime().toString()));
@@ -80,10 +82,10 @@ public class FRScheduledPaymentConverter {
                 .scheduledType(obScheduledPayment3.getScheduledType());
 
         if (obScheduledPayment3.getCreditorAccount() != null) {
-            obScheduledPayment1.setCreditorAccount(FRAccountConverter.toOBCashAccount3(obScheduledPayment3.getCreditorAccount()));
+            obScheduledPayment1.setCreditorAccount(toOBCashAccount3(obScheduledPayment3.getCreditorAccount()));
         }
         if (obScheduledPayment3.getInstructedAmount() != null) {
-            obScheduledPayment1.setInstructedAmount(toAccountPayment(obScheduledPayment3.getInstructedAmount()));
+            obScheduledPayment1.setInstructedAmount(toOBActiveOrHistoricCurrencyAndAmount(obScheduledPayment3.getInstructedAmount()));
         }
         if (obScheduledPayment3.getScheduledPaymentDateTime() != null) {
             obScheduledPayment1.setScheduledPaymentDateTime(DateTime.parse(obScheduledPayment3.getScheduledPaymentDateTime().toString()));
@@ -102,10 +104,10 @@ public class FRScheduledPaymentConverter {
                 .scheduledType(scheduledPayment.getScheduledType());
 
         if (scheduledPayment.getCreditorAccount() != null) {
-            obScheduledPayment2.setCreditorAccount(FRAccountConverter.toOBCashAccount5(scheduledPayment.getCreditorAccount()));
+            obScheduledPayment2.setCreditorAccount(toOBCashAccount5(scheduledPayment.getCreditorAccount()));
         }
         if (scheduledPayment.getInstructedAmount() != null) {
-            obScheduledPayment2.setInstructedAmount(toAccountPayment(scheduledPayment.getInstructedAmount()));
+            obScheduledPayment2.setInstructedAmount(toAccountOBActiveOrHistoricCurrencyAndAmount(scheduledPayment.getInstructedAmount()));
         }
         if (scheduledPayment.getScheduledPaymentDateTime() != null) {
             obScheduledPayment2.setScheduledPaymentDateTime(scheduledPayment.getScheduledPaymentDateTime());
@@ -124,10 +126,10 @@ public class FRScheduledPaymentConverter {
                 .scheduledType(scheduledPayment.getScheduledType());
 
         if (scheduledPayment.getCreditorAccount() != null) {
-            obScheduledPayment2.setCreditorAccount(FRAccountConverter.toOBCashAccount5(scheduledPayment.getCreditorAccount()));
+            obScheduledPayment2.setCreditorAccount(toOBCashAccount5(scheduledPayment.getCreditorAccount()));
         }
         if (scheduledPayment.getInstructedAmount() != null) {
-            obScheduledPayment2.setInstructedAmount(toOBActiveOrHistoricCurrencyAndAmount(scheduledPayment.getInstructedAmount()));
+            obScheduledPayment2.setInstructedAmount(toAccountOBActiveOrHistoricCurrencyAndAmount(scheduledPayment.getInstructedAmount()));
         }
         if (scheduledPayment.getScheduledPaymentDateTime() != null) {
             obScheduledPayment2.setScheduledPaymentDateTime(scheduledPayment.getScheduledPaymentDateTime());
@@ -136,29 +138,6 @@ public class FRScheduledPaymentConverter {
             obScheduledPayment2.setCreditorAgent(toOBBranchAndFinancialInstitutionIdentification5(scheduledPayment.getCreditorAgent()));
         }
         return obScheduledPayment2;
-    }
-
-
-    public static OBActiveOrHistoricCurrencyAndAmount toAccountPayment(uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount instructedAmount) {
-        if (instructedAmount == null) return null;
-        return new OBActiveOrHistoricCurrencyAndAmount().currency(instructedAmount.getCurrency()).amount(instructedAmount.getAmount());
-    }
-
-    public static OBActiveOrHistoricCurrencyAndAmount toAccountPayment(OBActiveOrHistoricCurrencyAndAmount1 instructedAmount) {
-        if (instructedAmount == null) return null;
-        return new OBActiveOrHistoricCurrencyAndAmount().currency(instructedAmount.getCurrency()).amount(instructedAmount.getAmount());
-    }
-
-    public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toAccountPayment(OBActiveOrHistoricCurrencyAndAmount instructedAmount) {
-        if (instructedAmount == null) return null;
-        return new uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount().currency(instructedAmount.getCurrency()).amount(instructedAmount.getAmount());
-    }
-
-    public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(OBActiveOrHistoricCurrencyAndAmount1 instructedAmount) {
-        if (instructedAmount == null) return null;
-        return new uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount()
-                .currency(instructedAmount.getCurrency())
-                .amount(instructedAmount.getAmount());
     }
 
 }
