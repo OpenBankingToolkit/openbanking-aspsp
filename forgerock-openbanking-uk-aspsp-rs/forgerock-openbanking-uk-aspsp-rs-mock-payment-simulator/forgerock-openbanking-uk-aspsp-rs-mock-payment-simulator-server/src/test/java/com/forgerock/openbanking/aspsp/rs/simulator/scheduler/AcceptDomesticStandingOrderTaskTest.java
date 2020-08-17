@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.account.standingorder.StandingOrderService;
@@ -35,15 +35,26 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount2;
+import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount3;
+import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount4;
+import uk.org.openbanking.datamodel.account.OBCashAccount51;
+import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
+import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
+import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 
 import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AcceptDomesticStandingOrderTaskTest {
@@ -68,7 +79,7 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void pendingStandingOrder_firstPaymentDue_shouldDebitAccount() throws CurrencyConverterException {
         // Given
-        FRStandingOrder5 payment = defaultPayment(StandingOrderStatus.PENDING);
+        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.PENDING);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -84,7 +95,7 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void pendingStandingOrder_firstPaymentDue_shouldCreditAccount() throws CurrencyConverterException {
         // Given
-        FRStandingOrder5 payment = defaultPayment(StandingOrderStatus.PENDING);
+        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.PENDING);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(defaultAccount(DEBIT_ACCOUNT));
 
@@ -103,7 +114,7 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void pendingStandingOrder_recurringPaymentDue_shouldDebitAccount() throws CurrencyConverterException {
         // Given
-        FRStandingOrder5 payment = defaultPayment(StandingOrderStatus.ACTIVE);
+        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.ACTIVE);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -120,7 +131,7 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void pendingStandingOrder_finalPaymentDue_shouldDebitAccount() throws CurrencyConverterException {
         // Given
-        FRStandingOrder5 payment = defaultPayment(StandingOrderStatus.ACTIVE);
+        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.ACTIVE);
         payment.getStandingOrder().setNextPaymentDateTime(payment.getStandingOrder().getFinalPaymentDateTime());
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
@@ -149,7 +160,7 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void shouldRejectPaymentWhenCurrencyConversionException() throws CurrencyConverterException {
         // Given
-        FRStandingOrder5 payment = defaultPayment(StandingOrderStatus.PENDING);
+        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.PENDING);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -167,7 +178,7 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void shouldRejectPaymentWhenAnyException() throws CurrencyConverterException {
         // Given
-        FRStandingOrder5 payment = defaultPayment(StandingOrderStatus.PENDING);
+        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.PENDING);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -185,7 +196,7 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void scheduledPayment_ignoreIfInactive() {
         // Given
-        FRStandingOrder5 payment = defaultPayment(StandingOrderStatus.PENDING);
+        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.PENDING);
         payment.getStandingOrder().setStandingOrderStatusCode(OBExternalStandingOrderStatus1Code.INACTIVE);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
 
@@ -200,20 +211,20 @@ public class AcceptDomesticStandingOrderTaskTest {
         return FRAccount2.builder().id(payAccount).build();
     }
 
-    private FRStandingOrder5 defaultPayment(StandingOrderStatus status) {
+    private FRStandingOrder6 defaultPayment(StandingOrderStatus status) {
 
-        OBStandingOrder5 standingOrder = new OBStandingOrder5()
-                .creditorAccount(new OBCashAccount5().identification(CREDIT_ACCOUNT))
+        OBStandingOrder6 standingOrder = new OBStandingOrder6()
+                .creditorAccount(new OBCashAccount51().identification(CREDIT_ACCOUNT))
                 .firstPaymentDateTime(DateTime.now().minusDays(3))
                 .nextPaymentDateTime(DateTime.now().minusDays(2))
                 .finalPaymentDateTime(DateTime.now().minusDays(1))
-                .firstPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount() .amount("1").currency("GBP"))
-                .nextPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount() .amount("2").currency("GBP"))
-                .finalPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount() .amount("3").currency("GBP"))
+                .firstPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount2() .amount("1").currency("GBP"))
+                .nextPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount3() .amount("2").currency("GBP"))
+                .finalPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount4() .amount("3").currency("GBP"))
                 .frequency("EvryDay")
                 .standingOrderStatusCode(OBExternalStandingOrderStatus1Code.ACTIVE)
                 .reference("test");
-        return FRStandingOrder5.builder()
+        return FRStandingOrder6.builder()
                 .accountId(DEBIT_ACCOUNT)
                 .status(status)
                 .id("111")

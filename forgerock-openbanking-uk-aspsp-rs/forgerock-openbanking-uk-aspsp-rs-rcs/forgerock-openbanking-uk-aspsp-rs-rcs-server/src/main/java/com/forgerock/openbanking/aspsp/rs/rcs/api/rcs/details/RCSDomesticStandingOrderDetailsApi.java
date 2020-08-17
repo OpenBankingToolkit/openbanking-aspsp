@@ -25,8 +25,6 @@ import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticStandingOrderPaymentConsentDetails;
-import com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.common.services.store.payment.DomesticStandingOrderService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -35,12 +33,17 @@ import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.account.OBStandingOrder5;
+import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount51;
 
 @Service
 @Slf4j
@@ -95,17 +98,17 @@ public class RCSDomesticStandingOrderDetailsApi implements RCSDetailsApi {
         paymentService.updatePayment(domesticConsent);
 
         OBWriteDomesticStandingOrder3DataInitiation domesticStandingOrder = domesticConsent.getInitiation();
-        OBStandingOrder5 standingOrder = new OBStandingOrder5()
+        OBStandingOrder6 standingOrder = new OBStandingOrder6()
                 .accountId(domesticConsent.getAccountId())
                 .standingOrderId(domesticConsent.getId())
-                .finalPaymentAmount(OBActiveOrHistoricCurrencyAndAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount(domesticStandingOrder.getFinalPaymentAmount()))
+                .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount4(domesticStandingOrder.getFinalPaymentAmount()))
                 .finalPaymentDateTime(domesticStandingOrder.getFinalPaymentDateTime())
-                .firstPaymentAmount(OBActiveOrHistoricCurrencyAndAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount(domesticStandingOrder.getFirstPaymentAmount()))
+                .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount2(domesticStandingOrder.getFirstPaymentAmount()))
                 .firstPaymentDateTime(domesticStandingOrder.getFirstPaymentDateTime())
                 .nextPaymentDateTime(domesticStandingOrder.getRecurringPaymentDateTime())
-                .nextPaymentAmount(OBActiveOrHistoricCurrencyAndAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount(domesticStandingOrder.getRecurringPaymentAmount()))
+                .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount3(domesticStandingOrder.getRecurringPaymentAmount()))
                 .frequency(domesticStandingOrder.getFrequency())
-                .creditorAccount(FRAccountConverter.toOBCashAccount5(domesticStandingOrder.getCreditorAccount()))
+                .creditorAccount(toOBCashAccount51(domesticStandingOrder.getCreditorAccount()))
                 .reference(domesticStandingOrder.getReference());
         return ResponseEntity.ok(DomesticStandingOrderPaymentConsentDetails.builder()
                 .standingOrder(standingOrder)
@@ -119,5 +122,4 @@ public class RCSDomesticStandingOrderDetailsApi implements RCSDetailsApi {
                         .orElse(""))
                 .build());
     }
-
 }

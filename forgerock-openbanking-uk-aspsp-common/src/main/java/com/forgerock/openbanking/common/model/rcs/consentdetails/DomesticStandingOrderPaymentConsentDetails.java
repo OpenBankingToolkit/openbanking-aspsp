@@ -27,7 +27,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBStandingOrder5;
+import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.util.List;
@@ -41,7 +41,7 @@ import java.util.List;
 @NoArgsConstructor
 public class DomesticStandingOrderPaymentConsentDetails extends ConsentDetails {
 
-    private OBStandingOrder5 standingOrder;
+    private OBStandingOrder6 standingOrder;
     
     private OBActiveOrHistoricCurrencyAndAmount instructedAmount; 
     

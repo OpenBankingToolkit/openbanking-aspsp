@@ -1,6 +1,13 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[bda0abf628cc814](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bda0abf628cc814) Matt Wills *2020-08-06 11:29:16*
+Release candidate: prepare for next development iteration
+## 1.0.93
+[e7e43775d59e878](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e7e43775d59e878) Matt Wills *2020-08-06 11:12:16*
+Added DebtorIdentification1 in v3.1.5 responses  (#272)
+[1b222323cfa28ed](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1b222323cfa28ed) Matt Wills *2020-08-06 11:29:06*
+Release candidate: prepare release 1.0.93
 [1789644675d4e15](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1789644675d4e15) Matt Wills *2020-08-05 17:10:41*
 Release candidate: prepare for next development iteration
 ## 1.0.92

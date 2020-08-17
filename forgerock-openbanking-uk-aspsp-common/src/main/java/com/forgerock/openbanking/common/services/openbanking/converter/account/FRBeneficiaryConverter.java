@@ -21,39 +21,22 @@
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBeneficiary1;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRBeneficiary2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRBeneficiary3;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRBeneficiary4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRBeneficiary5;
 import org.springframework.stereotype.Service;
+import uk.org.openbanking.datamodel.account.OBBeneficiary1;
+import uk.org.openbanking.datamodel.account.OBBeneficiary5;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount1;
 
 @Service
 public class FRBeneficiaryConverter {
 
-    public static FRBeneficiary3 toBeneficiary3(FRBeneficiary2 frBeneficiary2) {
-        if (frBeneficiary2==null) return null;
-        FRBeneficiary3 frBeneficiary3 =  new FRBeneficiary3();
-        frBeneficiary3.setAccountId(frBeneficiary2.getAccountId());
-        frBeneficiary3.setBeneficiary(OBBeneficiaryConverter.toOBBeneficiary3(frBeneficiary2.getBeneficiary()));
-        frBeneficiary3.setId(frBeneficiary2.getId());
-        frBeneficiary3.setCreated(frBeneficiary2.getCreated());
-        frBeneficiary3.setUpdated(frBeneficiary2.getUpdated());
-        return frBeneficiary3;
-    }
-
-    public static FRBeneficiary1 toBeneficiary1(FRBeneficiary3 frBeneficiary3) {
-        if (frBeneficiary3==null) return null;
-        FRBeneficiary1 frBeneficiary1 =  new FRBeneficiary1();
-        frBeneficiary1.setAccountId(frBeneficiary3.getAccountId());
-        frBeneficiary1.setBeneficiary(OBBeneficiaryConverter.toOBBeneficiary1(frBeneficiary3.getBeneficiary()));
-        frBeneficiary1.setId(frBeneficiary3.getId());
-        frBeneficiary1.setCreated(frBeneficiary3.getCreated());
-        frBeneficiary1.setUpdated(frBeneficiary3.getUpdated());
-        return frBeneficiary1;
-    }
 
     public static FRBeneficiary1 toBeneficiary1(FRBeneficiary4 frBeneficiary4) {
-        if (frBeneficiary4==null) return null;
-        FRBeneficiary1 frBeneficiary1 =  new FRBeneficiary1();
+        if (frBeneficiary4 == null) return null;
+        FRBeneficiary1 frBeneficiary1 = new FRBeneficiary1();
         frBeneficiary1.setAccountId(frBeneficiary4.getAccountId());
         frBeneficiary1.setBeneficiary(OBBeneficiaryConverter.toOBBeneficiary1(frBeneficiary4.getBeneficiary()));
         frBeneficiary1.setId(frBeneficiary4.getId());
@@ -61,4 +44,25 @@ public class FRBeneficiaryConverter {
         frBeneficiary1.setUpdated(frBeneficiary4.getUpdated());
         return frBeneficiary1;
     }
+
+    public static FRBeneficiary1 toBeneficiary1(FRBeneficiary5 frBeneficiary5) {
+        if (frBeneficiary5 == null) return null;
+        FRBeneficiary1 frBeneficiary1 = new FRBeneficiary1();
+        frBeneficiary1.setAccountId(frBeneficiary5.getAccountId());
+        frBeneficiary1.setBeneficiary(toOBBeneficiary1(frBeneficiary5.getBeneficiary()));
+        frBeneficiary1.setId(frBeneficiary5.getId());
+        frBeneficiary1.setCreated(frBeneficiary5.getCreated());
+        frBeneficiary1.setUpdated(frBeneficiary5.getUpdated());
+        return frBeneficiary1;
+    }
+
+    private static OBBeneficiary1 toOBBeneficiary1(OBBeneficiary5 obBeneficiary5) {
+        return obBeneficiary5 == null ? null : (new OBBeneficiary1())
+                .accountId(obBeneficiary5.getAccountId())
+                .beneficiaryId(obBeneficiary5.getBeneficiaryId())
+                .reference(obBeneficiary5.getReference())
+                .servicer(toOBBranchAndFinancialInstitutionIdentification2(obBeneficiary5.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount1(obBeneficiary5.getCreditorAccount()));
+    }
+
 }

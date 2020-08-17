@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.simulator.service;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import com.forgerock.openbanking.common.services.store.balance.BalanceStoreService;
 import com.forgerock.openbanking.common.services.store.transaction.TransactionStoreService;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -95,7 +95,7 @@ public class MoneyServiceTest {
         CreateTransaction<FRPaymentSetup1> createTransaction = mock(CreateTransaction.class);
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         FRPaymentSetup1 payment = new FRPaymentSetup1();
-        FRTransaction5 transaction = JMockData.mock(FRTransaction5.class);
+        FRTransaction6 transaction = JMockData.mock(FRTransaction6.class);
         OBActiveOrHistoricCurrencyAndAmount amount = defaultAmount();
         given(createTransaction.createTransaction(account, payment, OBCreditDebitCode.DEBIT, balance, amount)).willReturn(transaction);
 

@@ -24,6 +24,7 @@ import uk.org.openbanking.datamodel.account.OBBeneficiary1;
 import uk.org.openbanking.datamodel.account.OBBeneficiary2;
 import uk.org.openbanking.datamodel.account.OBBeneficiary3;
 import uk.org.openbanking.datamodel.account.OBBeneficiary4;
+import uk.org.openbanking.datamodel.account.OBBeneficiary5;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification2;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification3;
@@ -138,6 +139,32 @@ public final class OBBeneficiaryConverter {
         return obBeneficiary2;
     }
 
+    public static OBBeneficiary2 toOBBeneficiary2(OBBeneficiary5 obBeneficiary5) {
+        if (obBeneficiary5==null) return null;
+        OBBeneficiary2 obBeneficiary2 = new OBBeneficiary2();
+        if (obBeneficiary5.getAccountId() != null) {
+            obBeneficiary2.accountId(obBeneficiary5.getAccountId());
+        }
+
+        if (obBeneficiary5.getBeneficiaryId() != null) {
+            obBeneficiary2.beneficiaryId(obBeneficiary5.getBeneficiaryId());
+        }
+
+        if (obBeneficiary5.getReference() != null) {
+            obBeneficiary2.reference(obBeneficiary5.getReference());
+        }
+
+        if (obBeneficiary5.getCreditorAgent() != null) {
+            obBeneficiary2.creditorAgent(toOBBranchAndFinancialInstitutionIdentification3(obBeneficiary5.getCreditorAgent()));
+        }
+
+        if (obBeneficiary5.getCreditorAccount() != null) {
+            obBeneficiary2.creditorAccount(toOBCashAccount3(obBeneficiary5.getCreditorAccount()));
+        }
+
+        return obBeneficiary2;
+    }
+
     public static OBBeneficiary3 toOBBeneficiary3(OBBeneficiary2 obBeneficiary2) {
         if (obBeneficiary2==null) return null;
         OBBeneficiary3 obBeneficiary3 = new OBBeneficiary3();
@@ -162,5 +189,32 @@ public final class OBBeneficiaryConverter {
         obBeneficiary3.creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(obBeneficiary4.getCreditorAgent()));
         obBeneficiary3.creditorAccount(toOBCashAccount5(obBeneficiary4.getCreditorAccount()));
         return obBeneficiary3;
+    }
+
+    public static OBBeneficiary3 toOBBeneficiary3(OBBeneficiary5 obBeneficiary5) {
+        if (obBeneficiary5==null) return null;
+        OBBeneficiary3 obBeneficiary3 = new OBBeneficiary3();
+
+        obBeneficiary3.setAccountId(obBeneficiary5.getAccountId());
+        obBeneficiary3.setBeneficiaryId(obBeneficiary5.getBeneficiaryId());
+        obBeneficiary3.reference(obBeneficiary5.getReference());
+
+        obBeneficiary3.creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(obBeneficiary5.getCreditorAgent()));
+        obBeneficiary3.creditorAccount(toOBCashAccount5(obBeneficiary5.getCreditorAccount()));
+        return obBeneficiary3;
+    }
+
+    public static OBBeneficiary4 toOBBeneficiary4(OBBeneficiary5 obBeneficiary5) {
+        if (obBeneficiary5==null) return null;
+        OBBeneficiary4 obBeneficiary4 = new OBBeneficiary4();
+
+        obBeneficiary4.setAccountId(obBeneficiary5.getAccountId());
+        obBeneficiary4.setBeneficiaryId(obBeneficiary5.getBeneficiaryId());
+        obBeneficiary4.reference(obBeneficiary5.getReference());
+
+        obBeneficiary4.creditorAgent(obBeneficiary5.getCreditorAgent());
+        obBeneficiary4.creditorAccount(obBeneficiary5.getCreditorAccount());
+        obBeneficiary4.supplementaryData(obBeneficiary5.getSupplementaryData());
+        return obBeneficiary4;
     }
 }

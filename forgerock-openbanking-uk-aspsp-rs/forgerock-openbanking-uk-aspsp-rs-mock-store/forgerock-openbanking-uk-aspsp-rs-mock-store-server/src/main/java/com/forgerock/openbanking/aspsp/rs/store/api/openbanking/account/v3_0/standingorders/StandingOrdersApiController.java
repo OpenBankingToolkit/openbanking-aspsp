@@ -20,11 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_0.standingorders;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.standingorders.FRStandingOrder5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.standingorders.FRStandingOrder6Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRStandingOrder3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -59,7 +59,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     private int PAGE_LIMIT_STANDING_ORDERS;
 
     @Autowired
-    private FRStandingOrder5Repository frStandingOrderRepository;
+    private FRStandingOrder6Repository frStandingOrderRepository;
 
     @Autowired
     private AccountDataInternalIdFilter accountDataInternalIdFilter;
@@ -97,7 +97,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     ) throws OBErrorResponseException {
         LOGGER.info("Read standing orders for account {} with minimumPermissions {}",
                 accountId, permissions);
-        Page<FRStandingOrder5> standingOrdersResponse =
+        Page<FRStandingOrder6> standingOrdersResponse =
                 frStandingOrderRepository.byAccountIdWithPermissions(accountId, permissions,
                         PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
         List<OBStandingOrder3> standingOrders = standingOrdersResponse.stream()
@@ -147,7 +147,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Reading standing orders from account ids {}", accountIds);
-        Page<FRStandingOrder5> standingOrdersResponse = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRStandingOrder6> standingOrdersResponse = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, permissions,
                 PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
         List<OBStandingOrder3> standingOrders = standingOrdersResponse.stream()
                 .map(FRStandingOrderConverter::toStandingOrder3)
