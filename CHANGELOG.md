@@ -1,6 +1,15 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[7ec863b4bcd153c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7ec863b4bcd153c) Matt Wills *2020-08-17 13:20:53*
+Release candidate: prepare for next development iteration
+## 1.0.94
+[fe06fcf8d4c6cb6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fe06fcf8d4c6cb6) Matt Wills *2020-08-07 14:43:04*
+Changes for v3.1.5 of accounts (#272)
+[f0e96ca20c43849](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f0e96ca20c43849) Matt Wills *2020-08-17 13:20:43*
+Release candidate: prepare release 1.0.94
+[75b0b9339586ae7](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/75b0b9339586ae7) Matt Wills *2020-08-07 14:03:25*
+Release candidate: prepare for next development iteration
 [bda0abf628cc814](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bda0abf628cc814) Matt Wills *2020-08-06 11:29:16*
 Release candidate: prepare for next development iteration
 ## 1.0.93
