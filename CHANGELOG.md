@@ -1,6 +1,8 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[9d5b955a38c7632](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9d5b955a38c7632) Matt Wills *2020-08-21 07:53:28*
+Added controllers for v3.1.6 of the payments API (#272)
 [e3828a87603039c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e3828a87603039c) Matt Wills *2020-08-19 10:25:46*
 Added v3.1.5 CHANGELOG.md (#272)
 [2ea9ea313b934ab](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2ea9ea313b934ab) Matt Wills *2020-08-19 10:25:03*
