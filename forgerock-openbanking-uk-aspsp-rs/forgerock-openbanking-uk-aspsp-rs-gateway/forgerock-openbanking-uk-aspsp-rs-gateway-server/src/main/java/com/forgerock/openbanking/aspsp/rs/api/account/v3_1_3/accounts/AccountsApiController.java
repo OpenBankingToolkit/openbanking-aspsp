@@ -30,7 +30,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadAccount3;
 import uk.org.openbanking.datamodel.account.OBReadAccount5;
 
 import javax.servlet.http.HttpServletRequest;
@@ -59,7 +58,7 @@ public class AccountsApiController implements AccountsApi {
                                                      String xCustomerUserAgent,
                                                      HttpServletRequest request,
                                                      Principal principal) throws OBErrorResponseException {
-        return rsEndpointWrapperService.<OBReadAccount3>accountAndTransactionEndpoint()
+        return rsEndpointWrapperService.<OBReadAccount5>accountAndTransactionEndpoint()
                 .authorization(authorization)
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .accountId(accountId)
