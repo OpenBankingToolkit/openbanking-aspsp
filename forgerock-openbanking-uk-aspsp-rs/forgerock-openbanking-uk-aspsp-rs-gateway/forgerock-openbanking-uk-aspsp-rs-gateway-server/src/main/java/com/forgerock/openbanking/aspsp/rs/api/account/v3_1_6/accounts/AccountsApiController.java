@@ -22,84 +22,12 @@ package com.forgerock.openbanking.aspsp.rs.api.account.v3_1_6.accounts;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
-import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import lombok.extern.slf4j.Slf4j;
-import org.joda.time.DateTime;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBReadAccount6;
-
-import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.util.stream.Collectors;
 
 @Controller("AccountsApiV3.1.6")
-@Slf4j
-public class AccountsApiController implements AccountsApi {
-
-    private final RsStoreGateway rsStoreGateway;
-
-    private final RSEndpointWrapperService rsEndpointWrapperService;
+public class AccountsApiController extends com.forgerock.openbanking.aspsp.rs.api.account.v3_1_5.accounts.AccountsApiController implements AccountsApi {
 
     public AccountsApiController(RsStoreGateway rsStoreGateway, RSEndpointWrapperService rsEndpointWrapperService) {
-        this.rsStoreGateway = rsStoreGateway;
-        this.rsEndpointWrapperService = rsEndpointWrapperService;
-    }
-
-    @Override
-    public ResponseEntity<OBReadAccount6> getAccount(String accountId,
-                                                     String authorization,
-                                                     DateTime xFapiAuthDate,
-                                                     String xFapiCustomerIpAddress,
-                                                     String xFapiInteractionId,
-                                                     String xCustomerUserAgent,
-                                                     HttpServletRequest request,
-                                                     Principal principal) throws OBErrorResponseException {
-        return rsEndpointWrapperService.<OBReadAccount6>accountAndTransactionEndpoint()
-                .authorization(authorization)
-                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
-                .accountId(accountId)
-                .principal(principal)
-                .minimumPermissions(OBExternalPermissions1Code.READACCOUNTSBASIC, OBExternalPermissions1Code.READACCOUNTSDETAIL)
-                .execute(
-                        (accountRequest, permissions, pageNumber) -> {
-                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
-                            additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
-
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadAccount6.class);
-                        }
-                );
-    }
-
-    @Override
-    public ResponseEntity<OBReadAccount6> getAccounts(String page,
-                                                      String authorization,
-                                                      DateTime xFapiAuthDate,
-                                                      String xFapiCustomerIpAddress,
-                                                      String xFapiInteractionId,
-                                                      String xCustomerUserAgent,
-                                                      HttpServletRequest request,
-                                                      Principal principal) throws OBErrorResponseException {
-        return rsEndpointWrapperService.accountAndTransactionEndpoint()
-                .authorization(authorization)
-                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
-                .principal(principal)
-                .page(page)
-                .minimumPermissions(OBExternalPermissions1Code.READACCOUNTSBASIC, OBExternalPermissions1Code.READACCOUNTSDETAIL)
-                .execute(
-                        (accountRequest, permissions, pageNumber) -> {
-                            log.info("Read all accounts behind account request {} with permissions {}", accountRequest, permissions);
-                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.addAll("x-ob-account-ids", accountRequest.getAccountIds());
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
-                            additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
-
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadAccount6.class);
-                        }
-                );
+        super(rsStoreGateway, rsEndpointWrapperService);
     }
 }

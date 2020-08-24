@@ -28,9 +28,11 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_6.
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalConsent5Repository;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 
 @Controller("InternationalPaymentConsentsApiV3.1.6")
 public class InternationalPaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.internationalpayments.InternationalPaymentConsentsApiController implements InternationalPaymentConsentsApi {
@@ -41,5 +43,10 @@ public class InternationalPaymentConsentsApiController extends com.forgerock.ope
                                                      FundsAvailabilityService fundsAvailabilityService,
                                                      ResourceLinkService resourceLinkService) {
         super(consentMetricService, internationalConsentRepository, tppRepository, fundsAvailabilityService, resourceLinkService);
+    }
+
+    @Override
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_6();
     }
 }
