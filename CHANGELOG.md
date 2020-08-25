@@ -1,10 +1,22 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[c4583adf760e466](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c4583adf760e466) Matt Wills *2020-08-24 15:19:40*
+Additional fixes for v3.1.6 of the accounts API. Avoided returning OBReadAccount6 which was causing an issue (I think because it extends HashMap?) (#272)
+[c24cdd136135b99](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c24cdd136135b99) Matt Wills *2020-08-21 13:56:24*
+Added controllers for v3.1.6 of the accounts API (#272)
 [9d5b955a38c7632](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9d5b955a38c7632) Matt Wills *2020-08-21 07:53:28*
 Added controllers for v3.1.6 of the payments API (#272)
 [e3828a87603039c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e3828a87603039c) Matt Wills *2020-08-19 10:25:46*
 Added v3.1.5 CHANGELOG.md (#272)
+[617d29c81c8f22f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/617d29c81c8f22f) dependabot-preview[bot] *2020-08-24 09:28:12*
+Bump forgerock-openbanking-starter-parent from 1.0.77 to 1.0.78
+
+Bumps [forgerock-openbanking-starter-parent](https://github.com/OpenBankingToolkit/openbanking-parent) from 1.0.77 to 1.0.78.
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-parent/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-parent/compare/1.0.77...1.0.78)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
 [2ea9ea313b934ab](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2ea9ea313b934ab) Matt Wills *2020-08-19 10:25:03*
 Release candidate: prepare for next development iteration
 ## 1.0.95
