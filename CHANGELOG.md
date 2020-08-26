@@ -1,6 +1,11 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[d154dbe73395342](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d154dbe73395342) Matt Wills *2020-08-25 10:46:22*
+Release candidate: prepare for next development iteration
+## 1.0.96
+[39e8f371f8cbcf9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/39e8f371f8cbcf9) Matt Wills *2020-08-25 08:30:05*
+v3.1.6 of aggregated polling, callback, events and funds confirmation (#272)
 [c4583adf760e466](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c4583adf760e466) Matt Wills *2020-08-24 15:19:40*
 Additional fixes for v3.1.6 of the accounts API. Avoided returning OBReadAccount6 which was causing an issue (I think because it extends HashMap?) (#272)
 [c24cdd136135b99](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c24cdd136135b99) Matt Wills *2020-08-21 13:56:24*
@@ -9,6 +14,10 @@ Added controllers for v3.1.6 of the accounts API (#272)
 Added controllers for v3.1.6 of the payments API (#272)
 [e3828a87603039c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e3828a87603039c) Matt Wills *2020-08-19 10:25:46*
 Added v3.1.5 CHANGELOG.md (#272)
+[ba7dbe22ac7c936](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ba7dbe22ac7c936) Matt Wills *2020-08-19 07:36:56*
+Added v3.1.5 controllers of aggregated polling, callback API, event subscription and funds confirmation. Updated application.yml (#272)
+[f34ea494074644e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f34ea494074644e) Matt Wills *2020-08-25 10:46:13*
+Release candidate: prepare release 1.0.96
 [617d29c81c8f22f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/617d29c81c8f22f) dependabot-preview[bot] *2020-08-24 09:28:12*
 Bump forgerock-openbanking-starter-parent from 1.0.77 to 1.0.78
 
@@ -19,13 +28,11 @@ Bumps [forgerock-openbanking-starter-parent](https://github.com/OpenBankingToolk
 Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
 [2ea9ea313b934ab](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2ea9ea313b934ab) Matt Wills *2020-08-19 10:25:03*
 Release candidate: prepare for next development iteration
-## 1.0.95
-[ba7dbe22ac7c936](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ba7dbe22ac7c936) Matt Wills *2020-08-19 07:36:56*
-Added v3.1.5 controllers of aggregated polling, callback API, event subscription and funds confirmation. Updated application.yml (#272)
-[2fb6815233db8c6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2fb6815233db8c6) Matt Wills *2020-08-19 10:24:54*
-Release candidate: prepare release 1.0.95
 [7ec863b4bcd153c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7ec863b4bcd153c) Matt Wills *2020-08-17 13:20:53*
 Release candidate: prepare for next development iteration
+## 1.0.95
+[2fb6815233db8c6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2fb6815233db8c6) Matt Wills *2020-08-19 10:24:54*
+Release candidate: prepare release 1.0.95
 ## 1.0.94
 [fe06fcf8d4c6cb6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fe06fcf8d4c6cb6) Matt Wills *2020-08-07 14:43:04*
 Changes for v3.1.5 of accounts (#272)
@@ -284,6 +291,7 @@ Bumped version of parent pom to pull in latest converters from uk-datamodel (#21
 Bumped version of parent pom to pull in latest converters from uk-datamodel (#216)
 [2a5d119633adb1a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2a5d119633adb1a) Matt Wills *2020-06-18 13:56:30*
 Added required version for versions prior to 3.1.3 in the rs-store (#216)
+### GitHub [#252](https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/252) Update Data APIs to use Version reference in the request mapping
 [aa26278aac8b74d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/aa26278aac8b74d) Matt Wills *2020-06-24 15:05:13*
 Added new repositories and 'FR' document classes for new objects introduced in v3.1.3 of the Accounts API (#252)
 [090f7754aa6ece2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/090f7754aa6ece2) Matt Wills *2020-07-01 08:17:22*

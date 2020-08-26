@@ -24,7 +24,9 @@ import brave.Tracer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
 import com.forgerock.openbanking.am.services.AMResourceServerService;
+import com.forgerock.openbanking.aspsp.rs.api.payment.DetachedJwsGenerator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.BalanceTransferPaymentValidator;
+import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.DetachedJwsVerifier;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.MoneyTransferPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.PaymPaymentValidator;
@@ -64,6 +66,8 @@ public class RSEndpointWrapperService {
     public MoneyTransferPaymentValidator moneyTransferPaymentValidator;
     public PaymPaymentValidator paymPaymentValidator;
     public OBRisk1Validator riskValidator;
+    public DetachedJwsVerifier detachedJwsVerifier;
+    public DetachedJwsGenerator detachedJwsGenerator;
 
     @Autowired
     public RSEndpointWrapperService(OBHeaderCheckerService obHeaderCheckerService,
@@ -82,7 +86,9 @@ public class RSEndpointWrapperService {
                                     MoneyTransferPaymentValidator moneyTransferPaymentValidator,
                                     AMResourceServerService amResourceServerService,
                                     PaymPaymentValidator paymPaymentValidator,
-                                    OBRisk1Validator riskValidator
+                                    OBRisk1Validator riskValidator,
+                                    DetachedJwsVerifier detachedJwsVerifier,
+                                    DetachedJwsGenerator detachedJwsGenerator
     ) {
         this.obHeaderCheckerService = obHeaderCheckerService;
         this.cryptoApiClient = cryptoApiClient;
@@ -101,6 +107,8 @@ public class RSEndpointWrapperService {
         this.paymPaymentValidator = paymPaymentValidator;
         this.amResourceServerService = amResourceServerService;
         this.riskValidator = riskValidator;
+        this.detachedJwsVerifier = detachedJwsVerifier;
+        this.detachedJwsGenerator = detachedJwsGenerator;
     }
 
     public AccountsAndTransactionsEndpointWrapper accountAndTransactionEndpoint() {
@@ -139,7 +147,6 @@ public class RSEndpointWrapperService {
     public PaymentsRequestPaymentIdEndpointWrapper paymentsRequestPaymentIdEndpoint() {
         return new PaymentsRequestPaymentIdEndpointWrapper(this);
     }
-
 
     public EventNotificationsApiEndpointWrapper eventNotificationEndpoint() {
         return new EventNotificationsApiEndpointWrapper(this);
