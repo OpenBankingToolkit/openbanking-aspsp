@@ -76,9 +76,10 @@ public class PaymentsSubmissionEndpointWrapperTest {
         UUID uuid = UUID.randomUUID();
         // create required object to initialise the wrapper properly
         RSEndpointWrapperService rsEndpointWrapperService = new RSEndpointWrapperService(obHeaderCheckerService, cryptoApiClient,
-                null, null, rsConfiguration, null,
-                null, false, null, rsConfiguration.financialId, amOpenBankingConfiguration, null,
-                null, null, amResourceServerService, null, null);
+                null, null, rsConfiguration, null, null, false,
+                null, rsConfiguration.financialId, amOpenBankingConfiguration, null,
+                null, null, amResourceServerService, null,
+                null, null, null);
 
         wrapper = new PaymentsSubmissionsEndpointWrapper(rsEndpointWrapperService) {
             @Override

@@ -21,7 +21,6 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.forgerock.openbanking.aspsp.rs.filter.MultiReadHttpServletRequest;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.IdempotencyService;
@@ -30,14 +29,10 @@ import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
-import com.forgerock.openbanking.jwt.model.CreateDetachedJwtResponse;
-import com.forgerock.openbanking.jwt.model.SigningRequest;
-import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -50,12 +45,12 @@ import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.forgerock.openbanking.model.error.OBRIErrorType.SERVER_ERROR;
 
 @Slf4j
 public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
+
     protected RSEndpointWrapperService rsEndpointWrapperService;
     protected String authorization;
     protected String xFapiFinancialId;
@@ -106,31 +101,8 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
 
             log.info("Call main lambda");
             ResponseEntity response = run(main);
-            String jwsSignature = "";
-
-            SigningRequest.CustomHeaderClaims.CustomHeaderClaimsBuilder claimsBuilder = SigningRequest.CustomHeaderClaims.builder()
-                    .includeOBIss(true)
-                    .includeOBIat(true)
-                    .includeCrit(true)
-                    .tan(rsEndpointWrapperService.getTan());
-            if (obVersion == null || obVersion.isBeforeVersion(OBVersion.v3_1_4)) {
-                claimsBuilder.includeB64(true);
-            }
-            SigningRequest signingRequest = SigningRequest.builder()
-                    .customHeaderClaims(claimsBuilder.build())
-                    .build();
-            if (response.getBody() instanceof Resource) {
-                log.debug("JWT signing does not currently work for a file response which it just a file byte stream (currently XML or JSON)");
-                jwsSignature = null;
-            } else {
-                CreateDetachedJwtResponse createDetachedJwtResponse = rsEndpointWrapperService.getCryptoApiClient().signPayloadToDetachedJwt(signingRequest,
-                        rsEndpointWrapperService.getFinancialId(),
-                        rsEndpointWrapperService.mapper.writeValueAsString(response.getBody()));
-                if (createDetachedJwtResponse != null) {
-                    jwsSignature = createDetachedJwtResponse.getDetachedSignature();
-                }
-            }
-            log.debug("Signed response claims. Signature: {}", jwsSignature);
+            String tan = rsEndpointWrapperService.getTan();
+            String jwsSignature = rsEndpointWrapperService.detachedJwsGenerator.generateDetachedJws(response, obVersion, tan, xFapiFinancialId);
 
             return ResponseEntity
                     .status(response.getStatusCode())
@@ -207,8 +179,7 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
 
     public void verifyFinancialId() throws OBErrorException {
         if (!rsEndpointWrapperService.obHeaderCheckerService.verifyFinancialIdHeader(xFapiFinancialId)) {
-            log.warn("Financial ID received {} is not the one expected {}", xFapiFinancialId,
-                    rsEndpointWrapperService.rsConfiguration.financialId);
+            log.warn("Financial ID received {} is not the one expected {}", xFapiFinancialId, rsEndpointWrapperService.rsConfiguration.financialId);
             throw new OBErrorException(OBRIErrorType.FINANCIAL_ID_INVALID,
                     rsEndpointWrapperService.rsConfiguration.financialId,
                     xFapiFinancialId
@@ -218,31 +189,8 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
     }
 
     public void verifyJwsDetachedSignature(String jwsDetachedSignature, HttpServletRequest request) throws OBErrorException {
-
-        if (rsEndpointWrapperService.isDetachedSignatureEnable && jwsDetachedSignature != null) {
-            try {
-                MultiReadHttpServletRequest multiReadRequest = new MultiReadHttpServletRequest(request);
-                String body = multiReadRequest.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-                log.info("Verify detached signature {} with payload {}", jwsDetachedSignature, body);
-                UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-                Tpp tpp = rsEndpointWrapperService.tppStoreService.findByClientId(currentUser.getUsername()).get();
-                if (tpp.getRegistrationResponse().getJwks() != null) {
-                    rsEndpointWrapperService.cryptoApiClient.validateDetachedJWSWithJWK(jwsDetachedSignature, body, null,
-                            tpp.getClientId(), tpp.getRegistrationResponse().getJwks().getKeys().get(0));
-                } else {
-                    rsEndpointWrapperService.cryptoApiClient.validateDetachedJWS(jwsDetachedSignature, body, null,
-                            tpp.getClientId(), tpp.getRegistrationResponse().getJwks_uri());
-                }
-            } catch (InvalidTokenException e) {
-                log.warn("Invalid detached signature {}", jwsDetachedSignature, e);
-                throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, jwsDetachedSignature, e.getMessage());
-            } catch (IOException e) {
-                log.error("Can't get the request body", e);
-                throw new OBErrorException(OBRIErrorType.DETACHED_JWS_UN_ACCESSIBLE);
-            } catch (ParseException e) {
-                log.error("Can't parse JWS", e);
-                throw new OBErrorException(SERVER_ERROR);
-            }
+        if (rsEndpointWrapperService.isDetachedSignatureEnable) {
+            rsEndpointWrapperService.detachedJwsVerifier.verifyDetachedJws(jwsDetachedSignature, obVersion, request, principal);
         }
     }
 
