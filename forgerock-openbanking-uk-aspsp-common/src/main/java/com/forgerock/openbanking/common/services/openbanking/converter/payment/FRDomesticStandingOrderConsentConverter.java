@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent5;
 
 @Service
 public class FRDomesticStandingOrderConsentConverter {
@@ -121,5 +122,20 @@ public class FRDomesticStandingOrderConsentConverter {
         frDomesticScheduledConsent2.setStatusUpdate(frDomesticStandingOrderConsent5.getStatusUpdate());
         frDomesticScheduledConsent2.setUpdated(frDomesticStandingOrderConsent5.getUpdated());
         return frDomesticScheduledConsent2;
+    }
+
+    public static FRDomesticStandingOrderConsent5 toFRDomesticStandingOrderConsent5(FRDomesticStandingOrderConsent3 frDomesticStandingOrderConsent3) {
+        FRDomesticStandingOrderConsent5 frDomesticScheduledConsent5 = new FRDomesticStandingOrderConsent5();
+        frDomesticScheduledConsent5.setStatus(frDomesticStandingOrderConsent3.getStatus());
+        frDomesticScheduledConsent5.setId(frDomesticStandingOrderConsent3.getId());
+        frDomesticScheduledConsent5.setUserId(frDomesticStandingOrderConsent3.getUserId());
+        frDomesticScheduledConsent5.setAccountId(frDomesticStandingOrderConsent3.getAccountId());
+        frDomesticScheduledConsent5.setCreated(frDomesticStandingOrderConsent3.getCreated());
+        frDomesticScheduledConsent5.setDomesticStandingOrderConsent(toOBWriteDomesticStandingOrderConsent5(frDomesticStandingOrderConsent3.getDomesticStandingOrderConsent()));
+        frDomesticScheduledConsent5.setPispId(frDomesticStandingOrderConsent3.getPispId());
+        frDomesticScheduledConsent5.setPispName(frDomesticStandingOrderConsent3.getPispName());
+        frDomesticScheduledConsent5.setStatusUpdate(frDomesticStandingOrderConsent3.getStatusUpdate());
+        frDomesticScheduledConsent5.setUpdated(frDomesticStandingOrderConsent3.getUpdated());
+        return frDomesticScheduledConsent5;
     }
 }

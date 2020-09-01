@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalScheduledConsentConverter;
 
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent5;
 
 @Service
 public class FRInternationalScheduledConsentConverter {
@@ -90,5 +91,20 @@ public class FRInternationalScheduledConsentConverter {
         frInternationalScheduledConsent1.setStatusUpdate(frInternationalScheduledConsent5.getStatusUpdate());
         frInternationalScheduledConsent1.setUpdated(frInternationalScheduledConsent5.getUpdated());
         return frInternationalScheduledConsent1;
+    }
+
+    public static FRInternationalScheduledConsent5 toFRInternationalScheduledConsent5(FRInternationalScheduledConsent2 frInternationalScheduledConsent2) {
+        FRInternationalScheduledConsent5 frInternationalScheduledConsent5 = new FRInternationalScheduledConsent5();
+        frInternationalScheduledConsent5.setStatus(frInternationalScheduledConsent2.getStatus());
+        frInternationalScheduledConsent5.setId(frInternationalScheduledConsent2.getId());
+        frInternationalScheduledConsent5.setUserId(frInternationalScheduledConsent2.getUserId());
+        frInternationalScheduledConsent5.setAccountId(frInternationalScheduledConsent2.getAccountId());
+        frInternationalScheduledConsent5.setCreated(frInternationalScheduledConsent2.getCreated());
+        frInternationalScheduledConsent5.setInternationalScheduledConsent(toOBWriteInternationalScheduledConsent5(frInternationalScheduledConsent2.getInternationalScheduledConsent()));
+        frInternationalScheduledConsent5.setPispId(frInternationalScheduledConsent2.getPispId());
+        frInternationalScheduledConsent5.setPispName(frInternationalScheduledConsent2.getPispName());
+        frInternationalScheduledConsent5.setStatusUpdate(frInternationalScheduledConsent2.getStatusUpdate());
+        frInternationalScheduledConsent5.setUpdated(frInternationalScheduledConsent2.getUpdated());
+        return frInternationalScheduledConsent5;
     }
 }

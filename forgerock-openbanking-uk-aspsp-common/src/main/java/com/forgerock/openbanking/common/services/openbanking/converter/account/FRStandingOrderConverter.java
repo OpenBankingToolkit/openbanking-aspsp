@@ -24,6 +24,7 @@ import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRStandin
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStandingOrder2;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRStandingOrder3;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.account.FRStandingOrder4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBStandingOrderConverter.toOBStandingOrder1;
@@ -85,6 +86,16 @@ public class FRStandingOrderConverter {
         standingOrder6.setCreated(frStandingOrder4.getCreated());
         standingOrder6.setUpdated(frStandingOrder4.getUpdated());
         standingOrder6.setStandingOrder(toOBStandingOrder6(frStandingOrder4.getStandingOrder()));
+        return standingOrder6;
+    }
+
+    public static FRStandingOrder6 toFRStandingOrder6(FRStandingOrder5 frStandingOrder5) {
+        FRStandingOrder6 standingOrder6 = new FRStandingOrder6();
+        standingOrder6.setAccountId(frStandingOrder5.getAccountId());
+        standingOrder6.setId(frStandingOrder5.getId());
+        standingOrder6.setCreated(frStandingOrder5.getCreated());
+        standingOrder6.setUpdated(frStandingOrder5.getUpdated());
+        standingOrder6.setStandingOrder(toOBStandingOrder6(frStandingOrder5.getStandingOrder()));
         return standingOrder6;
     }
 }

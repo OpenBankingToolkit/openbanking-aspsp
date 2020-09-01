@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent4;
 
 @Service
 public class FRDomesticConsentConverter {
@@ -77,6 +78,22 @@ public class FRDomesticConsentConverter {
         frDomesticConsent1.setStatusUpdate(frDomesticConsent5.getStatusUpdate());
 
         return frDomesticConsent1;
+    }
+
+    public static FRDomesticConsent5 toFRDomesticConsent5(FRDomesticConsent2 frDomesticConsent2) {
+        FRDomesticConsent5 frDomesticConsent5 = new FRDomesticConsent5();
+
+        frDomesticConsent5.setId(frDomesticConsent5.getId());
+        frDomesticConsent5.setStatus(frDomesticConsent5.getStatus());
+        frDomesticConsent5.setUserId(frDomesticConsent5.getUserId());
+        frDomesticConsent5.setAccountId(frDomesticConsent5.getAccountId());
+        frDomesticConsent5.setCreated(frDomesticConsent5.getCreated());
+        frDomesticConsent5.setDomesticConsent(toOBWriteDomesticConsent4(frDomesticConsent2.getDomesticConsent()));
+        frDomesticConsent5.setPispId(frDomesticConsent5.getPispId());
+        frDomesticConsent5.setPispName(frDomesticConsent5.getPispName());
+        frDomesticConsent5.setStatusUpdate(frDomesticConsent5.getStatusUpdate());
+
+        return frDomesticConsent5;
     }
 
 }

@@ -24,6 +24,7 @@ import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccount
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBAccount1;
 import uk.org.openbanking.datamodel.account.OBAccount2;
@@ -41,6 +42,7 @@ import java.util.stream.Collectors;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification2;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification50;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount1;
 import static java.util.Collections.emptyList;
 
@@ -98,6 +100,17 @@ public class FRAccountConverter {
         frAccount3.setUpdated(account2.getUpdated());
         frAccount3.setLatestStatementId(account2.getLatestStatementId());
         return frAccount3;
+    }
+
+    public static FRAccount4 toAccount4(FRAccount3 account3) {
+        FRAccount4 frAccount4 = new FRAccount4();
+        frAccount4.setId(account3.getId());
+        frAccount4.setUserID(account3.getUserID());
+        frAccount4.setAccount(toOBAccount6(account3.getAccount()));
+        frAccount4.setCreated(account3.getCreated());
+        frAccount4.setUpdated(account3.getUpdated());
+        frAccount4.setLatestStatementId(account3.getLatestStatementId());
+        return frAccount4;
     }
 
     public static OBAccount1 toOBAccount1(OBAccount3 obAccount3) {
@@ -175,6 +188,22 @@ public class FRAccountConverter {
                 .servicer(toOBBranchAndFinancialInstitutionIdentification5(obAccount6.getServicer()));
     }
 
+    public static OBAccount6 toOBAccount6(OBAccount3 obAccount3) {
+        return obAccount3 == null ? null : (new OBAccount6())
+                .accountId(obAccount3.getAccountId())
+                .status(null)
+                .statusUpdateDateTime(DateTime.now())
+                .currency(obAccount3.getCurrency())
+                .accountType(obAccount3.getAccountType())
+                .accountSubType(obAccount3.getAccountSubType())
+                .description(obAccount3.getDescription())
+                .nickname(obAccount3.getNickname())
+                .openingDate(null)
+                .maturityDate(null)
+                .account(fromOBAccount3AccountToOBCashAccount6List(obAccount3.getAccount()))
+                .servicer(toOBBranchAndFinancialInstitutionIdentification50(obAccount3.getServicer()));
+    }
+
     private static List<OBCashAccount3> fromOBAccount3AccountToOBCashAccount3List(List<OBAccount3Account> accounts) {
         if (accounts == null) {
             return emptyList();
@@ -208,6 +237,15 @@ public class FRAccountConverter {
         }
         return accounts.stream()
                 .map(OBCashAccountConverter::toOBCashAccount5)
+                .collect(Collectors.toList());
+    }
+
+    private static List<OBAccount3Account> fromOBAccount3AccountToOBCashAccount6List(List<OBCashAccount5> accounts) {
+        if (accounts == null) {
+            return emptyList();
+        }
+        return accounts.stream()
+                .map(OBCashAccountConverter::toOBAccount3Account)
                 .collect(Collectors.toList());
     }
 

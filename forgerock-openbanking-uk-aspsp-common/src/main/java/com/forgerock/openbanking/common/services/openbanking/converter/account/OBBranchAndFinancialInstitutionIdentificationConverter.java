@@ -178,9 +178,45 @@ public final class OBBranchAndFinancialInstitutionIdentificationConverter {
                 .postalAddress(institutionIdentification.getPostalAddress());
     }
 
+    public static OBBranchAndFinancialInstitutionIdentification50 toOBBranchAndFinancialInstitutionIdentification50(OBBranchAndFinancialInstitutionIdentification5 institutionIdentification) {
+        return institutionIdentification == null ? null : (new OBBranchAndFinancialInstitutionIdentification50())
+                .schemeName(institutionIdentification.getSchemeName())
+                .identification(institutionIdentification.getIdentification());
+    }
+
     public static OBBranchAndFinancialInstitutionIdentification51 toOBBranchAndFinancialInstitutionIdentification51(OBBranchAndFinancialInstitutionIdentification4 institutionIdentification) {
         return institutionIdentification == null ? null : (new OBBranchAndFinancialInstitutionIdentification51())
                 .schemeName(institutionIdentification.getSchemeName())
                 .identification(institutionIdentification.getIdentification());
+    }
+
+    public static OBBranchAndFinancialInstitutionIdentification51 toOBBranchAndFinancialInstitutionIdentification51(OBBranchAndFinancialInstitutionIdentification5 institutionIdentification) {
+        return institutionIdentification == null ? null : (new OBBranchAndFinancialInstitutionIdentification51())
+                .schemeName(institutionIdentification.getSchemeName())
+                .identification(institutionIdentification.getIdentification());
+    }
+
+    public static OBBranchAndFinancialInstitutionIdentification60 toOBBranchAndFinancialInstitutionIdentification60(OBBranchAndFinancialInstitutionIdentification6 institutionIdentification) {
+        return institutionIdentification == null ? null : (new OBBranchAndFinancialInstitutionIdentification60())
+                .schemeName(institutionIdentification.getSchemeName())
+                .identification(institutionIdentification.getIdentification())
+                .name(institutionIdentification.getName())
+                .postalAddress(institutionIdentification.getPostalAddress());
+    }
+
+    public static OBBranchAndFinancialInstitutionIdentification61 toOBBranchAndFinancialInstitutionIdentification61(OBBranchAndFinancialInstitutionIdentification6 institutionIdentification) {
+        return institutionIdentification == null ? null : (new OBBranchAndFinancialInstitutionIdentification61())
+                .schemeName(institutionIdentification.getSchemeName())
+                .identification(institutionIdentification.getIdentification())
+                .name(institutionIdentification.getName())
+                .postalAddress(institutionIdentification.getPostalAddress());
+    }
+
+    public static OBBranchAndFinancialInstitutionIdentification62 toOBBranchAndFinancialInstitutionIdentification62(OBBranchAndFinancialInstitutionIdentification6 institutionIdentification) {
+        return institutionIdentification == null ? null : (new OBBranchAndFinancialInstitutionIdentification62())
+                .schemeName(institutionIdentification.getSchemeName())
+                .identification(institutionIdentification.getIdentification())
+                .name(institutionIdentification.getName())
+                .postalAddress(institutionIdentification.getPostalAddress());
     }
 }
