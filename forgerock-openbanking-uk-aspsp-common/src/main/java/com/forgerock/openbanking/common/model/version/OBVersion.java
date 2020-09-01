@@ -53,7 +53,11 @@ public enum OBVersion {
         return null;
     }
 
-    public boolean isBeforeVersion(OBVersion targetVersion) {
-        return this.ordinal() < targetVersion.ordinal();
+    public boolean isBeforeVersion(OBVersion version) {
+        return this.ordinal() < version.ordinal();
+    }
+
+    public boolean isAfterVersion(OBVersion version) {
+        return this.ordinal() > version.ordinal();
     }
 }

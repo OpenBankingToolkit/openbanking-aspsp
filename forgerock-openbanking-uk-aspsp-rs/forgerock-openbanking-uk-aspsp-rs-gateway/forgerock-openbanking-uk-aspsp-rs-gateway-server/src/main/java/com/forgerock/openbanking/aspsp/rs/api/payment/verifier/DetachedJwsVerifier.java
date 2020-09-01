@@ -44,6 +44,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.model.version.OBVersion.v3_1_3;
 import static com.forgerock.openbanking.common.model.version.OBVersion.v3_1_4;
 import static com.forgerock.openbanking.model.error.OBRIErrorType.SERVER_ERROR;
 
@@ -75,6 +76,10 @@ public class DetachedJwsVerifier {
             if ((obVersion == null || obVersion.isBeforeVersion(v3_1_4)) && !isB64ClaimHeaderSetToFalse(detachedJws, body)) {
                 log.warn("Invalid detached signature {}", detachedJws, "b64 claim header not set to false in version: " + obVersion);
                 throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, "b64 claim header not set to false");
+            }
+            if (obVersion != null && obVersion.isAfterVersion(v3_1_3) && isB64ClaimHeaderPresent(detachedJws, body)) {
+                log.warn("Invalid detached signature {}", detachedJws, "b64 claim header must not be present in version: " + obVersion);
+                throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, "b64 claim header must not be present");
             }
             UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
             Tpp tpp = tppStoreService.findByClientId(currentUser.getUsername()).get();
@@ -108,6 +113,13 @@ public class DetachedJwsVerifier {
             return ((Boolean)b64Param) == false;
         }
         return false;
+    }
+
+    private boolean isB64ClaimHeaderPresent(String jwsDetachedSignature, String payload) throws OBErrorException, ParseException {
+        String jwsSerialized = rebuildJWS(jwsDetachedSignature, payload);
+        log.debug("The reconstructed JWS from the detached signature: {}", jwsSerialized);
+        SignedJWT jws = (SignedJWT) JWTParser.parse(jwsSerialized);
+        return jws.getHeader().getCustomParam("b64") != null;
     }
 
     private String rebuildJWS(String jwsDetachedSignature, String bodySerialised) throws OBErrorException {
