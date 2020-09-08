@@ -1,6 +1,17 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[4ebbaeac1b213f0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4ebbaeac1b213f0) Matt Wills *2020-09-08 11:01:17*
+Release candidate: prepare for next development iteration
+## 1.0.98
+[c361d84fbffa314](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c361d84fbffa314) Matt Wills *2020-09-08 10:44:48*
+Added mongobee ChangeLog classes to migrate OB model objects from v3.1.2 to v3.1.6 (#279)
+[ba78368a08125fb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ba78368a08125fb) Matt Wills *2020-09-08 10:33:43*
+Release candidate: prepare for next development iteration
+
+Added mongobee ChangeLog classes to migrate OB model objects from v3.1.2 to 3.1.6 (#279)
+[4b05133ce427990](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4b05133ce427990) Matt Wills *2020-09-08 11:01:07*
+Release candidate: prepare release 1.0.98
 [e66b49e5c8c8eb5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e66b49e5c8c8eb5) Matt Wills *2020-09-01 14:31:13*
 Release candidate: prepare for next development iteration
 ## 1.0.97

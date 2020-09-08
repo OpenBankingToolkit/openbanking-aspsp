@@ -148,7 +148,7 @@ public class OBCashAccountConverter {
     // cannot use model mapper due to OBExternalAccountIdentification2Code
     public static OBCashAccount1 toOBCashAccount1(OBCashAccount5 obCashAccount5) {
         return obCashAccount5 == null ? null : (new OBCashAccount1())
-                .schemeName(obCashAccount5.getSchemeName() == null ? null : OBExternalAccountIdentification2Code.valueOf(obCashAccount5.getSchemeName()))
+                .schemeName(obCashAccount5.getSchemeName() == null ? null : OBExternalAccountIdentification2Code.valueOfReference(obCashAccount5.getSchemeName()))
                 .identification(obCashAccount5.getIdentification())
                 .name(obCashAccount5.getName())
                 .secondaryIdentification(obCashAccount5.getSecondaryIdentification());
@@ -156,7 +156,7 @@ public class OBCashAccountConverter {
 
     public static OBCashAccount1 toOBCashAccount1(OBCashAccount50 obCashAccount50) {
         return obCashAccount50 == null ? null : (new OBCashAccount1())
-                .schemeName(obCashAccount50.getSchemeName() == null ? null : OBExternalAccountIdentification2Code.valueOf(obCashAccount50.getSchemeName()))
+                .schemeName(obCashAccount50.getSchemeName() == null ? null : OBExternalAccountIdentification2Code.valueOfReference(obCashAccount50.getSchemeName()))
                 .identification(obCashAccount50.getIdentification())
                 .name(obCashAccount50.getName())
                 .secondaryIdentification(obCashAccount50.getSecondaryIdentification());
@@ -164,7 +164,7 @@ public class OBCashAccountConverter {
 
     public static OBCashAccount1 toOBCashAccount1(OBCashAccount51 obCashAccount51) {
         return obCashAccount51 == null ? null : (new OBCashAccount1())
-                .schemeName(obCashAccount51.getSchemeName() == null ? null : OBExternalAccountIdentification2Code.valueOf(obCashAccount51.getSchemeName()))
+                .schemeName(obCashAccount51.getSchemeName() == null ? null : OBExternalAccountIdentification2Code.valueOfReference(obCashAccount51.getSchemeName()))
                 .identification(obCashAccount51.getIdentification())
                 .name(obCashAccount51.getName())
                 .secondaryIdentification(obCashAccount51.getSecondaryIdentification());
@@ -172,7 +172,7 @@ public class OBCashAccountConverter {
 
     public static OBCashAccount1 toOBCashAccount1(OBAccount3Account obAccount3Account) {
         return obAccount3Account == null ? null : (new OBCashAccount1())
-                .schemeName(obAccount3Account.getSchemeName() == null ? null : OBExternalAccountIdentification2Code.valueOf(obAccount3Account.getSchemeName()))
+                .schemeName(obAccount3Account.getSchemeName() == null ? null : OBExternalAccountIdentification2Code.valueOfReference(obAccount3Account.getSchemeName()))
                 .identification(obAccount3Account.getIdentification())
                 .name(obAccount3Account.getName())
                 .secondaryIdentification(obAccount3Account.getSecondaryIdentification());
