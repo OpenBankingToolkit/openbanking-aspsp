@@ -200,7 +200,7 @@ public class FRAccountConverter {
                 .nickname(obAccount3.getNickname())
                 .openingDate(null)
                 .maturityDate(null)
-                .account(fromOBAccount3AccountToOBCashAccount6List(obAccount3.getAccount()))
+                .account(fromOBCashAccount5ListToOBAccount3Account(obAccount3.getAccount()))
                 .servicer(toOBBranchAndFinancialInstitutionIdentification50(obAccount3.getServicer()));
     }
 
@@ -240,7 +240,7 @@ public class FRAccountConverter {
                 .collect(Collectors.toList());
     }
 
-    private static List<OBAccount3Account> fromOBAccount3AccountToOBCashAccount6List(List<OBCashAccount5> accounts) {
+    private static List<OBAccount3Account> fromOBCashAccount5ListToOBAccount3Account(List<OBCashAccount5> accounts) {
         if (accounts == null) {
             return emptyList();
         }
