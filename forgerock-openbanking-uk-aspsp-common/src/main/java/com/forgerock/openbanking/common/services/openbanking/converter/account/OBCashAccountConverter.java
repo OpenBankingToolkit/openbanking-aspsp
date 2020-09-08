@@ -129,6 +129,22 @@ public class OBCashAccountConverter {
         return FRModelMapper.map(creditorAccount, OBCashAccount51.class);
     }
 
+    public static OBCashAccount50 toOBCashAccount50(OBCashAccount5 creditorAccount) {
+        return FRModelMapper.map(creditorAccount, OBCashAccount50.class);
+    }
+
+    public static OBCashAccount51 toOBCashAccount51(OBCashAccount5 creditorAccount) {
+        return FRModelMapper.map(creditorAccount, OBCashAccount51.class);
+    }
+
+    public static OBCashAccount60 toOBCashAccount60(OBCashAccount6 creditorAccount) {
+        return FRModelMapper.map(creditorAccount, OBCashAccount60.class);
+    }
+
+    public static OBCashAccount61 toOBCashAccount61(OBCashAccount6 debtorAccount) {
+        return FRModelMapper.map(debtorAccount, OBCashAccount61.class);
+    }
+
     // cannot use model mapper due to OBExternalAccountIdentification2Code
     public static OBCashAccount1 toOBCashAccount1(OBCashAccount5 obCashAccount5) {
         return obCashAccount5 == null ? null : (new OBCashAccount1())
@@ -160,5 +176,13 @@ public class OBCashAccountConverter {
                 .identification(obAccount3Account.getIdentification())
                 .name(obAccount3Account.getName())
                 .secondaryIdentification(obAccount3Account.getSecondaryIdentification());
+    }
+
+    public static OBAccount3Account toOBAccount3Account(OBCashAccount5 obCashAccount5) {
+        return obCashAccount5 == null ? null : (new OBAccount3Account())
+                .schemeName(obCashAccount5.getSchemeName())
+                .identification(obCashAccount5.getIdentification())
+                .name(obCashAccount5.getName())
+                .secondaryIdentification(obCashAccount5.getSecondaryIdentification());
     }
 }

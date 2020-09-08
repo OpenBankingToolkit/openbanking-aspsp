@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent3;
 
 @Service
 public class FRFileConsentConverter {
@@ -66,40 +67,59 @@ public class FRFileConsentConverter {
         return frFileConsent1;
     }
 
-    public static FRFileConsent2 toFRFileConsent2(FRFileConsent5 consent) {
+    public static FRFileConsent2 toFRFileConsent2(FRFileConsent5 frFileConsent5) {
         return FRFileConsent2.builder()
-                .id(consent.getId())
-                .status(consent.getStatus())
-                .writeFileConsent(toOBWriteFileConsent2(consent.getWriteFileConsent()))
-                .accountId(consent.getAccountId())
-                .userId(consent.getUserId())
-                .pispId(consent.getPispId())
-                .pispName(consent.getPispName())
-                .idempotencyKey(consent.getIdempotencyKey())
-                .created(consent.getCreated())
-                .statusUpdate(consent.getStatusUpdate())
-                .updated(consent.getUpdated())
-                .payments(consent.getPayments())
-                .fileContent(consent.getFileContent())
-                .obVersion(consent.getObVersion())
+                .id(frFileConsent5.getId())
+                .status(frFileConsent5.getStatus())
+                .writeFileConsent(toOBWriteFileConsent2(frFileConsent5.getWriteFileConsent()))
+                .accountId(frFileConsent5.getAccountId())
+                .userId(frFileConsent5.getUserId())
+                .pispId(frFileConsent5.getPispId())
+                .pispName(frFileConsent5.getPispName())
+                .idempotencyKey(frFileConsent5.getIdempotencyKey())
+                .created(frFileConsent5.getCreated())
+                .statusUpdate(frFileConsent5.getStatusUpdate())
+                .updated(frFileConsent5.getUpdated())
+                .payments(frFileConsent5.getPayments())
+                .fileContent(frFileConsent5.getFileContent())
+                .obVersion(frFileConsent5.getObVersion())
                 .build();
     }
 
-    public FRFileConsent1 toFRFileConsent1(FRFileConsent5 consent) {
+    public FRFileConsent1 toFRFileConsent1(FRFileConsent5 frFileConsent5) {
         return FRFileConsent1.builder()
-                .id(consent.getId())
-                .status(consent.getStatus())
-                .writeFileConsent(toOBWriteFileConsent1(consent.getWriteFileConsent()))
-                .accountId(consent.getAccountId())
-                .userId(consent.getUserId())
-                .pispId(consent.getPispId())
-                .pispName(consent.getPispName())
-                .created(consent.getCreated())
-                .statusUpdate(consent.getStatusUpdate())
-                .updated(consent.getUpdated())
-                .payments(consent.getPayments())
-                .fileContent(consent.getFileContent())
-                .version(consent.getObVersion())
+                .id(frFileConsent5.getId())
+                .status(frFileConsent5.getStatus())
+                .writeFileConsent(toOBWriteFileConsent1(frFileConsent5.getWriteFileConsent()))
+                .accountId(frFileConsent5.getAccountId())
+                .userId(frFileConsent5.getUserId())
+                .pispId(frFileConsent5.getPispId())
+                .pispName(frFileConsent5.getPispName())
+                .created(frFileConsent5.getCreated())
+                .statusUpdate(frFileConsent5.getStatusUpdate())
+                .updated(frFileConsent5.getUpdated())
+                .payments(frFileConsent5.getPayments())
+                .fileContent(frFileConsent5.getFileContent())
+                .version(frFileConsent5.getObVersion())
+                .build();
+    }
+
+    public static FRFileConsent5 toFRFileConsent5(FRFileConsent2 frFileConsent2) {
+        return FRFileConsent5.builder()
+                .id(frFileConsent2.getId())
+                .status(frFileConsent2.getStatus())
+                .writeFileConsent(toOBWriteFileConsent3(frFileConsent2.getWriteFileConsent()))
+                .accountId(frFileConsent2.getAccountId())
+                .userId(frFileConsent2.getUserId())
+                .pispId(frFileConsent2.getPispId())
+                .pispName(frFileConsent2.getPispName())
+                .idempotencyKey(frFileConsent2.getIdempotencyKey())
+                .created(frFileConsent2.getCreated())
+                .statusUpdate(frFileConsent2.getStatusUpdate())
+                .updated(frFileConsent2.getUpdated())
+                .payments(frFileConsent2.getPayments())
+                .fileContent(frFileConsent2.getFileContent())
+                .obVersion(frFileConsent2.getObVersion())
                 .build();
     }
 }

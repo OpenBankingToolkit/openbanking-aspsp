@@ -22,10 +22,12 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRInternationalConsent1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
 import org.springframework.stereotype.Service;
 
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent5;
 
 @Service
 public class FRInternationalConsentConverter {
@@ -60,5 +62,21 @@ public class FRInternationalConsentConverter {
         frInternationalConsent1.setStatusUpdate(frInternationalConsent2.getStatusUpdate());
 
         return frInternationalConsent1;
+    }
+
+    public static FRInternationalConsent5 toFRInternationalConsent5(FRInternationalConsent2 frInternationalConsent2) {
+        FRInternationalConsent5 frInternationalConsent5 = new FRInternationalConsent5();
+
+        frInternationalConsent5.setId(frInternationalConsent2.getId());
+        frInternationalConsent5.setStatus(frInternationalConsent2.getStatus());
+        frInternationalConsent5.setUserId(frInternationalConsent2.getUserId());
+        frInternationalConsent5.setAccountId(frInternationalConsent2.getAccountId());
+        frInternationalConsent5.setCreated(frInternationalConsent2.getCreated());
+        frInternationalConsent5.setInternationalConsent(toOBWriteInternationalConsent5(frInternationalConsent2.getInternationalConsent()));
+        frInternationalConsent5.setPispId(frInternationalConsent2.getPispId());
+        frInternationalConsent5.setPispName(frInternationalConsent2.getPispName());
+        frInternationalConsent5.setStatusUpdate(frInternationalConsent2.getStatusUpdate());
+
+        return frInternationalConsent5;
     }
 }

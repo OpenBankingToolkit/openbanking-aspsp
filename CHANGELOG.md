@@ -1,8 +1,15 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[e66b49e5c8c8eb5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e66b49e5c8c8eb5) Matt Wills *2020-09-01 14:31:13*
+Release candidate: prepare for next development iteration
+## 1.0.97
 [389c96e83405f2a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/389c96e83405f2a) Matt Wills *2020-08-26 14:43:24*
 Validation of b64 header if version if 3.1.3 or lower. Moved generation and verification of detached JWS into separate classes (#272)
+[183df0b0c098b2d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/183df0b0c098b2d) Matt Wills *2020-09-01 10:22:10*
+Ensured detached JWS headers containing a b64 claim are rejected from 3.1.4 onwards (#280)
+[e1243b3125b9dfc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e1243b3125b9dfc) Matt Wills *2020-09-01 14:31:03*
+Release candidate: prepare release 1.0.97
 [d154dbe73395342](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d154dbe73395342) Matt Wills *2020-08-25 10:46:22*
 Release candidate: prepare for next development iteration
 ## 1.0.96

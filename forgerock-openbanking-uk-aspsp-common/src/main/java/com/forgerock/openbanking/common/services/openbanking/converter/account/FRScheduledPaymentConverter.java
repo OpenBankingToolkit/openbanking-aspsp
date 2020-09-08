@@ -22,6 +22,7 @@ package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRScheduledPayment2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRScheduledPayment4;
 import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment2;
@@ -29,14 +30,17 @@ import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification51;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount51;
 
 public class FRScheduledPaymentConverter {
 
-    public static FRScheduledPayment2 toScheduledPayment2(FRScheduledPayment1 frScheduledPayment1) {
+    public static FRScheduledPayment2 toFRScheduledPayment2(FRScheduledPayment1 frScheduledPayment1) {
         FRScheduledPayment2 frScheduledPayment2 = FRScheduledPayment2.builder()
                 .accountId(frScheduledPayment1.getAccountId())
                 .created(frScheduledPayment1.getCreated())
@@ -50,6 +54,19 @@ public class FRScheduledPaymentConverter {
 
         frScheduledPayment2.setScheduledPayment(toOBScheduledPayment2(frScheduledPayment1.getScheduledPayment()));
         return frScheduledPayment2;
+    }
+
+    public static FRScheduledPayment4 toFRScheduledPayment4(FRScheduledPayment2 frScheduledPayment2) {
+        return frScheduledPayment2 == null ? null : FRScheduledPayment4.builder()
+                .id(frScheduledPayment2.getId())
+                .accountId(frScheduledPayment2.getAccountId())
+                .scheduledPayment(toOBScheduledPayment3(frScheduledPayment2.getScheduledPayment()))
+                .pispId(frScheduledPayment2.getPispId())
+                .created(frScheduledPayment2.getCreated())
+                .updated(frScheduledPayment2.getUpdated())
+                .rejectionReason(frScheduledPayment2.getRejectionReason())
+                .status(frScheduledPayment2.getStatus())
+                .build();
     }
 
     public static OBScheduledPayment1 toOBScheduledPayment1(OBScheduledPayment2 obScheduledPayment2) {
@@ -140,4 +157,16 @@ public class FRScheduledPaymentConverter {
         return obScheduledPayment2;
     }
 
+    public static OBScheduledPayment3 toOBScheduledPayment3(OBScheduledPayment2 obScheduledPayment2) {
+        return obScheduledPayment2 == null ? null : (new OBScheduledPayment3())
+                .accountId(obScheduledPayment2.getAccountId())
+                .scheduledPaymentId(obScheduledPayment2.getScheduledPaymentId())
+                .scheduledPaymentDateTime(obScheduledPayment2.getScheduledPaymentDateTime())
+                .scheduledType(obScheduledPayment2.getScheduledType())
+                .reference(obScheduledPayment2.getReference())
+                .debtorReference(null)
+                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount1(obScheduledPayment2.getInstructedAmount()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification51(obScheduledPayment2.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount51(obScheduledPayment2.getCreditorAccount()));
+    }
 }

@@ -23,10 +23,12 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRInternationalStandingOrderConsent1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalStandingOrderConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderConsent3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
 import org.springframework.stereotype.Service;
 
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent6;
 
 @Service
 public class FRInternationalStandingOrderConsentConverter {
@@ -89,6 +91,21 @@ public class FRInternationalStandingOrderConsentConverter {
         frInternationalScheduledConsent2.setStatusUpdate(frInternationalStandingOrderConsent2.getStatusUpdate());
         frInternationalScheduledConsent2.setUpdated(frInternationalStandingOrderConsent2.getUpdated());
         return frInternationalScheduledConsent2;
+    }
+
+    public static FRInternationalStandingOrderConsent5 toFRInternationalStandingOrderConsent5(FRInternationalStandingOrderConsent3 frInternationalStandingOrderConsent3) {
+        FRInternationalStandingOrderConsent5 frInternationalScheduledConsent5 = new FRInternationalStandingOrderConsent5();
+        frInternationalScheduledConsent5.setStatus(frInternationalStandingOrderConsent3.getStatus());
+        frInternationalScheduledConsent5.setId(frInternationalStandingOrderConsent3.getId());
+        frInternationalScheduledConsent5.setUserId(frInternationalStandingOrderConsent3.getUserId());
+        frInternationalScheduledConsent5.setAccountId(frInternationalStandingOrderConsent3.getAccountId());
+        frInternationalScheduledConsent5.setCreated(frInternationalStandingOrderConsent3.getCreated());
+        frInternationalScheduledConsent5.setInternationalStandingOrderConsent(toOBWriteInternationalStandingOrderConsent6(frInternationalStandingOrderConsent3.getInternationalStandingOrderConsent()));
+        frInternationalScheduledConsent5.setPispId(frInternationalStandingOrderConsent3.getPispId());
+        frInternationalScheduledConsent5.setPispName(frInternationalStandingOrderConsent3.getPispName());
+        frInternationalScheduledConsent5.setStatusUpdate(frInternationalStandingOrderConsent3.getStatusUpdate());
+        frInternationalScheduledConsent5.setUpdated(frInternationalStandingOrderConsent3.getUpdated());
+        return frInternationalScheduledConsent5;
     }
 
 }

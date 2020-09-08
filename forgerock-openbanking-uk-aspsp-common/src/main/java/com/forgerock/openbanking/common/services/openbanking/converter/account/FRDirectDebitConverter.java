@@ -20,15 +20,28 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount0;
+import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRDirectDebit1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRDirectDebit4;
 import uk.org.openbanking.datamodel.account.OBDirectDebit1;
 import uk.org.openbanking.datamodel.account.OBReadDirectDebit2DataDirectDebit;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount0;
 
 /**
  * Converter for 'OBDirectDebit' model objects.
  */
 public class FRDirectDebitConverter {
+
+    public static FRDirectDebit4 toFRDirectDebit4(FRDirectDebit1 frDirectDebit1) {
+        return frDirectDebit1 == null ? null : FRDirectDebit4.builder()
+                .id(frDirectDebit1.getId())
+                .accountId(frDirectDebit1.getAccountId())
+                .directDebit(toOBReadDirectDebit2DataDirectDebit(frDirectDebit1.getDirectDebit()))
+                .created(frDirectDebit1.getCreated())
+                .updated(frDirectDebit1.getUpdated())
+                .build();
+    }
 
     public static OBDirectDebit1 toOBDirectDebit1(OBReadDirectDebit2DataDirectDebit obReadDirectDebit2DataDirectDebit) {
         return obReadDirectDebit2DataDirectDebit == null ? null : (new OBDirectDebit1())
@@ -41,9 +54,15 @@ public class FRDirectDebitConverter {
                 .previousPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(obReadDirectDebit2DataDirectDebit.getPreviousPaymentAmount()));
     }
 
-    private static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(OBActiveOrHistoricCurrencyAndAmount0 amount) {
-        return amount == null ? null : (new OBActiveOrHistoricCurrencyAndAmount())
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
+    public static OBReadDirectDebit2DataDirectDebit toOBReadDirectDebit2DataDirectDebit(OBDirectDebit1 obDirectDebit1) {
+        return obDirectDebit1 == null ? null : (new OBReadDirectDebit2DataDirectDebit())
+                .accountId(obDirectDebit1.getAccountId())
+                .directDebitId(obDirectDebit1.getDirectDebitId())
+                .mandateIdentification(obDirectDebit1.getMandateIdentification())
+                .directDebitStatusCode(obDirectDebit1.getDirectDebitStatusCode())
+                .name(obDirectDebit1.getName())
+                .previousPaymentDateTime(obDirectDebit1.getPreviousPaymentDateTime())
+                .frequency(null)
+                .previousPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount0(obDirectDebit1.getPreviousPaymentAmount()));
     }
 }

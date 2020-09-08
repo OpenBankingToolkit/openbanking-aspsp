@@ -20,12 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import uk.org.openbanking.datamodel.account.OBStandingOrder1;
-import uk.org.openbanking.datamodel.account.OBStandingOrder2;
-import uk.org.openbanking.datamodel.account.OBStandingOrder3;
-import uk.org.openbanking.datamodel.account.OBStandingOrder4;
-import uk.org.openbanking.datamodel.account.OBStandingOrder5;
-import uk.org.openbanking.datamodel.account.OBStandingOrder6;
+import uk.org.openbanking.datamodel.account.*;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification2;
@@ -146,4 +141,24 @@ public class OBStandingOrderConverter {
                 .nextPaymentDateTime(obStandingOrder.getNextPaymentDateTime())
                 .reference(obStandingOrder.getReference());
     }
+
+    public static OBStandingOrder6 toOBStandingOrder6(OBStandingOrder5 obStandingOrder) {
+        return obStandingOrder == null ? null : (new OBStandingOrder6())
+                .accountId(obStandingOrder.getAccountId())
+                .frequency(obStandingOrder.getFrequency())
+                .nextPaymentDateTime((obStandingOrder.getNextPaymentDateTime()))
+                .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount3(obStandingOrder.getNextPaymentAmount()))
+                .standingOrderId(obStandingOrder.getStandingOrderId())
+                .standingOrderStatusCode(obStandingOrder.getStandingOrderStatusCode())
+                .creditorAccount(toOBCashAccount51(obStandingOrder.getCreditorAccount()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification51(obStandingOrder.getCreditorAgent()))
+                .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount4(obStandingOrder.getFinalPaymentAmount()))
+                .finalPaymentDateTime(obStandingOrder.getFirstPaymentDateTime())
+                .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount2(obStandingOrder.getFirstPaymentAmount()))
+                .firstPaymentDateTime(obStandingOrder.getFirstPaymentDateTime())
+                .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount3(obStandingOrder.getNextPaymentAmount()))
+                .nextPaymentDateTime(obStandingOrder.getNextPaymentDateTime())
+                .reference(obStandingOrder.getReference());
+    }
+
 }

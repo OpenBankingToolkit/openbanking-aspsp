@@ -56,7 +56,7 @@ public class FRPartyConverter {
         return frParty2;
     }
 
-    private static OBParty2 toOBParty2(OBParty1 party) {
+    public static OBParty2 toOBParty2(OBParty1 party) {
         if (party==null) return null;
 
         return new OBParty2()
