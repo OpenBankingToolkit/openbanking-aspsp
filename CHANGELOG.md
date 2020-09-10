@@ -1,6 +1,8 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[0893846c278ec7b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0893846c278ec7b) Matt Wills *2020-09-10 09:50:16*
+Fix for idempotency verification. Removed redundant repositories (#282)
 [450d679943400e6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/450d679943400e6) Matt Wills *2020-09-09 10:04:02*
 Release candidate: prepare for next development iteration
 ## 1.0.99
