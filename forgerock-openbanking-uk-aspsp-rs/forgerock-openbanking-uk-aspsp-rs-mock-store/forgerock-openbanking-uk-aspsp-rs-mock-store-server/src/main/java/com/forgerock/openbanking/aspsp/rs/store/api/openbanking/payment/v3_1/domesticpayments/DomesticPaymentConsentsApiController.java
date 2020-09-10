@@ -123,15 +123,15 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received '{}'.", obWriteDomesticConsent2);
-        OBWriteDomesticConsent4 consent1 = toOBWriteDomesticConsent4(obWriteDomesticConsent2);
-        log.trace("Converted request body to {}", consent1.getClass());
+        OBWriteDomesticConsent4 consent4 = toOBWriteDomesticConsent4(obWriteDomesticConsent2);
+        log.trace("Converted request body to {}", consent4.getClass());
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
 
         Optional<FRDomesticConsent5> consentByIdempotencyKey = domesticConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, obWriteDomesticConsent2, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticConsent());
+            validateIdempotencyRequest(xIdempotencyKey, consent4, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
@@ -140,7 +140,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         FRDomesticConsent5 domesticConsent = FRDomesticConsent5.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticConsent(consent1)
+                .domesticConsent(consent4)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
