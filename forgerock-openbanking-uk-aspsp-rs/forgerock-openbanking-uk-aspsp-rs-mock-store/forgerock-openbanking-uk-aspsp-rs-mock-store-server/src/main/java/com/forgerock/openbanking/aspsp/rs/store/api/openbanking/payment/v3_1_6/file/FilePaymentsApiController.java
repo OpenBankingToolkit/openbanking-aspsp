@@ -29,7 +29,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FilePay
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_1.report.PaymentReportFile2Service;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 
@@ -38,9 +38,9 @@ public class FilePaymentsApiController extends com.forgerock.openbanking.aspsp.r
 
     public FilePaymentsApiController(FileConsent5Repository fileConsentRepository,
                                      FilePaymentSubmission2Repository filePaymentSubmissionRepository,
-                                     PaymentReportFile2Service paymentReportFile1Service,
+                                     PaymentReportFile1Service paymentReportFileService,
                                      ResourceLinkService resourceLinkService) {
-        super(fileConsentRepository, filePaymentSubmissionRepository, paymentReportFile1Service, resourceLinkService);
+        super(fileConsentRepository, filePaymentSubmissionRepository, paymentReportFileService, resourceLinkService);
     }
 
     @Override

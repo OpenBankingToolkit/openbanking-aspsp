@@ -21,12 +21,12 @@
 package com.forgerock.openbanking.aspsp.rs.store.validator;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Test;
-import uk.org.openbanking.datamodel.payment.OBFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent2;
+import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
 
 import java.math.BigDecimal;
 
@@ -58,9 +58,9 @@ public class ControlSumValidatorTest {
         .hasMessage("The file received contains total transaction value of: 100.009 but the file consent metadata indicated a control sum value of 100.01'");
     }
 
-    private static FRFileConsent2 getConsent(String controlSum) {
-        return FRFileConsent2.builder()
-                .writeFileConsent(new OBWriteFileConsent2().data(new OBWriteDataFileConsent2().initiation(new OBFile2()
+    private static FRFileConsent5 getConsent(String controlSum) {
+        return FRFileConsent5.builder()
+                .writeFileConsent(new OBWriteFileConsent3().data(new OBWriteFileConsent3Data().initiation(new OBWriteFile2DataInitiation()
                         .controlSum(new BigDecimal(controlSum))
                 ))).build();
     }

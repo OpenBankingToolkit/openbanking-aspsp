@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.EventNotificationService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRDomesticConsent1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import com.forgerock.openbanking.common.services.notification.EventSubject;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.model.Tpp;
@@ -68,7 +68,7 @@ public class PaymentNotificationServiceTest {
     @Test
     public void paymentStatusChanged_notifyCallbackUrl() throws Exception {
         // Given
-        FRPaymentConsent payment = FRDomesticConsent1.builder()
+        FRPaymentConsent payment = FRDomesticConsent5.builder()
                 .id("PDC_111")
                 .pispId(PISP_ID)
                 .build();

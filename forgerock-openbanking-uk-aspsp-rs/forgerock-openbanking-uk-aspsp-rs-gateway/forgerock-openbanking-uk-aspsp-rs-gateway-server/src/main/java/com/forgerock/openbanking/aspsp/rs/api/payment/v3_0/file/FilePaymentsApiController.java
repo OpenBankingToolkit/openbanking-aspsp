@@ -23,7 +23,6 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.file;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRFileConsentConverter;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -31,7 +30,6 @@ import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -59,14 +57,15 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FilePaymentsApiController.class);
 
-    @Autowired
-    private FilePaymentService paymentsService;
-    @Autowired
-    private RSEndpointWrapperService rsEndpointWrapperService;
-    @Autowired
-    private RsStoreGateway rsStoreGateway;
-    @Autowired
-    private FRFileConsentConverter frFileConsentConverter;
+    private final FilePaymentService paymentsService;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
+
+    public FilePaymentsApiController(FilePaymentService paymentsService, RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway) {
+        this.paymentsService = paymentsService;
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+    }
 
     @Override
     public ResponseEntity<OBWriteFileResponse1> createFilePayments(
@@ -108,7 +107,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiFinancialId)
-                .payment(frFileConsentConverter.toFRFileConsent1(payment))
+                .payment(payment)
                 .principal(principal)
                 .filters(f -> {
                     f.verifyPaymentIdWithAccessToken();
