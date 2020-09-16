@@ -20,9 +20,13 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Collection;
 
@@ -39,15 +43,15 @@ public interface InternationalScheduledPaymentApi {
     @RequestMapping(value = "/search/findByStatus",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<Collection<FRInternationalScheduledConsent2>> findByStatus(
+    ResponseEntity<Collection<FRInternationalScheduledConsent5>> findByStatus(
             @RequestParam("status") String status
     );
 
     @RequestMapping(value = "/",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT)
-    ResponseEntity<FRInternationalScheduledConsent2> update(
-            @RequestBody FRInternationalScheduledConsent2 payment1
+    ResponseEntity<FRInternationalScheduledConsent5> update(
+            @RequestBody FRInternationalScheduledConsent5 payment1
     );
 }
 

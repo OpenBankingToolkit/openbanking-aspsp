@@ -25,7 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FilePay
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_1.report.PaymentReportFile2Service;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFilePaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -55,7 +55,6 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRFileConsentConverter.toFRFileConsent2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFile2;
 
@@ -64,14 +63,17 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFile
 public class FilePaymentsApiController implements FilePaymentsApi {
     private final FileConsent5Repository fileConsentRepository;
     private final FilePaymentSubmission2Repository filePaymentSubmissionRepository;
-    private final PaymentReportFile2Service paymentReportFile1Service;
+    private final PaymentReportFile1Service paymentReportFileService;
     private final ResourceLinkService resourceLinkService;
 
     @Autowired
-    public FilePaymentsApiController(FileConsent5Repository fileConsentRepository, FilePaymentSubmission2Repository filePaymentSubmissionRepository, PaymentReportFile2Service paymentReportFile1Service, ResourceLinkService resourceLinkService) {
+    public FilePaymentsApiController(FileConsent5Repository fileConsentRepository,
+                                     FilePaymentSubmission2Repository filePaymentSubmissionRepository,
+                                     PaymentReportFile1Service paymentReportFileService,
+                                     ResourceLinkService resourceLinkService) {
         this.fileConsentRepository = fileConsentRepository;
         this.filePaymentSubmissionRepository = filePaymentSubmissionRepository;
-        this.paymentReportFile1Service = paymentReportFile1Service;
+        this.paymentReportFileService = paymentReportFileService;
         this.resourceLinkService = resourceLinkService;
     }
 
@@ -223,7 +225,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                                         .toOBError1(filePaymentId))
                 );
         log.debug("Consent '{}' exists with status: {} so generating a report file for type: {}", consent.getId(), consent.getStatus(), consent.getFileType());
-        final String reportFile = paymentReportFile1Service.createPaymentReport(toFRFileConsent2(consent));
+        final String reportFile = paymentReportFileService.createPaymentReport(consent);
         log.debug("Generated report file for consent: {}", consent.getId());
         return ResponseEntity.ok(reportFile);
     }

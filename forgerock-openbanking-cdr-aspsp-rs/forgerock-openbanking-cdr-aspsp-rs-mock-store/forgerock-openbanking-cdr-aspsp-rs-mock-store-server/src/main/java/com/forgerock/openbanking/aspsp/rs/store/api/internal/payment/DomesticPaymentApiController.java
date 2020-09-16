@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticConsent2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticConsent5Repository;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +43,11 @@ public class DomesticPaymentApiController implements DomesticPaymentApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomesticPaymentApiController.class);
 
-    private final DomesticConsent2Repository consentRepository;
+    private final DomesticConsent5Repository consentRepository;
     private ConsentMetricService consentMetricService;
 
     @Autowired
-    public DomesticPaymentApiController(DomesticConsent2Repository consentRepository, ConsentMetricService consentMetricService) {
+    public DomesticPaymentApiController(DomesticConsent5Repository consentRepository, ConsentMetricService consentMetricService) {
         this.consentRepository = consentRepository;
         this.consentMetricService = consentMetricService;
     }
@@ -57,14 +57,14 @@ public class DomesticPaymentApiController implements DomesticPaymentApi {
             @PathVariable("paymentId") String paymentId
     ) {
         LOGGER.debug("Find payment by id {}", paymentId);
-        Optional<FRDomesticConsent2> byPaymentId = consentRepository.findById(paymentId);
+        Optional<FRDomesticConsent5> byPaymentId = consentRepository.findById(paymentId);
         return byPaymentId.<ResponseEntity>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment id '" + paymentId + "' not found"));
 
     }
 
     @Override
-    public ResponseEntity<Collection<FRDomesticConsent2>> findByStatus(
+    public ResponseEntity<Collection<FRDomesticConsent5>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     ) {
         LOGGER.debug("Find payment by status {}", status);
@@ -72,8 +72,8 @@ public class DomesticPaymentApiController implements DomesticPaymentApi {
     }
 
     @Override
-    public ResponseEntity<FRDomesticConsent2> update(
-            @RequestBody FRDomesticConsent2 paymentSetup
+    public ResponseEntity<FRDomesticConsent5> update(
+            @RequestBody FRDomesticConsent5 paymentSetup
     ) {
         LOGGER.debug("Update payment {}", paymentSetup);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(paymentSetup.getId(), paymentSetup.getStatus().name()));
