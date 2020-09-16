@@ -22,14 +22,12 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.file;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRFileConsentConverter;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -56,14 +54,15 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 @Slf4j
 public class FilePaymentConsentsApiController implements FilePaymentConsentsApi {
 
-    @Autowired
-    private RSEndpointWrapperService rsEndpointWrapperService;
-    @Autowired
-    private RsStoreGateway rsStoreGateway;
-    @Autowired
-    private FilePaymentService filePaymentService;
-    @Autowired
-    private FRFileConsentConverter frFileConsentConverter;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
+    private final FilePaymentService filePaymentService;
+
+    public FilePaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway, FilePaymentService filePaymentService) {
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+        this.filePaymentService = filePaymentService;
+    }
 
     @Override
     public ResponseEntity<OBWriteFileConsentResponse1> createFilePaymentConsents(
@@ -162,7 +161,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
         return rsEndpointWrapperService.filePaymentEndpoint()
                 .authorization(authorization)
-                .payment(frFileConsentConverter.toFRFileConsent1(consent))
+                .payment(consent)
                 .xFapiFinancialId(xFapiFinancialId)
                 .principal(principal)
                 .filters(f -> {

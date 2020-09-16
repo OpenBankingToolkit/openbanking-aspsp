@@ -22,7 +22,6 @@ package com.forgerock.openbanking.common.services.openbanking;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -80,18 +79,6 @@ public class IdempotencyService {
      *
      * Consent body must be the same on new and existing requests. Idempotency key must be less than expiry time. (X_IDEMPOTENCY_KEY_EXPIRY_HOURS)
      */
-    public static <T> void validateIdempotencyRequest(String xIdempotencyKey, FRFileConsent2 existingConsent) throws OBErrorResponseException {
-        log.debug("Found an existing consent '{}' with the same x-idempotency-key '{}'.", existingConsent.getId(), xIdempotencyKey);
-        checkMatchingIdempotencyKey(xIdempotencyKey, existingConsent);
-        checkIdempotencyKeyExpiry(xIdempotencyKey, existingConsent.getId(), existingConsent.getCreated());
-        // We don't need to check if file content body changed since previous request with same consent as that would fail the file hash check in RS-API already.
-    }
-
-    /**
-     * For file upload.
-     *
-     * Consent body must be the same on new and existing requests. Idempotency key must be less than expiry time. (X_IDEMPOTENCY_KEY_EXPIRY_HOURS)
-     */
     public static <T> void validateIdempotencyRequest(String xIdempotencyKey, FRFileConsent5 existingConsent) throws OBErrorResponseException {
         log.debug("Found an existing consent '{}' with the same x-idempotency-key '{}'.", existingConsent.getId(), xIdempotencyKey);
         checkMatchingIdempotencyKey(xIdempotencyKey, existingConsent);
@@ -111,10 +98,6 @@ public class IdempotencyService {
             );
         }
         log.info("Existing payment '{}' has the same x-idempotency-key '{}'.", existingPayment.getId(), xIdempotencyKey);
-    }
-
-    private static void checkMatchingIdempotencyKey(String xIdempotencyKey, FRFileConsent2 existingFileConsent) throws OBErrorResponseException {
-        checkMatchingIdempotencyKey(xIdempotencyKey, existingFileConsent.getIdempotencyKey(), existingFileConsent.getId(), existingFileConsent.getStatus());
     }
 
     private static void checkMatchingIdempotencyKey(String xIdempotencyKey, FRFileConsent5 existingFileConsent) throws OBErrorResponseException {

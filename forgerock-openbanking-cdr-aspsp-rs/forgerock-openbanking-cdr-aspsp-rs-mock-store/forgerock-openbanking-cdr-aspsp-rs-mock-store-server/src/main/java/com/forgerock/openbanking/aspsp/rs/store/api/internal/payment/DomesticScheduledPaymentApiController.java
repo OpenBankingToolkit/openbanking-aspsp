@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticScheduledConsent2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticScheduledConsent5Repository;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledConsent2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +43,11 @@ public class DomesticScheduledPaymentApiController implements DomesticScheduledP
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomesticScheduledPaymentApiController.class);
 
-    private final DomesticScheduledConsent2Repository consentRepository;
+    private final DomesticScheduledConsent5Repository consentRepository;
     private ConsentMetricService consentMetricService;
 
     @Autowired
-    public DomesticScheduledPaymentApiController(DomesticScheduledConsent2Repository consentRepository, ConsentMetricService consentMetricService) {
+    public DomesticScheduledPaymentApiController(DomesticScheduledConsent5Repository consentRepository, ConsentMetricService consentMetricService) {
         this.consentRepository = consentRepository;
         this.consentMetricService = consentMetricService;
     }
@@ -57,13 +57,13 @@ public class DomesticScheduledPaymentApiController implements DomesticScheduledP
             @PathVariable("paymentId") String paymentId
     ) {
         LOGGER.debug("Find payment by id {}", paymentId);
-        Optional<FRDomesticScheduledConsent2> byPaymentId = consentRepository.findById(paymentId);
+        Optional<FRDomesticScheduledConsent5> byPaymentId = consentRepository.findById(paymentId);
         return byPaymentId.<ResponseEntity>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment id '" + paymentId + "' not found"));
 
     }
 
     @Override
-    public ResponseEntity<Collection<FRDomesticScheduledConsent2>> findByStatus(
+    public ResponseEntity<Collection<FRDomesticScheduledConsent5>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     ) {
         LOGGER.debug("Find payment by status {}", status);
@@ -71,8 +71,8 @@ public class DomesticScheduledPaymentApiController implements DomesticScheduledP
     }
 
     @Override
-    public ResponseEntity<FRDomesticScheduledConsent2> update(
-            @RequestBody FRDomesticScheduledConsent2 paymentSetup
+    public ResponseEntity<FRDomesticScheduledConsent5> update(
+            @RequestBody FRDomesticScheduledConsent5 paymentSetup
     ) {
         LOGGER.debug("Update payment {}", paymentSetup);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(paymentSetup.getId(), paymentSetup.getStatus().name()));

@@ -23,7 +23,6 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.internationalstandin
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRInternationalStandingOrderConsentConverter;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.account.standingorder.StandingOrderService;
@@ -66,22 +65,25 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InternationalStandingOrdersApiController.class);
 
-    private InternationalStandingOrderService paymentsService;
-    private RSEndpointWrapperService rsEndpointWrapperService;
-    private RsStoreGateway rsStoreGateway;
-    private StandingOrderService standingOrderService;
-    private FrequencyService frequencyService;
-    private TppStoreService tppStoreService;
-    private FRInternationalStandingOrderConsentConverter frInternationalStandingOrderConsentConverter;
+    private final InternationalStandingOrderService paymentsService;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
+    private final StandingOrderService standingOrderService;
+    private final FrequencyService frequencyService;
+    private final TppStoreService tppStoreService;
 
-    public InternationalStandingOrdersApiController(InternationalStandingOrderService paymentsService, RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway, StandingOrderService standingOrderService, FrequencyService frequencyService, TppStoreService tppStoreService, FRInternationalStandingOrderConsentConverter frInternationalStandingOrderConsentConverter) {
+    public InternationalStandingOrdersApiController(InternationalStandingOrderService paymentsService,
+                                                    RSEndpointWrapperService rsEndpointWrapperService,
+                                                    RsStoreGateway rsStoreGateway,
+                                                    StandingOrderService standingOrderService,
+                                                    FrequencyService frequencyService,
+                                                    TppStoreService tppStoreService) {
         this.paymentsService = paymentsService;
         this.rsEndpointWrapperService = rsEndpointWrapperService;
         this.rsStoreGateway = rsStoreGateway;
         this.standingOrderService = standingOrderService;
         this.frequencyService = frequencyService;
         this.tppStoreService = tppStoreService;
-        this.frInternationalStandingOrderConsentConverter = frInternationalStandingOrderConsentConverter;
     }
 
     @Override
