@@ -26,7 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRDomesticConsent1;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 import com.forgerock.openbanking.common.services.openbanking.OBHeaderCheckerService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -46,7 +46,9 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.Mockito.when;
 
 
@@ -98,7 +100,7 @@ public class PaymentsSubmissionEndpointWrapperTest {
     @Test
     public void verifyAccessUsing_GrantTypeOK() throws Exception {
 
-        FRPaymentConsent payment = FRDomesticConsent1.builder()
+        FRPaymentConsent payment = FRDomesticConsent5.builder()
                 .status(ConsentStatusCode.AUTHORISED)
                 .build();
 
@@ -116,7 +118,7 @@ public class PaymentsSubmissionEndpointWrapperTest {
     @Test
     public void verifyAccessUsing_GrantTypeWrong() throws Exception {
         // given
-        FRPaymentConsent payment = FRDomesticConsent1.builder()
+        FRPaymentConsent payment = FRDomesticConsent5.builder()
                 .status(ConsentStatusCode.AUTHORISED)
                 .build();
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
@@ -138,7 +140,7 @@ public class PaymentsSubmissionEndpointWrapperTest {
     @Test
     public void verifyPaymentStatus_complete() throws Exception {
         // given
-        FRPaymentConsent payment = FRDomesticConsent1.builder()
+        FRPaymentConsent payment = FRDomesticConsent5.builder()
                 .status(ConsentStatusCode.AUTHORISED)
                 .build();
         // then
@@ -150,7 +152,7 @@ public class PaymentsSubmissionEndpointWrapperTest {
     @Test
     public void verifyPaymentStatus_notConsented() throws Exception {
         // given
-        FRPaymentConsent payment = FRDomesticConsent1.builder()
+        FRPaymentConsent payment = FRDomesticConsent5.builder()
                 .status(ConsentStatusCode.ACCEPTEDTECHNICALVALIDATION)
                 .build();
 
@@ -167,7 +169,7 @@ public class PaymentsSubmissionEndpointWrapperTest {
     @Test
     public void verifyPaymentStatus_pending() throws Exception {
         // given
-        FRPaymentConsent payment = FRDomesticConsent1.builder()
+        FRPaymentConsent payment = FRDomesticConsent5.builder()
                 .status(ConsentStatusCode.PENDING)
                 .build();
 
@@ -184,7 +186,7 @@ public class PaymentsSubmissionEndpointWrapperTest {
     @Test
     public void verifyPaymentStatus_rejected() throws Exception {
         // given
-        FRPaymentConsent payment = FRDomesticConsent1.builder()
+        FRPaymentConsent payment = FRDomesticConsent5.builder()
                 .status(ConsentStatusCode.REJECTED)
                 .build();
 

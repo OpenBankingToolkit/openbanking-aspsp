@@ -26,7 +26,6 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_4.domesticstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticStandingOrderConsentConverter;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.account.standingorder.StandingOrderService;
@@ -42,9 +41,8 @@ public class DomesticStandingOrdersApiController extends com.forgerock.openbanki
                                                RsStoreGateway rsStoreGateway,
                                                StandingOrderService standingOrderService,
                                                FrequencyService frequencyService,
-                                               TppStoreService tppStoreService,
-                                               FRDomesticStandingOrderConsentConverter frDomesticStandingOrderConsentConverter) {
-        super(paymentsService, rsEndpointWrapperService, rsStoreGateway, standingOrderService, frequencyService, tppStoreService, frDomesticStandingOrderConsentConverter);
+                                               TppStoreService tppStoreService) {
+        super(paymentsService, rsEndpointWrapperService, rsStoreGateway, standingOrderService, frequencyService, tppStoreService);
     }
 
 }

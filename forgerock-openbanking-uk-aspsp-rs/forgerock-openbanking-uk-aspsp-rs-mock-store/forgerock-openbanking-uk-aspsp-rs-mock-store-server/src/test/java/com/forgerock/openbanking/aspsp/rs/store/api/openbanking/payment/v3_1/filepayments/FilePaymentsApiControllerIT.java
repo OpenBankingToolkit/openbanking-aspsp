@@ -26,7 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileC
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_1.report.PaymentReportFile2Service;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFilePaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -59,7 +59,6 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileResponse2;
 
 import java.math.BigDecimal;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRFileConsentConverter.toFRFileConsent2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -85,7 +84,7 @@ public class FilePaymentsApiControllerIT {
     private SpringSecForTest springSecForTest;
 
     @MockBean
-    private PaymentReportFile2Service paymentReportFile2Service;
+    private PaymentReportFile1Service paymentReportFileService;
 
     @Before
     public void setUp() {
@@ -266,7 +265,7 @@ public class FilePaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent5 consent = saveConsent(ConsentStatusCode.PENDING);
-        when(paymentReportFile2Service.createPaymentReport(eq(toFRFileConsent2(consent)))).thenThrow(
+        when(paymentReportFileService.createPaymentReport(eq(consent))).thenThrow(
              new OBErrorResponseException(HttpStatus.NOT_FOUND,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
                     OBRIErrorType.FILE_PAYMENT_REPORT_NOT_READY.toOBError1(consent.getId(), consent.getStatus().toString(), ""))
@@ -292,7 +291,7 @@ public class FilePaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent5 consent = saveConsent();
-        when(paymentReportFile2Service.createPaymentReport(eq(toFRFileConsent2(consent)))).thenReturn("{\"Data\": {\"DomesticPayments\": []} }");
+        when(paymentReportFileService.createPaymentReport(eq(consent))).thenReturn("{\"Data\": {\"DomesticPayments\": []} }");
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/file-payments/"+consent.getId()+"/report-file")
