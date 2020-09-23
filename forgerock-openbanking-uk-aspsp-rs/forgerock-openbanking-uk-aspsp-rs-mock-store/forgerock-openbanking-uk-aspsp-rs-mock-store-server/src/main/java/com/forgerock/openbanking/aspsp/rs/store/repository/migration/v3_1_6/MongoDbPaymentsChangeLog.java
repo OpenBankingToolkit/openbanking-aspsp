@@ -20,16 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRDomesticConsent2;
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRDomesticScheduledConsent2;
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRDomesticStandingOrderConsent3;
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRFileConsent2;
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalConsent2;
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalScheduledConsent2;
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalStandingOrderConsent3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderPaymentSubmission3;
+import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.*;
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
 import lombok.extern.slf4j.Slf4j;
@@ -45,9 +36,9 @@ import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1
 import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalConsentConverter.toFRInternationalConsent5;
 import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalScheduledConsentConverter.toFRInternationalScheduledConsent5;
 import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalStandingOrderConsentConverter.toFRInternationalStandingOrderConsent5;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRInternationalPaymentSubmissionConverter.toFRInternationalPaymentSubmission4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRInternationalScheduledPaymentSubmissionConverter.toFRInternationalScheduledPaymentSubmission4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRInternationalStandingOrderPaymentSubmissionConverter.toFRInternationalStandingOrderPaymentSubmission4;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalPaymentSubmissionConverter.toFRInternationalPaymentSubmission4;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalScheduledPaymentSubmissionConverter.toFRInternationalScheduledPaymentSubmission4;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalStandingOrderPaymentSubmissionConverter.toFRInternationalStandingOrderPaymentSubmission4;
 
 @ChangeLog
 @Slf4j

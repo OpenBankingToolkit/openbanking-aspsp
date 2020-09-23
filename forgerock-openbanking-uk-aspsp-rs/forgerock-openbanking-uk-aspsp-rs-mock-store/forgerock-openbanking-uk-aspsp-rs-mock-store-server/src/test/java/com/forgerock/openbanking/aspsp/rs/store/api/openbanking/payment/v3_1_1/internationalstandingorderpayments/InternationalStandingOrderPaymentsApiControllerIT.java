@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.internationalstandingorderpayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.InternationalStandingOrderPaymentSubmission3Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalStandingOrderPaymentSubmission4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
@@ -29,8 +29,8 @@ import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderPaymentSubmission3;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalPaymentSubmission4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderPaymentSubmission4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -49,16 +49,20 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse3;
+import uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.internationalstandingorders.InternationalStandingOrderConsentsApiController.toOBInternationalStandingOrder3;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorAgentTestDataFactory.aValidFRDataInitiationCreditorAgent;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorTestDataFactory.aValidFRDataInitiationCreditor;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBInternationalStandingOrder3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -74,7 +78,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
     @Autowired
     private InternationalStandingOrderConsent5Repository consentRepository;
     @Autowired
-    private InternationalStandingOrderPaymentSubmission3Repository submissionRepository;
+    private InternationalStandingOrderPaymentSubmission4Repository submissionRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -92,7 +96,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent5 consent = saveConsent();
-        FRInternationalStandingOrderPaymentSubmission3 submission = savePaymentSubmission(consent);
+        FRInternationalStandingOrderPaymentSubmission4 submission = savePaymentSubmission(consent);
 
         // When
         HttpResponse<OBWriteInternationalStandingOrderConsentResponse3> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1.1/pisp/international-standing-orders/" + submission.getId())
@@ -103,7 +107,8 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(submission.getInternationalStandingOrder().getData().getInitiation());
+        OBWriteInternationalStandingOrder4DataInitiation initiation = submission.getInternationalStandingOrder().getData().getInitiation();
+        assertThat(response.getBody().getData().getInitiation()).isEqualTo(OBInternationalStandingOrderConverter.toOBInternationalStandingOrder3(initiation));
         assertThat(response.getBody().getData().getCreationDateTime()).isEqualTo(consent.getCreated());
         assertThat(response.getBody().getData().getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdate());
     }
@@ -113,8 +118,8 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent5 consent = saveConsent();
-        OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
-        FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
+        OBWriteInternational3 submissionRequest = JMockData.mock(OBWriteInternational3.class);
+        FRInternationalPaymentSubmission4 submission = FRInternationalPaymentSubmission4.builder()
                 .id(consent.getId())
                 .internationalPayment(submissionRequest)
                 .build();
@@ -135,7 +140,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent5 consent = JMockData.mock(FRInternationalStandingOrderConsent5.class);
         consent.setId(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT.generateIntentId());
-        FRInternationalStandingOrderPaymentSubmission3 submission = savePaymentSubmission(consent);
+        FRInternationalStandingOrderPaymentSubmission4 submission = savePaymentSubmission(consent);
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1.1/pisp/international-standing-orders/" + submission.getId())
@@ -171,7 +176,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteInternationalStandingOrderResponse3 consentResponse = response.getBody();
-        FRInternationalStandingOrderPaymentSubmission3 submission = submissionRepository.findById(response.getBody().getData().getInternationalStandingOrderId()).get();
+        FRInternationalStandingOrderPaymentSubmission4 submission = submissionRepository.findById(response.getBody().getData().getInternationalStandingOrderId()).get();
         assertThat(submission.getId()).isEqualTo(consentResponse.getData().getConsentId());
     }
 
@@ -180,7 +185,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent5 consent = saveConsent();
-        FRInternationalStandingOrderPaymentSubmission3 submission = savePaymentSubmission(consent);
+        FRInternationalStandingOrderPaymentSubmission4 submission = savePaymentSubmission(consent);
 
         OBWriteInternationalStandingOrder3 obWriteInternational3 = new OBWriteInternationalStandingOrder3();
         obWriteInternational3.risk(toOBRisk1(consent.getRisk()));
@@ -234,11 +239,11 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(400);
     }
 
-    private FRInternationalStandingOrderPaymentSubmission3 savePaymentSubmission(FRInternationalStandingOrderConsent5 consent) {
-        OBWriteInternationalStandingOrder3 submissionRequest = JMockData.mock(OBWriteInternationalStandingOrder3.class);
+    private FRInternationalStandingOrderPaymentSubmission4 savePaymentSubmission(FRInternationalStandingOrderConsent5 consent) {
+        OBWriteInternationalStandingOrder4 submissionRequest = JMockData.mock(OBWriteInternationalStandingOrder4.class);
         setupTestConsentInitiation(consent.getInitiation());
-        submissionRequest.getData().initiation(toOBInternationalStandingOrder3(consent.getInitiation()));
-        FRInternationalStandingOrderPaymentSubmission3 submission = FRInternationalStandingOrderPaymentSubmission3.builder()
+        submissionRequest.getData().initiation(toOBWriteInternationalStandingOrder4DataInitiation(consent.getInitiation()));
+        FRInternationalStandingOrderPaymentSubmission4 submission = FRInternationalStandingOrderPaymentSubmission4.builder()
                 .id(consent.getId())
                 .internationalStandingOrder(submissionRequest)
                 .build();
