@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.state
 import com.forgerock.openbanking.aspsp.rs.store.service.statement.StatementPDFService;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRStatement4;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRStatementConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;

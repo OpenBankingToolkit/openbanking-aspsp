@@ -23,9 +23,9 @@ package com.forgerock.openbanking.common.conf.discovery;
 
 import com.forgerock.openbanking.common.model.openbanking.event.FREventSubscription1;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmation1;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.funds.FRFundsConfirmation1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.funds.FRFundsConfirmationConsent1;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentSubmission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

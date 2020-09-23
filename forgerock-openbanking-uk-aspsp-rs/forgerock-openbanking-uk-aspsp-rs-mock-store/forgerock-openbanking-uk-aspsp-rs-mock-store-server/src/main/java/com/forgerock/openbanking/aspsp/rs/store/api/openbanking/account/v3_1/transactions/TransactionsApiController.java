@@ -23,8 +23,8 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1.tr
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions.FRTransaction6Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.account.FRTransaction4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1.account.FRTransaction4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRTransaction6;
 import com.forgerock.openbanking.common.services.openbanking.converter.transaction.FRTransactionConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;

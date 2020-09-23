@@ -20,13 +20,13 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRDirectDebit1;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStatement1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRBeneficiary3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRScheduledPayment2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRStandingOrder5;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRDirectDebit1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRStatement1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRBeneficiary3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRScheduledPayment2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRStandingOrder5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRTransaction5;
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
 import lombok.extern.slf4j.Slf4j;

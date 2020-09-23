@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRAccount4;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;

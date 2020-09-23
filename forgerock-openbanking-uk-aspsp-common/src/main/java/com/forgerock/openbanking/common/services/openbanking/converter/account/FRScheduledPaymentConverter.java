@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRScheduledPayment2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRScheduledPayment4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRScheduledPayment1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRScheduledPayment2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRScheduledPayment4;
 import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment2;

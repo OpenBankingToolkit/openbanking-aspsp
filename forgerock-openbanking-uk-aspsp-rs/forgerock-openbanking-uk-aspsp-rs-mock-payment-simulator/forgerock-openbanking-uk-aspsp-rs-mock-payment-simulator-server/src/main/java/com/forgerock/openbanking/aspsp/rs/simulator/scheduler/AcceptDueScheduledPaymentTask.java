@@ -25,8 +25,8 @@ import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationF
 import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRScheduledPayment1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRTransaction6;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;

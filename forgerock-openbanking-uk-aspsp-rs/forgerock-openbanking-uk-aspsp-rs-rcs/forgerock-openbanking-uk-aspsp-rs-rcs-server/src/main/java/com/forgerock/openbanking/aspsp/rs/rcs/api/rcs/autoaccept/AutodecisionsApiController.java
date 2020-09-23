@@ -28,7 +28,7 @@ import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RcsService;
 import com.forgerock.openbanking.common.conf.RcsConfiguration;
 import com.forgerock.openbanking.common.constants.RCSConstants;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRAccount2;
 import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.data.UserDataService;

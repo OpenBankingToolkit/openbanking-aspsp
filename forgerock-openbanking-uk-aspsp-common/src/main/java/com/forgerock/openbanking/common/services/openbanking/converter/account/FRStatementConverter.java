@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStatement1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRStatement1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRStatement4;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
 import uk.org.openbanking.datamodel.account.OBStatement1;
 import uk.org.openbanking.datamodel.account.OBStatement2;

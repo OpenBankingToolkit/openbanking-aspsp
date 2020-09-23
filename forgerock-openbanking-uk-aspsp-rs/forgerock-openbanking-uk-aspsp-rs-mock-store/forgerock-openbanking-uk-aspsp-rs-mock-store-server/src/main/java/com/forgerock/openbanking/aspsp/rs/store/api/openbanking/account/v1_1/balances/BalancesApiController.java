@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.ba
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRBalance1;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;

@@ -28,7 +28,7 @@ import com.forgerock.openbanking.aspsp.rs.simulator.event.store.CallbackUrlsServ
 import com.forgerock.openbanking.aspsp.rs.simulator.event.store.EventSubscriptionService;
 import com.forgerock.openbanking.common.model.openbanking.event.FREventSubscription1;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.event.FRCallbackUrl1;
 import com.forgerock.openbanking.common.services.notification.EventSubject;
 import com.forgerock.openbanking.common.services.notification.EventType;
 import com.forgerock.openbanking.model.Tpp;

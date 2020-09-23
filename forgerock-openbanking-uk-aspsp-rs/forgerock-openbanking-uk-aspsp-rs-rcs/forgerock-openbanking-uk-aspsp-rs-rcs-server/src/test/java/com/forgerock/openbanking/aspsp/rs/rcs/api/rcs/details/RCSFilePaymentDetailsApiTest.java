@@ -29,7 +29,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRAccount4;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FilePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;

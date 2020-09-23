@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.statement;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.statements.FRStatement1Repository;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRStatement1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRStatement1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

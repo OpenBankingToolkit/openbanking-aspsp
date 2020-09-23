@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.funds.v3_0;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.funds.FRFundsConfirmationConsent1;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;

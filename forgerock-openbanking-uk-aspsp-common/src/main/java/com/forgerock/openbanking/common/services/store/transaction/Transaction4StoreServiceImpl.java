@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.transaction;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1.account.FRTransaction4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1.account.FRTransaction4;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;

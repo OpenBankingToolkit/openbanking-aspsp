@@ -53,7 +53,7 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalResponse5DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.forgerock.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
 
 @Controller("InternationalPaymentsApiV3.1.5")

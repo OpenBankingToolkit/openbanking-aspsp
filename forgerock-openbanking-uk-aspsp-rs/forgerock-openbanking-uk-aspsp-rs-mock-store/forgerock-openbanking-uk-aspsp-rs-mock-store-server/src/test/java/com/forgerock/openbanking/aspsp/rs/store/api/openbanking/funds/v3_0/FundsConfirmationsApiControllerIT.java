@@ -26,8 +26,8 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfi
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmation1;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.funds.FRFundsConfirmation1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.funds.FRFundsConfirmationConsent1;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;

@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.fundconfirmatio
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.funds.FRFundsConfirmationConsent1;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
 import com.forgerock.openbanking.exceptions.OBErrorException;

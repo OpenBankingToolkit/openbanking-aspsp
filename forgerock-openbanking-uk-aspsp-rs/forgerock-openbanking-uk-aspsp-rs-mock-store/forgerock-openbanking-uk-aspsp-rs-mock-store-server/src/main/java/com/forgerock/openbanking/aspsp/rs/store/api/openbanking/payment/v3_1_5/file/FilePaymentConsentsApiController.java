@@ -63,7 +63,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteFileConsentResponse4DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.forgerock.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteFileConsentResponse4DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;

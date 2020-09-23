@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.account.FRAccountAccessConsent1;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;

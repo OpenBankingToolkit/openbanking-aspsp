@@ -20,11 +20,11 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.transaction;
 
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRTransaction1;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRTransaction2;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRTransaction3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.account.FRTransaction4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRTransaction1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRTransaction2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.account.FRTransaction3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1.account.FRTransaction4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRTransaction6;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.transaction.OBTransactionConverter.toOBTransaction1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.transaction.OBTransactionConverter.toOBTransaction2;

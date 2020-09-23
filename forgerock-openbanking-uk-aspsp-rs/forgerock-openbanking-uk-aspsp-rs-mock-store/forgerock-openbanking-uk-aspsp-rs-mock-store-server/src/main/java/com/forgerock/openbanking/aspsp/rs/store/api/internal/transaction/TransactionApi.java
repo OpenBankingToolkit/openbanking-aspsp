@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.transaction;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRTransaction6;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
