@@ -21,6 +21,9 @@
 package com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment;
 
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRFileConsent;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
@@ -40,9 +43,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBRisk1;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 
 import java.util.Date;
 import java.util.List;
@@ -60,7 +60,7 @@ public class FRFileConsent5 implements FRPaymentConsent, FRFileConsent, Persista
     @Indexed
     public ConsentStatusCode status;
 
-    public OBWriteFileConsent3 writeFileConsent;
+    public FRWriteFileConsent writeFileConsent;
 
     @Indexed
     public String accountId;
@@ -95,12 +95,12 @@ public class FRFileConsent5 implements FRPaymentConsent, FRFileConsent, Persista
     }
 
     @Override
-    public OBWriteFile2DataInitiation getInitiation() {
+    public FRWriteFileDataInitiation getInitiation() {
         return writeFileConsent.getData().getInitiation();
     }
 
     @Override
-    public OBRisk1 getRisk() { return null; }
+    public FRRisk getRisk() { return null; }
 
     public PaymentFileType getFileType() {
         return PaymentFileType.fromFileType(writeFileConsent.getData().getInitiation().getFileType());

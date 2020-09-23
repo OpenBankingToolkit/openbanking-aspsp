@@ -22,6 +22,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticSchedulePaymentConsentDetails;
@@ -34,15 +36,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j
@@ -95,7 +95,7 @@ public class RCSDomesticSchedulePaymentDetailsApi implements RCSDetailsApi {
         domesticConsent.setUserId(username);
         paymentService.updatePayment(domesticConsent);
 
-        OBWriteDomesticScheduled2DataInitiation domesticScheduled = domesticConsent.getInitiation();
+        FRWriteDomesticScheduledDataInitiation domesticScheduled = domesticConsent.getInitiation();
         OBScheduledPayment1 obScheduledPayment1 = new OBScheduledPayment1()
                 .accountId(domesticConsent.getAccountId())
                 .scheduledPaymentId(domesticScheduled.getInstructionIdentification())
@@ -113,9 +113,8 @@ public class RCSDomesticSchedulePaymentDetailsApi implements RCSDetailsApi {
                 .clientId(clientId)
                 .paymentReference(Optional.ofNullable(
                         domesticConsent.getInitiation().getRemittanceInformation())
-                        .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)
+                        .map(FRRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
     }
-
 }

@@ -20,6 +20,9 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -35,9 +38,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBRisk1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
 
 import java.util.Date;
 
@@ -52,7 +52,7 @@ public class FRDomesticScheduledConsent5 implements FRPaymentConsent, Persistabl
     public String id;
     @Indexed
     public ConsentStatusCode status;
-    public OBWriteDomesticScheduledConsent4 domesticScheduledConsent;
+    public FRWriteDomesticScheduledConsent domesticScheduledConsent;
 
     @Indexed
     public String accountId;
@@ -78,12 +78,12 @@ public class FRDomesticScheduledConsent5 implements FRPaymentConsent, Persistabl
     }
 
     @Override
-    public OBWriteDomesticScheduled2DataInitiation getInitiation() {
+    public FRWriteDomesticScheduledDataInitiation getInitiation() {
         return domesticScheduledConsent.getData().getInitiation();
     }
 
     @Override
-    public OBRisk1 getRisk() {
+    public FRRisk getRisk() {
         return domesticScheduledConsent.getRisk();
     }
 

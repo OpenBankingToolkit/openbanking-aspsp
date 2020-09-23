@@ -30,6 +30,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
 
 import java.math.BigDecimal;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -59,10 +60,9 @@ public class ControlSumValidatorTest {
     }
 
     private static FRFileConsent5 getConsent(String controlSum) {
-        return FRFileConsent5.builder()
-                .writeFileConsent(new OBWriteFileConsent3().data(new OBWriteFileConsent3Data().initiation(new OBWriteFile2DataInitiation()
-                        .controlSum(new BigDecimal(controlSum))
-                ))).build();
+        OBWriteFileConsent3 consent = new OBWriteFileConsent3()
+                .data(new OBWriteFileConsent3Data().initiation(new OBWriteFile2DataInitiation().controlSum(new BigDecimal(controlSum))));
+        return FRFileConsent5.builder().writeFileConsent(toFRWriteFileConsent(consent)).build();
     }
 
     private static PaymentFile getPaymentFile(String controlSum) {

@@ -52,6 +52,9 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBInitiation1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("PaymentsApiV1.1")
@@ -121,7 +124,7 @@ public class PaymentsApiController implements PaymentsApi {
         frPaymentSetup.setId(IntentType.PAYMENT_SINGLE_REQUEST.generateIntentId());
 
         frPaymentSetup.setStatus(ConsentStatusCode.ACCEPTEDTECHNICALVALIDATION);
-        frPaymentSetup.setPaymentSetupRequest(paymentSetupPOSTRequest);
+        frPaymentSetup.setPaymentSetupRequest(toFRWriteDomesticConsent(paymentSetupPOSTRequest));
         frPaymentSetup.setPisp(tpp);
         frPaymentSetup.setIdempotencyKey(xIdempotencyKey);
         frPaymentSetup.setObVersion(VersionPathExtractor.getVersionFromPath(httpServletRequest));
@@ -171,12 +174,16 @@ public class PaymentsApiController implements PaymentsApi {
                 .paymentId(frPaymentSetup.getId())
                 .status(frPaymentSetup.getStatus().toOBTransactionIndividualStatus1Code())
                 .creationDateTime(frPaymentSetup.getCreated())
-                .initiation(frPaymentSetup.getPaymentSetupRequest().getData().getInitiation());
+                .initiation(toOBInitiation1(frPaymentSetup.getPaymentSetupRequest().getData().getInitiation()));
         return new OBPaymentSetupResponse1()
                 .data(data)
-                .risk(frPaymentSetup.getPaymentSetupRequest().getRisk())
+                .risk(toOBRisk1(frPaymentSetup.getPaymentSetupRequest().getRisk()))
                 .links(resourceLinkService.toSelfLink(frPaymentSetup, discovery -> discovery.getV_1_1().getGetSingleImmediatePayment()))
                 .meta(new Meta());
     }
+
+
+
+
 
 }

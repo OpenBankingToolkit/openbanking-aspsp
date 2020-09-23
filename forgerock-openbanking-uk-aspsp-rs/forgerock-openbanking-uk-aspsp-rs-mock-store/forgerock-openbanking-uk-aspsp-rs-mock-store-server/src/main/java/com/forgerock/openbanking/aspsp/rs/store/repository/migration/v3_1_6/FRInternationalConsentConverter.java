@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalConsent;
 
 public class FRInternationalConsentConverter {
 
@@ -35,7 +35,7 @@ public class FRInternationalConsentConverter {
         frInternationalConsent5.setUserId(frInternationalConsent2.getUserId());
         frInternationalConsent5.setAccountId(frInternationalConsent2.getAccountId());
         frInternationalConsent5.setCreated(frInternationalConsent2.getCreated());
-        frInternationalConsent5.setInternationalConsent(toOBWriteInternationalConsent5(frInternationalConsent2.getInternationalConsent()));
+        frInternationalConsent5.setInternationalConsent(toFRWriteInternationalConsent(frInternationalConsent2.getInternationalConsent()));
         frInternationalConsent5.setPispId(frInternationalConsent2.getPispId());
         frInternationalConsent5.setPispName(frInternationalConsent2.getPispName());
         frInternationalConsent5.setStatusUpdate(frInternationalConsent2.getStatusUpdate());

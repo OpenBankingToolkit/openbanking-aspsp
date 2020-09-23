@@ -21,7 +21,6 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.currency.CurrencyRateService;
 import com.forgerock.openbanking.model.Tpp;
@@ -48,7 +47,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Document
-public class FRInternationalScheduledConsent2 implements FRPaymentConsent, Persistable<String> {
+public class FRInternationalScheduledConsent2 implements Persistable<String> {
     @Id
     @Indexed
     public String id;
@@ -73,18 +72,15 @@ public class FRInternationalScheduledConsent2 implements FRPaymentConsent, Persi
 
     public OBVersion obVersion;
 
-    @Override
     public void setPisp(Tpp tpp) {
         this.pispId = tpp.getId();
         this.pispName = tpp.getOfficialName();
     }
 
-    @Override
     public OBInternationalScheduled2 getInitiation() {
         return internationalScheduledConsent.getData().getInitiation();
     }
 
-    @Override
     public OBRisk1 getRisk() {
         return internationalScheduledConsent.getRisk();
     }

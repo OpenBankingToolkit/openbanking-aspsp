@@ -24,12 +24,12 @@ import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTrans
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import uk.org.openbanking.datamodel.account.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount10;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount10;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification61;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification62;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount60;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount61;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount60;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount61;
 
 public class FRTransactionConverter {
 

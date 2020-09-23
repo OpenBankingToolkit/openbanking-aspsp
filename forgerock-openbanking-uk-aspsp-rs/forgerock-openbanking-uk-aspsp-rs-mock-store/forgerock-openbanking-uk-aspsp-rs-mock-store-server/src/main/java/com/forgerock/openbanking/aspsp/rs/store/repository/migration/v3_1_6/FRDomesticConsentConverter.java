@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRDomesticConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
 
 public class FRDomesticConsentConverter {
 
@@ -35,7 +35,7 @@ public class FRDomesticConsentConverter {
         frDomesticConsent5.setUserId(frDomesticConsent5.getUserId());
         frDomesticConsent5.setAccountId(frDomesticConsent5.getAccountId());
         frDomesticConsent5.setCreated(frDomesticConsent5.getCreated());
-        frDomesticConsent5.setDomesticConsent(toOBWriteDomesticConsent4(frDomesticConsent2.getDomesticConsent()));
+        frDomesticConsent5.setDomesticConsent(toFRWriteDomesticConsent(frDomesticConsent2.getDomesticConsent()));
         frDomesticConsent5.setPispId(frDomesticConsent5.getPispId());
         frDomesticConsent5.setPispName(frDomesticConsent5.getPispName());
         frDomesticConsent5.setStatusUpdate(frDomesticConsent5.getStatusUpdate());

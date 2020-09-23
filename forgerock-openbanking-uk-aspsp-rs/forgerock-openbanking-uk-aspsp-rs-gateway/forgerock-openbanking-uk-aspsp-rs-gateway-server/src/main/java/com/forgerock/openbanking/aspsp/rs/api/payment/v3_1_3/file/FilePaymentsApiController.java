@@ -48,7 +48,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter.toOBWriteFile2DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileDataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
@@ -91,7 +91,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyInitiation(toOBWriteFile2DataInitiation(obWriteFile2.getData().getInitiation()));
+                    f.verifyInitiation(toFRWriteFileDataInitiation(obWriteFile2.getData().getInitiation()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(

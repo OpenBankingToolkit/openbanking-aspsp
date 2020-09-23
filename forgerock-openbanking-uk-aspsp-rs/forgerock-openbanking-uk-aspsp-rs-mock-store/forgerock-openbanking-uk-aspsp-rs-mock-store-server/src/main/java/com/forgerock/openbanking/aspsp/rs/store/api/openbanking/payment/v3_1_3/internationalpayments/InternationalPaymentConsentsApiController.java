@@ -50,6 +50,7 @@ import uk.org.openbanking.datamodel.payment.OBFundsAvailableResult1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4Data;
 
@@ -59,7 +60,10 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalConsentResponse4DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalConsentConverter.toOBWriteInternationalConsent5;
 
@@ -109,10 +113,11 @@ public class InternationalPaymentConsentsApiController implements InternationalP
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
+        OBWriteInternationalConsent5 obWriteInternationalConsent5 = toOBWriteInternationalConsent5(obWriteInternationalConsent4);
         FRInternationalConsent5 internationalConsent = FRInternationalConsent5.builder()
                 .id(IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .internationalConsent(toOBWriteInternationalConsent5(obWriteInternationalConsent4))
+                .internationalConsent(toFRWriteInternationalConsent(obWriteInternationalConsent5))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -182,7 +187,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
     private OBWriteInternationalConsentResponse4 packageResponse(FRInternationalConsent5 internationalConsent) {
         return new OBWriteInternationalConsentResponse4()
                 .data(new OBWriteInternationalConsentResponse4Data()
-                        .initiation(internationalConsent.getInitiation())
+                        .initiation(toOBWriteInternational3DataInitiation(internationalConsent.getInitiation()))
                         .status(toOBWriteInternationalConsentResponse4DataStatus(internationalConsent.getStatus()))
                         .creationDateTime(internationalConsent.getCreated())
                         .statusUpdateDateTime(internationalConsent.getStatusUpdate())
@@ -190,7 +195,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                         .consentId(internationalConsent.getId())
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(internationalConsent.getInternationalConsent().getData().getAuthorisation()))
                 )
-                .risk(internationalConsent.getRisk())
+                .risk(toOBRisk1(internationalConsent.getRisk()))
                 .links(resourceLinkService.toSelfLink(internationalConsent, discovery -> getVersion(discovery).getGetInternationalPaymentConsent()))
                 .meta(new Meta());
     }

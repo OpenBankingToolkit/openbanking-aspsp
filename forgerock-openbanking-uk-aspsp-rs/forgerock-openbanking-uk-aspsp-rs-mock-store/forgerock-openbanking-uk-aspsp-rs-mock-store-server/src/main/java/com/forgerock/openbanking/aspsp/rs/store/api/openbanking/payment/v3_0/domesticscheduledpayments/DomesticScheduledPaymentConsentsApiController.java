@@ -54,9 +54,11 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBAuthorisation1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBDomesticScheduled1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled1;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent4;
 
 @Controller("DomesticScheduledPaymentConsentsApiV3.0")
@@ -129,7 +131,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
         FRDomesticScheduledConsent5 domesticScheduledConsent = FRDomesticScheduledConsent5.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticScheduledConsent(consent4)
+                .domesticScheduledConsent(toFRWriteDomesticScheduledConsent(consent4))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -196,7 +198,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
 
                 )
                 .links(resourceLinkService.toSelfLink(domesticScheduledConsent, discovery -> discovery.getV_3_0().getGetDomesticScheduledPaymentConsent()))
-                .risk(domesticScheduledConsent.getRisk())
+                .risk(toOBRisk1(domesticScheduledConsent.getRisk()))
                 .meta(new Meta());
     }
 }

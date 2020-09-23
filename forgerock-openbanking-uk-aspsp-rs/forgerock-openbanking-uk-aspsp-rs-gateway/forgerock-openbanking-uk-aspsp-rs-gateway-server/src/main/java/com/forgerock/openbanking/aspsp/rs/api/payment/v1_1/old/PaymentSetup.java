@@ -32,6 +32,8 @@ import uk.org.openbanking.datamodel.payment.OBTransactionIndividualStatus1Code;
 import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetup1;
 import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetupResponse1;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
+
 @Slf4j
 @Service
 public class PaymentSetup {
@@ -70,7 +72,7 @@ public class PaymentSetup {
     private FRPaymentSetup1 tracePaymentSetup(OBHeaders headers, OBPaymentSetup1 paymentSetupPOSTRequest, String paymentID) {
         FRPaymentSetup1 paymentSetupEntity = new FRPaymentSetup1();
         paymentSetupEntity.setId(paymentID);
-        paymentSetupEntity.setPaymentSetupRequest(paymentSetupPOSTRequest);
+        paymentSetupEntity.setPaymentSetupRequest(toFRWriteDomesticConsent(paymentSetupPOSTRequest));
         //paymentSetupEntity = paymentSetupsService.createPaymentSetup(paymentSetupEntity);
         return paymentSetupEntity;
     }

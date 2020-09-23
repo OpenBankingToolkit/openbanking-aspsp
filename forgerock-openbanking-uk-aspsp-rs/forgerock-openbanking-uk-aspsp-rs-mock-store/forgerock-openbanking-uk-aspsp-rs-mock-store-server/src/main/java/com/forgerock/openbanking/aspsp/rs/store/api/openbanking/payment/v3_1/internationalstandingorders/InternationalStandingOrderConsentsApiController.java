@@ -53,10 +53,12 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBAuthorisation1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBExternalPermissions2Code;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBInternationalStandingOrder2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder2;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBExternalPermissions2Code;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent6;
 
 @Controller("InternationalStandingOrderConsentsApiV3.1")
@@ -129,7 +131,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
         FRInternationalStandingOrderConsent5 internationalStandingOrderConsent = FRInternationalStandingOrderConsent5.builder()
                 .id(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .internationalStandingOrderConsent(consent6)
+                .internationalStandingOrderConsent(toFRWriteInternationalStandingOrderConsent(consent6))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -191,8 +193,9 @@ public class InternationalStandingOrderConsentsApiController implements Internat
                         .consentId(internationalStandingOrderConsent.getId())
                         .permission(toOBExternalPermissions2Code(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getPermission()))
                         .authorisation(toOBAuthorisation1(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getAuthorisation()))
-                ).risk(internationalStandingOrderConsent.getRisk())
+                ).risk(toOBRisk1(internationalStandingOrderConsent.getRisk()))
                 .links(resourceLinkService.toSelfLink(internationalStandingOrderConsent, discovery -> discovery.getV_3_1().getGetInternationalStandingOrderConsent()))
                 .meta(new Meta());
     }
+
 }

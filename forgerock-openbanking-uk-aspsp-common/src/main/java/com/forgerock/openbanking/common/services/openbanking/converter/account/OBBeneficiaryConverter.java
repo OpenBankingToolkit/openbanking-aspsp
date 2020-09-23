@@ -29,9 +29,9 @@ import uk.org.openbanking.datamodel.account.OBBeneficiary5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification2;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification6;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount5;
 
 public final class OBBeneficiaryConverter {
 

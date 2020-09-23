@@ -66,6 +66,9 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteFileConsentResponse3DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
@@ -118,7 +121,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
         FRFileConsent5 fileConsent = FRFileConsent5.builder().id(IntentType.PAYMENT_FILE_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGUPLOAD)
-                .writeFileConsent(obWriteFileConsent3)
+                .writeFileConsent(toFRWriteFileConsent(obWriteFileConsent3))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -244,8 +247,8 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                         .status(toOBWriteFileConsentResponse3DataStatus(fileConsent.getStatus()))
                         .creationDateTime(fileConsent.getCreated())
                         .statusUpdateDateTime(fileConsent.getStatusUpdate())
-                        .initiation(fileConsent.getInitiation())
-                        .authorisation(fileConsent.getWriteFileConsent().getData().getAuthorisation())
+                        .initiation(toOBWriteFile2DataInitiation(fileConsent.getInitiation()))
+                        .authorisation(toOBWriteDomesticConsent3DataAuthorisation(fileConsent.getWriteFileConsent().getData().getAuthorisation()))
                 )
                 .links(resourceLinkService.toSelfLink(fileConsent, discovery -> getVersion(discovery).getGetFilePaymentConsent()))
                 .meta(new Meta());

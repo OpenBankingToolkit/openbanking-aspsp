@@ -54,7 +54,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalStandingOrderResponse7DataStatus;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
 
 @Controller("InternationalStandingOrdersApiV3.1.5")
 @Slf4j
@@ -153,7 +153,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                         .creationDateTime(internationalStandingOrderConsent5.getCreated())
                         .statusUpdateDateTime(internationalStandingOrderConsent5.getStatusUpdate())
                         .status(toOBWriteInternationalStandingOrderResponse7DataStatus(internationalStandingOrderConsent5.getStatus()))
-                        .debtor(toDebtorIdentification1(internationalStandingOrderConsent5.getInitiation().getDebtorAccount()))
+                        .debtor(toOBDebtorIdentification1(internationalStandingOrderConsent5.getInitiation().getDebtorAccount()))
                         .consentId(internationalStandingOrderConsent5.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalStandingOrder()))
                 .meta(new Meta());

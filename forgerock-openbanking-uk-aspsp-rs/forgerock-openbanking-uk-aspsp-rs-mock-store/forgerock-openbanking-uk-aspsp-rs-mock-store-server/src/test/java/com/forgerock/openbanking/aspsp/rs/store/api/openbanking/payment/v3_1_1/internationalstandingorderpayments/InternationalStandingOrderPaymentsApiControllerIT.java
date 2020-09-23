@@ -25,6 +25,9 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.Inter
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderPaymentSubmission3;
@@ -45,19 +48,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse3;
 
-import java.util.Arrays;
-import java.util.Collections;
-
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.internationalstandingorders.InternationalStandingOrderConsentsApiController.toOBInternationalStandingOrder3;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorAgentTestDataFactory.aValidFRDataInitiationCreditorAgent;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorTestDataFactory.aValidFRDataInitiationCreditor;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder3;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.internationalstandingorders.InternationalStandingOrdersApiController}.
@@ -151,7 +153,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent5 consent = saveConsent();
         OBWriteInternationalStandingOrder3 submissionRequest = new OBWriteInternationalStandingOrder3()
-                .risk(consent.getRisk())
+                .risk(toOBRisk1(consent.getRisk()))
                 .data((new OBWriteDataInternationalStandingOrder3())
                         .consentId(consent.getId())
                         .initiation(toOBInternationalStandingOrder3(consent.getInitiation())));
@@ -181,7 +183,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         FRInternationalStandingOrderPaymentSubmission3 submission = savePaymentSubmission(consent);
 
         OBWriteInternationalStandingOrder3 obWriteInternational3 = new OBWriteInternationalStandingOrder3();
-        obWriteInternational3.risk(consent.getRisk());
+        obWriteInternational3.risk(toOBRisk1(consent.getRisk()));
         obWriteInternational3.data((new OBWriteDataInternationalStandingOrder3())
                 .consentId(submission.getId())
                 .initiation(toOBInternationalStandingOrder3(consent.getInitiation())));
@@ -207,13 +209,11 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         FRInternationalStandingOrderConsent5 consent = JMockData.mock(FRInternationalStandingOrderConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         setupTestConsentInitiation(consent.getInitiation());
-        consent.getRisk().merchantCategoryCode("ABCD").getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
-                .addressLine(Collections.singletonList("3 Queens Square"))
-                .country("GP");
+        consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
+        consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
 
         OBWriteInternationalStandingOrder3 submissionRequest = new OBWriteInternationalStandingOrder3()
-                .risk(consent.getRisk())
+                .risk(toOBRisk1(consent.getRisk()))
                 .data((new OBWriteDataInternationalStandingOrder3())
                         .consentId(consent.getId())
                         .initiation(toOBInternationalStandingOrder3(consent.getInitiation())));
@@ -250,29 +250,25 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         FRInternationalStandingOrderConsent5 consent = JMockData.mock(FRInternationalStandingOrderConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT.generateIntentId());
         setupTestConsentInitiation(consent.getInitiation());
-        consent.getRisk().merchantCategoryCode("ABCD")
-                .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
-                .addressLine(Collections.singletonList("3 Queens Square"))
-                .country("GP");
+        consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
+        consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
         consent.setStatus(ConsentStatusCode.CONSUMED);
         consentRepository.save(consent);
         return consent;
     }
 
-    private static void setupTestConsentInitiation(OBWriteInternationalStandingOrder4DataInitiation initiation) {
-        initiation.purpose("t1");
-        initiation.getInstructedAmount().amount("100.00");
-        initiation.getInstructedAmount().currency("GBP");
-        initiation.currencyOfTransfer("GBP");
-        initiation.firstPaymentDateTime(DateTime.now().withMillisOfSecond(0));
-        initiation.finalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
-        initiation.frequency("EvryDay");
-        initiation.reference("123");
-        initiation.numberOfPayments("12");
-        initiation.getCreditor().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
-        initiation.getCreditorAgent().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
-        initiation.supplementaryData(new OBSupplementaryData1());
+    private static void setupTestConsentInitiation(FRWriteInternationalStandingOrderDataInitiation initiation) {
+        initiation.setPurpose("t1");
+        initiation.setInstructedAmount(FRAmount.builder().currency("GBP").amount("100.00").build());
+        initiation.setCurrencyOfTransfer("GBP");
+        initiation.setFirstPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFinalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFrequency("EvryDay");
+        initiation.setReference("123");
+        initiation.setNumberOfPayments("12");
+        initiation.setCreditor(aValidFRDataInitiationCreditor());
+        initiation.setCreditorAgent(aValidFRDataInitiationCreditorAgent());
+        initiation.setSupplementaryData(FRSupplementaryData.builder().build());
     }
 
 }

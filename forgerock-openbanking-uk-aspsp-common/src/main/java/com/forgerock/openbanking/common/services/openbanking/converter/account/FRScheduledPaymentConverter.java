@@ -28,15 +28,15 @@ import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment2;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification51;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount5;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount51;
 
 public class FRScheduledPaymentConverter {
 

@@ -21,6 +21,9 @@
 package com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment;
 
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -37,11 +40,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4DataExchangeRateInformation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6DataExchangeRateInformation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
 
 import java.util.Date;
 
@@ -58,7 +58,7 @@ public class FRInternationalScheduledConsent5 implements FRPaymentConsent, Persi
     public String id;
     @Indexed
     public ConsentStatusCode status;
-    public OBWriteInternationalScheduledConsent5 internationalScheduledConsent;
+    public FRWriteInternationalScheduledConsent internationalScheduledConsent;
 
     @Indexed
     public String accountId;
@@ -84,12 +84,12 @@ public class FRInternationalScheduledConsent5 implements FRPaymentConsent, Persi
     }
 
     @Override
-    public OBWriteInternationalScheduled3DataInitiation getInitiation() {
+    public FRWriteInternationalScheduledDataInitiation getInitiation() {
         return internationalScheduledConsent.getData().getInitiation();
     }
 
     @Override
-    public OBRisk1 getRisk() {
+    public FRRisk getRisk() {
         return internationalScheduledConsent.getRisk();
     }
 

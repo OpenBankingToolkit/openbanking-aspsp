@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.Pay
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -56,10 +57,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBInternational2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBInternational2;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments.InternationalPaymentConsentsApiController}.
@@ -100,7 +101,7 @@ public class InternationalPaymentConsentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalConsent5 consent = JMockData.mock(FRInternationalConsent5.class);
-        consent.getInitiation().supplementaryData(new OBSupplementaryData1());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
         consent.setStatus(ConsentStatusCode.CONSUMED);
         repository.save(consent);
 

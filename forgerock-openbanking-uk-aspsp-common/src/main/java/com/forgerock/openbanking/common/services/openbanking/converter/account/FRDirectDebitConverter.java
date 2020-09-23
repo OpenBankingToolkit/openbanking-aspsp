@@ -25,8 +25,8 @@ import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRDirec
 import uk.org.openbanking.datamodel.account.OBDirectDebit1;
 import uk.org.openbanking.datamodel.account.OBReadDirectDebit2DataDirectDebit;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount0;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount0;
 
 /**
  * Converter for 'OBDirectDebit' model objects.

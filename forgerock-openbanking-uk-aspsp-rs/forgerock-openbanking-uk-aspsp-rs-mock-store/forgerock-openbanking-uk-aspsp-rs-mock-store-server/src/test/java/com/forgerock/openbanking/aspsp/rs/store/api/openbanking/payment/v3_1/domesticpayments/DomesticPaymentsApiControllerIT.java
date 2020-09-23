@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.Domesti
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
@@ -45,18 +46,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse2;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
 
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRPostalAddressTestDataFactory.aValidFRPostalAddress;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBDomestic2;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBDomestic2;
 
 /**
  * Spring Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.domesticpayments.DomesticPaymentsApiController}.
@@ -152,7 +154,7 @@ public class DomesticPaymentsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent5 consent = saveConsent();
         OBWriteDomestic2 submissionRequest = new OBWriteDomestic2()
-                .risk(consent.getRisk())
+                .risk(toOBRisk1(consent.getRisk()))
                 .data(new OBWriteDataDomestic2()
                         .consentId(consent.getId())
                         .initiation(toOBDomestic2(consent.getInitiation())));
@@ -184,7 +186,7 @@ public class DomesticPaymentsApiControllerIT {
         FRDomesticPaymentSubmission2 submission = savePaymentSubmission(consent, UUID.randomUUID().toString());
 
         OBWriteDomestic2 obWriteDomestic2 = new OBWriteDomestic2();
-        obWriteDomestic2.risk(consent.getRisk());
+        obWriteDomestic2.risk(toOBRisk1(consent.getRisk()));
         obWriteDomestic2.data(new OBWriteDataDomestic2()
                 .consentId(submission.getId())
                 .initiation(toOBDomestic2(consent.getInitiation())));
@@ -234,17 +236,14 @@ public class DomesticPaymentsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
-        consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
-        consent.getInitiation().getCreditorPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
-        consent.getInitiation().supplementaryData(new OBSupplementaryData1());
-        consent.getRisk().merchantCategoryCode("ABCD")
-                .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
-                .addressLine(Collections.singletonList("3 Queens Square"))
-                .country("GP");
+        consent.getInitiation().setInstructedAmount(aValidFRAmount());
+        consent.getInitiation().setCreditorPostalAddress(aValidFRPostalAddress());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
+        consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
 
         OBWriteDomestic2 submissionRequest = new OBWriteDomestic2()
-                .risk(consent.getRisk())
+                .risk(toOBRisk1(consent.getRisk()))
                 .data(new OBWriteDataDomestic2()
                         .consentId(consent.getId())
                         .initiation(toOBDomestic2(consent.getInitiation())));
@@ -267,7 +266,7 @@ public class DomesticPaymentsApiControllerIT {
     private FRDomesticPaymentSubmission2 savePaymentSubmission(FRDomesticConsent5 consent, String xIdempotencyKey) {
         OBWriteDomestic2 submissionRequest = JMockData.mock(OBWriteDomestic2.class);
         submissionRequest = new OBWriteDomestic2()
-                .risk(consent.getRisk())
+                .risk(toOBRisk1(consent.getRisk()))
                 .data(new OBWriteDataDomestic2()
                         .consentId(consent.getId())
                         .initiation(toOBDomestic2(consent.getInitiation())));
@@ -283,14 +282,11 @@ public class DomesticPaymentsApiControllerIT {
     private FRDomesticConsent5 saveConsent() {
         FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
-        consent.getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
-        consent.getInitiation().getCreditorPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
-        consent.getInitiation().supplementaryData(new OBSupplementaryData1());
-        consent.getRisk().merchantCategoryCode("ABCD")
-                .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
-                .addressLine(Collections.singletonList("3 Queens Square"))
-                .country("GP");
+        consent.getInitiation().setInstructedAmount(aValidFRAmount());
+        consent.getInitiation().setCreditorPostalAddress(aValidFRPostalAddress());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
+        consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
         consentRepository.save(consent);
         return consent;

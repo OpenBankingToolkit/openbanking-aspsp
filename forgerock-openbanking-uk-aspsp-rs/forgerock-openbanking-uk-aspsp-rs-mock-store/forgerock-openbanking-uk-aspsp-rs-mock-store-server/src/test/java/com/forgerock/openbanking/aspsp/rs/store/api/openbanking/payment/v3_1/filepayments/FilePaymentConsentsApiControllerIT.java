@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFileType;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
@@ -67,6 +68,7 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_PISP_ID;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_PISP_NAME;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.setupMockTpp;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.ACCEPT;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -105,7 +107,7 @@ public class FilePaymentConsentsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent5 consent = JMockData.mock(FRFileConsent5.class);
         consent.setStatus(ConsentStatusCode.AWAITINGUPLOAD);
-        consent.getInitiation().supplementaryData(new OBSupplementaryData1());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
         repository.save(consent);
 
         // When
@@ -192,12 +194,13 @@ public class FilePaymentConsentsApiControllerIT {
         existingConsent.setId(fileConsentId);
         existingConsent.setFileContent(null);
         existingConsent.setPayments(Collections.emptyList());
-        existingConsent.setWriteFileConsent(new OBWriteFileConsent3().data(new OBWriteFileConsent3Data().initiation(new OBWriteFile2DataInitiation()
+        OBWriteFileConsent3 obWriteFileConsent3 = new OBWriteFileConsent3().data(new OBWriteFileConsent3Data().initiation(new OBWriteFile2DataInitiation()
                 .fileHash("kdjfklsdjflksjf")
                 .numberOfTransactions("3")
                 .controlSum(new BigDecimal("66.0"))
                 .fileType(PaymentFileType.UK_OBIE_PAYMENT_INITIATION_V3_0.getFileType())
-        )));
+        ));
+        existingConsent.setWriteFileConsent(toFRWriteFileConsent(obWriteFileConsent3));
         repository.save(existingConsent);
 
         // When

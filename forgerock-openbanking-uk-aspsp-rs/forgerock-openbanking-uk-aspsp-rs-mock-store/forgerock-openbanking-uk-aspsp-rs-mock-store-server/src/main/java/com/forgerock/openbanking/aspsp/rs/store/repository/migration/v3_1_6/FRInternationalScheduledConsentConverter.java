@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalScheduledConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledConsent;
 
 public class FRInternationalScheduledConsentConverter {
 
@@ -34,7 +34,7 @@ public class FRInternationalScheduledConsentConverter {
         frInternationalScheduledConsent5.setUserId(frInternationalScheduledConsent2.getUserId());
         frInternationalScheduledConsent5.setAccountId(frInternationalScheduledConsent2.getAccountId());
         frInternationalScheduledConsent5.setCreated(frInternationalScheduledConsent2.getCreated());
-        frInternationalScheduledConsent5.setInternationalScheduledConsent(toOBWriteInternationalScheduledConsent5(frInternationalScheduledConsent2.getInternationalScheduledConsent()));
+        frInternationalScheduledConsent5.setInternationalScheduledConsent(toFRWriteInternationalScheduledConsent(frInternationalScheduledConsent2.getInternationalScheduledConsent()));
         frInternationalScheduledConsent5.setPispId(frInternationalScheduledConsent2.getPispId());
         frInternationalScheduledConsent5.setPispName(frInternationalScheduledConsent2.getPispName());
         frInternationalScheduledConsent5.setStatusUpdate(frInternationalScheduledConsent2.getStatusUpdate());
