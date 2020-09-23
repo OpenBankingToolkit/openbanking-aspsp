@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.aggregatedpolling;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.v3_0.FREventNotification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

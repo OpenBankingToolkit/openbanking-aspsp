@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.Builder;
 import lombok.Data;

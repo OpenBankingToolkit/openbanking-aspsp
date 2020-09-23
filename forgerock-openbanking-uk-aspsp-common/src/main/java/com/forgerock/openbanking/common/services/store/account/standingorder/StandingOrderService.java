@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.account.standingorder;
 
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRStandingOrder6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRStandingOrder6;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

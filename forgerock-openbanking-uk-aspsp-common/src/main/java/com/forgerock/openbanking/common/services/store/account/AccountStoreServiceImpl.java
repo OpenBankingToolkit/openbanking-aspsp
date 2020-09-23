@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.common.services.store.account;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

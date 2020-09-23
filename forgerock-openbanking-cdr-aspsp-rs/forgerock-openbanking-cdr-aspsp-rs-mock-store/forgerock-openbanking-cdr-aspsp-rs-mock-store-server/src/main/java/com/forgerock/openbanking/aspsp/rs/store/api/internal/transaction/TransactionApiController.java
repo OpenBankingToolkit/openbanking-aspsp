@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.transaction;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.transactions.FRTransaction5Repository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRTransaction5;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -26,7 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentR
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;

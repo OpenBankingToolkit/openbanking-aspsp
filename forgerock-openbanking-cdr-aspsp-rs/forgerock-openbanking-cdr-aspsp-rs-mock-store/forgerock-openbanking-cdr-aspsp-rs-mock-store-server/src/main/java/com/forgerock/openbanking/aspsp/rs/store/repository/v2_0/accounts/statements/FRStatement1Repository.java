@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.statements;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRStatement1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRStatement1;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

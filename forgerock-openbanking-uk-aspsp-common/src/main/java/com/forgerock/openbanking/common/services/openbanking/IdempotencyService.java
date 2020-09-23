@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.common.services.openbanking;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;

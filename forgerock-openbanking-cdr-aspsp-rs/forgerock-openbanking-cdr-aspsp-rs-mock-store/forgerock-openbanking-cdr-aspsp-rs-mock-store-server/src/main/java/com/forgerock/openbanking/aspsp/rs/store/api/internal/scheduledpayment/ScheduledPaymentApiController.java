@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.scheduledpayment;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.scheduledpayments.FRScheduledPayment2Repository;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRScheduledPayment2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRScheduledPayment2;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;

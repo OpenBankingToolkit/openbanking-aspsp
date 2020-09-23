@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_3.
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.directdebits.FRDirectDebit4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRDirectDebit4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRDirectDebit4;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;

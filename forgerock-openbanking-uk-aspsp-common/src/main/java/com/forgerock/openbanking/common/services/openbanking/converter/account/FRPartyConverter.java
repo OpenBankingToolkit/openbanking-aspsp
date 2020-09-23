@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRParty1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRParty2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRParty1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRParty2;
 import uk.org.openbanking.datamodel.account.OBParty1;
 import uk.org.openbanking.datamodel.account.OBParty2;
 

@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.funds;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmationConsent1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

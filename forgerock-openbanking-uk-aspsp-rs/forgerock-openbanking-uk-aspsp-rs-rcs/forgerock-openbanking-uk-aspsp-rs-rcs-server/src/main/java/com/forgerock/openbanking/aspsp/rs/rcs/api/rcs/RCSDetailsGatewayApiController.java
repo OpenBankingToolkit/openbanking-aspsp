@@ -27,7 +27,7 @@ import com.forgerock.openbanking.analytics.services.PsuCounterEntryKPIService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.IntentTypeService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.constants.RCSConstants;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.data.UserDataService;
 import com.forgerock.openbanking.common.utils.JwsClaimsUtils;

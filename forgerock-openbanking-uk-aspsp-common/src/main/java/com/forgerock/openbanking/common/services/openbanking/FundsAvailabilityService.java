@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.openbanking;
 
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
 import com.forgerock.openbanking.common.services.store.balance.BalanceStoreService;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;

@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.api.account.v2_0.accounts;
 
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRAccountRequest1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRAccountRequest1;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;

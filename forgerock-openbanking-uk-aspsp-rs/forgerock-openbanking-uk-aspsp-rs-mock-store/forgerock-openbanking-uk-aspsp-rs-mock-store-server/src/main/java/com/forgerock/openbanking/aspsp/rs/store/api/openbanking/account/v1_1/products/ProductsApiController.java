@@ -22,8 +22,8 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.pr
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.products.FRProduct2Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRProduct1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRProduct2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRProduct1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRProduct2;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRProductConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;

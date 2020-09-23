@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.common.services.store.balance;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBalance1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;

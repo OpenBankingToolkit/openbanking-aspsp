@@ -26,7 +26,7 @@ import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
 import com.forgerock.openbanking.aspsp.rs.store.repository.FRPendingEventsRepository;
 import com.forgerock.openbanking.common.model.data.FRDataEvent;
 import com.forgerock.openbanking.common.model.data.OBEventNotification2;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.v3_0.FREventNotification;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;

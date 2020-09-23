@@ -29,7 +29,7 @@ import com.forgerock.openbanking.aspsp.rs.store.validator.ControlSumValidator;
 import com.forgerock.openbanking.aspsp.rs.store.validator.FileTransactionCountValidator;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFileFactory;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;

@@ -27,9 +27,9 @@ import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;

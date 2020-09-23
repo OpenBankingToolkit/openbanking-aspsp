@@ -25,7 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticPaym
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;

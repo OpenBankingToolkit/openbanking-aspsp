@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticSchedulePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;

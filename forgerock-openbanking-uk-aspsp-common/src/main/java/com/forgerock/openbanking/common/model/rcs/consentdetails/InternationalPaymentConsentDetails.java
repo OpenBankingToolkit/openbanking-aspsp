@@ -22,7 +22,7 @@ package com.forgerock.openbanking.common.model.rcs.consentdetails;
 
 
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -25,8 +25,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events;
 
 
-import com.forgerock.openbanking.common.model.openbanking.event.FREventSubscription1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription1;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 

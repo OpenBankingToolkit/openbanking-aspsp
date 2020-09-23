@@ -20,12 +20,12 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRStandingOrder1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRStandingOrder2;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.account.FRStandingOrder3;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1.account.FRStandingOrder4;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRStandingOrder5;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRStandingOrder6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRStandingOrder1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRStandingOrder2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.FRStandingOrder3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1.FRStandingOrder4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRStandingOrder5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRStandingOrder6;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBStandingOrderConverter.toOBStandingOrder1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBStandingOrderConverter.toOBStandingOrder2;

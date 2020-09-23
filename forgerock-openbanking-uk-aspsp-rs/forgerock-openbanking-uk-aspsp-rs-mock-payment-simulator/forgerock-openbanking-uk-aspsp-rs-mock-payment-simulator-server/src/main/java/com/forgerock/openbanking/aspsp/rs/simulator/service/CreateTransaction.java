@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 

@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.accountrequest;
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.accountrequests.FRAccountRequest1Repository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRAccountRequest1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRAccountRequest1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

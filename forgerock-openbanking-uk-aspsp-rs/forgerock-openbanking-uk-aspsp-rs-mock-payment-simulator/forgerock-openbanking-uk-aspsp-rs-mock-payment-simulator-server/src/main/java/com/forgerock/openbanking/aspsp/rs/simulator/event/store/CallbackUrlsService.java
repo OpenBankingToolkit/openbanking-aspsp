@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.event.store;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl1;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;

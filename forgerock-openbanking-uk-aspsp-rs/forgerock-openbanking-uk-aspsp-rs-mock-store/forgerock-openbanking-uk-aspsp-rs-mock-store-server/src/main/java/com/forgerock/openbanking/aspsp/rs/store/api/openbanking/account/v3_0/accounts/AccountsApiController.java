@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_0.accounts;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBAccount3Account;
 import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification3Code;

@@ -23,8 +23,6 @@ package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.currency.CurrencyRateService;
 import com.forgerock.openbanking.model.Tpp;
