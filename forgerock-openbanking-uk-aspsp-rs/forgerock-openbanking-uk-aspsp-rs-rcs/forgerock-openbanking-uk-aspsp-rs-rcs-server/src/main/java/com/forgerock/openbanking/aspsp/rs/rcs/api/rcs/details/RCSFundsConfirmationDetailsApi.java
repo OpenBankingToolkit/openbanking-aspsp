@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FundsConfirmationConsentDetails;
 import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
@@ -55,7 +55,7 @@ public class RCSFundsConfirmationDetailsApi implements RCSDetailsApi {
     }
 
     @Override
-    public ResponseEntity consentDetails(String remoteConsentRequest, List<FRAccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
+    public ResponseEntity consentDetails(String remoteConsentRequest, List<AccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
         log.debug("Received a consent request with consent_request='{}'", remoteConsentRequest);
         log.debug("=> The payment id '{}'", consentId);
 
@@ -64,7 +64,7 @@ public class RCSFundsConfirmationDetailsApi implements RCSDetailsApi {
         FRFundsConfirmationConsent1 consent = fundsConfirmationService.getConsent(consentId);
 
         // Verify that the 'DebtorAccount' matches one of the accounts of the user and define as the selected account.
-        Optional<FRAccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(consent.getDebtorAccount().getIdentification(), accounts);
+        Optional<AccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(consent.getDebtorAccount().getIdentification(), accounts);
         if (!matchingUserAccount.isPresent()) {
             log.error("The PISP '{}' created the funds confirmation request '{}' but the debtor account: {} on the consent " +
                     " is not one of the user's accounts: {}.", consent.getPispId(), consentId, consent.getDebtorAccount(), accounts);

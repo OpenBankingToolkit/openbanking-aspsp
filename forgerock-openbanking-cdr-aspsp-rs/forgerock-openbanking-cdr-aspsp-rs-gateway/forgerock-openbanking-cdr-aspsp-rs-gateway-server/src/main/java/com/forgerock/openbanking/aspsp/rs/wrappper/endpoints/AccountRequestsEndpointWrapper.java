@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -64,7 +64,7 @@ public class AccountRequestsEndpointWrapper extends AccountsApiEndpointWrapper<A
 
     public void verifyAccountRequest() throws OBErrorException {
         if (accountRequestId != null) {
-            Optional<FRAccountRequest> accountRequest = rsEndpointWrapperService.accountRequestStore.get(accountRequestId);
+            Optional<AccountRequest> accountRequest = rsEndpointWrapperService.accountRequestStore.get(accountRequestId);
             if (!accountRequest.isPresent()) {
                 LOGGER.warn("AISP {} is trying to delete an account request {} that doesn't exist",
                         tppId, accountRequestId);

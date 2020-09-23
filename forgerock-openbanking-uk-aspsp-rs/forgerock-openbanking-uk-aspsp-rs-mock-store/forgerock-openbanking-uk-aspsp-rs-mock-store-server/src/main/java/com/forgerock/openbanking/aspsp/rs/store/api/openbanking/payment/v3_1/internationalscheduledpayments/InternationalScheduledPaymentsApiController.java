@@ -21,12 +21,12 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalScheduledPaymentSubmission4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalScheduledConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledPaymentSubmission4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -60,12 +60,12 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBInternati
 @Controller("InternationalScheduledPaymentsApiV3.1")
 @Slf4j
 public class InternationalScheduledPaymentsApiController implements InternationalScheduledPaymentsApi {
-    private final InternationalScheduledConsent5Repository internationalScheduledConsentRepository;
-    private final InternationalScheduledPaymentSubmission4Repository internationalScheduledPaymentSubmissionRepository;
+    private final InternationalScheduledConsentRepository internationalScheduledConsentRepository;
+    private final InternationalScheduledPaymentSubmissionRepository internationalScheduledPaymentSubmissionRepository;
     private final ResourceLinkService resourceLinkService;
 
-    public InternationalScheduledPaymentsApiController(InternationalScheduledConsent5Repository internationalScheduledConsentRepository,
-                                                       InternationalScheduledPaymentSubmission4Repository internationalScheduledPaymentSubmissionRepository,
+    public InternationalScheduledPaymentsApiController(InternationalScheduledConsentRepository internationalScheduledConsentRepository,
+                                                       InternationalScheduledPaymentSubmissionRepository internationalScheduledPaymentSubmissionRepository,
                                                        ResourceLinkService resourceLinkService) {
         this.internationalScheduledConsentRepository = internationalScheduledConsentRepository;
         this.internationalScheduledPaymentSubmissionRepository = internationalScheduledPaymentSubmissionRepository;
@@ -112,7 +112,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         log.trace("Converted to: {}", payment.getClass());
 
         String paymentId = obWriteInternationalScheduled2.getData().getConsentId();
-        FRInternationalScheduledConsent5 paymentConsent = internationalScheduledConsentRepository.findById(paymentId)
+        FRInternationalScheduledConsent paymentConsent = internationalScheduledConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -120,7 +120,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 );
         log.debug("Found consent '{}' to match this payment id: {} ", paymentConsent, paymentId);
 
-        FRInternationalScheduledPaymentSubmission4 frPaymentSubmission = FRInternationalScheduledPaymentSubmission4.builder()
+        FRInternationalScheduledPaymentSubmission frPaymentSubmission = FRInternationalScheduledPaymentSubmission.builder()
                 .id(paymentId)
                 .internationalScheduledPayment(payment)
                 .created(new Date())
@@ -161,21 +161,21 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRInternationalScheduledPaymentSubmission4> isPaymentSubmission = internationalScheduledPaymentSubmissionRepository.findById(internationalScheduledPaymentId);
+        Optional<FRInternationalScheduledPaymentSubmission> isPaymentSubmission = internationalScheduledPaymentSubmissionRepository.findById(internationalScheduledPaymentId);
         if (!isPaymentSubmission.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + internationalScheduledPaymentId + "' can't be found");
         }
-        FRInternationalScheduledPaymentSubmission4 frPaymentSubmission = isPaymentSubmission.get();
+        FRInternationalScheduledPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRInternationalScheduledConsent5> isPaymentSetup = internationalScheduledConsentRepository.findById(internationalScheduledPaymentId);
+        Optional<FRInternationalScheduledConsent> isPaymentSetup = internationalScheduledConsentRepository.findById(internationalScheduledPaymentId);
         if (!isPaymentSetup.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + internationalScheduledPaymentId + "' can't be found");
         }
-        FRInternationalScheduledConsent5 frPaymentSetup = isPaymentSetup.get();
+        FRInternationalScheduledConsent frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteInternationalScheduledResponse2 packagePayment(FRInternationalScheduledPaymentSubmission4 frPaymentSubmission, FRInternationalScheduledConsent5 frInternationalScheduledConsent) {
+    private OBWriteInternationalScheduledResponse2 packagePayment(FRInternationalScheduledPaymentSubmission frPaymentSubmission, FRInternationalScheduledConsent frInternationalScheduledConsent) {
         return new OBWriteInternationalScheduledResponse2()
                 .data((new OBWriteDataInternationalScheduledResponse2())
                         .internationalScheduledPaymentId(frPaymentSubmission.getId())

@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.v2_0.account;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,7 +42,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
-public class FRAccount2 implements FRAccount {
+public class FRAccount2 implements Account {
 
     @Id
     @Indexed

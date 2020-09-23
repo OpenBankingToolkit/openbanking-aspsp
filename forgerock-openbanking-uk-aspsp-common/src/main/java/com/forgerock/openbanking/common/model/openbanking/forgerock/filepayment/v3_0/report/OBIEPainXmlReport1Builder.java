@@ -29,7 +29,7 @@ import com.forgerock.openbanking.common.model.openbanking.obie.pain00200109.Grou
 import com.forgerock.openbanking.common.model.openbanking.obie.pain00200109.OriginalGroupHeader13;
 import com.forgerock.openbanking.common.model.openbanking.obie.pain00200109.OriginalPaymentInstruction27;
 import com.forgerock.openbanking.common.model.openbanking.obie.pain00200109.PaymentTransaction92;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 public class OBIEPainXmlReport1Builder {
     private static final String REPORT_MESSAGE_TYPE = "pain.002.001.09";
 
-    String toPaymentReport(FRFileConsent5 consent) {
+    String toPaymentReport(FRFileConsent consent) {
         log.debug("Create {} report file for consent id: {}", consent.getFileType(), consent.getId());
         final Document reportDocument = mapConsentToReportDocument(consent);
         log.debug("Created JAXB object for report file: {}", reportDocument);
@@ -65,7 +65,7 @@ public class OBIEPainXmlReport1Builder {
         }
     }
 
-    private Document mapConsentToReportDocument(FRFileConsent5 consent) {
+    private Document mapConsentToReportDocument(FRFileConsent consent) {
         com.forgerock.openbanking.common.model.openbanking.obie.pain001.Document paymentInitiationDocument;
         try {
           paymentInitiationDocument = JAXB.unmarshal(new StringReader(consent.getFileContent()), com.forgerock.openbanking.common.model.openbanking.obie.pain001.Document.class);

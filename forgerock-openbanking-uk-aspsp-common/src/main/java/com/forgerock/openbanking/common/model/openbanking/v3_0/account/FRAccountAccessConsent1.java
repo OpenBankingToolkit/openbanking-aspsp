@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.model.openbanking.v3_0.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.model.Tpp;
 import lombok.AllArgsConstructor;
@@ -48,7 +48,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class FRAccountAccessConsent1 implements FRAccountRequest, Persistable<String> {
+public class FRAccountAccessConsent1 implements AccountRequest, Persistable<String> {
     @Id
     @Indexed
     public String id;

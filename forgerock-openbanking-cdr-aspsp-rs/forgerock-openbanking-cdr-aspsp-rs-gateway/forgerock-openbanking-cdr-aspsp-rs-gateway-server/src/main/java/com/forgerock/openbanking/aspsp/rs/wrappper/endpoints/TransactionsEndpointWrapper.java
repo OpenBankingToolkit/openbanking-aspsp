@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
 import com.forgerock.openbanking.common.utils.DateTimeUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
@@ -122,7 +122,7 @@ public class TransactionsEndpointWrapper extends AccountsApiEndpointWrapper<Tran
 
     public interface Main {
         ResponseEntity run(
-                FRAccountRequest accountRequest,
+                AccountRequest accountRequest,
                 List<OBExternalPermissions1Code> permissions,
                 DateTime transactionFrom,
                 DateTime transactionTo,

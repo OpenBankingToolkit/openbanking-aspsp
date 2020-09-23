@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +58,7 @@ public class AccountsApiController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<List<FRAccountWithBalance>> getAccounts(
+    public ResponseEntity<List<AccountWithBalance>> getAccounts(
             @RequestParam("userId") String userId,
             @RequestParam(value = "withBalance", required = false, defaultValue = "false") Boolean withBalance
     ) {
@@ -121,13 +121,13 @@ public class AccountsApiController implements AccountsApi {
         return new ResponseEntity(accountsRepository.findById(accountId), HttpStatus.OK);
     }
 
-    private FRAccountWithBalance toFRAccountWithBalance(FRAccount4 account, Map<String, List<FRBalance1>> balanceMap) {
+    private AccountWithBalance toFRAccountWithBalance(FRAccount4 account, Map<String, List<FRBalance1>> balanceMap) {
         final List<OBCashBalance1> balances = Optional.ofNullable(balanceMap.get(account.getId()))
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(FRBalance1::getBalance)
                 .collect(Collectors.toList());
 
-        return new FRAccountWithBalance(account, balances);
+        return new AccountWithBalance(account, balances);
     }
 }

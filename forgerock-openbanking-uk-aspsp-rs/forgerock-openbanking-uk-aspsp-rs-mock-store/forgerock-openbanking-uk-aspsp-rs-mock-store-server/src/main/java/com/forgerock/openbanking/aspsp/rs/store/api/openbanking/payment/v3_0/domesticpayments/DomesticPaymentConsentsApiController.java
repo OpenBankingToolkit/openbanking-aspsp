@@ -23,12 +23,12 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.do
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import io.swagger.annotations.ApiParam;
@@ -63,12 +63,12 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDome
 @Controller("DomesticPaymentConsentsApiV3.0")
 @Slf4j
 public class DomesticPaymentConsentsApiController implements DomesticPaymentConsentsApi {
-    private DomesticConsent5Repository domesticConsentRepository;
+    private DomesticConsentRepository domesticConsentRepository;
     private TppRepository tppRepository;
     private ResourceLinkService resourceLinkService;
     private ConsentMetricService consentMetricService;
 
-    public DomesticPaymentConsentsApiController(ConsentMetricService consentMetricService, DomesticConsent5Repository domesticConsent2Repository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
+    public DomesticPaymentConsentsApiController(ConsentMetricService consentMetricService, DomesticConsentRepository domesticConsent2Repository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         this.consentMetricService = consentMetricService;
         this.domesticConsentRepository = domesticConsent2Repository;
         this.tppRepository = tppRepository;
@@ -119,14 +119,14 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        Optional<FRDomesticConsent5> consentByIdempotencyKey = domesticConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRDomesticConsent> consentByIdempotencyKey = domesticConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, consent4, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
-        FRDomesticConsent5 domesticConsent = FRDomesticConsent5.builder()
+        FRDomesticConsent domesticConsent = FRDomesticConsent.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
                 .domesticConsent(toFRWriteDomesticConsent(consent4))
@@ -172,17 +172,17 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRDomesticConsent5> isDomesticConsent = domesticConsentRepository.findById(consentId);
+        Optional<FRDomesticConsent> isDomesticConsent = domesticConsentRepository.findById(consentId);
         if (!isDomesticConsent.isPresent()) {
             // OB specifies a 400 when the id does not match an existing consent
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic consent '" + consentId + "' can't be found");
         }
-        FRDomesticConsent5 domesticConsent = isDomesticConsent.get();
+        FRDomesticConsent domesticConsent = isDomesticConsent.get();
 
         return ResponseEntity.ok(packageResponse(domesticConsent));
     }
 
-    private OBWriteDomesticConsentResponse1 packageResponse(FRDomesticConsent5 domesticConsent) {
+    private OBWriteDomesticConsentResponse1 packageResponse(FRDomesticConsent domesticConsent) {
         return new OBWriteDomesticConsentResponse1()
                 .data(new OBWriteDataDomesticConsentResponse1()
                         .initiation(toOBDomestic1(domesticConsent.getInitiation()))

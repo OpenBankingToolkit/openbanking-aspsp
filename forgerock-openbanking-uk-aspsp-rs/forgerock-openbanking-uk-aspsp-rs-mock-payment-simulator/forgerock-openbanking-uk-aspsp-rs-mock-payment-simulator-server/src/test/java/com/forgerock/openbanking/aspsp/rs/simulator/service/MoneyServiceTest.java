@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import com.forgerock.openbanking.common.services.store.balance.BalanceStoreService;
@@ -65,7 +65,7 @@ public class MoneyServiceTest {
 
         // When
         moneyService.moveMoney(defaultAccount(DEBIT_ACCOUNT), defaultAmount(), OBCreditDebitCode.DEBIT,
-                new FRPaymentSetup1(), mock(CreateTransaction.class));
+                new FRPaymentSetup(), mock(CreateTransaction.class));
 
         // Then
         verify(balanceStoreService).updateBalance(defaultBalance(DEBIT_ACCOUNT, "17.00"));
@@ -80,7 +80,7 @@ public class MoneyServiceTest {
 
         // When
         moneyService.moveMoney(defaultAccount(CREDIT_ACCOUNT), defaultAmount(), OBCreditDebitCode.CREDIT,
-                new FRPaymentSetup1(), mock(CreateTransaction.class));
+                new FRPaymentSetup(), mock(CreateTransaction.class));
 
         // Then
         verify(balanceStoreService).updateBalance(defaultBalance(CREDIT_ACCOUNT, "4.00"));
@@ -92,9 +92,9 @@ public class MoneyServiceTest {
         FRBalance1 balance = defaultBalance(DEBIT_ACCOUNT, "20");
         given(balanceStoreService.getBalance(DEBIT_ACCOUNT, OBBalanceType1Code.INTERIMAVAILABLE))
                 .willReturn(Optional.of(balance));
-        CreateTransaction<FRPaymentSetup1> createTransaction = mock(CreateTransaction.class);
+        CreateTransaction<FRPaymentSetup> createTransaction = mock(CreateTransaction.class);
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
-        FRPaymentSetup1 payment = new FRPaymentSetup1();
+        FRPaymentSetup payment = new FRPaymentSetup();
         FRTransaction6 transaction = JMockData.mock(FRTransaction6.class);
         OBActiveOrHistoricCurrencyAndAmount amount = defaultAmount();
         given(createTransaction.createTransaction(account, payment, OBCreditDebitCode.DEBIT, balance, amount)).willReturn(transaction);

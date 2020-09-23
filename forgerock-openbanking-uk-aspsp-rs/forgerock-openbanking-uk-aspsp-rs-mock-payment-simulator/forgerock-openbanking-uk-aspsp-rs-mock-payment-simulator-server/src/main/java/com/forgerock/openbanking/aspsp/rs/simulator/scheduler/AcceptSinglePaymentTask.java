@@ -23,9 +23,9 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
@@ -79,13 +79,13 @@ public class AcceptSinglePaymentTask {
     @SchedulerLock(name = "singlePayment")
     public void autoAcceptPayment() {
         log.info("Auto-accept payment task waking up. The time is now {}.", format.print(DateTime.now()));
-        Collection<FRPaymentSetup1> allPaymentsInProcess = paymentsService.getAllPaymentsInProcess();
-        for (FRPaymentSetup1 payment: allPaymentsInProcess) {
+        Collection<FRPaymentSetup> allPaymentsInProcess = paymentsService.getAllPaymentsInProcess();
+        for (FRPaymentSetup payment: allPaymentsInProcess) {
             log.info("Processing payment {}", payment);
             try {
-                FRAccount accountTo = accountStoreService.getAccount(payment.getAccountId());
+                Account accountTo = accountStoreService.getAccount(payment.getAccountId());
                 String identificationFrom = moveDebitPayment(payment, accountTo);
-                Optional<FRAccount> isAccountFromOurs = accountStoreService.findAccountByIdentification(identificationFrom);
+                Optional<Account> isAccountFromOurs = accountStoreService.findAccountByIdentification(identificationFrom);
                 if (isAccountFromOurs.isPresent()) {
                     moveCreditPayment(payment, identificationFrom, isAccountFromOurs.get());
                 } else {
@@ -113,14 +113,14 @@ public class AcceptSinglePaymentTask {
                 format.print(DateTime.now()));
     }
 
-    private void moveCreditPayment(FRPaymentSetup1 payment, String identificationFrom, FRAccount accountFrom) throws CurrencyConverterException {
+    private void moveCreditPayment(FRPaymentSetup payment, String identificationFrom, Account accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationFrom, accountFrom);
         log.info("Move the money to this account");
         moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
                 OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
-    private String moveDebitPayment(FRPaymentSetup1 payment, FRAccount accountTo) throws CurrencyConverterException {
+    private String moveDebitPayment(FRPaymentSetup payment, Account accountTo) throws CurrencyConverterException {
         log.info("We are going to pay from this account: {}", accountTo);
         moneyService.moveMoney(accountTo, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
                 OBCreditDebitCode.DEBIT, payment,  this::createTransaction);
@@ -130,7 +130,7 @@ public class AcceptSinglePaymentTask {
         return identificationFrom;
     }
 
-    private FRTransaction6 createTransaction(FRAccount account, FRPaymentSetup1 paymentSetup, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction6 createTransaction(Account account, FRPaymentSetup paymentSetup, OBCreditDebitCode creditDebitCode, Balance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
 

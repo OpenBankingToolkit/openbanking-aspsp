@@ -23,7 +23,7 @@ package com.forgerock.openbanking.common.services.token;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.common.error.exception.PermissionDenyException;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +49,7 @@ public class AccessTokenService {
         return intentClaims.path("value").asText();
     }
 
-    public List<OBExternalPermissions1Code> isAllowed(FRAccountRequest accountRequest,
+    public List<OBExternalPermissions1Code> isAllowed(AccountRequest accountRequest,
                                                       List<OBExternalPermissions1Code> permissions) throws PermissionDenyException {
 
         List<OBExternalPermissions1Code> allowedPermissions = new ArrayList<>();

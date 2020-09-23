@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -38,17 +38,17 @@ import java.util.Arrays;
 public class PaymentsSubmissionsEndpointWrapper extends RSEndpointWrapper<PaymentsSubmissionsEndpointWrapper, PaymentsSubmissionsEndpointWrapper.PaymentRestEndpointContent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentsSubmissionsEndpointWrapper.class);
 
-    private FRPaymentConsent payment;
+    private PaymentConsent payment;
 
     public PaymentsSubmissionsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
         super(RSEndpointWrapperService);
     }
 
-    public FRPaymentConsent getPayment() {
+    public PaymentConsent getPayment() {
         return payment;
     }
 
-    public PaymentsSubmissionsEndpointWrapper payment(FRPaymentConsent payment) {
+    public PaymentsSubmissionsEndpointWrapper payment(PaymentConsent payment) {
         this.payment = payment;
         return this;
     }

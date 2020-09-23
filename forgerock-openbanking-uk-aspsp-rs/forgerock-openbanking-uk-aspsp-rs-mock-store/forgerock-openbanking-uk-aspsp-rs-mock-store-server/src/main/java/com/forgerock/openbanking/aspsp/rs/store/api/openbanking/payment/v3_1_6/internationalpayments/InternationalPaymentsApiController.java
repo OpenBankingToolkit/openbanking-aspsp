@@ -25,8 +25,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_6.internationalpayments;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalPaymentSubmission4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import org.springframework.stereotype.Controller;
@@ -35,8 +35,8 @@ import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 @Controller("InternationalPaymentsApiV3.1.6")
 public class InternationalPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.internationalpayments.InternationalPaymentsApiController implements InternationalPaymentsApi {
 
-    public InternationalPaymentsApiController(InternationalConsent5Repository internationalConsentRepository,
-                                              InternationalPaymentSubmission4Repository internationalPaymentSubmissionRepository,
+    public InternationalPaymentsApiController(InternationalConsentRepository internationalConsentRepository,
+                                              InternationalPaymentSubmissionRepository internationalPaymentSubmissionRepository,
                                               ResourceLinkService resourceLinkService) {
         super(internationalConsentRepository, internationalPaymentSubmissionRepository, resourceLinkService);
     }

@@ -21,15 +21,15 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.filepayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FilePaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFilePaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
@@ -74,9 +74,9 @@ public class FilePaymentsApiControllerIT {
     private int port;
 
     @Autowired
-    private FileConsent5Repository consentRepository;
+    private FileConsentRepository consentRepository;
     @Autowired
-    private FilePaymentSubmission2Repository submissionRepository;
+    private FilePaymentSubmissionRepository submissionRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -96,8 +96,8 @@ public class FilePaymentsApiControllerIT {
     public void testGetInternationalPaymentSubmission() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFileConsent5 consent = saveConsent();
-        FRFilePaymentSubmission2 submission = savePaymentSubmission(consent);
+        FRFileConsent consent = saveConsent();
+        FRFilePaymentSubmission submission = savePaymentSubmission(consent);
 
         // When
         HttpResponse<OBWriteFileConsentResponse2> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/file-payments/" + submission.getId())
@@ -117,9 +117,9 @@ public class FilePaymentsApiControllerIT {
     public void testGetMissingInternationalPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFileConsent5 consent = saveConsent();
+        FRFileConsent consent = saveConsent();
         OBWriteFile2 submissionRequest = JMockData.mock(OBWriteFile2.class);
-        FRFilePaymentSubmission2 submission = FRFilePaymentSubmission2.builder()
+        FRFilePaymentSubmission submission = FRFilePaymentSubmission.builder()
                 .id(consent.getId())
                 .filePayment(submissionRequest)
                 .build();
@@ -139,9 +139,9 @@ public class FilePaymentsApiControllerIT {
     public void testGetInternationalPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFileConsent5 consent = JMockData.mock(FRFileConsent5.class);
+        FRFileConsent consent = JMockData.mock(FRFileConsent.class);
         consent.setId(IntentType.PAYMENT_FILE_CONSENT.generateIntentId());
-        FRFilePaymentSubmission2 submission = savePaymentSubmission(consent);
+        FRFilePaymentSubmission submission = savePaymentSubmission(consent);
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/file-payments/" + submission.getId())
@@ -158,7 +158,7 @@ public class FilePaymentsApiControllerIT {
     public void testCreateInternationalPaymentSubmission() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFileConsent5 consent = saveConsent();
+        FRFileConsent consent = saveConsent();
         OBWriteFile2 submissionRequest = new OBWriteFile2()
                 .data(new OBWriteDataFile2()
                         .consentId(consent.getId())
@@ -177,7 +177,7 @@ public class FilePaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteFileResponse2 consentResponse = response.getBody();
-        FRFilePaymentSubmission2 submission = submissionRepository.findById(response.getBody().getData().getFilePaymentId()).get();
+        FRFilePaymentSubmission submission = submissionRepository.findById(response.getBody().getData().getFilePaymentId()).get();
         assertThat(submission.getId()).isEqualTo(consentResponse.getData().getConsentId());
         assertThat(submission.getFilePayment()).isEqualTo(submissionRequest);
         assertThat(submission.getObVersion()).isEqualTo(OBVersion.v3_1);
@@ -187,8 +187,8 @@ public class FilePaymentsApiControllerIT {
     public void testDuplicatePaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFileConsent5 consent = saveConsent();
-        FRFilePaymentSubmission2 submission = savePaymentSubmission(consent);
+        FRFileConsent consent = saveConsent();
+        FRFilePaymentSubmission submission = savePaymentSubmission(consent);
 
         OBWriteFile2 obWriteFile = new OBWriteFile2();
         obWriteFile.data(new OBWriteDataFile2()
@@ -213,7 +213,7 @@ public class FilePaymentsApiControllerIT {
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFileConsent5 consent = JMockData.mock(FRFileConsent5.class);
+        FRFileConsent consent = JMockData.mock(FRFileConsent.class);
         consent.setId(IntentType.PAYMENT_FILE_CONSENT.generateIntentId());
         consent.getInitiation().setControlSum(new BigDecimal("1001.1"));
         consent.getInitiation().setFileType("UK.OBIE.PaymentInitiation.3.0");
@@ -265,7 +265,7 @@ public class FilePaymentsApiControllerIT {
     public void testReportNotReady_NotFound() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFileConsent5 consent = saveConsent(ConsentStatusCode.PENDING);
+        FRFileConsent consent = saveConsent(ConsentStatusCode.PENDING);
         when(paymentReportFileService.createPaymentReport(eq(consent))).thenThrow(
              new OBErrorResponseException(HttpStatus.NOT_FOUND,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -291,7 +291,7 @@ public class FilePaymentsApiControllerIT {
     public void testGetReportFileSuccess() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFileConsent5 consent = saveConsent();
+        FRFileConsent consent = saveConsent();
         when(paymentReportFileService.createPaymentReport(eq(consent))).thenReturn("{\"Data\": {\"DomesticPayments\": []} }");
 
         // When
@@ -310,11 +310,11 @@ public class FilePaymentsApiControllerIT {
         assertThat(response.getBody()).isEqualTo("{\"Data\": {\"DomesticPayments\": []} }");
     }
 
-    private FRFilePaymentSubmission2 savePaymentSubmission(FRFileConsent5 consent) {
+    private FRFilePaymentSubmission savePaymentSubmission(FRFileConsent consent) {
         OBWriteFile2 submissionRequest = JMockData.mock(OBWriteFile2.class);
         submissionRequest.getData().getInitiation().setRequestedExecutionDateTime(null);
         submissionRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
-        FRFilePaymentSubmission2 submission = FRFilePaymentSubmission2.builder()
+        FRFilePaymentSubmission submission = FRFilePaymentSubmission.builder()
                 .id(consent.getId())
                 .filePayment(submissionRequest)
                 .build();
@@ -322,12 +322,12 @@ public class FilePaymentsApiControllerIT {
         return submission;
     }
 
-    private FRFileConsent5 saveConsent() {
+    private FRFileConsent saveConsent() {
         return saveConsent(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
     }
 
-    private FRFileConsent5 saveConsent(ConsentStatusCode statusCode) {
-        FRFileConsent5 consent = JMockData.mock(FRFileConsent5.class);
+    private FRFileConsent saveConsent(ConsentStatusCode statusCode) {
+        FRFileConsent consent = JMockData.mock(FRFileConsent.class);
         consent.setId(IntentType.PAYMENT_FILE_CONSENT.generateIntentId());
         consent.getInitiation().setControlSum(new BigDecimal("1001.1"));
         consent.getInitiation().setFileType("UK.OBIE.PaymentInitiation.3.0");

@@ -21,24 +21,24 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRDomesticScheduledConsent2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent;
 
 public class FRDomesticScheduledConsentConverter {
 
-    public static FRDomesticScheduledConsent5 toFRDomesticScheduledConsent5(FRDomesticScheduledConsent2 frDomesticScheduledConsent2) {
-        FRDomesticScheduledConsent5 frDomesticScheduledConsent5 = new FRDomesticScheduledConsent5();
-        frDomesticScheduledConsent5.setStatus(frDomesticScheduledConsent2.getStatus());
-        frDomesticScheduledConsent5.setId(frDomesticScheduledConsent2.getId());
-        frDomesticScheduledConsent5.setUserId(frDomesticScheduledConsent2.getUserId());
-        frDomesticScheduledConsent5.setAccountId(frDomesticScheduledConsent2.getAccountId());
-        frDomesticScheduledConsent5.setCreated(frDomesticScheduledConsent2.getCreated());
-        frDomesticScheduledConsent5.setDomesticScheduledConsent(toFRWriteDomesticScheduledConsent(frDomesticScheduledConsent2.getDomesticScheduledConsent()));
-        frDomesticScheduledConsent5.setPispId(frDomesticScheduledConsent2.getPispId());
-        frDomesticScheduledConsent5.setPispName(frDomesticScheduledConsent2.getPispName());
-        frDomesticScheduledConsent5.setStatusUpdate(frDomesticScheduledConsent2.getStatusUpdate());
-        frDomesticScheduledConsent5.setUpdated(frDomesticScheduledConsent2.getUpdated());
-        return frDomesticScheduledConsent5;
+    public static FRDomesticScheduledConsent toFRDomesticScheduledConsent(FRDomesticScheduledConsent2 frDomesticScheduledConsent2) {
+        FRDomesticScheduledConsent frDomesticScheduledConsent = new FRDomesticScheduledConsent();
+        frDomesticScheduledConsent.setStatus(frDomesticScheduledConsent2.getStatus());
+        frDomesticScheduledConsent.setId(frDomesticScheduledConsent2.getId());
+        frDomesticScheduledConsent.setUserId(frDomesticScheduledConsent2.getUserId());
+        frDomesticScheduledConsent.setAccountId(frDomesticScheduledConsent2.getAccountId());
+        frDomesticScheduledConsent.setCreated(frDomesticScheduledConsent2.getCreated());
+        frDomesticScheduledConsent.setDomesticScheduledConsent(toFRWriteDomesticScheduledConsent(frDomesticScheduledConsent2.getDomesticScheduledConsent()));
+        frDomesticScheduledConsent.setPispId(frDomesticScheduledConsent2.getPispId());
+        frDomesticScheduledConsent.setPispName(frDomesticScheduledConsent2.getPispName());
+        frDomesticScheduledConsent.setStatusUpdate(frDomesticScheduledConsent2.getStatusUpdate());
+        frDomesticScheduledConsent.setUpdated(frDomesticScheduledConsent2.getUpdated());
+        return frDomesticScheduledConsent;
     }
 }

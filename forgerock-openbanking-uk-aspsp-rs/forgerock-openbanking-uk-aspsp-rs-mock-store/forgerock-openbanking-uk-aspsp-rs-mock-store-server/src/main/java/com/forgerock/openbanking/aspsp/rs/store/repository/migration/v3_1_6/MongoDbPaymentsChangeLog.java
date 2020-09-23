@@ -29,16 +29,16 @@ import org.springframework.data.util.CloseableIterator;
 
 import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.MigrationHelper.getLegacyDocuments;
 import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.MigrationHelper.migrate;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRDomesticConsentConverter.toFRDomesticConsent5;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRDomesticScheduledConsentConverter.toFRDomesticScheduledConsent5;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRDomesticStandingOrderConsentConverter.toFRDomesticStandingOrderConsent5;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRFileConsentConverter.toFRFileConsent5;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalConsentConverter.toFRInternationalConsent5;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalScheduledConsentConverter.toFRInternationalScheduledConsent5;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalStandingOrderConsentConverter.toFRInternationalStandingOrderConsent5;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalPaymentSubmissionConverter.toFRInternationalPaymentSubmission4;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalScheduledPaymentSubmissionConverter.toFRInternationalScheduledPaymentSubmission4;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalStandingOrderPaymentSubmissionConverter.toFRInternationalStandingOrderPaymentSubmission4;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRDomesticConsentConverter.toFRDomesticConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRDomesticScheduledConsentConverter.toFRDomesticScheduledConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRDomesticStandingOrderConsentConverter.toFRDomesticStandingOrderConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRFileConsentConverter.toFRFileConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalConsentConverter.toFRInternationalConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalScheduledConsentConverter.toFRInternationalScheduledConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalStandingOrderConsentConverter.toFRInternationalStandingOrderConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalPaymentSubmissionConverter.toFRInternationalPaymentSubmission;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalScheduledPaymentSubmissionConverter.toFRInternationalScheduledPaymentSubmission;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalStandingOrderPaymentSubmissionConverter.toFRInternationalStandingOrderPaymentSubmission;
 
 @ChangeLog
 @Slf4j
@@ -56,35 +56,35 @@ public class MongoDbPaymentsChangeLog {
 
     private void migrateDomesticPayments(MongoTemplate mongoTemplate) {
         CloseableIterator<FRDomesticConsent2> frDomesticConsents = getLegacyDocuments(mongoTemplate, FRDomesticConsent2.class);
-        frDomesticConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRDomesticConsent5(f)));
+        frDomesticConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRDomesticConsent(f)));
 
         CloseableIterator<FRDomesticScheduledConsent2> frDomesticScheduledConsents = getLegacyDocuments(mongoTemplate, FRDomesticScheduledConsent2.class);
-        frDomesticScheduledConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRDomesticScheduledConsent5(f)));
+        frDomesticScheduledConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRDomesticScheduledConsent(f)));
 
         CloseableIterator<FRDomesticStandingOrderConsent3> frDomesticStandingOrderConsents = getLegacyDocuments(mongoTemplate, FRDomesticStandingOrderConsent3.class);
-        frDomesticStandingOrderConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRDomesticStandingOrderConsent5(f)));
+        frDomesticStandingOrderConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRDomesticStandingOrderConsent(f)));
 
         CloseableIterator<FRFileConsent2> frFileConsents = getLegacyDocuments(mongoTemplate, FRFileConsent2.class);
-        frFileConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRFileConsent5(f)));
+        frFileConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRFileConsent(f)));
     }
 
     private void migrateInternationalPayments(MongoTemplate mongoTemplate) {
         CloseableIterator<FRInternationalConsent2> frInternationalConsents = getLegacyDocuments(mongoTemplate, FRInternationalConsent2.class);
-        frInternationalConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalConsent5(f)));
+        frInternationalConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalConsent(f)));
 
-        CloseableIterator<FRInternationalPaymentSubmission2> frInternationalPaymentSubmissions = getLegacyDocuments(mongoTemplate, FRInternationalPaymentSubmission2.class);
-        frInternationalPaymentSubmissions.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalPaymentSubmission4(f)));
+        CloseableIterator<InternationalPaymentSubmission2> frInternationalPaymentSubmissions = getLegacyDocuments(mongoTemplate, InternationalPaymentSubmission2.class);
+        frInternationalPaymentSubmissions.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalPaymentSubmission(f)));
 
         CloseableIterator<FRInternationalScheduledConsent2> frInternationalScheduledConsents = getLegacyDocuments(mongoTemplate, FRInternationalScheduledConsent2.class);
-        frInternationalScheduledConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalScheduledConsent5(f)));
+        frInternationalScheduledConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalScheduledConsent(f)));
 
-        CloseableIterator<FRInternationalScheduledPaymentSubmission2> frInternationalScheduledPaymentSubmissions = getLegacyDocuments(mongoTemplate, FRInternationalScheduledPaymentSubmission2.class);
-        frInternationalScheduledPaymentSubmissions.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalScheduledPaymentSubmission4(f)));
+        CloseableIterator<InternationalScheduledPaymentSubmission2> frInternationalScheduledPaymentSubmissions = getLegacyDocuments(mongoTemplate, InternationalScheduledPaymentSubmission2.class);
+        frInternationalScheduledPaymentSubmissions.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalScheduledPaymentSubmission(f)));
 
         CloseableIterator<FRInternationalStandingOrderConsent3> frInternationalStandingOrderConsents = getLegacyDocuments(mongoTemplate, FRInternationalStandingOrderConsent3.class);
-        frInternationalStandingOrderConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalStandingOrderConsent5(f)));
+        frInternationalStandingOrderConsents.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalStandingOrderConsent(f)));
 
-        CloseableIterator<FRInternationalStandingOrderPaymentSubmission3> frInternationalStandingOrderPaymentSubmissions = getLegacyDocuments(mongoTemplate, FRInternationalStandingOrderPaymentSubmission3.class);
-        frInternationalStandingOrderPaymentSubmissions.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalStandingOrderPaymentSubmission4(f)));
+        CloseableIterator<InternationalStandingOrderPaymentSubmission3> frInternationalStandingOrderPaymentSubmissions = getLegacyDocuments(mongoTemplate, InternationalStandingOrderPaymentSubmission3.class);
+        frInternationalStandingOrderPaymentSubmissions.forEachRemaining(f -> migrate(mongoTemplate, f, toFRInternationalStandingOrderPaymentSubmission(f)));
     }
 }

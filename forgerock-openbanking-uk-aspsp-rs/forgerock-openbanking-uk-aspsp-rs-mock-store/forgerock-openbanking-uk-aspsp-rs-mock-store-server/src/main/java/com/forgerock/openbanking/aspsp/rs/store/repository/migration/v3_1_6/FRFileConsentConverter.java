@@ -21,14 +21,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRFileConsent2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
 
 public class FRFileConsentConverter {
 
-    public static FRFileConsent5 toFRFileConsent5(FRFileConsent2 frFileConsent2) {
-        return FRFileConsent5.builder()
+    public static FRFileConsent toFRFileConsent(FRFileConsent2 frFileConsent2) {
+        return FRFileConsent.builder()
                 .id(frFileConsent2.getId())
                 .status(frFileConsent2.getStatus())
                 .writeFileConsent(toFRWriteFileConsent(frFileConsent2.getWriteFileConsent()))

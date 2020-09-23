@@ -23,12 +23,12 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.do
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticScheduledConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledConsentRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPermission;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -72,7 +72,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private DomesticScheduledConsent5Repository repository;
+    private DomesticScheduledConsentRepository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -93,7 +93,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
     public void testGetDomesticScheduledPaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticScheduledConsent5 consent = JMockData.mock(FRDomesticScheduledConsent5.class);
+        FRDomesticScheduledConsent consent = JMockData.mock(FRDomesticScheduledConsent.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         DateTime requestedExecutionDateTime = DateTime.now().withMillisOfSecond(0);
         consent.getInitiation().setRequestedExecutionDateTime(DateTime.now().withMillisOfSecond(0));
@@ -120,7 +120,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
     public void testGetDomesticScheduledPaymentConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticScheduledConsent5 consent = JMockData.mock(FRDomesticScheduledConsent5.class);
+        FRDomesticScheduledConsent consent = JMockData.mock(FRDomesticScheduledConsent.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
         // When
@@ -163,7 +163,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteDomesticScheduledConsentResponse2 consentResponse = response.getBody();
-        FRDomesticScheduledConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRDomesticScheduledConsent consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getPispName()).isEqualTo(PaymentTestHelper.MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());

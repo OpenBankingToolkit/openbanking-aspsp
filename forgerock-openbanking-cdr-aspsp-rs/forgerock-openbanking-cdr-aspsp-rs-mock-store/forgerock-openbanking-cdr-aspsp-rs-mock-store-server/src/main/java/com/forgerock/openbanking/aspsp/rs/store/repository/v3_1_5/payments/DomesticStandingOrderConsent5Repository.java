@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import uk.org.openbanking.datamodel.payment.OBTransactionIndividualStatus1Code;
@@ -28,8 +28,8 @@ import uk.org.openbanking.datamodel.payment.OBTransactionIndividualStatus1Code;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface DomesticStandingOrderConsent5Repository extends MongoRepository<FRDomesticStandingOrderConsent5, String> {
+public interface DomesticStandingOrderConsent5Repository extends MongoRepository<FRDomesticStandingOrderConsent, String> {
 
-    Collection<FRDomesticStandingOrderConsent5> findByStatus(@Param("status") OBTransactionIndividualStatus1Code status);
-    Optional<FRDomesticStandingOrderConsent5> findByIdempotencyKeyAndPispId(@Param("idempotencyKey") String idempotencyKey, @Param("pispId") String pispId);
+    Collection<FRDomesticStandingOrderConsent> findByStatus(@Param("status") OBTransactionIndividualStatus1Code status);
+    Optional<FRDomesticStandingOrderConsent> findByIdempotencyKeyAndPispId(@Param("idempotencyKey") String idempotencyKey, @Param("pispId") String pispId);
 }

@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 public class DomesticPaymentApiControllerTest {
 
     @Mock
-    private DomesticConsent5Repository repository;
+    private DomesticConsentRepository repository;
 
     @InjectMocks
     private DomesticPaymentApiController controller;
@@ -53,7 +53,7 @@ public class DomesticPaymentApiControllerTest {
     @Test
     public void getDomesticPaymentConsent() {
         // Given
-        FRDomesticConsent5 expectedConsent = new FRDomesticConsent5();
+        FRDomesticConsent expectedConsent = new FRDomesticConsent();
         expectedConsent.id = "expectedId123";
         when(repository.findById(eq("pay123"))).thenReturn(Optional.of(expectedConsent));
 
@@ -62,7 +62,7 @@ public class DomesticPaymentApiControllerTest {
 
         // Then
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(((FRDomesticConsent5) Objects.requireNonNull(resp.getBody())).id).isEqualTo("expectedId123");
+        assertThat(((FRDomesticConsent) Objects.requireNonNull(resp.getBody())).id).isEqualTo("expectedId123");
     }
 
     @Test
@@ -80,12 +80,12 @@ public class DomesticPaymentApiControllerTest {
     @Test
     public void findByStatus() {
         // Given
-        FRDomesticConsent5 expectedConsent = new FRDomesticConsent5();
+        FRDomesticConsent expectedConsent = new FRDomesticConsent();
         expectedConsent.id = "expectedId123";
         when(repository.findByStatus(eq(OBTransactionIndividualStatus1Code.ACCEPTEDSETTLEMENTINPROCESS))).thenReturn(Collections.singleton(expectedConsent));
 
         // When
-        ResponseEntity<Collection<FRDomesticConsent5>> resp = controller.findByStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
+        ResponseEntity<Collection<FRDomesticConsent>> resp = controller.findByStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
 
         // Then
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -98,7 +98,7 @@ public class DomesticPaymentApiControllerTest {
         when(repository.findByStatus(eq(OBTransactionIndividualStatus1Code.ACCEPTEDSETTLEMENTINPROCESS))).thenReturn(Collections.emptyList());
 
         // When
-        ResponseEntity<Collection<FRDomesticConsent5>> resp = controller.findByStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
+        ResponseEntity<Collection<FRDomesticConsent>> resp = controller.findByStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
 
         // Then
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);

@@ -27,10 +27,10 @@ import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FilePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -72,7 +72,7 @@ public class RCSFilePaymentDetailsApiTest {
     private static final String PISP_NAME = "MyApp";
     private static final String CONSENT_ID = "PFC_123";
 
-    private static final FRAccountWithBalance DEBTOR_ACCOUNT = new FRAccountWithBalance(FRAccount4.builder()
+    private static final AccountWithBalance DEBTOR_ACCOUNT = new AccountWithBalance(FRAccount4.builder()
             .id("111")
             .account(new OBAccount6().account(singletonList(
                     new OBAccount3Account().identification("123")
@@ -107,12 +107,12 @@ public class RCSFilePaymentDetailsApiTest {
     @Test
     public void validFilePayment_noAccountSpecified_createConsentDetailsWithAllAccounts() throws Exception{
         // Given
-        List<FRAccountWithBalance> accounts = singletonList(DEBTOR_ACCOUNT);
+        List<AccountWithBalance> accounts = singletonList(DEBTOR_ACCOUNT);
         FRWriteFileConsentData data = FRWriteFileConsentData.builder().initiation(getValidOBFile().build()).build();
         FRWriteFileConsent writeFileConsent = FRWriteFileConsent.builder().data(data).build();
         FRAmount amount = FRAmount.builder().currency("GBP").build();
         given(paymentService.getPayment(eq(CONSENT_ID))).willReturn(
-                FRFileConsent5.builder()
+                FRFileConsent.builder()
                         .id(CONSENT_ID)
                         .writeFileConsent(writeFileConsent)
                         .pispId(PISP_ID)
@@ -139,7 +139,7 @@ public class RCSFilePaymentDetailsApiTest {
     @Test
     public void validFilePayment_accountSpecifiedAndFound_createConsentDetailsWithAllAccounts() throws Exception{
         // Given
-        List<FRAccountWithBalance> accounts = singletonList(DEBTOR_ACCOUNT);
+        List<AccountWithBalance> accounts = singletonList(DEBTOR_ACCOUNT);
         FRWriteFileDataInitiation validOBFileWithAccount = getValidOBFile()
                 .debtorAccount(FRAccount.builder().identification("123").build())
                 .build();
@@ -148,7 +148,7 @@ public class RCSFilePaymentDetailsApiTest {
                 .build();
         FRAmount amount = FRAmount.builder().currency("GBP").build();
         given(paymentService.getPayment(eq(CONSENT_ID))).willReturn(
-                FRFileConsent5.builder()
+                FRFileConsent.builder()
                         .id(CONSENT_ID)
                         .writeFileConsent(frWriteFileConsent)
                         .pispId(PISP_ID)
@@ -176,7 +176,7 @@ public class RCSFilePaymentDetailsApiTest {
     @Test
     public void validFilePayment_accountSpecifiedButNotFound_getErrorRedirect() throws Exception{
         // Given
-        List<FRAccountWithBalance> accounts = Collections.emptyList();
+        List<AccountWithBalance> accounts = Collections.emptyList();
         FRWriteFileDataInitiation validOBFileWithAccount = getValidOBFile()
                 .debtorAccount(FRAccount.builder().identification("123").build())
                 .build();
@@ -184,7 +184,7 @@ public class RCSFilePaymentDetailsApiTest {
                 .data(FRWriteFileConsentData.builder().initiation(validOBFileWithAccount).build())
                 .build();
         given(paymentService.getPayment(eq(CONSENT_ID))).willReturn(
-                FRFileConsent5.builder()
+                FRFileConsent.builder()
                         .id(CONSENT_ID)
                         .writeFileConsent(writeFileConsent)
                         .pispId(PISP_ID)
@@ -210,7 +210,7 @@ public class RCSFilePaymentDetailsApiTest {
                 .initiation(validOBFile)
                 .build();
         given(paymentService.getPayment(eq(CONSENT_ID))).willReturn(
-                FRFileConsent5.builder()
+                FRFileConsent.builder()
                         .id(CONSENT_ID)
                         .writeFileConsent(FRWriteFileConsent.builder().data(writeFileConsentData).build())
                         .pispId(PISP_ID)
@@ -235,7 +235,7 @@ public class RCSFilePaymentDetailsApiTest {
                 .initiation(validOBFile)
                 .build();
         given(paymentService.getPayment(eq(CONSENT_ID))).willReturn(
-                FRFileConsent5.builder()
+                FRFileConsent.builder()
                         .id(CONSENT_ID)
                         .writeFileConsent(FRWriteFileConsent.builder().data(writeFileConsentData).build())
                         .pispId(PISP_ID)

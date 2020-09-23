@@ -27,7 +27,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_4.
 
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import org.springframework.stereotype.Controller;
@@ -37,7 +37,7 @@ import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 public class InternationalStandingOrderConsentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.internationalstandingorders.InternationalStandingOrderConsentsApiController implements InternationalStandingOrderConsentsApi {
 
     public InternationalStandingOrderConsentsApiController(ConsentMetricService consentMetricService,
-                                                           InternationalStandingOrderConsent5Repository internationalStandingOrderConsentRepository,
+                                                           InternationalStandingOrderConsentRepository internationalStandingOrderConsentRepository,
                                                            TppRepository tppRepository,
                                                            ResourceLinkService resourceLinkService) {
         super(consentMetricService, internationalStandingOrderConsentRepository, tppRepository, resourceLinkService);

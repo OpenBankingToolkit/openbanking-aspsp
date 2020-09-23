@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.validator;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Test;
 import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
@@ -59,10 +59,10 @@ public class ControlSumValidatorTest {
         .hasMessage("The file received contains total transaction value of: 100.009 but the file consent metadata indicated a control sum value of 100.01'");
     }
 
-    private static FRFileConsent5 getConsent(String controlSum) {
+    private static FRFileConsent getConsent(String controlSum) {
         OBWriteFileConsent3 consent = new OBWriteFileConsent3()
                 .data(new OBWriteFileConsent3Data().initiation(new OBWriteFile2DataInitiation().controlSum(new BigDecimal(controlSum))));
-        return FRFileConsent5.builder().writeFileConsent(toFRWriteFileConsent(consent)).build();
+        return FRFileConsent.builder().writeFileConsent(toFRWriteFileConsent(consent)).build();
     }
 
     private static PaymentFile getPaymentFile(String controlSum) {

@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticPaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -64,8 +64,8 @@ public class RCSDomesticPaymentDetailsApiTest {
     @Test
     public void shouldReturnAllAccountsWhenNoDebtor() throws OBErrorException {
         // Given
-        List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<List<FRAccountWithBalance>>() {});
-        FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
+        List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<List<AccountWithBalance>>() {});
+        FRDomesticConsent consent = JMockData.mock(FRDomesticConsent.class);
         consent.getInitiation().setDebtorAccount(null);
         given(paymentService.getPayment(any())).willReturn(consent);
         given(tppStoreService.findById(consent.getPispId())).willReturn(Optional.of(Tpp.builder().clientId(CLIENT_ID).build()));
@@ -82,8 +82,8 @@ public class RCSDomesticPaymentDetailsApiTest {
     @Test
     public void shouldReturnRequestedAccountWhenDebtor() throws OBErrorException {
         // Given
-        List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
-        FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
+        List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
+        FRDomesticConsent consent = JMockData.mock(FRDomesticConsent.class);
         OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment(any())).willReturn(consent);

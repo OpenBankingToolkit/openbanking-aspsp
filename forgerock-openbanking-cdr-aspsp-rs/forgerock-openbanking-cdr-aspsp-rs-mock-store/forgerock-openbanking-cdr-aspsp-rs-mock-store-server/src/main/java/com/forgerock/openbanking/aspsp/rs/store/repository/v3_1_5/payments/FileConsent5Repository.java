@@ -21,15 +21,15 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.Optional;
 
-public interface FileConsent5Repository extends MongoRepository<FRFileConsent5, String> {
+public interface FileConsent5Repository extends MongoRepository<FRFileConsent, String> {
 
-    Collection<FRFileConsent5> findByStatus(@Param("status") ConsentStatusCode status);
-    Optional<FRFileConsent5> findByIdempotencyKeyAndPispId(@Param("idempotencyKey") String idempotencyKey, @Param("pispId") String pispId);
+    Collection<FRFileConsent> findByStatus(@Param("status") ConsentStatusCode status);
+    Optional<FRFileConsent> findByIdempotencyKeyAndPispId(@Param("idempotencyKey") String idempotencyKey, @Param("pispId") String pispId);
 }

@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import uk.org.openbanking.datamodel.payment.OBTransactionIndividualStatus1Code;
@@ -28,9 +28,9 @@ import uk.org.openbanking.datamodel.payment.OBTransactionIndividualStatus1Code;
 import java.util.Collection;
 import java.util.Optional;
 
-public interface DomesticScheduledConsent5Repository extends MongoRepository<FRDomesticScheduledConsent5, String> {
+public interface DomesticScheduledConsent5Repository extends MongoRepository<FRDomesticScheduledConsent, String> {
 
-    Collection<FRDomesticScheduledConsent5> findByStatus(@Param("status") OBTransactionIndividualStatus1Code status);
+    Collection<FRDomesticScheduledConsent> findByStatus(@Param("status") OBTransactionIndividualStatus1Code status);
 
-    Optional<FRDomesticScheduledConsent5> findByIdempotencyKeyAndPispId(@Param("idempotencyKey") String idempotencyKey, @Param("pispId") String pispId);
+    Optional<FRDomesticScheduledConsent> findByIdempotencyKeyAndPispId(@Param("idempotencyKey") String idempotencyKey, @Param("pispId") String pispId);
 }

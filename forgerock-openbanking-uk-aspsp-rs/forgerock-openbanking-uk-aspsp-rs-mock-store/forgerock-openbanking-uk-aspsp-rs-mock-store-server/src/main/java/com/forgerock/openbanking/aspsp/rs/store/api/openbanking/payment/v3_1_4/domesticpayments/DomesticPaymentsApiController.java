@@ -25,8 +25,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_4.domesticpayments;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticPaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import org.springframework.stereotype.Controller;
@@ -35,8 +35,8 @@ import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 @Controller("DomesticPaymentsApiV3.1.4")
 public class DomesticPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticpayments.DomesticPaymentsApiController implements DomesticPaymentsApi {
 
-    public DomesticPaymentsApiController(DomesticConsent5Repository domesticConsentRepository,
-                                         DomesticPaymentSubmission2Repository domesticPaymentSubmissionRepository,
+    public DomesticPaymentsApiController(DomesticConsentRepository domesticConsentRepository,
+                                         DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository,
                                          ResourceLinkService resourceLinkService) {
         super(domesticConsentRepository, domesticPaymentSubmissionRepository, resourceLinkService);
     }

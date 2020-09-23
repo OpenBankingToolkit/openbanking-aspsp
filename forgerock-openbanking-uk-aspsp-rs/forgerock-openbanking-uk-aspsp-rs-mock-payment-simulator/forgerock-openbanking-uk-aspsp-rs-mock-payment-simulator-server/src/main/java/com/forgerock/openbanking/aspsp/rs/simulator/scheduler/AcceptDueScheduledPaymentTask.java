@@ -22,8 +22,8 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
@@ -89,7 +89,7 @@ public class AcceptDueScheduledPaymentTask {
             log.info("Processing scheduled payment {}", payment);
             try {
                 String identificationFrom = moveDebitPayment(scheduledPayment);
-                Optional<FRAccount> isAccountFromOurs = accountStoreService.findAccountByIdentification(identificationFrom);
+                Optional<Account> isAccountFromOurs = accountStoreService.findAccountByIdentification(identificationFrom);
                 if (isAccountFromOurs.isPresent()) {
                     moveCreditPayment(scheduledPayment, identificationFrom, isAccountFromOurs.get());
                 } else {
@@ -120,7 +120,7 @@ public class AcceptDueScheduledPaymentTask {
     }
 
     private String moveDebitPayment(FRScheduledPayment1 payment) throws CurrencyConverterException {
-        FRAccount accountFrom = accountStoreService.getAccount(payment.getAccountId());
+        Account accountFrom = accountStoreService.getAccount(payment.getAccountId());
         log.info("We are going to pay from this account: {}", accountFrom);
         moneyService.moveMoney(accountFrom, payment.getScheduledPayment().getInstructedAmount(),
                 OBCreditDebitCode.DEBIT, payment, this::createTransaction);
@@ -130,14 +130,14 @@ public class AcceptDueScheduledPaymentTask {
         return identificationFrom;
     }
 
-    private void moveCreditPayment(FRScheduledPayment1 payment, String identificationTo, FRAccount accountFrom) throws CurrencyConverterException {
+    private void moveCreditPayment(FRScheduledPayment1 payment, String identificationTo, Account accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationTo, accountFrom);
         log.info("Move the money to this account");
         moneyService.moveMoney(accountFrom, payment.getScheduledPayment().getInstructedAmount(),
                 OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction6 createTransaction(FRAccount account, FRScheduledPayment1 payment, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction6 createTransaction(Account account, FRScheduledPayment1 payment, OBCreditDebitCode creditDebitCode, Balance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());

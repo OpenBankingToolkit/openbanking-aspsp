@@ -26,13 +26,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.domesticstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.DomesticStandingOrderPaymentSubmission3Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticStandingOrderConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderPaymentSubmission3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -61,11 +61,11 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.pa
 @Slf4j
 public class DomesticStandingOrdersApiController implements DomesticStandingOrdersApi {
 
-    private final DomesticStandingOrderConsent5Repository domesticStandingOrderConsentRepository;
-    private final DomesticStandingOrderPaymentSubmission3Repository domesticStandingOrderPaymentSubmissionRepository;
+    private final DomesticStandingOrderConsentRepository domesticStandingOrderConsentRepository;
+    private final DomesticStandingOrderPaymentSubmissionRepository domesticStandingOrderPaymentSubmissionRepository;
     private final ResourceLinkService resourceLinkService;
 
-    public DomesticStandingOrdersApiController(DomesticStandingOrderConsent5Repository domesticStandingOrderConsentRepository, DomesticStandingOrderPaymentSubmission3Repository domesticStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public DomesticStandingOrdersApiController(DomesticStandingOrderConsentRepository domesticStandingOrderConsentRepository, DomesticStandingOrderPaymentSubmissionRepository domesticStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
         this.domesticStandingOrderConsentRepository = domesticStandingOrderConsentRepository;
         this.domesticStandingOrderPaymentSubmissionRepository = domesticStandingOrderPaymentSubmissionRepository;
         this.resourceLinkService = resourceLinkService;
@@ -86,7 +86,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         log.debug("Received payment submission: {}", obWriteDomesticStandingOrder3);
 
         String paymentId = obWriteDomesticStandingOrder3.getData().getConsentId();
-        FRDomesticStandingOrderConsent5 paymentConsent = domesticStandingOrderConsentRepository.findById(paymentId)
+        FRDomesticStandingOrderConsent paymentConsent = domesticStandingOrderConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -94,7 +94,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 );
         log.debug("Found consent '{}' to match this payment id: {} ", paymentConsent, paymentId);
 
-        FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission3.builder()
+        FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission.builder()
                 .id(paymentId)
                 .domesticStandingOrder(obWriteDomesticStandingOrder3)
                 .created(new Date())
@@ -118,17 +118,17 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             Principal principal
     ) throws OBErrorResponseException {
 
-        Optional<FRDomesticStandingOrderPaymentSubmission3> isPaymentSubmission = domesticStandingOrderPaymentSubmissionRepository.findById(domesticStandingOrderId);
+        Optional<FRDomesticStandingOrderPaymentSubmission> isPaymentSubmission = domesticStandingOrderPaymentSubmissionRepository.findById(domesticStandingOrderId);
         if (!isPaymentSubmission.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + domesticStandingOrderId + "' can't be found");
         }
-        FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission = isPaymentSubmission.get();
+        FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRDomesticStandingOrderConsent5> isPaymentSetup = domesticStandingOrderConsentRepository.findById(domesticStandingOrderId);
+        Optional<FRDomesticStandingOrderConsent> isPaymentSetup = domesticStandingOrderConsentRepository.findById(domesticStandingOrderId);
         if (!isPaymentSetup.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + domesticStandingOrderId + "' can't be found");
         }
-        FRDomesticStandingOrderConsent5 frPaymentSetup = isPaymentSetup.get();
+        FRDomesticStandingOrderConsent frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
@@ -146,7 +146,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    private OBWriteDomesticStandingOrderResponse6 packagePayment(FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission, FRDomesticStandingOrderConsent5 frDomesticStandingOrderConsent) {
+    private OBWriteDomesticStandingOrderResponse6 packagePayment(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission, FRDomesticStandingOrderConsent frDomesticStandingOrderConsent) {
         return new OBWriteDomesticStandingOrderResponse6()
                 .data(new OBWriteDomesticStandingOrderResponse6Data()
                         .domesticStandingOrderId(frPaymentSubmission.getId())

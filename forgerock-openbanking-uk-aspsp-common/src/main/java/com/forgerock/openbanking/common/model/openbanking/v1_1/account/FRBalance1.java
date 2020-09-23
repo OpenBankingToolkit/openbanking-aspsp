@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.v1_1.account;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,7 +48,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
-public class FRBalance1 implements FRBalance {
+public class FRBalance1 implements Balance {
     private final static NumberFormat FORMAT_AMOUNT = new DecimalFormat("#0.00");
 
     @Id

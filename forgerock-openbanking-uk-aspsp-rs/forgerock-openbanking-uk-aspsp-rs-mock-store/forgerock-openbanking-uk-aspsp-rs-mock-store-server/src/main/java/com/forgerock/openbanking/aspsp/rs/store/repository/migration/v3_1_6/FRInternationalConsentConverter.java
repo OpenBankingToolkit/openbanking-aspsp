@@ -21,25 +21,25 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalConsent2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalConsent;
 
 public class FRInternationalConsentConverter {
 
-    public static FRInternationalConsent5 toFRInternationalConsent5(FRInternationalConsent2 frInternationalConsent2) {
-        FRInternationalConsent5 frInternationalConsent5 = new FRInternationalConsent5();
+    public static FRInternationalConsent toFRInternationalConsent(FRInternationalConsent2 frInternationalConsent2) {
+        FRInternationalConsent frInternationalConsent = new FRInternationalConsent();
 
-        frInternationalConsent5.setId(frInternationalConsent2.getId());
-        frInternationalConsent5.setStatus(frInternationalConsent2.getStatus());
-        frInternationalConsent5.setUserId(frInternationalConsent2.getUserId());
-        frInternationalConsent5.setAccountId(frInternationalConsent2.getAccountId());
-        frInternationalConsent5.setCreated(frInternationalConsent2.getCreated());
-        frInternationalConsent5.setInternationalConsent(toFRWriteInternationalConsent(frInternationalConsent2.getInternationalConsent()));
-        frInternationalConsent5.setPispId(frInternationalConsent2.getPispId());
-        frInternationalConsent5.setPispName(frInternationalConsent2.getPispName());
-        frInternationalConsent5.setStatusUpdate(frInternationalConsent2.getStatusUpdate());
+        frInternationalConsent.setId(frInternationalConsent2.getId());
+        frInternationalConsent.setStatus(frInternationalConsent2.getStatus());
+        frInternationalConsent.setUserId(frInternationalConsent2.getUserId());
+        frInternationalConsent.setAccountId(frInternationalConsent2.getAccountId());
+        frInternationalConsent.setCreated(frInternationalConsent2.getCreated());
+        frInternationalConsent.setInternationalConsent(toFRWriteInternationalConsent(frInternationalConsent2.getInternationalConsent()));
+        frInternationalConsent.setPispId(frInternationalConsent2.getPispId());
+        frInternationalConsent.setPispName(frInternationalConsent2.getPispName());
+        frInternationalConsent.setStatusUpdate(frInternationalConsent2.getStatusUpdate());
 
-        return frInternationalConsent5;
+        return frInternationalConsent;
     }
 }

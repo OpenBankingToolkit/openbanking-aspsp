@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.services;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -34,12 +34,12 @@ import java.util.Optional;
 @Slf4j
 public class AccountService {
 
-    public Optional<FRAccountWithBalance> findAccountByIdentification(final String identification, final Collection<FRAccountWithBalance> accounts) {
+    public Optional<AccountWithBalance> findAccountByIdentification(final String identification, final Collection<AccountWithBalance> accounts) {
         if (StringUtils.isEmpty(identification)) {
             log.error("Debtor account has null or empty identification string");
             return Optional.empty();
         }
-        for (FRAccountWithBalance account : accounts) {
+        for (AccountWithBalance account : accounts) {
             if (!CollectionUtils.isEmpty(account.getAccount().getAccount())) {
                 for (OBAccount3Account obAccount3Account : account.getAccount().getAccount()) {
                     if (identification.equals(obAccount3Account.getIdentification())) {

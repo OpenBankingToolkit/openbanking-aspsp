@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRFileConsent;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FileConsent;
 import com.forgerock.openbanking.common.utils.HashUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
@@ -37,13 +37,13 @@ import java.util.Collections;
 
 @Slf4j
 public class FilePaymentsApiEndpointWrapper extends RSEndpointWrapper<FilePaymentsApiEndpointWrapper, FilePaymentsApiEndpointWrapper.FilePaymentRestEndpointContent> {
-    private FRFileConsent consent;
+    private FileConsent consent;
 
     public FilePaymentsApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
         super(RSEndpointWrapperService);
     }
 
-    public FilePaymentsApiEndpointWrapper payment(FRFileConsent consent) {
+    public FilePaymentsApiEndpointWrapper payment(FileConsent consent) {
         this.consent = consent;
         return this;
     }

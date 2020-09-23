@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledPayment;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledPayment;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface DomesticScheduledPaymentSubmission2Repository extends MongoRepository<FRDomesticScheduledPayment, String> {

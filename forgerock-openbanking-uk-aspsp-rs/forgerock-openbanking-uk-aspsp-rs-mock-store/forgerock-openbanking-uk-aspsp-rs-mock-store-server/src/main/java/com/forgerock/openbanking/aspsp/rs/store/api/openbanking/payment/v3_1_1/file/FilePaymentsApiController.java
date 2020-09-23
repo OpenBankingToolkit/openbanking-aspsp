@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.file;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FilePaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +31,8 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class FilePaymentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.file.FilePaymentsApiController implements FilePaymentsApi {
 
-    public FilePaymentsApiController(FileConsent5Repository fileConsentRepository,
-                                     FilePaymentSubmission2Repository filePaymentSubmissionRepository,
+    public FilePaymentsApiController(FileConsentRepository fileConsentRepository,
+                                     FilePaymentSubmissionRepository filePaymentSubmissionRepository,
                                      PaymentReportFile1Service paymentReportFileService,
                                      ResourceLinkService resourceLinkService) {
         super(fileConsentRepository, filePaymentSubmissionRepository, paymentReportFileService, resourceLinkService);

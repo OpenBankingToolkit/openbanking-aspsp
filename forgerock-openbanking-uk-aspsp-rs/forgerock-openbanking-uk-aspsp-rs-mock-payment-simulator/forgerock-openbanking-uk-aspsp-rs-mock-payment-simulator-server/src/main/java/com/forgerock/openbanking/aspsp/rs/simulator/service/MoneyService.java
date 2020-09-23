@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
 import com.forgerock.openbanking.common.services.store.balance.BalanceStoreService;
 import com.forgerock.openbanking.common.services.store.transaction.TransactionStoreService;
@@ -50,14 +50,14 @@ public class MoneyService {
     @Autowired
     private TransactionStoreService transactionStoreService;
 
-    public <T> void moveMoney(FRAccount account, OBActiveOrHistoricCurrencyAndAmount amount, OBCreditDebitCode creditDebitCode, T payment, CreateTransaction<T> createTransaction) throws CurrencyConverterException {
-        Optional<FRBalance> balanceIf = balanceStoreService.getBalance(account.getId(), OBBalanceType1Code.INTERIMAVAILABLE);
+    public <T> void moveMoney(Account account, OBActiveOrHistoricCurrencyAndAmount amount, OBCreditDebitCode creditDebitCode, T payment, CreateTransaction<T> createTransaction) throws CurrencyConverterException {
+        Optional<Balance> balanceIf = balanceStoreService.getBalance(account.getId(), OBBalanceType1Code.INTERIMAVAILABLE);
         //Verify account for a balance
         if (!balanceIf.isPresent()) {
             throw new IllegalStateException("No balance found of type '"
                     + OBBalanceType1Code.INTERIMAVAILABLE + "' for account id '" + account.getId() + "'");
         }
-        FRBalance balance = balanceIf.get();
+        Balance balance = balanceIf.get();
 
         BigDecimal finalAmount = computeAmount(amount, creditDebitCode, balance);
 
@@ -73,7 +73,7 @@ public class MoneyService {
         log.info("Balance updated {}", balance);
     }
 
-    private void addTransactionToLatestStatement(FRAccount account, FRTransaction6 transaction) {
+    private void addTransactionToLatestStatement(Account account, FRTransaction6 transaction) {
         if (account.getLatestStatementId() != null) {
             log.info("Add the new transaction id '{}' to the latest statement id '{}'",
                     transaction.getId(), account.getLatestStatementId());
@@ -91,7 +91,7 @@ public class MoneyService {
         }
     }
 
-    private void updateBalance(FRBalance balance, BigDecimal finalAmount) {
+    private void updateBalance(Balance balance, BigDecimal finalAmount) {
         log.debug("Update balance amount");
         if (finalAmount.compareTo(BigDecimal.ZERO) < 0) {
             balance.setAmount(finalAmount.negate());
@@ -103,7 +103,7 @@ public class MoneyService {
         log.info("New balance {}", balance);
     }
 
-    private BigDecimal computeAmount(OBActiveOrHistoricCurrencyAndAmount amount, OBCreditDebitCode creditDebitCode, FRBalance balance)
+    private BigDecimal computeAmount(OBActiveOrHistoricCurrencyAndAmount amount, OBCreditDebitCode creditDebitCode, Balance balance)
             throws CurrencyConverterException {
         BigDecimal currentAmount = balance.getAmount();
         BigDecimal paymentAmount = new BigDecimal(amount.getAmount());

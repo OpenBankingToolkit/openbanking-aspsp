@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.error.exception.PermissionDenyException;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import org.joda.time.DateTime;
@@ -46,7 +46,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
     protected List<OBExternalPermissions1Code> minimumPermissions;
     protected String page = "";
     protected String accountId = null;
-    protected FRAccountRequest accountRequest;
+    protected AccountRequest accountRequest;
     protected DateTime fromBookingDateTime;
     protected DateTime toBookingDateTime;
 
@@ -141,7 +141,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
         }
     }
 
-    public FRAccountRequest getAccountRequest() throws OBErrorException {
+    public AccountRequest getAccountRequest() throws OBErrorException {
 
         if (accountRequest == null) {
             try {
@@ -149,7 +149,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
                 String accountRequestId = rsEndpointWrapperService.accessTokenService.getIntentId(accessToken);
 
                 LOGGER.info("Account request id {}", accountRequestId);
-                Optional<FRAccountRequest> isAccountRequest = rsEndpointWrapperService.accountRequestStore.get(accountRequestId);
+                Optional<AccountRequest> isAccountRequest = rsEndpointWrapperService.accountRequestStore.get(accountRequestId);
                 if (!isAccountRequest.isPresent()) {
                     LOGGER.warn("Couldn't not find the account request {}", accountRequestId);
                     throw new OBErrorException(OBRIErrorType.ACCOUNT_REQUEST_NOT_FOUND,

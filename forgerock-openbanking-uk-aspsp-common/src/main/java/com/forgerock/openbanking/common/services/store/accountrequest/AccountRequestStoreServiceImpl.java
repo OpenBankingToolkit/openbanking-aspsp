@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.accountrequest;
 
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRAccountAccessConsent1;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
     }
 
     @Override
-    public void save(FRAccountRequest accountRequest) {
+    public void save(AccountRequest accountRequest) {
         switch (IntentType.identify(accountRequest.getId())) {
             case ACCOUNT_REQUEST:
                 saveAccountRequest(accountRequest);
@@ -94,14 +94,14 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
         return restTemplate.exchange(uri, HttpMethod.GET, null, ptr).getBody();
     }
 
-    private void saveAccountRequest(FRAccountRequest accountRequest) {
-        HttpEntity<FRAccountRequest> request = new HttpEntity<>(accountRequest, new HttpHeaders());
+    private void saveAccountRequest(AccountRequest accountRequest) {
+        HttpEntity<AccountRequest> request = new HttpEntity<>(accountRequest, new HttpHeaders());
         restTemplate.exchange(rsStoreRoot + "/api/account-requests/", HttpMethod.PUT,
                 request, Void.class);
     }
 
     private void saveAccountAccessConsent(FRAccountAccessConsent1 accountAccessConsent1) {
-        HttpEntity<FRAccountRequest> request = new HttpEntity<>(accountAccessConsent1, new HttpHeaders());
+        HttpEntity<AccountRequest> request = new HttpEntity<>(accountAccessConsent1, new HttpHeaders());
         try {
             restTemplate.exchange(rsStoreRoot + "/api/account-access-consents/", HttpMethod.PUT,
                     request, Void.class);

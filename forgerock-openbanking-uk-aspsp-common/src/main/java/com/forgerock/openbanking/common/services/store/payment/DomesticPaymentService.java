@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +38,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class DomesticPaymentService implements PaymentService<FRDomesticConsent5> {
+public class DomesticPaymentService implements PaymentService<FRDomesticConsent> {
     private static final String BASE_RESOURCE_PATH = "/api/domestic-payments/";
 
     private String rsStoreRoot;
@@ -51,27 +51,27 @@ public class DomesticPaymentService implements PaymentService<FRDomesticConsent5
         this.rsStoreRoot = rsStoreRoot;
     }
 
-    public FRDomesticConsent5 getPayment(String consentId) {
+    public FRDomesticConsent getPayment(String consentId) {
         log.debug("Getting consent for {}", consentId);
         return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId,
-                FRDomesticConsent5.class);
+                FRDomesticConsent.class);
     }
 
-    public Collection<FRDomesticConsent5> getAllPaymentsInProcess() {
+    public Collection<FRDomesticConsent> getAllPaymentsInProcess() {
         log.debug("Read all the payments");
-        ParameterizedTypeReference<List<FRDomesticConsent5>> ptr =
-                new ParameterizedTypeReference<List<FRDomesticConsent5>>() {};
+        ParameterizedTypeReference<List<FRDomesticConsent>> ptr =
+                new ParameterizedTypeReference<List<FRDomesticConsent>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + BASE_RESOURCE_PATH + "search/findByStatus"
         );
         builder.queryParam("status", ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRDomesticConsent5>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<List<FRDomesticConsent>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
 
         return entity.getBody();
     }
 
-    public void updatePayment(FRDomesticConsent5 consent) {
+    public void updatePayment(FRDomesticConsent consent) {
         log.debug("Update the consent in the store. {}", consent);
         restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH, consent);
     }

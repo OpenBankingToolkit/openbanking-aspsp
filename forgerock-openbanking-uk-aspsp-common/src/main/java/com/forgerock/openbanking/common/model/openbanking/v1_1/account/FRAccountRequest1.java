@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.model.openbanking.v1_1.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.model.Tpp;
 import org.joda.time.DateTime;
@@ -39,7 +39,7 @@ import java.util.Date;
 import java.util.List;
 
 @Document
-public class FRAccountRequest1 implements FRAccountRequest {
+public class FRAccountRequest1 implements AccountRequest {
     @Id
     @Indexed
     public String id;

@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.domesticstandin
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import com.forgerock.openbanking.common.services.store.payment.DomesticStandingOrderService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Before;
@@ -41,13 +41,13 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class DomesticStandingOrdersConsentDecisionDelegateTest extends AbstractDecisionDelegateTest {
     private DomesticStandingOrderService paymentService;
-    private FRDomesticStandingOrderConsent5 consent;
+    private FRDomesticStandingOrderConsent consent;
     private DomesticStandingOrdersConsentDecisionDelegate decisionDelegate;
 
     @Before
     public void setup() {
         paymentService = mock(DomesticStandingOrderService.class);
-        consent = FRDomesticStandingOrderConsent5.builder()
+        consent = FRDomesticStandingOrderConsent.builder()
                 .id(CONSENT_ID)
                 .pispId(PISP_ID)
                 .userId(USER_ID)

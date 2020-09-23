@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalScheduledPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledPaymentSubmission4;
+import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.InternationalScheduledPaymentSubmission2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledPaymentSubmission;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduled1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled1;
@@ -33,8 +33,8 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBInternati
 
 public class FRInternationalScheduledPaymentSubmissionConverter {
 
-    public static FRInternationalScheduledPaymentSubmission4 toFRInternationalScheduledPaymentSubmission4(FRInternationalScheduledPaymentSubmission2 frInternationalScheduledPaymentSubmission2) {
-        return frInternationalScheduledPaymentSubmission2 == null ? null : FRInternationalScheduledPaymentSubmission4.builder()
+    public static FRInternationalScheduledPaymentSubmission toFRInternationalScheduledPaymentSubmission(InternationalScheduledPaymentSubmission2 frInternationalScheduledPaymentSubmission2) {
+        return frInternationalScheduledPaymentSubmission2 == null ? null : FRInternationalScheduledPaymentSubmission.builder()
                 .id(frInternationalScheduledPaymentSubmission2.getId())
                 .internationalScheduledPayment(toOBWriteInternationalScheduled3(frInternationalScheduledPaymentSubmission2.getInternationalScheduledPayment()))
                 .created(frInternationalScheduledPaymentSubmission2.getCreated())

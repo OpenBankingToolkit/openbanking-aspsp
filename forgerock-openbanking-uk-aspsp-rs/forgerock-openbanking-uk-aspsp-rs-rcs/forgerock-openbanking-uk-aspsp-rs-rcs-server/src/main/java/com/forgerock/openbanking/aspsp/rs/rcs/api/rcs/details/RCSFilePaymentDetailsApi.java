@@ -24,9 +24,9 @@ import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FilePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -59,18 +59,18 @@ public class RCSFilePaymentDetailsApi implements RCSDetailsApi {
     }
 
     @Override
-    public ResponseEntity consentDetails(String remoteConsentRequest, List<FRAccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
+    public ResponseEntity consentDetails(String remoteConsentRequest, List<AccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
         log.debug("Received a consent request with consent_request='{}'", remoteConsentRequest);
         log.debug("=> The payment id '{}'", consentId);
         log.debug("Populate the model with the payment and consent data");
 
-        FRFileConsent5 consent = paymentService.getPayment(consentId);
+        FRFileConsent consent = paymentService.getPayment(consentId);
 
         checkValidPisp(consent, clientId);
 
         // A null debtor account will let PSU select account when authorising
         if (consent.getInitiation().getDebtorAccount()!=null) {
-            Optional<FRAccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(consent.getInitiation().getDebtorAccount().getIdentification(), accounts);
+            Optional<AccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(consent.getInitiation().getDebtorAccount().getIdentification(), accounts);
             if (!matchingUserAccount.isPresent()) {
                 log.error("The PISP '{}' created the payment consent '{}' but the debtor account: {} on the consent " +
                         " is not one of the user's accounts: {}.", consent.getPispId(), consent.getId(), consent.getInitiation().getDebtorAccount(), accounts);
@@ -112,12 +112,12 @@ public class RCSFilePaymentDetailsApi implements RCSDetailsApi {
                 .build());
     }
 
-    private void associatePaymentToUser(FRFileConsent5 consent, String username) {
+    private void associatePaymentToUser(FRFileConsent consent, String username) {
         consent.setUserId(username);
         paymentService.updatePayment(consent);
     }
 
-    private void checkValidPisp(FRPaymentConsent consent, String clientId) throws OBErrorException {
+    private void checkValidPisp(PaymentConsent consent, String clientId) throws OBErrorException {
         Optional<Tpp> isTpp = tppStoreService.findById(consent.getPispId());
         if (!isTpp.isPresent()) {
             log.error("The PISP '{}' that created this payment id '{}' doesn't exist anymore.", consent.getPispId(), consent.getId());

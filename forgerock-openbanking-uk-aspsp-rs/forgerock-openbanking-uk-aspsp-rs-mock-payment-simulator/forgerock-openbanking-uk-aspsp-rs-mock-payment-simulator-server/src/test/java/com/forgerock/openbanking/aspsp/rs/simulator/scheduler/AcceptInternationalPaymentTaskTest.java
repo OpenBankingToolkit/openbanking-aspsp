@@ -29,7 +29,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
@@ -73,7 +73,7 @@ public class AcceptInternationalPaymentTaskTest {
     @Test
     public void shouldDebitAccount() throws CurrencyConverterException {
         // Given
-        FRInternationalConsent5 payment = defaultPayment();
+        FRInternationalConsent payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -90,7 +90,7 @@ public class AcceptInternationalPaymentTaskTest {
     @Test
     public void shouldCreditAccount() throws CurrencyConverterException {
         // Given
-        FRInternationalConsent5 payment = defaultPayment();
+        FRInternationalConsent payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(defaultAccount(DEBIT_ACCOUNT));
 
@@ -110,7 +110,7 @@ public class AcceptInternationalPaymentTaskTest {
     @Test
     public void shouldRejectPaymentWhenCurrencyConversionException() throws CurrencyConverterException {
         // Given
-        FRInternationalConsent5 payment = defaultPayment();
+        FRInternationalConsent payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -128,7 +128,7 @@ public class AcceptInternationalPaymentTaskTest {
     @Test
     public void shouldRejectPaymentWhenAnyException() throws CurrencyConverterException {
         // Given
-        FRInternationalConsent5 payment = defaultPayment();
+        FRInternationalConsent payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -147,12 +147,12 @@ public class AcceptInternationalPaymentTaskTest {
         return FRAccount2.builder().id(payAccount).build();
     }
 
-    private FRInternationalConsent5 defaultPayment() {
+    private FRInternationalConsent defaultPayment() {
         FRWriteInternationalDataInitiation initiation = FRWriteInternationalDataInitiation.builder()
                 .creditorAccount(FRAccount.builder().identification(CREDIT_ACCOUNT).build())
                 .instructedAmount(FRAmount.builder().currency("GBP").amount("3").build())
                 .build();
-        return FRInternationalConsent5.builder()
+        return FRInternationalConsent.builder()
                 .accountId(DEBIT_ACCOUNT)
                 .internationalConsent(FRWriteInternationalConsent.builder()
                         .data(FRWriteInternationalConsentData.builder()

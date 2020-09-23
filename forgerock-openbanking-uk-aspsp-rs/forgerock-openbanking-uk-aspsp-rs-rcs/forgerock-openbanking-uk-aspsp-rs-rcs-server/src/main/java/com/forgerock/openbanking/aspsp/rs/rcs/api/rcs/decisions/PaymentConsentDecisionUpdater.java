@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions;
 
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -49,7 +49,7 @@ public class PaymentConsentDecisionUpdater {
         this.accountStoreService = accountStoreService;
     }
 
-    public <T extends FRPaymentConsent> void applyUpdate(String userId, String accountId, boolean decision, Consumer<T> paymentConsentUpdater, T paymentConsent) throws OBErrorException {
+    public <T extends PaymentConsent> void applyUpdate(String userId, String accountId, boolean decision, Consumer<T> paymentConsentUpdater, T paymentConsent) throws OBErrorException {
         if (decision) {
             if (StringUtils.isEmpty(accountId)) {
                 log.error("No account was selected for payment [{}] by user {} for consent: {}", userId, paymentConsent);

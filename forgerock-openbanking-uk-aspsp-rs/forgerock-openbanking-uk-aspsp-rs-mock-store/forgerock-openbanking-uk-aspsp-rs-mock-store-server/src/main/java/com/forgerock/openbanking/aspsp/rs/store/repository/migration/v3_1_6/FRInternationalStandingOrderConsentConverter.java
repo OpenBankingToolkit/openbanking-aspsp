@@ -21,14 +21,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalStandingOrderConsent3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent;
 
 public class FRInternationalStandingOrderConsentConverter {
 
-    public static FRInternationalStandingOrderConsent5 toFRInternationalStandingOrderConsent5(FRInternationalStandingOrderConsent3 frInternationalStandingOrderConsent3) {
-        FRInternationalStandingOrderConsent5 frInternationalScheduledConsent5 = new FRInternationalStandingOrderConsent5();
+    public static FRInternationalStandingOrderConsent toFRInternationalStandingOrderConsent(FRInternationalStandingOrderConsent3 frInternationalStandingOrderConsent3) {
+        FRInternationalStandingOrderConsent frInternationalScheduledConsent5 = new FRInternationalStandingOrderConsent();
         frInternationalScheduledConsent5.setStatus(frInternationalStandingOrderConsent3.getStatus());
         frInternationalScheduledConsent5.setId(frInternationalStandingOrderConsent3.getId());
         frInternationalScheduledConsent5.setUserId(frInternationalStandingOrderConsent3.getUserId());
