@@ -29,7 +29,6 @@ public class FRPostalAddressTestDataFactory {
     public static FRPostalAddress aValidFRPostalAddress() {
         return FRPostalAddress.builder()
                 .addressLine(singletonList("3 Queens Square"))
-                .townName("Bristol")
                 .country("GB")
                 .build();
     }

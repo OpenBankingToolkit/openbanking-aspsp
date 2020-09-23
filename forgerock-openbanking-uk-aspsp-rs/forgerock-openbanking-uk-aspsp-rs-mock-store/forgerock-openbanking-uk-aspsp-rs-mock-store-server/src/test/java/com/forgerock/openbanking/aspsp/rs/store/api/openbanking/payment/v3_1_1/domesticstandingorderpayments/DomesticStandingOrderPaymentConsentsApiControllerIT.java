@@ -26,6 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticStandingOrderConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPermission;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
@@ -64,6 +65,7 @@ import java.util.UUID;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount2;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderDataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -183,8 +185,8 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
         assertThat(consent.getInitiation()).isEqualTo(toFRWriteDomesticStandingOrderDataInitiation(consentResponse.getData().getInitiation()));
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
-        assertThat(consent.getRisk()).isEqualTo(consentResponse.getRisk());
-        assertThat(consent.getDomesticStandingOrderConsent().getData().getPermission()).isEqualTo(PermissionEnum.valueOf(consentResponse.getData().getPermission().name()));
+        assertThat(consent.getRisk()).isEqualTo(toFRRisk(consentResponse.getRisk()));
+        assertThat(consent.getDomesticStandingOrderConsent().getData().getPermission()).isEqualTo(FRPermission.valueOf(consentResponse.getData().getPermission().name()));
         assertThat(consent.getObVersion()).isEqualTo(OBVersion.v3_1_1);
     }
 
@@ -260,7 +262,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         initiation.setFrequency("EvryDay");
         initiation.setReference("123");
         initiation.setNumberOfPayments("12");
-        initiation.setSupplementaryData(FRSupplementaryData.builder().build());
+        initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         initiation.setDebtorAccount(aValidFRAccount());
         initiation.setCreditorAccount(aValidFRAccount2());
     }

@@ -210,7 +210,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().setInstructedAmount(aValidFRAmount());
         consent.getInitiation().setCreditorPostalAddress(aValidFRPostalAddress());
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
 
@@ -252,7 +252,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
         consent.getInitiation().setInstructedAmount(aValidFRAmount());
         consent.getInitiation().setCreditorPostalAddress(aValidFRPostalAddress());
         consent.getInitiation().setRequestedExecutionDateTime(DateTime.now().withMillisOfSecond(0));
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
         consent.setStatus(ConsentStatusCode.CONSUMED);

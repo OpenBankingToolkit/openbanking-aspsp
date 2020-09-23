@@ -220,7 +220,7 @@ public class FilePaymentsApiControllerIT {
         consent.getInitiation().setFileReference("Test");
         consent.getInitiation().setNumberOfTransactions("100");
         consent.getInitiation().setFileHash("sdjhgfksfkshfjksh");
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
 
         OBWriteFile2 submissionRequest = new OBWriteFile2()
                 .data(new OBWriteDataFile2()
@@ -335,7 +335,7 @@ public class FilePaymentsApiControllerIT {
         consent.getInitiation().setNumberOfTransactions("100");
         consent.getInitiation().setFileHash("sdjhgfksfkshfjksh");
         consent.getInitiation().setRequestedExecutionDateTime(null);
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.setStatus(statusCode);
         consentRepository.save(consent);
         return consent;

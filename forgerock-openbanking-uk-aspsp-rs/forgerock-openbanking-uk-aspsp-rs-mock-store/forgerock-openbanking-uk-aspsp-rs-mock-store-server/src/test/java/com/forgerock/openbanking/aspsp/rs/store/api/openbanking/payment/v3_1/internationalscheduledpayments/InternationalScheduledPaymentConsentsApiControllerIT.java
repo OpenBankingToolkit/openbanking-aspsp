@@ -93,7 +93,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
         consent.setStatus(ConsentStatusCode.CONSUMED);
         DateTime requestedExecutionDateTime = DateTime.now().withMillisOfSecond(0);
         consent.getInitiation().setRequestedExecutionDateTime(requestedExecutionDateTime);
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.getInitiation().setExtendedPurpose(null);
         consent.getInitiation().setDestinationCountryCode("GB");
         repository.save(consent);

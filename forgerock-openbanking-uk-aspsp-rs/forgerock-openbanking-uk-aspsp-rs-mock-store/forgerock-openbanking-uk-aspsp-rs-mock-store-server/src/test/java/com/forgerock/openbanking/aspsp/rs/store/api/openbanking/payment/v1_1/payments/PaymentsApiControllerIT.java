@@ -55,6 +55,7 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_PISP_ID;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_PISP_NAME;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.setupMockTpp;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBInitiation1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.jodatime.api.Assertions.assertThat;
 
@@ -117,7 +118,7 @@ public class PaymentsApiControllerIT {
         assertThat(consent.getPispName()).isEqualTo(MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getPaymentId());
-        assertThat(consent.getInitiation()).isEqualTo(consentResponse.getData().getInitiation());
+        assertThat(toOBInitiation1(consent.getInitiation())).isEqualTo(consentResponse.getData().getInitiation());
         assertThat(consent.getStatus().toOBTransactionIndividualStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
 
         // Is between start of test and now
@@ -147,7 +148,7 @@ public class PaymentsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         OBPaymentSetupResponse1 consentResponse = response.getBody();
         assertThat(consentResponse.getData().getPaymentId()).isEqualTo(consent.getId());
-        assertThat(consentResponse.getData().getInitiation()).isEqualTo(consent.getInitiation());
+        assertThat(consentResponse.getData().getInitiation()).isEqualTo(toOBInitiation1(consent.getInitiation()));
         assertThat(consentResponse.getData().getStatus()).isEqualTo(consent.getStatus().toOBTransactionIndividualStatus1Code());
         assertThat(consentResponse.getData().getCreationDateTime()).isEqualToIgnoringMillis(consent.getCreated());
     }
