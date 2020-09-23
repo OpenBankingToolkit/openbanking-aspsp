@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.transactions;
 
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRTransaction1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRTransaction1;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

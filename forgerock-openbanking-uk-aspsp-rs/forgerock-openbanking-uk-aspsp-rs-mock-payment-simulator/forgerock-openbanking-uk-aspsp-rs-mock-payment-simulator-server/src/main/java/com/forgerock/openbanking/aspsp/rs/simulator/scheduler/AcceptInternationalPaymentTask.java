@@ -25,7 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationF
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRTransaction6;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.services.currency.CurrencyRateService;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;

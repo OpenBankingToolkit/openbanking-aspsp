@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRAccount3;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

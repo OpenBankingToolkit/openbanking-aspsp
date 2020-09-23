@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.standingorders;
 
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRStandingOrder1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRStandingOrder1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

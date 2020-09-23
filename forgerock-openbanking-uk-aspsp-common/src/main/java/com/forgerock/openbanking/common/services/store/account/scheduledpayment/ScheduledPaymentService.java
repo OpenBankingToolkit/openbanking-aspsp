@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.account.scheduledpayment;
 
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRScheduledPayment1;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;

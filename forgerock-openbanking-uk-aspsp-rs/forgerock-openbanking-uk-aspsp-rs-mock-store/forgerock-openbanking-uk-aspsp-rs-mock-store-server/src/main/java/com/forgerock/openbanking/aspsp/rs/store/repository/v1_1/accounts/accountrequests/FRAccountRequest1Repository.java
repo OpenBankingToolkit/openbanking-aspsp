@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.accountrequests;
 
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRAccountRequest1;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;

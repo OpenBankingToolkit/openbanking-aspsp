@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.beneficiaries;
 
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRBeneficiary2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRBeneficiary2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;

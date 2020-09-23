@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.transaction;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1.account.FRTransaction4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1.account.FRTransaction4;
 
 public interface Transaction4StoreService {
 

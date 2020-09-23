@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRAccountRequest1;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Before;
 import org.junit.Test;

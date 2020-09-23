@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.party;
 
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRParty1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRParty1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
