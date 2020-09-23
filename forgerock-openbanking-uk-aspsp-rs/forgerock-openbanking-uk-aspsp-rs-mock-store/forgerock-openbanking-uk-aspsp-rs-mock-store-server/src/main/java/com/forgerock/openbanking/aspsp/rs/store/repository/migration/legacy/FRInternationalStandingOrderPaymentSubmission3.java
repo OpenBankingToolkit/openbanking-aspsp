@@ -18,8 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.v3_1.payment;
+package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy;
 
+import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRPaymentSubmission;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.Builder;
 import lombok.Data;
@@ -28,19 +29,19 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder3;
 
 import java.util.Date;
 
 @Builder
 @Data
 @Document
-public class FRInternationalStandingOrderPaymentSubmission2 implements FRPaymentSubmission {
+public class FRInternationalStandingOrderPaymentSubmission3 implements FRPaymentSubmission {
     @Id
     @Indexed
     public String id;
 
-    public OBWriteInternationalStandingOrder2 internationalStandingOrder;
+    public OBWriteInternationalStandingOrder3 internationalStandingOrder;
 
     @CreatedDate
     public Date created;
@@ -49,5 +50,5 @@ public class FRInternationalStandingOrderPaymentSubmission2 implements FRPayment
 
     public String idempotencyKey;
 
-    public OBVersion version;
+    public OBVersion obVersion;
 }

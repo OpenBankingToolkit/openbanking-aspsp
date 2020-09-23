@@ -34,12 +34,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderCon
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6Data;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toFRAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBWriteDomesticStandingOrder3DataInitiationDebtorAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBWriteInternationalStandingOrder4DataInitiationCreditorAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBDomestic2InstructedAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBWriteDomestic2DataInitiationInstructedAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRChargeBearerConverter.toFRChargeBearerType;
@@ -224,6 +222,24 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .creditor(toOBPartyIdentification43(initiation.getCreditor()))
                 .creditorAgent(toOBBranchAndFinancialInstitutionIdentification3(initiation.getCreditorAgent()))
                 .creditorAccount(toOBCashAccount3(initiation.getCreditorAccount()))
+                .supplementaryData(toOBSupplementaryData1(initiation.getSupplementaryData()));
+    }
+
+    public static OBInternationalStandingOrder3 toOBInternationalStandingOrder3(FRWriteInternationalStandingOrderDataInitiation initiation) {
+        return initiation == null ? null : new OBInternationalStandingOrder3()
+                .frequency(initiation.getFrequency())
+                .reference(initiation.getReference())
+                .numberOfPayments(initiation.getNumberOfPayments())
+                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
+                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
+                .purpose(initiation.getPurpose())
+                .chargeBearer(toOBChargeBearerType1Code(initiation.getChargeBearer()))
+                .currencyOfTransfer(initiation.getCurrencyOfTransfer())
+                .instructedAmount(toOBDomestic2InstructedAmount(initiation.getInstructedAmount()))
+                .debtorAccount(toOBCashAccountDebtor4(initiation.getDebtorAccount()))
+                .creditor(toOBPartyIdentification43(initiation.getCreditor()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(initiation.getCreditorAgent()))
+                .creditorAccount(toOBCashAccountCreditor3(initiation.getCreditorAccount()))
                 .supplementaryData(toOBSupplementaryData1(initiation.getSupplementaryData()));
     }
 }

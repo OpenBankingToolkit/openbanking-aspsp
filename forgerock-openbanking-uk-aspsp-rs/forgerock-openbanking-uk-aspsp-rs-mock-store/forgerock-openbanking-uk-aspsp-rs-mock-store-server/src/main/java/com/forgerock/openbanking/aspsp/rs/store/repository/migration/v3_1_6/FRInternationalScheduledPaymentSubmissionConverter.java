@@ -18,11 +18,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.openbanking.converter.payment;
+package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledPaymentSubmission2;
+import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalScheduledPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledPaymentSubmission4;
+import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduled1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduled2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3Data;
@@ -42,10 +44,22 @@ public class FRInternationalScheduledPaymentSubmissionConverter {
                 .build();
     }
 
+    public static OBWriteInternationalScheduled3 toOBWriteInternationalScheduled2(OBWriteInternationalScheduled1 obWriteInternationalScheduled1) {
+        return obWriteInternationalScheduled1 == null ? null : (new OBWriteInternationalScheduled3())
+                .data(toOBWriteInternationalScheduled3Data(obWriteInternationalScheduled1.getData()))
+                .risk(obWriteInternationalScheduled1.getRisk());
+    }
+
     public static OBWriteInternationalScheduled3 toOBWriteInternationalScheduled3(OBWriteInternationalScheduled2 obWriteInternationalScheduled2) {
         return obWriteInternationalScheduled2 == null ? null : (new OBWriteInternationalScheduled3())
                 .data(toOBWriteInternationalScheduled3Data(obWriteInternationalScheduled2.getData()))
                 .risk(obWriteInternationalScheduled2.getRisk());
+    }
+
+    public static OBWriteInternationalScheduled3Data toOBWriteInternationalScheduled3Data(OBWriteDataInternationalScheduled1 data) {
+        return data == null ? null : new OBWriteInternationalScheduled3Data()
+                .consentId(data.getConsentId())
+                .initiation(toOBWriteInternationalScheduled3DataInitiation(data.getInitiation()));
     }
 
     public static OBWriteInternationalScheduled3Data toOBWriteInternationalScheduled3Data(OBWriteDataInternationalScheduled2 data) {

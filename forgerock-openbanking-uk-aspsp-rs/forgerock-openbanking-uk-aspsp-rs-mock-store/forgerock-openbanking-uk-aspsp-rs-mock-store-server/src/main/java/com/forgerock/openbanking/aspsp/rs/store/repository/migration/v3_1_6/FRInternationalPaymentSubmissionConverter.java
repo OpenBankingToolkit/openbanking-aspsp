@@ -18,11 +18,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.openbanking.converter.payment;
+package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
+import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalPaymentSubmission4;
+import uk.org.openbanking.datamodel.payment.OBWriteDataInternational1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternational2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational3Data;
@@ -42,10 +44,22 @@ public class FRInternationalPaymentSubmissionConverter {
                 .build();
     }
 
+    public static OBWriteInternational3 toOBWriteInternational3(OBWriteInternational1 obWriteInternational1) {
+        return obWriteInternational1 == null ? null : (new OBWriteInternational3())
+                .data(toOBWriteInternational3Data(obWriteInternational1.getData()))
+                .risk(obWriteInternational1.getRisk());
+    }
+
     public static OBWriteInternational3 toOBWriteInternational3(OBWriteInternational2 obWriteInternational2) {
         return obWriteInternational2 == null ? null : (new OBWriteInternational3())
                 .data(toOBWriteInternational3Data(obWriteInternational2.getData()))
                 .risk(obWriteInternational2.getRisk());
+    }
+
+    public static OBWriteInternational3Data toOBWriteInternational3Data(OBWriteDataInternational1 data) {
+        return data == null ? null : (new OBWriteInternational3Data())
+                .consentId(data.getConsentId())
+                .initiation(toOBWriteInternational3DataInitiation(data.getInitiation()));
     }
 
     public static OBWriteInternational3Data toOBWriteInternational3Data(OBWriteDataInternational2 data) {

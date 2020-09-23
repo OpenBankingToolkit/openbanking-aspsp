@@ -21,15 +21,16 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalscheduledpayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalScheduledPaymentSubmission2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalScheduledPaymentSubmission4Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalScheduledConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalScheduledPaymentSubmission2;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalPaymentSubmission4;
+import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalScheduledPaymentSubmission4;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
+import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -46,11 +47,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse2;
+import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorAgentTestDataFactory.aValidFRDataInitiationCreditorAgent;
@@ -58,8 +56,14 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsuppo
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRFRExchangeRateInformationTestDataFactory.aValidFRExchangeRateInformation;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate1;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalIdentifierConverter.toOBBranchAndFinancialInstitutionIdentification3;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalIdentifierConverter.toOBPartyIdentification43;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBRemittanceInformationConverter.toOBRemittanceInformation1;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalscheduledpayments.InternationalScheduledPaymentsApiController}.
@@ -74,7 +78,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
     @Autowired
     private InternationalScheduledConsent5Repository consentRepository;
     @Autowired
-    private InternationalScheduledPaymentSubmission2Repository submissionRepository;
+    private InternationalScheduledPaymentSubmission4Repository submissionRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -93,7 +97,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent5 consent = saveConsent();
-        FRInternationalScheduledPaymentSubmission2 submission = savePaymentSubmission(consent);
+        FRInternationalScheduledPaymentSubmission4 submission = savePaymentSubmission(consent);
 
         // When
         HttpResponse<OBWriteInternationalScheduledConsentResponse2> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/international-scheduled-payments/" + submission.getId())
@@ -104,7 +108,8 @@ public class InternationalScheduledPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(submission.getInternationalScheduledPayment().getData().getInitiation());
+        OBInternationalScheduled2 initiation = OBInternationalScheduledConverter.toOBInternationalScheduled2(submission.getInternationalScheduledPayment().getData().getInitiation());
+        assertThat(response.getBody().getData().getInitiation()).isEqualTo(initiation);
         assertThat(response.getBody().getData().getCreationDateTime()).isEqualTo(consent.getCreated());
         assertThat(response.getBody().getData().getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdate());
     }
@@ -114,8 +119,8 @@ public class InternationalScheduledPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent5 consent = saveConsent();
-        OBWriteInternational2 submissionRequest = JMockData.mock(OBWriteInternational2.class);
-        FRInternationalPaymentSubmission2 submission = FRInternationalPaymentSubmission2.builder()
+        OBWriteInternational3 submissionRequest = JMockData.mock(OBWriteInternational3.class);
+        FRInternationalPaymentSubmission4 submission = FRInternationalPaymentSubmission4.builder()
                 .id(consent.getId())
                 .internationalPayment(submissionRequest)
                 .build();
@@ -136,7 +141,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent5 consent = JMockData.mock(FRInternationalScheduledConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
-        FRInternationalScheduledPaymentSubmission2 submission = savePaymentSubmission(consent);
+        FRInternationalScheduledPaymentSubmission4 submission = savePaymentSubmission(consent);
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/international-scheduled-payments/" + submission.getId())
@@ -155,7 +160,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
         FRInternationalScheduledConsent5 consent = saveConsent();
         OBWriteDataInternationalScheduled2 data = (new OBWriteDataInternationalScheduled2())
                 .consentId(consent.getId())
-                .initiation(toOBInternationalScheduled2(consent.getInitiation()));
+                .initiation(FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2(consent.getInitiation()));
         OBWriteInternationalScheduled2 submissionRequest = new OBWriteInternationalScheduled2()
                 .risk(toOBRisk1(consent.getRisk()))
                 .data(data);
@@ -173,9 +178,9 @@ public class InternationalScheduledPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteInternationalScheduledResponse2 consentResponse = response.getBody();
-        FRInternationalScheduledPaymentSubmission2 submission = submissionRepository.findById(response.getBody().getData().getInternationalScheduledPaymentId()).get();
+        FRInternationalScheduledPaymentSubmission4 submission = submissionRepository.findById(response.getBody().getData().getInternationalScheduledPaymentId()).get();
         assertThat(submission.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(submission.getInternationalScheduledPayment()).isEqualTo(submissionRequest);
+        assertThat(toOBWriteInternationalScheduled2(submission.getInternationalScheduledPayment())).isEqualTo(submissionRequest);
     }
 
     @Test
@@ -183,13 +188,13 @@ public class InternationalScheduledPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalScheduledConsent5 consent = saveConsent();
-        FRInternationalScheduledPaymentSubmission2 submission = savePaymentSubmission(consent);
+        FRInternationalScheduledPaymentSubmission4 submission = savePaymentSubmission(consent);
 
         OBWriteInternationalScheduled2 obWriteInternational2 = new OBWriteInternationalScheduled2();
         obWriteInternational2.risk(toOBRisk1(consent.getRisk()));
         obWriteInternational2.data(new OBWriteDataInternationalScheduled2()
                 .consentId(submission.getId())
-                .initiation(toOBInternationalScheduled2(consent.getInitiation())));
+                .initiation(FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2(consent.getInitiation())));
 
         // When
         HttpResponse<String> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1/pisp/international-scheduled-payments")
@@ -225,7 +230,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
                 .risk(toOBRisk1(consent.getRisk()))
                 .data(new OBWriteDataInternationalScheduled2()
                         .consentId(consent.getId())
-                        .initiation(toOBInternationalScheduled2(consent.getInitiation())));
+                        .initiation(FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2(consent.getInitiation())));
 
         // When
         HttpResponse<String> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1/pisp/international-scheduled-payments")
@@ -242,10 +247,10 @@ public class InternationalScheduledPaymentsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(400);
     }
 
-    private FRInternationalScheduledPaymentSubmission2 savePaymentSubmission(FRInternationalScheduledConsent5 consent) {
-        OBWriteInternationalScheduled2 submissionRequest = JMockData.mock(OBWriteInternationalScheduled2.class);
-        submissionRequest.getData().initiation(toOBInternationalScheduled2(consent.getInitiation()));
-        FRInternationalScheduledPaymentSubmission2 submission = FRInternationalScheduledPaymentSubmission2.builder()
+    private FRInternationalScheduledPaymentSubmission4 savePaymentSubmission(FRInternationalScheduledConsent5 consent) {
+        OBWriteInternationalScheduled3 submissionRequest = JMockData.mock(OBWriteInternationalScheduled3.class);
+        submissionRequest.getData().initiation(toOBWriteInternationalScheduled3DataInitiation(consent.getInitiation()));
+        FRInternationalScheduledPaymentSubmission4 submission = FRInternationalScheduledPaymentSubmission4.builder()
                 .id(consent.getId())
                 .internationalScheduledPayment(submissionRequest)
                 .build();
@@ -269,6 +274,38 @@ public class InternationalScheduledPaymentsApiControllerIT {
         consent.setStatus(ConsentStatusCode.CONSUMED);
         consentRepository.save(consent);
         return consent;
+    }
+
+    private OBWriteInternationalScheduled2 toOBWriteInternationalScheduled2(OBWriteInternationalScheduled3 obWriteInternationalScheduled3) {
+        return obWriteInternationalScheduled3 == null ? null : new OBWriteInternationalScheduled2()
+                .data(toOBWriteDataInternationalScheduled2(obWriteInternationalScheduled3.getData()))
+                .risk(obWriteInternationalScheduled3.getRisk());
+    }
+
+    private OBWriteDataInternationalScheduled2 toOBWriteDataInternationalScheduled2(OBWriteInternationalScheduled3Data data) {
+        return data == null ? null : new OBWriteDataInternationalScheduled2()
+                .consentId(data.getConsentId())
+                .initiation(toOBInternationalScheduled2(data.getInitiation()));
+    }
+
+    private OBInternationalScheduled2 toOBInternationalScheduled2(OBWriteInternationalScheduled3DataInitiation initiation) {
+        return initiation == null ? null : new OBInternationalScheduled2()
+                .instructionIdentification(initiation.getInstructionIdentification())
+                .endToEndIdentification(initiation.getEndToEndIdentification())
+                .localInstrument(initiation.getLocalInstrument())
+                .instructionPriority(initiation.getInstructionPriority() == null ? null : OBPriority2Code.valueOf(initiation.getInstructionPriority().name()))
+                .purpose(initiation.getPurpose())
+                .chargeBearer(initiation.getChargeBearer())
+                .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
+                .currencyOfTransfer(initiation.getCurrencyOfTransfer())
+                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
+                .exchangeRateInformation(toOBExchangeRate1(initiation.getExchangeRateInformation()))
+                .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
+                .creditor(toOBPartyIdentification43(initiation.getCreditor()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification3(initiation.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount3(initiation.getCreditorAccount()))
+                .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()))
+                .supplementaryData(initiation.getSupplementaryData());
     }
 
 }
