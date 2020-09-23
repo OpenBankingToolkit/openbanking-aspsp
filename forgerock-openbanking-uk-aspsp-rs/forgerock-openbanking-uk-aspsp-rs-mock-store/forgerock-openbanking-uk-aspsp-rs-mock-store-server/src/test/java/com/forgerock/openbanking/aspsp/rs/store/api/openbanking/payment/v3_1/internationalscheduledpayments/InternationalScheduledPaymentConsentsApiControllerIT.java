@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.Pay
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalScheduledConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
@@ -53,9 +54,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledDataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBInternationalScheduled2;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalscheduledpayments.InternationalScheduledPaymentConsentsApiController}.
@@ -91,10 +92,10 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
         FRInternationalScheduledConsent5 consent = JMockData.mock(FRInternationalScheduledConsent5.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         DateTime requestedExecutionDateTime = DateTime.now().withMillisOfSecond(0);
-        consent.getInitiation().requestedExecutionDateTime(requestedExecutionDateTime);
-        consent.getInitiation().supplementaryData(new OBSupplementaryData1());
-        consent.getInitiation().extendedPurpose(null);
-        consent.getInitiation().destinationCountryCode("GB");
+        consent.getInitiation().setRequestedExecutionDateTime(requestedExecutionDateTime);
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setExtendedPurpose(null);
+        consent.getInitiation().setDestinationCountryCode("GB");
         repository.save(consent);
 
         // When
@@ -106,7 +107,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(toOBWriteInternationalScheduled3DataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
+        assertThat(toFRWriteInternationalScheduledDataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
         assertThat(response.getBody().getData().getStatus()).isEqualTo(consent.getStatus().toOBExternalConsentStatus1Code());
         Assertions.assertThat(response.getBody().getData().getCreationDateTime()).isEqualToIgnoringMillis(consent.getCreated());
         Assertions.assertThat(response.getBody().getData().getStatusUpdateDateTime()).isEqualToIgnoringMillis(consent.getStatusUpdate());

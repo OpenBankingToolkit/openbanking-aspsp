@@ -20,6 +20,9 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -36,9 +39,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBRisk1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4DataExchangeRateInformation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6DataExchangeRateInformation;
 
@@ -57,7 +57,7 @@ public class FRInternationalConsent5 implements FRPaymentConsent, Persistable<St
     public String id;
     @Indexed
     public ConsentStatusCode status;
-    public OBWriteInternationalConsent5 internationalConsent;
+    public FRWriteInternationalConsent internationalConsent;
 
     @Indexed
     public String accountId;
@@ -82,6 +82,7 @@ public class FRInternationalConsent5 implements FRPaymentConsent, Persistable<St
      *
      * @return OBExchangeRate2 with rate nd expiry date fields populated where appropriate
      */
+    // TODO #296 - return FR exchange rate
     public OBWriteInternationalConsentResponse6DataExchangeRateInformation getCalculatedExchangeRate() {
         OBWriteInternationalConsentResponse4DataExchangeRateInformation exchangeRate = CurrencyRateService.getCalculatedExchangeRate(internationalConsent.getData().getInitiation().getExchangeRateInformation(), created);
         return toOBWriteInternationalConsentResponse6DataExchangeRateInformation(exchangeRate);
@@ -94,12 +95,12 @@ public class FRInternationalConsent5 implements FRPaymentConsent, Persistable<St
     }
 
     @Override
-    public OBWriteInternational3DataInitiation getInitiation() {
+    public FRWriteInternationalDataInitiation getInitiation() {
         return internationalConsent.getData().getInitiation();
     }
 
     @Override
-    public OBRisk1 getRisk() {
+    public FRRisk getRisk() {
         return internationalConsent.getRisk();
     }
 

@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRFileConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
 
 public class FRFileConsentConverter {
 
@@ -31,7 +31,7 @@ public class FRFileConsentConverter {
         return FRFileConsent5.builder()
                 .id(frFileConsent2.getId())
                 .status(frFileConsent2.getStatus())
-                .writeFileConsent(toOBWriteFileConsent3(frFileConsent2.getWriteFileConsent()))
+                .writeFileConsent(toFRWriteFileConsent(frFileConsent2.getWriteFileConsent()))
                 .accountId(frFileConsent2.getAccountId())
                 .userId(frFileConsent2.getUserId())
                 .pispId(frFileConsent2.getPispId())

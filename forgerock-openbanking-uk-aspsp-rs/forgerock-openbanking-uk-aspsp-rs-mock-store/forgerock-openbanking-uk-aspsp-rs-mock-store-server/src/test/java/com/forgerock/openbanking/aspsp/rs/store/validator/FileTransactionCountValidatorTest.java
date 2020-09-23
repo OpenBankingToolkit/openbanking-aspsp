@@ -28,6 +28,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -48,10 +49,11 @@ public class FileTransactionCountValidatorTest {
     }
 
     private static FRFileConsent5 getConsent(int noOfTransactions) {
+        OBWriteFileConsent3 consent = new OBWriteFileConsent3()
+                .data(new OBWriteFileConsent3Data()
+                        .initiation(new OBWriteFile2DataInitiation().numberOfTransactions(String.valueOf(noOfTransactions))));
         return FRFileConsent5.builder()
-                .writeFileConsent(new OBWriteFileConsent3().data(new OBWriteFileConsent3Data().initiation(new OBWriteFile2DataInitiation()
-                        .numberOfTransactions(String.valueOf(noOfTransactions))
-                ))).build();
+                .writeFileConsent(toFRWriteFileConsent(consent)).build();
     }
 
     private static PaymentFile getPaymentFile(int noOfTransactions) {

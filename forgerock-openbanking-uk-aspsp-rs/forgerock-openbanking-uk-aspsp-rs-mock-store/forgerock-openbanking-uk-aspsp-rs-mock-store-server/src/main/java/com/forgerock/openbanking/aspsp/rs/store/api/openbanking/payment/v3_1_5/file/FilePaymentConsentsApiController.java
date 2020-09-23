@@ -25,7 +25,6 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.file;
 
-
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
@@ -65,9 +64,11 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteFileConsentResponse4DataStatus;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
 
 @Controller("FilePaymentConsentsApiV3.1.5")
 @Slf4j
@@ -118,7 +119,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
         FRFileConsent5 fileConsent = FRFileConsent5.builder().id(IntentType.PAYMENT_FILE_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGUPLOAD)
-                .writeFileConsent(obWriteFileConsent3)
+                .writeFileConsent(toFRWriteFileConsent(obWriteFileConsent3))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -244,8 +245,8 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                         .status(toOBWriteFileConsentResponse4DataStatus(fileConsent.getStatus()))
                         .creationDateTime(fileConsent.getCreated())
                         .statusUpdateDateTime(fileConsent.getStatusUpdate())
-                        .initiation(fileConsent.getInitiation())
-                        .debtor(toDebtorIdentification1(fileConsent.getInitiation().getDebtorAccount()))
+                        .initiation(toOBWriteFile2DataInitiation(fileConsent.getInitiation()))
+                        .debtor(toOBDebtorIdentification1(fileConsent.getInitiation().getDebtorAccount()))
                         .authorisation(toOBWriteDomesticConsent4DataAuthorisation(fileConsent.getWriteFileConsent().getData().getAuthorisation()))
                 )
                 .links(resourceLinkService.toSelfLink(fileConsent, discovery -> getVersion(discovery).getGetFilePaymentConsent()))

@@ -26,6 +26,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_5.domesticstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
@@ -43,7 +44,6 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
 import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse6;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
@@ -52,11 +52,12 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount51;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrder3DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderDataInitiation;
 
 @Controller("DomesticStandingOrdersApiV3.1.5")
 @Slf4j
@@ -97,7 +98,6 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     ) throws OBErrorResponseException {
         String consentId = obWriteDomesticStandingOrder3.getData().getConsentId();
         FRDomesticStandingOrderConsent5 payment = paymentsService.getPayment(consentId);
-        OBWriteDomesticStandingOrder3DataInitiation paymentInitiation = toOBWriteDomesticStandingOrder3DataInitiation(obWriteDomesticStandingOrder3.getData().getInitiation());
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -109,7 +109,9 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(paymentInitiation, obWriteDomesticStandingOrder3.getRisk());
+                    f.verifyRiskAndInitiation(
+                            toFRWriteDomesticStandingOrderDataInitiation(obWriteDomesticStandingOrder3.getData().getInitiation()),
+                            toFRRisk(obWriteDomesticStandingOrder3.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -117,20 +119,21 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                             //Modify the status of the payment
                             log.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
 
-                            DateTime firstPaymentDateTime = paymentInitiation.getFirstPaymentDateTime();
+                            FRWriteDomesticStandingOrderDataInitiation initiation = payment.getInitiation();
+                            DateTime firstPaymentDateTime = initiation.getFirstPaymentDateTime();
 
                             OBStandingOrder6 standingOrder = new OBStandingOrder6()
                                     .accountId(payment.getAccountId())
                                     .standingOrderStatusCode(OBExternalStandingOrderStatus1Code.ACTIVE)
-                                    .creditorAccount(toOBCashAccount51(paymentInitiation.getCreditorAccount()))
-                                    .frequency(paymentInitiation.getFrequency())
-                                    .reference(paymentInitiation.getReference())
+                                    .creditorAccount(toOBCashAccount51(initiation.getCreditorAccount()))
+                                    .frequency(initiation.getFrequency())
+                                    .reference(initiation.getReference())
                                     .firstPaymentDateTime(firstPaymentDateTime)
-                                    .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount2(paymentInitiation.getFirstPaymentAmount()))
-                                    .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount3(paymentInitiation.getRecurringPaymentAmount()))
-                                    .nextPaymentDateTime(frequencyService.getNextDateTime(firstPaymentDateTime, paymentInitiation.getFrequency()))
-                                    .finalPaymentDateTime(paymentInitiation.getFinalPaymentDateTime())
-                                    .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount4(paymentInitiation.getFinalPaymentAmount()))
+                                    .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount2(initiation.getFirstPaymentAmount()))
+                                    .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount3(initiation.getRecurringPaymentAmount()))
+                                    .nextPaymentDateTime(frequencyService.getNextDateTime(firstPaymentDateTime, initiation.getFrequency()))
+                                    .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
+                                    .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount4(initiation.getFinalPaymentAmount()))
                                     .standingOrderId(payment.getId());
 
                             String pispId = tppStoreService.findByClientId(tppId)

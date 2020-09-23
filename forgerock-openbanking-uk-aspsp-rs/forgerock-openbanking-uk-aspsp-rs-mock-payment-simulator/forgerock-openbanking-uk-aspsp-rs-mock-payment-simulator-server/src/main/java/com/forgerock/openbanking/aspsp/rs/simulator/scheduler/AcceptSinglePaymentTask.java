@@ -52,7 +52,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 
 @Slf4j
@@ -115,13 +116,13 @@ public class AcceptSinglePaymentTask {
     private void moveCreditPayment(FRPaymentSetup1 payment, String identificationFrom, FRAccount accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationFrom, accountFrom);
         log.info("Move the money to this account");
-        moneyService.moveMoney(accountFrom, payment.getInitiation().getInstructedAmount(),
+        moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
                 OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
     private String moveDebitPayment(FRPaymentSetup1 payment, FRAccount accountTo) throws CurrencyConverterException {
         log.info("We are going to pay from this account: {}", accountTo);
-        moneyService.moveMoney(accountTo, payment.getInitiation().getInstructedAmount(),
+        moneyService.moveMoney(accountTo, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
                 OBCreditDebitCode.DEBIT, payment,  this::createTransaction);
 
         String identificationFrom = payment.getInitiation().getCreditorAccount().getIdentification();

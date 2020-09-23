@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.Pay
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticScheduledConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
@@ -55,8 +56,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBDomesticScheduled2;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBDomesticScheduled2;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBWriteDomesticScheduled2DataInitiation;
 
 /**
@@ -94,8 +95,8 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
         FRDomesticScheduledConsent5 consent = JMockData.mock(FRDomesticScheduledConsent5.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         DateTime requestedExecutionDateTime = DateTime.now().withMillisOfSecond(0);
-        consent.getInitiation().requestedExecutionDateTime(DateTime.now().withMillisOfSecond(0));
-        consent.getInitiation().supplementaryData(new OBSupplementaryData1());
+        consent.getInitiation().setRequestedExecutionDateTime(DateTime.now().withMillisOfSecond(0));
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
         repository.save(consent);
 
         // When

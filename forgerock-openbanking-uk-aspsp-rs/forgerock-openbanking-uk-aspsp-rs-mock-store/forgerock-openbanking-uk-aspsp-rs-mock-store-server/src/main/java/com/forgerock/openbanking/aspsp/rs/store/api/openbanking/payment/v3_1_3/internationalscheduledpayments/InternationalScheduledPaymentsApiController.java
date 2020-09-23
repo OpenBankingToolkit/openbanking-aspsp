@@ -43,7 +43,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse4Data;
@@ -148,7 +147,6 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     }
 
     private OBWriteInternationalScheduledResponse4 packagePayment(FRInternationalScheduledPaymentSubmission4 frPaymentSubmission, FRInternationalScheduledConsent5 frInternationalScheduledConsent) {
-        OBWriteInternational3DataInitiationExchangeRateInformation exchangeRateInformation = frInternationalScheduledConsent.getInitiation().getExchangeRateInformation();
         return new OBWriteInternationalScheduledResponse4()
                 .data(
                         new OBWriteInternationalScheduledResponse4Data()

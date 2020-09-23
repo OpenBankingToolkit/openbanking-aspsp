@@ -55,7 +55,8 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticScheduledResponse5DataStatus;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduled2DataInitiation;
 
 @Controller("DomesticScheduledPaymentsApiV3.1.5")
 @Slf4j
@@ -151,11 +152,11 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         return new OBWriteDomesticScheduledResponse5()
                 .data(new OBWriteDomesticScheduledResponse5Data()
                         .domesticScheduledPaymentId(frPaymentSubmission.getId())
-                        .initiation(frDomesticScheduledConsent.getInitiation())
+                        .initiation(toOBWriteDomesticScheduled2DataInitiation(frDomesticScheduledConsent.getInitiation()))
                         .creationDateTime(frDomesticScheduledConsent.getCreated())
                         .statusUpdateDateTime(frDomesticScheduledConsent.getStatusUpdate())
                         .status(toOBWriteDomesticScheduledResponse5DataStatus(frDomesticScheduledConsent.getStatus()))
-                        .debtor(toDebtorIdentification1(frDomesticScheduledConsent.getInitiation().getDebtorAccount()))
+                        .debtor(toOBDebtorIdentification1(frDomesticScheduledConsent.getInitiation().getDebtorAccount()))
                         .consentId(frDomesticScheduledConsent.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetDomesticScheduledPayment()))
                 .meta(new Meta());

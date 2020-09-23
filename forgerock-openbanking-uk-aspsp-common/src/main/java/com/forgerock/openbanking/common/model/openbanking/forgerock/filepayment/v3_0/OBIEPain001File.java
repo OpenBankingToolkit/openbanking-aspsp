@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.obie.pain001.*;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -34,6 +35,8 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 
 /**
  * This is an internal model of the XML-based "UK.OBIE.pain.001.001.08" file type
@@ -78,7 +81,7 @@ public class OBIEPain001File implements PaymentFile {
     public BigDecimal getControlSum() {
         return payments.stream()
                 .map(FRFilePayment::getInstructedAmount)
-                .map(OBActiveOrHistoricCurrencyAndAmount::getAmount)
+                .map(FRAmount::getAmount)
                 .map(BigDecimal::new)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
@@ -116,7 +119,7 @@ public class OBIEPain001File implements PaymentFile {
         return FRFilePayment.builder()
                 .instructionIdentification(payment.getPmtId().getInstrId())
                 .endToEndIdentification(payment.getPmtId().getEndToEndId())
-                .instructedAmount(amt)
+                .instructedAmount(toFRAmount(amt))
                 .created(DateTime.now())
                 .creditorAccountIdentification(creditorAccountId)
                 .remittanceReference(remittanceReference)

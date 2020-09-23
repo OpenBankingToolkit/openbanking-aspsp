@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticStandingOrderPaymentConsentDetails;
@@ -34,16 +35,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBStandingOrder6;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
 
 @Service
 @Slf4j
@@ -97,7 +97,7 @@ public class RCSDomesticStandingOrderDetailsApi implements RCSDetailsApi {
         domesticConsent.setUserId(username);
         paymentService.updatePayment(domesticConsent);
 
-        OBWriteDomesticStandingOrder3DataInitiation domesticStandingOrder = domesticConsent.getInitiation();
+        FRWriteDomesticStandingOrderDataInitiation domesticStandingOrder = domesticConsent.getInitiation();
         OBStandingOrder6 standingOrder = new OBStandingOrder6()
                 .accountId(domesticConsent.getAccountId())
                 .standingOrderId(domesticConsent.getId())
@@ -122,4 +122,5 @@ public class RCSDomesticStandingOrderDetailsApi implements RCSDetailsApi {
                         .orElse(""))
                 .build());
     }
+
 }

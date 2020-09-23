@@ -25,6 +25,8 @@ import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.Pay
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
@@ -61,6 +63,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorAgentTestDataFactory.aValidFRDataInitiationCreditorAgent;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorTestDataFactory.aValidFRDataInitiationCreditor;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
@@ -180,12 +185,25 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         initiation.numberOfPayments("12");
         initiation.setCreditor(new OBWriteInternational3DataInitiationCreditor().name("user").postalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square"))));
         initiation.setCreditorAgent(new OBWriteInternationalStandingOrder4DataInitiationCreditorAgent().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber"));
-        initiation.getCreditor().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
-        initiation.getCreditorAgent().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
-        initiation.getCreditorAgent().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
         initiation.setExtendedPurpose(null);
         initiation.setDestinationCountryCode("GB");
         initiation.setSupplementaryData(new OBSupplementaryData1());
+    }
+
+    private static void setupTestConsentInitiation(FRWriteInternationalStandingOrderDataInitiation initiation) {
+        initiation.setPurpose("test");
+        initiation.setInstructedAmount(aValidFRAmount());
+        initiation.setCurrencyOfTransfer("GBP");
+        initiation.setFirstPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFinalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFrequency("EvryDay");
+        initiation.setReference("123");
+        initiation.setNumberOfPayments("12");
+        initiation.setCreditor(aValidFRDataInitiationCreditor());
+        initiation.setCreditorAgent(aValidFRDataInitiationCreditorAgent());
+        initiation.setExtendedPurpose(null);
+        initiation.setDestinationCountryCode("GB");
+        initiation.setSupplementaryData(FRSupplementaryData.builder().build());
     }
 
 }

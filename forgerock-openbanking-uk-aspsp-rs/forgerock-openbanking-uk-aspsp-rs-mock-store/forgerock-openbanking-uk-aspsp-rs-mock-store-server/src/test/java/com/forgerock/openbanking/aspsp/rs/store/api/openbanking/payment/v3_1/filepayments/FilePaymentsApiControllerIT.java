@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FilePay
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFilePaymentSubmission2;
@@ -59,10 +60,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileResponse2;
 
 import java.math.BigDecimal;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBFile2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter.toOBFile2;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -219,7 +220,7 @@ public class FilePaymentsApiControllerIT {
         consent.getInitiation().setFileReference("Test");
         consent.getInitiation().setNumberOfTransactions("100");
         consent.getInitiation().setFileHash("sdjhgfksfkshfjksh");
-        consent.getInitiation().supplementaryData(new OBSupplementaryData1());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
 
         OBWriteFile2 submissionRequest = new OBWriteFile2()
                 .data(new OBWriteDataFile2()
@@ -334,7 +335,7 @@ public class FilePaymentsApiControllerIT {
         consent.getInitiation().setNumberOfTransactions("100");
         consent.getInitiation().setFileHash("sdjhgfksfkshfjksh");
         consent.getInitiation().setRequestedExecutionDateTime(null);
-        consent.getInitiation().supplementaryData(new OBSupplementaryData1());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
         consent.setStatus(statusCode);
         consentRepository.save(consent);
         return consent;

@@ -58,9 +58,11 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBAuthorisation1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBDomestic2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBDomestic2;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent4;
 
 @Controller("DomesticPaymentConsentsApiV3.1")
@@ -140,7 +142,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         FRDomesticConsent5 domesticConsent = FRDomesticConsent5.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticConsent(consent4)
+                .domesticConsent(toFRWriteDomesticConsent(consent4))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -257,7 +259,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                         .authorisation(toOBAuthorisation1(domesticConsent.getDomesticConsent().getData().getAuthorisation()))
                 )
                 .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> discovery.getV_3_1().getGetDomesticPaymentConsent()))
-                .risk(domesticConsent.getRisk())
+                .risk(toOBRisk1(domesticConsent.getRisk()))
                 .meta(new Meta());
     }
 

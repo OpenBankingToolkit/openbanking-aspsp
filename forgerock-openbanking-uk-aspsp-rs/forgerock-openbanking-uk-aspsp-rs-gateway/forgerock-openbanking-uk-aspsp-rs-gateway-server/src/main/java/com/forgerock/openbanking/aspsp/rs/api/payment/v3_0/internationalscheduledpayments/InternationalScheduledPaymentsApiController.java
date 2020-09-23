@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.internationalscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
@@ -42,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.OBExternalScheduleType1Code;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,10 +50,11 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -117,7 +118,6 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     ) throws OBErrorResponseException {
         String consentId = obWriteInternationalScheduled1.getData().getConsentId();
         FRInternationalScheduledConsent5 payment = paymentsService.getPayment(consentId);
-        OBWriteInternationalScheduled3DataInitiation paymentInitiation = toOBWriteInternationalScheduled3DataInitiation(obWriteInternationalScheduled1.getData().getInitiation());
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -128,14 +128,16 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(paymentInitiation, obWriteInternationalScheduled1.getRisk());
+                    f.verifyRiskAndInitiation(
+                            toFRWriteInternationalScheduledDataInitiation(obWriteInternationalScheduled1.getData().getInitiation()),
+                            toFRRisk(obWriteInternationalScheduled1.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
                         (String tppId) -> {
                             //Modify the status of the payment
                             LOGGER.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
-
+                            FRWriteInternationalScheduledDataInitiation paymentInitiation = payment.getInitiation();
                             OBScheduledPayment1 scheduledPayment = new OBScheduledPayment1()
                                     .accountId(payment.getAccountId())
                                     .creditorAccount(toOBCashAccount3(paymentInitiation.getCreditorAccount()))

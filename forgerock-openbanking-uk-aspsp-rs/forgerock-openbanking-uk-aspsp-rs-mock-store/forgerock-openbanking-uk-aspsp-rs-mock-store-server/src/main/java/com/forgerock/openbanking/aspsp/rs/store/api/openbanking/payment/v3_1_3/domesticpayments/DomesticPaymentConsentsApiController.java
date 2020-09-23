@@ -60,7 +60,10 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticConsentResponse3DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent4;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
@@ -118,7 +121,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         FRDomesticConsent5 domesticConsent = FRDomesticConsent5.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticConsent(obWriteDomesticConsent4)
+                .domesticConsent(toFRWriteDomesticConsent(obWriteDomesticConsent4))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -192,7 +195,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     private OBWriteDomesticConsentResponse3 packageResponse(FRDomesticConsent5 domesticConsent) {
         return new OBWriteDomesticConsentResponse3()
                 .data(new OBWriteDomesticConsentResponse3Data()
-                        .initiation(domesticConsent.getInitiation())
+                        .initiation(toOBWriteDomestic2DataInitiation(domesticConsent.getInitiation()))
                         .status(toOBWriteDomesticConsentResponse3DataStatus(domesticConsent.getStatus()))
                         .creationDateTime(domesticConsent.getCreated())
                         .statusUpdateDateTime(domesticConsent.getStatusUpdate())
@@ -200,7 +203,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(domesticConsent.getDomesticConsent().getData().getAuthorisation()))
                 )
                 .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> getVersion(discovery).getGetDomesticPaymentConsent()))
-                .risk(domesticConsent.getRisk())
+                .risk(toOBRisk1(domesticConsent.getRisk()))
                 .meta(new Meta());
     }
 

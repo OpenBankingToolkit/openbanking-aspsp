@@ -25,6 +25,11 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.Domes
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticStandingOrderConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderPaymentSubmission3;
@@ -46,13 +51,23 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBRisk1;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse3;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse2;
 
-import java.util.Arrays;
-import java.util.Collections;
-
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccountCreditor3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccountDebtor4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBDomesticStandingOrder3FinalPaymentAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBDomesticStandingOrder3FirstPaymentAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBDomesticStandingOrder3RecurringPaymentAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRSupplementaryDataConverter.toOBSupplementaryData1;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder3;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrdersApiController}.
@@ -146,10 +161,10 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticStandingOrderConsent5 consent = saveConsent();
         OBWriteDomesticStandingOrder3 submissionRequest = JMockData.mock(OBWriteDomesticStandingOrder3.class)
-                .risk(consent.getRisk());
+                .risk(toOBRisk1(consent.getRisk()));
         submissionRequest.getData()
-                        .consentId(consent.getId())
-                        .initiation(toOBDomesticStandingOrder3(consent.getInitiation()));
+                .consentId(consent.getId())
+                .initiation(toOBDomesticStandingOrder3(consent.getInitiation()));
 
         // When
         HttpResponse<OBWriteDomesticStandingOrderResponse2> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1.1/pisp/domestic-standing-orders")
@@ -177,7 +192,7 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
         FRDomesticStandingOrderPaymentSubmission3 submission = savePaymentSubmission(consent);
 
         OBWriteDomesticStandingOrder3 obWriteDomestic = JMockData.mock(OBWriteDomesticStandingOrder3.class);
-        obWriteDomestic.risk(consent.getRisk());
+        obWriteDomestic.risk(toOBRisk1(consent.getRisk()));
         obWriteDomestic.data(new OBWriteDataDomesticStandingOrder3()
                 .consentId(submission.getId())
                 .initiation(toOBDomesticStandingOrder3(consent.getInitiation())));
@@ -203,13 +218,11 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
         FRDomesticStandingOrderConsent5 consent = JMockData.mock(FRDomesticStandingOrderConsent5.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         setupTestConsentInitiation(consent.getInitiation());
-        consent.getRisk().merchantCategoryCode("ABCD").getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
-                .addressLine(Collections.singletonList("3 Queens Square"))
-                .country("GP");
+        consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
+        consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
 
         OBWriteDomesticStandingOrder3 submissionRequest = new OBWriteDomesticStandingOrder3()
-                .risk(consent.getRisk())
+                .risk(toOBRisk1(consent.getRisk()))
                 .data(new OBWriteDataDomesticStandingOrder3()
                         .consentId(consent.getId())
                         .initiation(toOBDomesticStandingOrder3(consent.getInitiation())));
@@ -249,32 +262,45 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
 
     private FRDomesticStandingOrderConsent5 saveConsent() {
         FRDomesticStandingOrderConsent5 consent = JMockData.mock(FRDomesticStandingOrderConsent5.class);
-        consent.setDomesticStandingOrderConsent(JMockData.mock(OBWriteDomesticStandingOrderConsent5.class));
+        consent.setDomesticStandingOrderConsent(JMockData.mock(FRWriteDomesticStandingOrderConsent.class));
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         setupTestConsentInitiation(consent.getInitiation());
-        consent.getRisk().merchantCategoryCode("ABCD")
-                .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
-                .addressLine(Collections.singletonList("3 Queens Square"))
-                .country("GP");
+        consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
+        consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
         consent.setStatus(ConsentStatusCode.CONSUMED);
         consentRepository.save(consent);
         return consent;
     }
 
-    private static void setupTestConsentInitiation(OBWriteDomesticStandingOrder3DataInitiation initiation ) {
-        initiation.setRecurringPaymentAmount(new OBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount().amount("100.0").currency("GBP"));
-        initiation.recurringPaymentDateTime(DateTime.now().withMillisOfSecond(0));
-        initiation.setFirstPaymentAmount(new OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount().amount("120.0").currency("GBP"));
-        initiation.firstPaymentDateTime(DateTime.now().withMillisOfSecond(0));
-        initiation.setFinalPaymentAmount(new OBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount().amount("120.0").currency("GBP"));
-        initiation.finalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
-        initiation.frequency("EvryDay");
-        initiation.reference("123");
-        initiation.numberOfPayments("12");
-        initiation.supplementaryData(new OBSupplementaryData1());
-        initiation.setDebtorAccount(new OBWriteDomesticStandingOrder3DataInitiationDebtorAccount().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber"));
-        initiation.setCreditorAccount(new OBWriteDomesticStandingOrder3DataInitiationCreditorAccount().identification("321").name("test2").schemeName("UK.OBIE.SortCodeAccountNumber"));
+    private static void setupTestConsentInitiation(FRWriteDomesticStandingOrderDataInitiation initiation) {
+        initiation.setRecurringPaymentAmount(FRAmount.builder().currency("GBP").amount("100.0").build());
+        initiation.setRecurringPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFirstPaymentAmount(FRAmount.builder().currency("GBP").amount("120.0").build());
+        initiation.setFirstPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFinalPaymentAmount(FRAmount.builder().currency("GBP").amount("120.0").build());
+        initiation.setFinalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFrequency("EvryDay");
+        initiation.setReference("123");
+        initiation.setNumberOfPayments("12");
+        initiation.setSupplementaryData(FRSupplementaryData.builder().build());
+        initiation.setDebtorAccount(FRAccount.builder().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber").build());
+        initiation.setCreditorAccount(FRAccount.builder().identification("321").name("test2").schemeName("UK.OBIE.SortCodeAccountNumber").build());
+    }
+
+    private OBDomesticStandingOrder3 toOBDomesticStandingOrder3(FRWriteDomesticStandingOrderDataInitiation initiation) {
+        return initiation == null ? null : new OBDomesticStandingOrder3()
+                .frequency(initiation.getFrequency())
+                .reference(initiation.getReference())
+                .numberOfPayments(initiation.getNumberOfPayments())
+                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
+                .recurringPaymentDateTime(initiation.getRecurringPaymentDateTime())
+                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
+                .firstPaymentAmount(toOBDomesticStandingOrder3FirstPaymentAmount(initiation.getFirstPaymentAmount()))
+                .recurringPaymentAmount(toOBDomesticStandingOrder3RecurringPaymentAmount(initiation.getRecurringPaymentAmount()))
+                .finalPaymentAmount(toOBDomesticStandingOrder3FinalPaymentAmount(initiation.getFinalPaymentAmount()))
+                .debtorAccount(toOBCashAccountDebtor4(initiation.getDebtorAccount()))
+                .creditorAccount(toOBCashAccountCreditor3(initiation.getCreditorAccount()))
+                .supplementaryData(toOBSupplementaryData1(initiation.getSupplementaryData()));
     }
 
 }

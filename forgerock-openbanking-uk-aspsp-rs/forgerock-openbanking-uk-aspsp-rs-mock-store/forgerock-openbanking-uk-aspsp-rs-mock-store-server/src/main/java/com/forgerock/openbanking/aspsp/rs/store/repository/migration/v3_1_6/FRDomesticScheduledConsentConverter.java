@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRDomesticScheduledConsent2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduledConsent4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent;
 
 public class FRDomesticScheduledConsentConverter {
 
@@ -34,7 +34,7 @@ public class FRDomesticScheduledConsentConverter {
         frDomesticScheduledConsent5.setUserId(frDomesticScheduledConsent2.getUserId());
         frDomesticScheduledConsent5.setAccountId(frDomesticScheduledConsent2.getAccountId());
         frDomesticScheduledConsent5.setCreated(frDomesticScheduledConsent2.getCreated());
-        frDomesticScheduledConsent5.setDomesticScheduledConsent(toOBWriteDomesticScheduledConsent4(frDomesticScheduledConsent2.getDomesticScheduledConsent()));
+        frDomesticScheduledConsent5.setDomesticScheduledConsent(toFRWriteDomesticScheduledConsent(frDomesticScheduledConsent2.getDomesticScheduledConsent()));
         frDomesticScheduledConsent5.setPispId(frDomesticScheduledConsent2.getPispId());
         frDomesticScheduledConsent5.setPispName(frDomesticScheduledConsent2.getPispName());
         frDomesticScheduledConsent5.setStatusUpdate(frDomesticScheduledConsent2.getStatusUpdate());

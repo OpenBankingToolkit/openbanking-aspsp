@@ -53,7 +53,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 
 @Slf4j
@@ -137,7 +138,7 @@ public class AcceptFilePaymentTask {
     private String moveDebitPayment(FRFilePayment payment, String accountId) throws CurrencyConverterException {
         FRAccount accountFrom = accountStoreService.getAccount(accountId);
         log.info("We are going to pay from this account: {}", accountFrom);
-        moneyService.moveMoney(accountFrom, payment.getInstructedAmount(),
+        moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInstructedAmount()),
                 OBCreditDebitCode.DEBIT, payment, this::createTransaction);
 
         String identificationFrom = payment.getCreditorAccountIdentification();
@@ -148,7 +149,7 @@ public class AcceptFilePaymentTask {
     private void moveCreditPayment(FRFilePayment payment, String identificationTo, FRAccount accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationTo, accountFrom);
         log.info("Move the money to this account");
-        moneyService.moveMoney(accountFrom, payment.getInstructedAmount(),
+        moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInstructedAmount()),
                 OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 

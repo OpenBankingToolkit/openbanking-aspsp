@@ -20,6 +20,9 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -35,9 +38,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBRisk1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
 
 import java.util.Date;
 
@@ -52,7 +52,7 @@ public class FRDomesticConsent5 implements FRPaymentConsent, Persistable<String>
     public String id;
     @Indexed
     public ConsentStatusCode status;
-    public OBWriteDomesticConsent4 domesticConsent;
+    public FRWriteDomesticConsent domesticConsent;
 
     @Indexed
     public String accountId;
@@ -78,12 +78,12 @@ public class FRDomesticConsent5 implements FRPaymentConsent, Persistable<String>
     }
 
     @Override
-    public OBWriteDomestic2DataInitiation getInitiation() {
+    public FRWriteDomesticDataInitiation getInitiation() {
         return domesticConsent.getData().getInitiation();
     }
 
     @Override
-    public OBRisk1 getRisk() {
+    public FRRisk getRisk() {
         return domesticConsent.getRisk();
     }
 

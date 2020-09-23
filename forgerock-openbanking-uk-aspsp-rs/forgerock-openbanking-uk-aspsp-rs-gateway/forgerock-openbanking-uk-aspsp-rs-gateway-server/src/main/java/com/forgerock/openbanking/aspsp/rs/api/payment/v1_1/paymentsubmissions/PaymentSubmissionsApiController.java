@@ -46,6 +46,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("PaymentSubmissionsApiV1.1")
@@ -106,7 +108,7 @@ public class PaymentSubmissionsApiController implements PaymentSubmissionsApi {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(paymentSubmission.getData().getInitiation(), paymentSubmission.getRisk());
+                    f.verifyRiskAndInitiation(toFRWriteDomesticDataInitiation(paymentSubmission.getData().getInitiation()), toFRRisk(paymentSubmission.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -164,4 +166,5 @@ public class PaymentSubmissionsApiController implements PaymentSubmissionsApi {
                         }
                 );
     }
+
 }

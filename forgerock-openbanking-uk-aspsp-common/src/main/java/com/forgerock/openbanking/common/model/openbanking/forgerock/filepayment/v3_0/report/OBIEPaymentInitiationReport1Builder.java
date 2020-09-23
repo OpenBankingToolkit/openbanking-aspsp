@@ -43,6 +43,8 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+
 @Slf4j
 @Component
 public class OBIEPaymentInitiationReport1Builder {
@@ -85,7 +87,7 @@ public class OBIEPaymentInitiationReport1Builder {
                             new OBDomestic1()
                             .instructionIdentification(filePayment.getInstructionIdentification())
                             .endToEndIdentification(filePayment.getEndToEndIdentification())
-                            .instructedAmount(filePayment.getInstructedAmount())
+                            .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(filePayment.getInstructedAmount()))
                             .remittanceInformation(new OBRemittanceInformation1()
                                     .reference(filePayment.getRemittanceReference())
                                     .unstructured(filePayment.getRemittanceUnstructured()))

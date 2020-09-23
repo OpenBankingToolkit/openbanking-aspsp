@@ -23,6 +23,10 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.UserProfileService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsentData;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
@@ -50,14 +54,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBInitiation1;
-import uk.org.openbanking.datamodel.payment.OBPaymentDataSetup1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
-import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetup1;
 
 import java.util.List;
 import java.util.Optional;
@@ -121,13 +117,16 @@ public class RCSConsentDecisionApiControllerIT {
     @Test
     public void getConsentDetailsForSinglePayment() throws Exception {
         // Given
+        FRWriteDomesticConsentData writeDomesticConsentData = FRWriteDomesticConsentData.builder()
+                .initiation(FRWriteDomesticDataInitiation.builder().build())
+                .build();
         FRPaymentSetup1 payment = FRPaymentSetup1.builder()
                 .pispId(PISP_ID)
                 .pispName(PISP_NAME)
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .paymentSetupRequest(new OBPaymentSetup1().data(new OBPaymentDataSetup1().initiation(new OBInitiation1())))
+                .paymentSetupRequest(FRWriteDomesticConsent.builder().data(writeDomesticConsentData).build())
                 .build();
-        payment.getInitiation().setInstructedAmount(new OBActiveOrHistoricCurrencyAndAmount());
+        payment.getInitiation().setInstructedAmount(FRAmount.builder().build());
         when(singlePaymentService.getPayment(any())).thenReturn(payment);
         String signedJwtEncoded = toEncodedSignedTestJwt("jwt/singlePaymentConsentRequestPayload.json");
 
@@ -152,13 +151,16 @@ public class RCSConsentDecisionApiControllerIT {
     @Test
     public void getConsentDetailsForDomesticPayment() throws Exception {
         // Given
+        FRWriteDomesticConsentData writeDomesticConsentData = FRWriteDomesticConsentData.builder()
+                .initiation(FRWriteDomesticDataInitiation.builder().build())
+                .build();
         FRDomesticConsent5 payment = FRDomesticConsent5.builder()
                 .pispId(PISP_ID)
                 .pispName(PISP_NAME)
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticConsent(new OBWriteDomesticConsent4().data(new OBWriteDomesticConsent4Data().initiation(new OBWriteDomestic2DataInitiation())))
+                .domesticConsent(FRWriteDomesticConsent.builder().data(writeDomesticConsentData).build())
                 .build();
-        payment.getInitiation().setInstructedAmount(new OBWriteDomestic2DataInitiationInstructedAmount());
+        payment.getInitiation().setInstructedAmount(FRAmount.builder().build());
         when(domesticPaymentService.getPayment(any())).thenReturn(payment);
         String signedJwtEncoded = toEncodedSignedTestJwt("jwt/domesticPaymentConsentRequestPayload.json");
 
