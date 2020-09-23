@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.funds.FRFundsConfirmation1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmation1;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface FundsConfirmationRepository extends MongoRepository<FRFundsConfirmation1, String> {

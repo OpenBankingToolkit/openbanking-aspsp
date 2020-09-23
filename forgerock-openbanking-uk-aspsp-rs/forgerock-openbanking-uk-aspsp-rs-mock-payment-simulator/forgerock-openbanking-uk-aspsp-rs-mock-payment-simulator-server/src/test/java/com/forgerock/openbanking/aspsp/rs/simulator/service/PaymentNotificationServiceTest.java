@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.EventNotificationService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.services.notification.EventSubject;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;

@@ -27,8 +27,8 @@ import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalDataInitiation;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;

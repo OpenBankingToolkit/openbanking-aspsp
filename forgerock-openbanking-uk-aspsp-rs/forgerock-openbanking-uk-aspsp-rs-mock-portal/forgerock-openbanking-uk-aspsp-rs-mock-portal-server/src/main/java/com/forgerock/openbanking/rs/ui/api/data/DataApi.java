@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.rs.ui.api.data;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.account.data.FRUserData3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.data.FRUserData3;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;

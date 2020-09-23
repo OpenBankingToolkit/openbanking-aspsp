@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.accounts.standingorders;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1.account.FRStandingOrder4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1.FRStandingOrder4;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;

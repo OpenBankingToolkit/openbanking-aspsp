@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRDirectDebit1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRDirectDebit4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRDirectDebit1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRDirectDebit4;
 import uk.org.openbanking.datamodel.account.OBDirectDebit1;
 import uk.org.openbanking.datamodel.account.OBReadDirectDebit2DataDirectDebit;
 

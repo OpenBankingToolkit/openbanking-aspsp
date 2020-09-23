@@ -27,8 +27,8 @@ import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticPaymentConsentDetails;

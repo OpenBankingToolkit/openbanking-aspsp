@@ -25,9 +25,9 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balance
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.transactions.FRTransaction5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtilCdr;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRBalance1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRAccount3;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRTransaction5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRTransaction5;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;

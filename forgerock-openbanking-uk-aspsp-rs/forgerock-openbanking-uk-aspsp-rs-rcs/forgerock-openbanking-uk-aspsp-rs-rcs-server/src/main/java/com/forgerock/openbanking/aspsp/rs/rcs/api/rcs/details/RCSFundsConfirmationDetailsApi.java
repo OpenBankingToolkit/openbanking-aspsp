@@ -22,8 +22,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmationConsent1;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FundsConfirmationConsentDetails;
 import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;

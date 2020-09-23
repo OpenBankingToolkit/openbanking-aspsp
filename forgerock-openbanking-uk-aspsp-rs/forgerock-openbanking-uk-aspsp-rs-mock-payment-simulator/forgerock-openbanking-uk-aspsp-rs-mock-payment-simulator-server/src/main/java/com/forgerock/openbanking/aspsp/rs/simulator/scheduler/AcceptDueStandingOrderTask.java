@@ -22,11 +22,11 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRStandingOrder6;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRStandingOrder6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.account.standingorder.StandingOrderService;

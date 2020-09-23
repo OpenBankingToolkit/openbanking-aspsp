@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.AccountConsentDecision;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;

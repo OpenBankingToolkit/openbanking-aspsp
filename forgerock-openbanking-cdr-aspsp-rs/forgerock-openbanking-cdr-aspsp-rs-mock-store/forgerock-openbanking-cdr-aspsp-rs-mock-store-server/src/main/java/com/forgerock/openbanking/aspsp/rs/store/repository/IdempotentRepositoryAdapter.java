@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.repository.MongoRepository;

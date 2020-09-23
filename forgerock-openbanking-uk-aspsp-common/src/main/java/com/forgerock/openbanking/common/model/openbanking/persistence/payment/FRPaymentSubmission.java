@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentSubmission;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

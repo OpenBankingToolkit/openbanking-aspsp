@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v1_1.old;
 
 import com.forgerock.openbanking.aspsp.rs.api.OBHeaders;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import lombok.extern.slf4j.Slf4j;

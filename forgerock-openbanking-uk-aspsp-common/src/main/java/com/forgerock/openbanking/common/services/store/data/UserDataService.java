@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.data;
 
 import com.forgerock.openbanking.common.conf.data.DataConfigurationProperties;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.account.data.FRUserData3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.data.FRUserData3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

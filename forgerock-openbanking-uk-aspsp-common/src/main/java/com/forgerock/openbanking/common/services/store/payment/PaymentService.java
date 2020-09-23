@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.payment;
 
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 
 /**
  * An internal Payment service

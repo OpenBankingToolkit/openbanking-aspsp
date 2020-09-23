@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 
 import com.forgerock.openbanking.common.model.data.FRDataEvent;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.v3_0.FREventNotification;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;

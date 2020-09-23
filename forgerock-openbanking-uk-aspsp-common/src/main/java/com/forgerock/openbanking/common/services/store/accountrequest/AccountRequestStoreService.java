@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.accountrequest;
 
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
 
 import java.util.Optional;
 

@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRProduct1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRProduct2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRProduct1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRProduct2;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBExternalProductType1Code;
 import uk.org.openbanking.datamodel.account.OBProduct1;

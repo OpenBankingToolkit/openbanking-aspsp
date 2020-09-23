@@ -20,10 +20,10 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRAccount1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRAccount3;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRAccount1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRAccount3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
 import com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;

@@ -21,9 +21,9 @@
 package com.forgerock.openbanking.common.services.store.accountrequest;
 
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRAccountRequest1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_0.account.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRAccountRequest1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.FRAccountAccessConsent1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

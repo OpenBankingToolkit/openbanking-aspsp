@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.balance;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
 import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
 
 import java.util.Optional;

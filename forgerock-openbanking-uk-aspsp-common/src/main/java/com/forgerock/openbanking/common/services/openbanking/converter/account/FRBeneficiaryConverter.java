@@ -20,10 +20,10 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.v1_1.account.FRBeneficiary1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_1.account.FRBeneficiary3;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_3.account.FRBeneficiary4;
-import com.forgerock.openbanking.common.model.openbanking.persistence.v3_1_5.account.FRBeneficiary5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBeneficiary1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRBeneficiary3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRBeneficiary4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRBeneficiary5;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBBeneficiary1;
 import uk.org.openbanking.datamodel.account.OBBeneficiary3;
