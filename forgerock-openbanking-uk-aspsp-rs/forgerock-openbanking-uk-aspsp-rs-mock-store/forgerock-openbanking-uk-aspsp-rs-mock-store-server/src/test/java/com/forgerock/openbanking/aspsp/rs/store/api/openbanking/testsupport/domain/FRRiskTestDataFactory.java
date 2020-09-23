@@ -32,6 +32,7 @@ public class FRRiskTestDataFactory {
                 .deliveryAddress(FRRisk.FRRiskDeliveryAddress.builder()
                         .countrySubDivision(singletonList("Wessex"))
                         .addressLine(singletonList("3 Queens Square"))
+                        .townName("Bristol")
                         .country("GB")
                         .build())
                 .build();

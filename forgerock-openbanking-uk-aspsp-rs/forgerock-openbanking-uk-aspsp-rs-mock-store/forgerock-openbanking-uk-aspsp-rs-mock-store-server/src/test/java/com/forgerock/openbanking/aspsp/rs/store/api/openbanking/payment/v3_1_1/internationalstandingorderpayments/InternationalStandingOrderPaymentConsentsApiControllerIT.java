@@ -66,9 +66,9 @@ import java.util.UUID;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorAgentTestDataFactory.aValidFRDataInitiationCreditorAgent;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorTestDataFactory.aValidFRDataInitiationCreditor;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderDataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 import static uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent3;
 
 /**
@@ -116,7 +116,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(toOBWriteInternationalStandingOrder4DataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
+        assertThat(toFRWriteInternationalStandingOrderDataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
         assertThat(response.getBody().getData().getStatus()).isEqualTo(consent.getStatus().toOBExternalConsentStatus1Code());
     }
 
@@ -168,7 +168,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         OBWriteInternationalStandingOrderConsentResponse3 consentResponse = response.getBody();
         FRInternationalStandingOrderConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(toOBWriteInternationalStandingOrder4DataInitiation(consentResponse.getData().getInitiation()));
+        assertThat(consent.getInitiation()).isEqualTo(toFRWriteInternationalStandingOrderDataInitiation(consentResponse.getData().getInitiation()));
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
         assertThat(consent.getPispName()).isEqualTo(PaymentTestHelper.MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
@@ -203,7 +203,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         initiation.setCreditorAgent(aValidFRDataInitiationCreditorAgent());
         initiation.setExtendedPurpose(null);
         initiation.setDestinationCountryCode("GB");
-        initiation.setSupplementaryData(FRSupplementaryData.builder().build());
+        initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
     }
 
 }

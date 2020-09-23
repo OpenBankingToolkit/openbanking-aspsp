@@ -82,7 +82,6 @@ public class DomesticPaymentsApiControllerIT {
     @Autowired
     private SpringSecForTest springSecForTest;
 
-
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
@@ -238,7 +237,7 @@ public class DomesticPaymentsApiControllerIT {
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().setInstructedAmount(aValidFRAmount());
         consent.getInitiation().setCreditorPostalAddress(aValidFRPostalAddress());
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
 
@@ -264,8 +263,7 @@ public class DomesticPaymentsApiControllerIT {
     }
 
     private FRDomesticPaymentSubmission2 savePaymentSubmission(FRDomesticConsent5 consent, String xIdempotencyKey) {
-        OBWriteDomestic2 submissionRequest = JMockData.mock(OBWriteDomestic2.class);
-        submissionRequest = new OBWriteDomestic2()
+        OBWriteDomestic2 submissionRequest = new OBWriteDomestic2()
                 .risk(toOBRisk1(consent.getRisk()))
                 .data(new OBWriteDataDomestic2()
                         .consentId(consent.getId())
@@ -284,7 +282,7 @@ public class DomesticPaymentsApiControllerIT {
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().setInstructedAmount(aValidFRAmount());
         consent.getInitiation().setCreditorPostalAddress(aValidFRPostalAddress());
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);

@@ -25,18 +25,18 @@ import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
 
 public class FRSupplementaryDataConverter {
 
-    public static FRSupplementaryData toFRSupplementaryData(OBSupplementaryData1 supplementaryData) {
-        return supplementaryData == null ? null : FRSupplementaryData.builder()
-                .data(supplementaryData.getData())
+    public static FRSupplementaryData toFRSupplementaryData(OBSupplementaryData1 obSupplementaryData) {
+        return obSupplementaryData == null ? null : FRSupplementaryData.builder()
+                .data(obSupplementaryData.getData())
                 .build();
     }
 
-    public static OBSupplementaryData1 toOBSupplementaryData1(FRSupplementaryData supplementaryData) {
-        if (supplementaryData == null) {
+    public static OBSupplementaryData1 toOBSupplementaryData1(FRSupplementaryData frSupplementaryData) {
+        if (frSupplementaryData == null) {
             return null;
         }
         OBSupplementaryData1 obSupplementaryData1 = new OBSupplementaryData1();
-        obSupplementaryData1.setData(supplementaryData.getData());
+        obSupplementaryData1.setData(frSupplementaryData.getData());
         return obSupplementaryData1;
     }
 }

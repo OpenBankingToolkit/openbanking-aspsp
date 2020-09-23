@@ -217,7 +217,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
         consent.getInitiation().setExchangeRateInformation(aValidFRExchangeRateInformation());
         consent.getInitiation().setCurrencyOfTransfer("USD");
         consent.getInitiation().setPurpose("to");
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
 
@@ -263,7 +263,7 @@ public class InternationalScheduledPaymentsApiControllerIT {
         consent.getInitiation().setPurpose("to");
         consent.getInitiation().setCreditorAgent(aValidFRDataInitiationCreditorAgent());
         consent.getInitiation().setRequestedExecutionDateTime(DateTime.now().withMillisOfSecond(0));
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
         consent.setStatus(ConsentStatusCode.CONSUMED);
