@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.singlepayments;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.SinglePaymentConsentDecision;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
@@ -42,9 +42,9 @@ class SinglePaymentConsentDecisionDelegate implements ConsentDecisionDelegate {
     private AccountStoreService accountsService;
     private SinglePaymentService paymentsService;
     private ObjectMapper objectMapper;
-    private FRPaymentSetup1 payment;
+    private FRPaymentSetup payment;
 
-    SinglePaymentConsentDecisionDelegate(AccountStoreService accountsService, SinglePaymentService paymentsService, ObjectMapper objectMapper, FRPaymentSetup1 payment) {
+    SinglePaymentConsentDecisionDelegate(AccountStoreService accountsService, SinglePaymentService paymentsService, ObjectMapper objectMapper, FRPaymentSetup payment) {
         this.accountsService = accountsService;
         this.paymentsService = paymentsService;
         this.objectMapper = objectMapper;

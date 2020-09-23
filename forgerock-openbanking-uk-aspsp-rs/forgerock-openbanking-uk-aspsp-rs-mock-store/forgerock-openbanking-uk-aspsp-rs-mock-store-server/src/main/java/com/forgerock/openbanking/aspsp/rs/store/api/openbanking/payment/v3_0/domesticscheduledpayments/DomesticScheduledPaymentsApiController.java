@@ -22,13 +22,13 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.do
 
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticScheduledPaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticScheduledConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticScheduledPayment;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledPayment;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -61,11 +61,11 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDome
 @Controller("DomesticScheduledPaymentsApiV3.0")
 @Slf4j
 public class DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
-    private DomesticScheduledConsent5Repository domesticScheduledConsentRepository;
-    private DomesticScheduledPaymentSubmission2Repository domesticScheduledPaymentSubmissionRepository;
+    private DomesticScheduledConsentRepository domesticScheduledConsentRepository;
+    private DomesticScheduledPaymentSubmissionRepository domesticScheduledPaymentSubmissionRepository;
     private ResourceLinkService resourceLinkService;
 
-    public DomesticScheduledPaymentsApiController(DomesticScheduledConsent5Repository domesticScheduledConsentRepository, DomesticScheduledPaymentSubmission2Repository domesticScheduledPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public DomesticScheduledPaymentsApiController(DomesticScheduledConsentRepository domesticScheduledConsentRepository, DomesticScheduledPaymentSubmissionRepository domesticScheduledPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
         this.domesticScheduledConsentRepository = domesticScheduledConsentRepository;
         this.domesticScheduledPaymentSubmissionRepository = domesticScheduledPaymentSubmissionRepository;
         this.resourceLinkService = resourceLinkService;
@@ -111,7 +111,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         log.trace("Converted to OBWriteDomesticScheduled2: {}", payment);
 
         String paymentId = payment.getData().getConsentId();
-        FRDomesticScheduledConsent5 paymentConsent = domesticScheduledConsentRepository.findById(paymentId)
+        FRDomesticScheduledConsent paymentConsent = domesticScheduledConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.NOT_FOUND,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -168,16 +168,16 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         }
         FRDomesticScheduledPayment frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRDomesticScheduledConsent5> isPaymentSetup = domesticScheduledConsentRepository.findById(domesticScheduledPaymentId);
+        Optional<FRDomesticScheduledConsent> isPaymentSetup = domesticScheduledConsentRepository.findById(domesticScheduledPaymentId);
         if (!isPaymentSetup.isPresent()) {
             // OB specifies a 400 when the id does not match an existing consent
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + domesticScheduledPaymentId + "' can't be found");
         }
-        FRDomesticScheduledConsent5 frPaymentSetup = isPaymentSetup.get();
+        FRDomesticScheduledConsent frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteDomesticScheduledResponse1 packagePayment(FRDomesticScheduledPayment frPaymentSubmission, FRPaymentConsent frDomesticScheduledConsent) {
+    private OBWriteDomesticScheduledResponse1 packagePayment(FRDomesticScheduledPayment frPaymentSubmission, PaymentConsent frDomesticScheduledConsent) {
         return new OBWriteDomesticScheduledResponse1().data(new OBWriteDataDomesticScheduledResponse1()
                 .domesticScheduledPaymentId(frPaymentSubmission.getId())
                 .initiation(OBDomesticScheduledConverter.toOBDomesticScheduled1(frPaymentSubmission.getDomesticScheduledPayment().getData().getInitiation()))

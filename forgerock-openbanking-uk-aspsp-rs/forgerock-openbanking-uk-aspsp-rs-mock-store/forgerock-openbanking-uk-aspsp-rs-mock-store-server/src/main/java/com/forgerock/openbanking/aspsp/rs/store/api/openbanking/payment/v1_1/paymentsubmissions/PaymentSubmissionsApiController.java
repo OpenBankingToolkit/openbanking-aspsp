@@ -21,12 +21,12 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v1_1.paymentsubmissions;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.payments.paymentsetup.FRPaymentSetup1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.payments.paymentsubmission.FRPaymentSubmission1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FRPaymentSetupRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FRPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSubmission1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -54,9 +54,9 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE
 @Slf4j
 public class PaymentSubmissionsApiController implements PaymentSubmissionsApi {
     @Autowired
-    private FRPaymentSubmission1Repository frPaymentSubmission1Repository;
+    private FRPaymentSubmissionRepository frPaymentSubmissionRepository;
     @Autowired
-    private FRPaymentSetup1Repository frPaymentSetup1Repository;
+    private FRPaymentSetupRepository frPaymentSetupRepository;
     @Autowired
     private ResourceLinkService resourceLinkService;
 
@@ -98,21 +98,21 @@ public class PaymentSubmissionsApiController implements PaymentSubmissionsApi {
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: {}", paymentSubmission);
 
-        Optional<FRPaymentSetup1> isPaymentSetup = frPaymentSetup1Repository.findById(paymentId);
+        Optional<FRPaymentSetup> isPaymentSetup = frPaymentSetupRepository.findById(paymentId);
         if (isPaymentSetup.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + paymentId + "' can't be found");
         }
 
         //Trace the payment submission request
-        FRPaymentSubmission1 frPaymentSubmission = new FRPaymentSubmission1();
+        FRPaymentSubmission frPaymentSubmission = new FRPaymentSubmission();
         frPaymentSubmission.setId(paymentId);
         frPaymentSubmission.setPaymentSubmission(paymentSubmission);
         frPaymentSubmission.setIdempotencyKey(xIdempotencyKey);
         frPaymentSubmission.setObVersion(VersionPathExtractor.getVersionFromPath(httpServletRequest));
-        frPaymentSubmission = new IdempotentRepositoryAdapter<>(frPaymentSubmission1Repository)
+        frPaymentSubmission = new IdempotentRepositoryAdapter<>(frPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
 
-        FRPaymentSetup1 frPaymentSetup = isPaymentSetup.get();
+        FRPaymentSetup frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.status(HttpStatus.CREATED).body(packageToPaymentSubmission(frPaymentSubmission, frPaymentSetup));
     }
 
@@ -140,21 +140,21 @@ public class PaymentSubmissionsApiController implements PaymentSubmissionsApi {
             @ApiParam(value = "An RFC4122 UID used as a correlation id.")
             @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId
     ) throws OBErrorResponseException {
-        Optional<FRPaymentSubmission1> isPaymentSubmission = frPaymentSubmission1Repository.findById(paymentSubmissionId);
+        Optional<FRPaymentSubmission> isPaymentSubmission = frPaymentSubmissionRepository.findById(paymentSubmissionId);
         if (isPaymentSubmission.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + paymentSubmissionId + "' can't be found");
         }
-        FRPaymentSubmission1 frPaymentSubmission = isPaymentSubmission.get();
+        FRPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRPaymentSetup1> isPaymentSetup = frPaymentSetup1Repository.findById(paymentSubmissionId);
+        Optional<FRPaymentSetup> isPaymentSetup = frPaymentSetupRepository.findById(paymentSubmissionId);
         if (isPaymentSetup.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + paymentSubmissionId + "' can't be found");
         }
-        FRPaymentSetup1 frPaymentSetup = isPaymentSetup.get();
+        FRPaymentSetup frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packageToPaymentSubmission(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBPaymentSubmissionResponse1 packageToPaymentSubmission(FRPaymentSubmission1 frPaymentSubmission, FRPaymentSetup1 frPaymentSetup) {
+    private OBPaymentSubmissionResponse1 packageToPaymentSubmission(FRPaymentSubmission frPaymentSubmission, FRPaymentSetup frPaymentSetup) {
         //Create Payment submission response
         OBPaymentDataSubmissionResponse1 paymentDataSubmissionResponse = new OBPaymentDataSubmissionResponse1()
                 .paymentSubmissionId(frPaymentSubmission.getId())

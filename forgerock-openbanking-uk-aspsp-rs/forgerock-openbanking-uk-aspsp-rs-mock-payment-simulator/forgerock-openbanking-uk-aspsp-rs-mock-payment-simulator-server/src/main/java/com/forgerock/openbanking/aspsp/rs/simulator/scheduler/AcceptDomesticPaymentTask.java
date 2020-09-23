@@ -23,10 +23,10 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
@@ -79,12 +79,12 @@ public class AcceptDomesticPaymentTask {
     @SchedulerLock(name = "domesticPayment")
     public void autoAcceptPayment() {
         log.info("Auto-accept payment task waking up. The time is now {}.", format.print(DateTime.now()));
-        Collection<FRDomesticConsent5> allPaymentsInProcess = domesticPaymentsService.getAllPaymentsInProcess();
-        for (FRDomesticConsent5 payment: allPaymentsInProcess) {
+        Collection<FRDomesticConsent> allPaymentsInProcess = domesticPaymentsService.getAllPaymentsInProcess();
+        for (FRDomesticConsent payment: allPaymentsInProcess) {
             log.info("Processing payment {}", payment);
             try {
                 String identificationTo = moveDebitPayment(payment);
-                Optional<FRAccount> isAccountToFromOurs = accountStoreService.findAccountByIdentification(identificationTo);
+                Optional<Account> isAccountToFromOurs = accountStoreService.findAccountByIdentification(identificationTo);
                 if (isAccountToFromOurs.isPresent()) {
                     moveCreditPayment(payment, identificationTo, isAccountToFromOurs.get());
                 } else {
@@ -112,8 +112,8 @@ public class AcceptDomesticPaymentTask {
                 format.print(DateTime.now()));
     }
 
-    private String moveDebitPayment(FRDomesticConsent5 payment) throws CurrencyConverterException {
-        FRAccount accountFrom = accountStoreService.getAccount(payment.getAccountId());
+    private String moveDebitPayment(FRDomesticConsent payment) throws CurrencyConverterException {
+        Account accountFrom = accountStoreService.getAccount(payment.getAccountId());
         log.info("We are going to pay from this account: {}", accountFrom);
         moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
                 OBCreditDebitCode.DEBIT, payment, this::createTransaction);
@@ -123,14 +123,14 @@ public class AcceptDomesticPaymentTask {
         return identificationFrom;
     }
 
-    private void moveCreditPayment(FRDomesticConsent5 payment, String identificationTo, FRAccount accountFrom) throws CurrencyConverterException {
+    private void moveCreditPayment(FRDomesticConsent payment, String identificationTo, Account accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationTo, accountFrom);
         log.info("Move the money to this account");
         moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
                 OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction6 createTransaction(FRAccount account, FRDomesticConsent5 payment, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction6 createTransaction(Account account, FRDomesticConsent payment, OBCreditDebitCode creditDebitCode, Balance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());

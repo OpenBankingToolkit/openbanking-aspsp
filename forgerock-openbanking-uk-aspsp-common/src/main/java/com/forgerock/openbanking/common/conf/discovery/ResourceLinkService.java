@@ -22,11 +22,11 @@ package com.forgerock.openbanking.common.conf.discovery;
 
 
 import com.forgerock.openbanking.common.model.openbanking.event.FREventSubscription1;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmation1;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentSubmission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.Links;
@@ -42,11 +42,11 @@ public class ResourceLinkService {
         this.discoveryConfigurationProperties = discoveryConfigurationProperties;
     }
 
-    public Links toSelfLink(FRPaymentConsent consent, Function<DiscoveryConfigurationProperties.PaymentApis, String> getUrl) {
+    public Links toSelfLink(PaymentConsent consent, Function<DiscoveryConfigurationProperties.PaymentApis, String> getUrl) {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getPayments()), consent.getId());
     }
 
-    public Links toSelfLink(FRPaymentSubmission payment, Function<DiscoveryConfigurationProperties.PaymentApis, String> getUrl) {
+    public Links toSelfLink(PaymentSubmission payment, Function<DiscoveryConfigurationProperties.PaymentApis, String> getUrl) {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getPayments()), payment.getId());
     }
 

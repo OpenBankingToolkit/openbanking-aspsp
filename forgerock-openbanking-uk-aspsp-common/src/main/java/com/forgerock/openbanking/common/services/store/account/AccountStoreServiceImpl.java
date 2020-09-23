@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.account;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,19 +95,19 @@ public class AccountStoreServiceImpl implements AccountStoreService {
     }
 
     @Override
-    public List<FRAccountWithBalance> getAccountWithBalances(String userID) {
+    public List<AccountWithBalance> getAccountWithBalances(String userID) {
         // This is necessary as auth server always uses lowercase user id
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for accounts with user ID: {}", lowercaseUserId);
 
-        ParameterizedTypeReference<List<FRAccountWithBalance>> ptr = new ParameterizedTypeReference<List<FRAccountWithBalance>>() {};
+        ParameterizedTypeReference<List<AccountWithBalance>> ptr = new ParameterizedTypeReference<List<AccountWithBalance>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + "/api/accounts/search/findByUserId");
         builder.queryParam("userId", lowercaseUserId);
         builder.queryParam("withBalance", true);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRAccountWithBalance>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<List<AccountWithBalance>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
         return entity.getBody();
     }
 }

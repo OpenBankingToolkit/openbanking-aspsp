@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,15 +44,15 @@ public interface InternationalPaymentApi {
     @RequestMapping(value = "/search/findByStatus",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<Collection<FRInternationalConsent5>> findByStatus(
+    ResponseEntity<Collection<FRInternationalConsent>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     );
 
     @RequestMapping(value = "/",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.PUT)
-    ResponseEntity<FRInternationalConsent5> update(
-            @RequestBody FRInternationalConsent5 payment1
+    ResponseEntity<FRInternationalConsent> update(
+            @RequestBody FRInternationalConsent payment1
     );
 }
 

@@ -23,13 +23,13 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticStandingOrderConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderConsentRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPermission;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -81,7 +81,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private DomesticStandingOrderConsent5Repository repository;
+    private DomesticStandingOrderConsentRepository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -101,7 +101,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     public void testGetDomesticStandingOrderPaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticStandingOrderConsent5 consent = JMockData.mock(FRDomesticStandingOrderConsent5.class);
+        FRDomesticStandingOrderConsent consent = JMockData.mock(FRDomesticStandingOrderConsent.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         setupTestConsentInitiation(consent.getInitiation());
         repository.save(consent);
@@ -127,7 +127,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     public void testGetDomesticStandingOrderPaymentConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticStandingOrderConsent5 consent = JMockData.mock(FRDomesticStandingOrderConsent5.class);
+        FRDomesticStandingOrderConsent consent = JMockData.mock(FRDomesticStandingOrderConsent.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
         // When
@@ -179,7 +179,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteDomesticStandingOrderConsentResponse3 consentResponse = response.getBody();
-        FRDomesticStandingOrderConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRDomesticStandingOrderConsent consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getPispName()).isEqualTo(PaymentTestHelper.MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());

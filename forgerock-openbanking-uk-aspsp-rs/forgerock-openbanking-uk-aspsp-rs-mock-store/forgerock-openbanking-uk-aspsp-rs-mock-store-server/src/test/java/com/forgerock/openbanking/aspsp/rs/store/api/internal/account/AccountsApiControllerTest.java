@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import org.junit.Test;
@@ -60,10 +60,10 @@ public class AccountsApiControllerTest {
         given(balanceRepository.findByAccountIdIn(any())).willReturn(Collections.emptyList());
 
         // When
-        ResponseEntity<List<FRAccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
+        ResponseEntity<List<AccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
 
         // Then
-        List<FRAccountWithBalance> results = Objects.requireNonNull(result.getBody());
+        List<AccountWithBalance> results = Objects.requireNonNull(result.getBody());
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).getBalances()).isEmpty();
     }
@@ -74,7 +74,7 @@ public class AccountsApiControllerTest {
         given(accountsRepository.findByUserID(any())).willReturn(Collections.emptyList());
 
         // When
-        ResponseEntity<List<FRAccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
+        ResponseEntity<List<AccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
 
         // Then
         assertThat(Objects.requireNonNull(result.getBody())).isEmpty();
@@ -88,10 +88,10 @@ public class AccountsApiControllerTest {
         ));
 
         // When
-        ResponseEntity<List<FRAccountWithBalance>> result = accountsApiController.getAccounts("user1", false);
+        ResponseEntity<List<AccountWithBalance>> result = accountsApiController.getAccounts("user1", false);
 
         // Then
-        List<FRAccountWithBalance> results = Objects.requireNonNull(result.getBody());
+        List<AccountWithBalance> results = Objects.requireNonNull(result.getBody());
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).getBalances().size()).isEqualTo(0);
         verifyZeroInteractions(balanceRepository);
@@ -108,10 +108,10 @@ public class AccountsApiControllerTest {
         ));
 
         // When
-        ResponseEntity<List<FRAccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
+        ResponseEntity<List<AccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
 
         // Then
-        List<FRAccountWithBalance> results = Objects.requireNonNull(result.getBody());
+        List<AccountWithBalance> results = Objects.requireNonNull(result.getBody());
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).getBalances().size()).isEqualTo(1);
     }

@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRFileConsent;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.FileConsent;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFileType;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -45,12 +45,25 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent2;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This class exists purely for migration purposes and should be removed once all clusters have been upgraded to a release of openbanking-reference-implementation
+ * containing v3.1.5 (currently REM).
+ *
+ * <p>
+ * Note that Prior to extensive refactoring, there were a series of these "FR" mongo document classes that were named in sequence (e.g. FRDomesticConsent2,
+ * FRDomesticConsent3 etc.). The sequence number was incremented each time there was a new version of the OB model objects they contained. Instead of this, there
+ * is now one FR document class (e.g. FRDomesticConsent) for each corresponding area of the payments API. Each one contains our own "domain" model object, rather
+ * than the OB model ones. This means that if a new OB release adds new fields to an OB object, the fields only need to be added to the our domain objects
+ * (and mapped accordingly). There should be no need to create a new version of the "FR" mongo documents and corresponding repositories.
+ * </p>
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Document
-public class FRFileConsent2 implements FRFileConsent, Persistable<String> {
+@Deprecated
+public class FRFileConsent2 implements FileConsent, Persistable<String> {
     @Id
     @Indexed
     public String id;

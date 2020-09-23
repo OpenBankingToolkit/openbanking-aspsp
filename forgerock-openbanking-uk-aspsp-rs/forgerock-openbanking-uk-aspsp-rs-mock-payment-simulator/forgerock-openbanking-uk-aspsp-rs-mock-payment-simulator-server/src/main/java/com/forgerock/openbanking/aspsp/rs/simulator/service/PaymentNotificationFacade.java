@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.CallbackFailedException;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.EventNotificationService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
 import com.forgerock.openbanking.common.services.notification.EventSubject;
@@ -54,7 +54,7 @@ public class PaymentNotificationFacade {
         this.eventNotificationService = eventNotificationService;
     }
 
-    public void paymentStatusChanged(FRPaymentConsent paymentConsent) {
+    public void paymentStatusChanged(PaymentConsent paymentConsent) {
         log.debug("Send notification for changed payment status. id: '{}', status: '{}'", paymentConsent.getId(), paymentConsent.getStatus());
         createAndSendNotification(paymentConsent.getId(), paymentConsent.getPispId());
     }

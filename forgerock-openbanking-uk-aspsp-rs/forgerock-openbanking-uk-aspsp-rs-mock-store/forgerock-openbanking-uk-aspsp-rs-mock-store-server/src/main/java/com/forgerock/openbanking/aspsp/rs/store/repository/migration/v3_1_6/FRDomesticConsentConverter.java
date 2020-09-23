@@ -21,26 +21,26 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRDomesticConsent2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
 
 public class FRDomesticConsentConverter {
 
-    public static FRDomesticConsent5 toFRDomesticConsent5(FRDomesticConsent2 frDomesticConsent2) {
-        FRDomesticConsent5 frDomesticConsent5 = new FRDomesticConsent5();
+    public static FRDomesticConsent toFRDomesticConsent(FRDomesticConsent2 frDomesticConsent2) {
+        FRDomesticConsent frDomesticConsent = new FRDomesticConsent();
 
-        frDomesticConsent5.setId(frDomesticConsent5.getId());
-        frDomesticConsent5.setStatus(frDomesticConsent5.getStatus());
-        frDomesticConsent5.setUserId(frDomesticConsent5.getUserId());
-        frDomesticConsent5.setAccountId(frDomesticConsent5.getAccountId());
-        frDomesticConsent5.setCreated(frDomesticConsent5.getCreated());
-        frDomesticConsent5.setDomesticConsent(toFRWriteDomesticConsent(frDomesticConsent2.getDomesticConsent()));
-        frDomesticConsent5.setPispId(frDomesticConsent5.getPispId());
-        frDomesticConsent5.setPispName(frDomesticConsent5.getPispName());
-        frDomesticConsent5.setStatusUpdate(frDomesticConsent5.getStatusUpdate());
+        frDomesticConsent.setId(frDomesticConsent.getId());
+        frDomesticConsent.setStatus(frDomesticConsent.getStatus());
+        frDomesticConsent.setUserId(frDomesticConsent.getUserId());
+        frDomesticConsent.setAccountId(frDomesticConsent.getAccountId());
+        frDomesticConsent.setCreated(frDomesticConsent.getCreated());
+        frDomesticConsent.setDomesticConsent(toFRWriteDomesticConsent(frDomesticConsent2.getDomesticConsent()));
+        frDomesticConsent.setPispId(frDomesticConsent.getPispId());
+        frDomesticConsent.setPispName(frDomesticConsent.getPispName());
+        frDomesticConsent.setStatusUpdate(frDomesticConsent.getStatusUpdate());
 
-        return frDomesticConsent5;
+        return frDomesticConsent;
     }
 
 }

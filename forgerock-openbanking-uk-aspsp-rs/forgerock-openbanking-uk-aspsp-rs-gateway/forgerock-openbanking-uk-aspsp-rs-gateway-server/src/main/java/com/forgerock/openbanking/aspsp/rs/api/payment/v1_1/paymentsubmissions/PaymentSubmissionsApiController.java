@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v1_1.paymentsubmissions;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -97,7 +97,7 @@ public class PaymentSubmissionsApiController implements PaymentSubmissionsApi {
     ) throws OBErrorResponseException {
 
         String paymentId = paymentSubmission.getData().getPaymentId();
-        FRPaymentSetup1 payment = paymentsService.getPayment(paymentId);
+        FRPaymentSetup payment = paymentsService.getPayment(paymentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)

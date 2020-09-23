@@ -25,7 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FileParseException;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -56,7 +56,7 @@ public class OBIEPaymentInitiationReport1Builder {
         this.objectMapper = objectMapper;
     }
 
-    String toPaymentReport(final FRFileConsent5 consent) {
+    String toPaymentReport(final FRFileConsent consent) {
         log.debug("Create {} report file for consent id: {}", consent.getFileType(), consent.getId());
         final List<OBWriteDomesticResponse1> payments =
                 consent.getPayments().stream()
@@ -78,7 +78,7 @@ public class OBIEPaymentInitiationReport1Builder {
         }
     }
 
-    private static OBWriteDomesticResponse1 mapDomesticPayment(FRFileConsent5 consent, FRFilePayment filePayment) {
+    private static OBWriteDomesticResponse1 mapDomesticPayment(FRFileConsent consent, FRFilePayment filePayment) {
             OBWriteDomesticResponse1 response = new OBWriteDomesticResponse1()
             .data(new OBWriteDataDomesticResponse1()
                     .initiation(

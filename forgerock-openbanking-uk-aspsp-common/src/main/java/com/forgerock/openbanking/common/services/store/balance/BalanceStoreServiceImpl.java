@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.balance;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,8 +66,8 @@ public class BalanceStoreServiceImpl implements BalanceStoreService {
      * @param balance a balance
      */
     @Override
-    public void updateBalance(FRBalance balance) {
-        HttpEntity<FRBalance> request = new HttpEntity<>(balance, new HttpHeaders());
+    public void updateBalance(Balance balance) {
+        HttpEntity<Balance> request = new HttpEntity<>(balance, new HttpHeaders());
         restTemplate.exchange(
                 rsStoreRoot + "/api/balances/",
                 HttpMethod.PUT, request, Void.class);

@@ -22,10 +22,10 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v1_1.pa
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.payments.paymentsetup.FRPaymentSetup1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FRPaymentSetupRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -72,7 +72,7 @@ public class PaymentsApiControllerIT {
     @Autowired
     private RSConfiguration rsConfiguration;
     @Autowired
-    private FRPaymentSetup1Repository repository;
+    private FRPaymentSetupRepository repository;
 
 
     @MockBean
@@ -114,7 +114,7 @@ public class PaymentsApiControllerIT {
         log.error("The response: {}", response);
         assertThat(response.getStatus()).isEqualTo(201);
         OBPaymentSetupResponse1 consentResponse = response.getBody();
-        FRPaymentSetup1 consent = repository.findById(consentResponse.getData().getPaymentId()).get();
+        FRPaymentSetup consent = repository.findById(consentResponse.getData().getPaymentId()).get();
         assertThat(consent.getPispName()).isEqualTo(MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getPaymentId());
@@ -130,7 +130,7 @@ public class PaymentsApiControllerIT {
     public void shouldGetSinglePaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRPaymentSetup1 consent = JMockData.mock(FRPaymentSetup1.class);
+        FRPaymentSetup consent = JMockData.mock(FRPaymentSetup.class);
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
         repository.save(consent);
 

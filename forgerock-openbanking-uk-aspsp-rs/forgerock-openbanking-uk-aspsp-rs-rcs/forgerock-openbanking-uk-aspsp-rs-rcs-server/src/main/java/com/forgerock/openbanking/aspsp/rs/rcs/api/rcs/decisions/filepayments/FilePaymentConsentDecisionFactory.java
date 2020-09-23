@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.filepayments;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,7 @@ public class FilePaymentConsentDecisionFactory {
     }
 
     public ConsentDecisionDelegate create(final String intentId) {
-        FRFileConsent5 consent = paymentsService.getPayment(intentId);
+        FRFileConsent consent = paymentsService.getPayment(intentId);
         return new FilePaymentConsentDecisionDelegate(paymentConsentDecisionUpdater, paymentsService, objectMapper, consent);
     }
 

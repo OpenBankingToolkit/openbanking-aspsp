@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.payments.paymentsetup.FRPaymentSetup1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FRPaymentSetupRepository;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,13 +43,13 @@ public class PaymentApiController implements PaymentApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentApiController.class);
 
-    private final FRPaymentSetup1Repository frPaymentSetup1Repository;
+    private final FRPaymentSetupRepository frPaymentSetupRepository;
     private ConsentMetricService consentMetricService;
 
 
     @Autowired
-    public PaymentApiController(FRPaymentSetup1Repository frPaymentSetup1Repository, ConsentMetricService consentMetricService) {
-        this.frPaymentSetup1Repository = frPaymentSetup1Repository;
+    public PaymentApiController(FRPaymentSetupRepository frPaymentSetupRepository, ConsentMetricService consentMetricService) {
+        this.frPaymentSetupRepository = frPaymentSetupRepository;
         this.consentMetricService = consentMetricService;
     }
 
@@ -58,7 +58,7 @@ public class PaymentApiController implements PaymentApi {
             @PathVariable("paymentId") String paymentId
     ) {
         LOGGER.debug("Find payment by id {}", paymentId);
-        Optional<FRPaymentSetup1> byPaymentId = frPaymentSetup1Repository.findById(paymentId);
+        Optional<FRPaymentSetup> byPaymentId = frPaymentSetupRepository.findById(paymentId);
 
         return byPaymentId.<ResponseEntity>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment id '" + paymentId + "' not found"));
@@ -66,19 +66,19 @@ public class PaymentApiController implements PaymentApi {
     }
 
     @Override
-    public ResponseEntity<Collection<FRPaymentSetup1>> findByStatus(
+    public ResponseEntity<Collection<FRPaymentSetup>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     ) {
         LOGGER.debug("Find payment by status {}", status);
-        return new ResponseEntity<>(frPaymentSetup1Repository.findByStatus(status.toOBTransactionIndividualStatus1Code()), HttpStatus.OK);
+        return new ResponseEntity<>(frPaymentSetupRepository.findByStatus(status.toOBTransactionIndividualStatus1Code()), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<FRPaymentSetup1> update(
-            @RequestBody FRPaymentSetup1 paymentSetup
+    public ResponseEntity<FRPaymentSetup> update(
+            @RequestBody FRPaymentSetup paymentSetup
     ) {
         LOGGER.debug("Update payment {}", paymentSetup);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(paymentSetup.getId(), paymentSetup.getStatus().name()));
-        return new ResponseEntity<>(frPaymentSetup1Repository.save(paymentSetup), HttpStatus.OK);
+        return new ResponseEntity<>(frPaymentSetupRepository.save(paymentSetup), HttpStatus.OK);
     }
 }

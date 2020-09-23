@@ -22,8 +22,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.SinglePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -52,13 +52,13 @@ public class RCSSinglePaymentDetailsApi implements RCSDetailsApi {
     private TppStoreService tppStoreService;
 
     @Override
-    public ResponseEntity consentDetails(String remoteConsentRequest, List<FRAccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
+    public ResponseEntity consentDetails(String remoteConsentRequest, List<AccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
         log.debug("Received a consent request with consent_request='{}'", remoteConsentRequest);
         log.debug("=> The payment id '{}'", consentId);
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRPaymentSetup1 payment = singlePaymentService.getPayment(consentId);
+        FRPaymentSetup payment = singlePaymentService.getPayment(consentId);
         Optional<Tpp> isTpp = tppStoreService.findById(payment.getPispId());
         if (!isTpp.isPresent()) {
             log.error("The TPP '{}' (Client ID {}) that created this consent id '{}' doesn't exist anymore.", payment.getPispId(), clientId, consentId);

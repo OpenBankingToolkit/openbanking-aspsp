@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.internationalpayments;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.payments.InternationalPaymentSubmission4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -30,8 +30,8 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class InternationalPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments.InternationalPaymentsApiController implements InternationalPaymentsApi {
 
-    public InternationalPaymentsApiController(InternationalConsent5Repository internationalConsentRepository,
-                                              InternationalPaymentSubmission4Repository internationalPaymentSubmissionRepository,
+    public InternationalPaymentsApiController(InternationalConsentRepository internationalConsentRepository,
+                                              InternationalPaymentSubmissionRepository internationalPaymentSubmissionRepository,
                                               ResourceLinkService resourceLinkService) {
         super(internationalConsentRepository, internationalPaymentSubmissionRepository, resourceLinkService);
     }

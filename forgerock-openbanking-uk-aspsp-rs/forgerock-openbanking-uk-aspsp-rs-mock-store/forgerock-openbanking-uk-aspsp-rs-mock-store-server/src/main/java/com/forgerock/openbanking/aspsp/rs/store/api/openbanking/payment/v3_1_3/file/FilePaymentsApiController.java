@@ -26,14 +26,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.file;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.FilePaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFilePaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -60,12 +60,12 @@ import java.util.Optional;
 @Slf4j
 public class FilePaymentsApiController implements FilePaymentsApi {
 
-    private final FileConsent5Repository fileConsentRepository;
-    private final FilePaymentSubmission2Repository filePaymentSubmissionRepository;
+    private final FileConsentRepository fileConsentRepository;
+    private final FilePaymentSubmissionRepository filePaymentSubmissionRepository;
     private final PaymentReportFile1Service paymentReportFileService;
     private final ResourceLinkService resourceLinkService;
 
-    public FilePaymentsApiController(FileConsent5Repository fileConsentRepository, FilePaymentSubmission2Repository filePaymentSubmissionRepository, PaymentReportFile1Service paymentReportFileService, ResourceLinkService resourceLinkService) {
+    public FilePaymentsApiController(FileConsentRepository fileConsentRepository, FilePaymentSubmissionRepository filePaymentSubmissionRepository, PaymentReportFile1Service paymentReportFileService, ResourceLinkService resourceLinkService) {
         this.fileConsentRepository = fileConsentRepository;
         this.filePaymentSubmissionRepository = filePaymentSubmissionRepository;
         this.paymentReportFileService = paymentReportFileService;
@@ -87,7 +87,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         log.debug("Received payment submission: {}", obWriteFile2);
 
         String paymentId = obWriteFile2.getData().getConsentId();
-        FRFileConsent5 paymentConsent = fileConsentRepository.findById(paymentId)
+        FRFileConsent paymentConsent = fileConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -95,7 +95,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                 );
         log.debug("Found consent '{}' to match this payment id: {} ", paymentConsent, paymentId);
 
-        FRFilePaymentSubmission2 frPaymentSubmission = FRFilePaymentSubmission2.builder()
+        FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
                 .id(paymentId)
                 .filePayment(obWriteFile2)
                 .created(new Date())
@@ -119,7 +119,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             Principal principal
     ) throws OBErrorResponseException {
 
-        Optional<FRFilePaymentSubmission2> isPaymentSubmission = filePaymentSubmissionRepository.findById(filePaymentId);
+        Optional<FRFilePaymentSubmission> isPaymentSubmission = filePaymentSubmissionRepository.findById(filePaymentId);
         if (!isPaymentSubmission.isPresent()) {
             throw new OBErrorResponseException(
                     HttpStatus.BAD_REQUEST,
@@ -127,9 +127,9 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                     OBRIErrorType.PAYMENT_SUBMISSION_NOT_FOUND
                             .toOBError1(filePaymentId));
         }
-        FRFilePaymentSubmission2 frPaymentSubmission = isPaymentSubmission.get();
+        FRFilePaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRFileConsent5> isPaymentSetup = fileConsentRepository.findById(filePaymentId);
+        Optional<FRFileConsent> isPaymentSetup = fileConsentRepository.findById(filePaymentId);
         if (!isPaymentSetup.isPresent()) {
             throw new OBErrorResponseException(
                     HttpStatus.BAD_REQUEST,
@@ -137,7 +137,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                     OBRIErrorType.PAYMENT_CONSENT_BEHIND_SUBMISSION_NOT_FOUND
                             .toOBError1(filePaymentId));
         }
-        FRFileConsent5 frPaymentSetup = isPaymentSetup.get();
+        FRFileConsent frPaymentSetup = isPaymentSetup.get();
 
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
@@ -166,7 +166,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        FRFileConsent5 consent = fileConsentRepository.findById(filePaymentId)
+        FRFileConsent consent = fileConsentRepository.findById(filePaymentId)
                 .orElseThrow(() ->
                         new OBErrorResponseException(
                                 HttpStatus.BAD_REQUEST,
@@ -180,7 +180,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         return ResponseEntity.ok(reportFile);
     }
 
-    private OBWriteFileResponse2 packagePayment(FRFilePaymentSubmission2 frPaymentSubmission, FRFileConsent5 frFileConsent) {
+    private OBWriteFileResponse2 packagePayment(FRFilePaymentSubmission frPaymentSubmission, FRFileConsent frFileConsent) {
         return new OBWriteFileResponse2().data(new OBWriteDataFileResponse2()
                 .filePaymentId(frPaymentSubmission.getId())
                 .initiation(frPaymentSubmission.getFilePayment().getData().getInitiation())

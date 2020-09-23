@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderConsentRepository;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,7 +45,7 @@ import static org.mockito.Mockito.when;
 public class InternationalStandingOrderApiControllerTest {
 
     @Mock
-    private InternationalStandingOrderConsent5Repository repository;
+    private InternationalStandingOrderConsentRepository repository;
 
     @InjectMocks
     private InternationalStandingOrderApiController controller;
@@ -53,7 +53,7 @@ public class InternationalStandingOrderApiControllerTest {
     @Test
     public void getInternationalStandingOrderPaymentConsent() {
         // Given
-        FRInternationalStandingOrderConsent5 expectedConsent = new FRInternationalStandingOrderConsent5();
+        FRInternationalStandingOrderConsent expectedConsent = new FRInternationalStandingOrderConsent();
         expectedConsent.id = "expectedId123";
         when(repository.findById(eq("pay123"))).thenReturn(Optional.of(expectedConsent));
 
@@ -62,7 +62,7 @@ public class InternationalStandingOrderApiControllerTest {
 
         // Then
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(((FRInternationalStandingOrderConsent5) Objects.requireNonNull(resp.getBody())).id).isEqualTo("expectedId123");
+        assertThat(((FRInternationalStandingOrderConsent) Objects.requireNonNull(resp.getBody())).id).isEqualTo("expectedId123");
     }
 
     @Test
@@ -80,12 +80,12 @@ public class InternationalStandingOrderApiControllerTest {
     @Test
     public void findByStatus() {
         // Given
-        FRInternationalStandingOrderConsent5 expectedConsent = new FRInternationalStandingOrderConsent5();
+        FRInternationalStandingOrderConsent expectedConsent = new FRInternationalStandingOrderConsent();
         expectedConsent.id = "expectedId123";
         when(repository.findByStatus(eq(OBTransactionIndividualStatus1Code.ACCEPTEDSETTLEMENTINPROCESS))).thenReturn(Collections.singleton(expectedConsent));
 
         // When
-        ResponseEntity<Collection<FRInternationalStandingOrderConsent5>> resp = controller.findByStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
+        ResponseEntity<Collection<FRInternationalStandingOrderConsent>> resp = controller.findByStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
 
         // Then
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -98,7 +98,7 @@ public class InternationalStandingOrderApiControllerTest {
         when(repository.findByStatus(eq(OBTransactionIndividualStatus1Code.ACCEPTEDSETTLEMENTINPROCESS))).thenReturn(Collections.emptyList());
 
         // When
-        ResponseEntity<Collection<FRInternationalStandingOrderConsent5>> resp = controller.findByStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
+        ResponseEntity<Collection<FRInternationalStandingOrderConsent>> resp = controller.findByStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
 
         // Then
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);

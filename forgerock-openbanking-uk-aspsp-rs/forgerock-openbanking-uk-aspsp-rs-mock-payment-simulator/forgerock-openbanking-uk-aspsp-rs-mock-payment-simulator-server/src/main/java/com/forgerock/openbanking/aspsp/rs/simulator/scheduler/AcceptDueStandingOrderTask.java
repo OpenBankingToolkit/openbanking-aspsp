@@ -22,8 +22,8 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Account;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
@@ -154,7 +154,7 @@ public class AcceptDueStandingOrderTask {
 
         String identificationFrom = frStandingOrder.getStandingOrder().getCreditorAccount().getIdentification();
         log.debug("Find if the 'to' account '{}' is own by this ASPSP", identificationFrom);
-        Optional<FRAccount> isAccountFromOurs = accountStoreService.findAccountByIdentification(identificationFrom);
+        Optional<Account> isAccountFromOurs = accountStoreService.findAccountByIdentification(identificationFrom);
         if (isAccountFromOurs.isPresent()) {
             moveCreditPayment(frStandingOrder, identificationFrom, isAccountFromOurs.get(), amount);
         } else {
@@ -164,20 +164,20 @@ public class AcceptDueStandingOrderTask {
     }
 
     private void moveDebitPayment(FRStandingOrder6 payment, OBActiveOrHistoricCurrencyAndAmount amount) throws CurrencyConverterException {
-        FRAccount accountTo = accountStoreService.getAccount(payment.getAccountId());
+        Account accountTo = accountStoreService.getAccount(payment.getAccountId());
         log.info("We are going to pay from this account: {}", accountTo);
         moneyService.moveMoney(accountTo, amount,
                 OBCreditDebitCode.DEBIT, payment, this::createTransaction);
     }
 
-    private void moveCreditPayment(FRStandingOrder6 payment, String identificationFrom, FRAccount accountFrom, OBActiveOrHistoricCurrencyAndAmount amount) throws CurrencyConverterException {
+    private void moveCreditPayment(FRStandingOrder6 payment, String identificationFrom, Account accountFrom, OBActiveOrHistoricCurrencyAndAmount amount) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationFrom, accountFrom);
         log.info("Move the money to this account");
         moneyService.moveMoney(accountFrom, amount,
                 OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction6 createTransaction(FRAccount account, FRStandingOrder6 payment, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction6 createTransaction(Account account, FRStandingOrder6 payment, OBCreditDebitCode creditDebitCode, Balance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
         log.debug("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());

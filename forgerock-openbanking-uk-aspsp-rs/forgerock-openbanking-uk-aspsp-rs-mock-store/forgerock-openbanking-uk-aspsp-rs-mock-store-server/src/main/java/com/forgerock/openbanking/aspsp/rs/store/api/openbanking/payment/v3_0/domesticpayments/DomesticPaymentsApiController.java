@@ -21,13 +21,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.domesticpayments;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticPaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -61,11 +61,11 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDome
 @Slf4j
 public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
-    private DomesticConsent5Repository domesticConsentRepository;
-    private DomesticPaymentSubmission2Repository domesticPaymentSubmissionRepository;
+    private DomesticConsentRepository domesticConsentRepository;
+    private DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository;
     private ResourceLinkService resourceLinkService;
 
-    public DomesticPaymentsApiController(DomesticConsent5Repository domesticConsentRepository, DomesticPaymentSubmission2Repository domesticPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public DomesticPaymentsApiController(DomesticConsentRepository domesticConsentRepository, DomesticPaymentSubmissionRepository domesticPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
         this.domesticConsentRepository = domesticConsentRepository;
         this.domesticPaymentSubmissionRepository = domesticPaymentSubmissionRepository;
         this.resourceLinkService = resourceLinkService;
@@ -111,7 +111,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         log.trace("Converted to: {}", payment.getClass());
 
         String paymentId = payment.getData().getConsentId();
-        FRDomesticConsent5 paymentConsent = domesticConsentRepository.findById(paymentId)
+        FRDomesticConsent paymentConsent = domesticConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                     // OB specifies a 400 when the id does not match an existing consent
                     HttpStatus.BAD_REQUEST,
@@ -120,7 +120,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                 );
         log.debug("Found consent '{}' to match this payment id: {} ", paymentConsent, paymentId);
 
-        FRDomesticPaymentSubmission2 frPaymentSubmission = FRDomesticPaymentSubmission2.builder()
+        FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
                 .id(payment.getData().getConsentId())
                 .domesticPayment(payment)
                 .created(new Date())
@@ -161,21 +161,21 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRDomesticPaymentSubmission2> isPaymentSubmission = domesticPaymentSubmissionRepository.findById(domesticPaymentId);
+        Optional<FRDomesticPaymentSubmission> isPaymentSubmission = domesticPaymentSubmissionRepository.findById(domesticPaymentId);
         if (!isPaymentSubmission.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + domesticPaymentId + "' can't be found");
         }
-        FRDomesticPaymentSubmission2 frPaymentSubmission = isPaymentSubmission.get();
+        FRDomesticPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRDomesticConsent5> isPaymentSetup = domesticConsentRepository.findById(domesticPaymentId);
+        Optional<FRDomesticConsent> isPaymentSetup = domesticConsentRepository.findById(domesticPaymentId);
         if (!isPaymentSetup.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + domesticPaymentId + "' can't be found");
         }
-        FRDomesticConsent5 frPaymentSetup = isPaymentSetup.get();
+        FRDomesticConsent frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteDomesticResponse1 packagePayment(FRDomesticPaymentSubmission2 frPaymentSubmission, FRPaymentConsent paymentConsent) {
+    private OBWriteDomesticResponse1 packagePayment(FRDomesticPaymentSubmission frPaymentSubmission, PaymentConsent paymentConsent) {
         return new OBWriteDomesticResponse1()
                 .data(new OBWriteDataDomesticResponse1()
                 .domesticPaymentId(frPaymentSubmission.getId())

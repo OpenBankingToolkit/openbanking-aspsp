@@ -24,7 +24,7 @@ import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,20 +52,20 @@ public class FilePaymentApiController implements FilePaymentApi {
     @Override
     public ResponseEntity get(@PathVariable("paymentId") String paymentId) {
         log.debug("Find file payment by id {}", paymentId);
-        Optional<FRFileConsent5> byPaymentId = consentRepository.findById(paymentId);
+        Optional<FRFileConsent> byPaymentId = consentRepository.findById(paymentId);
         return byPaymentId.<ResponseEntity>map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment id '" + paymentId + "' not found"));
     }
 
     @Override
-    public ResponseEntity<FRFileConsent5> update(@RequestBody FRFileConsent5 paymentSetup) {
+    public ResponseEntity<FRFileConsent> update(@RequestBody FRFileConsent paymentSetup) {
         log.debug("Update file payment {}", paymentSetup);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(paymentSetup.getId(), paymentSetup.getStatus().name()));
         return ResponseEntity.ok(consentRepository.save(paymentSetup));
     }
 
     @Override
-    public ResponseEntity<Collection<FRFileConsent5>> findByStatus(
+    public ResponseEntity<Collection<FRFileConsent>> findByStatus(
             @RequestParam("status") ConsentStatusCode status) {
         log.debug("Find file payment by status {}", status);
         return new ResponseEntity<>(consentRepository.findByStatus(status), HttpStatus.OK);

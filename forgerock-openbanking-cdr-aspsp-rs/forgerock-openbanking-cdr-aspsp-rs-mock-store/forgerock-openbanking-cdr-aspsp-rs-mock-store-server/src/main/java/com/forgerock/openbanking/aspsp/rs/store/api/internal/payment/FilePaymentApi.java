@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,14 +44,14 @@ public interface FilePaymentApi {
     @RequestMapping(value = "/",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.PUT)
-    ResponseEntity<FRFileConsent5> update(
-            @RequestBody FRFileConsent5 payment1
+    ResponseEntity<FRFileConsent> update(
+            @RequestBody FRFileConsent payment1
     );
 
     @RequestMapping(value = "/search/findByStatus",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<Collection<FRFileConsent5>> findByStatus(
+    ResponseEntity<Collection<FRFileConsent>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     );
 }

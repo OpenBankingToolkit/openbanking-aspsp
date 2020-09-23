@@ -25,8 +25,8 @@ import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.services.openbanking.OBHeaderCheckerService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -96,7 +96,7 @@ public class PaymentsRequestPaymentIdEndpointWrapperTest {
     @Test
     public void verifyAccessToken() throws Exception {
         // given
-        FRPaymentConsent payment = FRDomesticConsent5.builder()
+        PaymentConsent payment = FRDomesticConsent.builder()
                 .status(ConsentStatusCode.AUTHORISED)
                 .build();
 
@@ -117,7 +117,7 @@ public class PaymentsRequestPaymentIdEndpointWrapperTest {
     @Test
     public void verifyAccessUsing_GrantTypeOK() throws Exception {
 
-        FRPaymentConsent payment = FRDomesticConsent5.builder()
+        PaymentConsent payment = FRDomesticConsent.builder()
                 .status(ConsentStatusCode.AUTHORISED)
                 .build();
 
@@ -134,7 +134,7 @@ public class PaymentsRequestPaymentIdEndpointWrapperTest {
     @Test
     public void verifyAccessUsing_GrantTypeWrong() throws Exception {
         // given
-        FRPaymentConsent payment = FRDomesticConsent5.builder()
+        PaymentConsent payment = FRDomesticConsent.builder()
                 .status(ConsentStatusCode.AUTHORISED)
                 .build();
 

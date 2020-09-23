@@ -21,14 +21,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRDomesticStandingOrderConsent3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent;
 
 public class FRDomesticStandingOrderConsentConverter {
 
-    public static FRDomesticStandingOrderConsent5 toFRDomesticStandingOrderConsent5(FRDomesticStandingOrderConsent3 frDomesticStandingOrderConsent3) {
-        FRDomesticStandingOrderConsent5 frDomesticScheduledConsent5 = new FRDomesticStandingOrderConsent5();
+    public static FRDomesticStandingOrderConsent toFRDomesticStandingOrderConsent(FRDomesticStandingOrderConsent3 frDomesticStandingOrderConsent3) {
+        FRDomesticStandingOrderConsent frDomesticScheduledConsent5 = new FRDomesticStandingOrderConsent();
         frDomesticScheduledConsent5.setStatus(frDomesticStandingOrderConsent3.getStatus());
         frDomesticScheduledConsent5.setId(frDomesticStandingOrderConsent3.getId());
         frDomesticScheduledConsent5.setUserId(frDomesticStandingOrderConsent3.getUserId());

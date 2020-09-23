@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalStandingOrderPaymentSubmission3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalStandingOrderPaymentSubmission4;
+import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.InternationalStandingOrderPaymentSubmission3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderPaymentSubmission;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrder2;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder2;
@@ -33,8 +33,8 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBInternati
 
 public class FRInternationalStandingOrderPaymentSubmissionConverter {
 
-    public static FRInternationalStandingOrderPaymentSubmission4 toFRInternationalStandingOrderPaymentSubmission4(FRInternationalStandingOrderPaymentSubmission3 frInternationalStandingOrderPaymentSubmission3) {
-        return frInternationalStandingOrderPaymentSubmission3 == null ? null : FRInternationalStandingOrderPaymentSubmission4.builder()
+    public static FRInternationalStandingOrderPaymentSubmission toFRInternationalStandingOrderPaymentSubmission(InternationalStandingOrderPaymentSubmission3 frInternationalStandingOrderPaymentSubmission3) {
+        return frInternationalStandingOrderPaymentSubmission3 == null ? null : FRInternationalStandingOrderPaymentSubmission.builder()
                 .id(frInternationalStandingOrderPaymentSubmission3.getId())
                 .internationalStandingOrder(toOBWriteInternationalStandingOrder4(frInternationalStandingOrderPaymentSubmission3.getInternationalStandingOrder()))
                 .created(frInternationalStandingOrderPaymentSubmission3.getCreated())

@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.AccountsConsentDetails;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -51,18 +51,18 @@ public class RCSAccountDetailsApi implements RCSDetailsApi {
     private TppStoreService tppStoreService;
 
     @Override
-    public ResponseEntity consentDetails(String remoteConsentRequest, List<FRAccountWithBalance> accounts, String username, String accountRequestId, String clientId) throws OBErrorException {
+    public ResponseEntity consentDetails(String remoteConsentRequest, List<AccountWithBalance> accounts, String username, String accountRequestId, String clientId) throws OBErrorException {
         log.debug("Received a consent request with consent_request='{}'", remoteConsentRequest);
         log.debug("=> The account request id '{}''", accountRequestId);
 
-        Optional<FRAccountRequest> isAccountRequest = accountRequestStoreService.get(accountRequestId);
+        Optional<AccountRequest> isAccountRequest = accountRequestStoreService.get(accountRequestId);
         if (!isAccountRequest.isPresent()) {
             log.error("The AISP '{}' is referencing an account request {} that doesn't exist",  clientId,
                     accountRequestId);
             return rcsErrorService.error(OBRIErrorType.RCS_CONSENT_REQUEST_UNKNOWN_ACCOUNT_REQUEST,
                     clientId, accountRequestId);
         }
-        FRAccountRequest accountRequest = isAccountRequest.get();
+        AccountRequest accountRequest = isAccountRequest.get();
 
         //Verify the aisp is the same than the one that created this accountRequest ^
         if (!clientId.equals(accountRequest.getClientId())) {

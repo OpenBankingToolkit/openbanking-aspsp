@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRInternationalPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.payment.FRInternationalPaymentSubmission4;
+import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.InternationalPaymentSubmission2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternational1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternational2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational1;
@@ -33,8 +33,8 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBInternati
 
 public class FRInternationalPaymentSubmissionConverter {
 
-    public static FRInternationalPaymentSubmission4 toFRInternationalPaymentSubmission4(FRInternationalPaymentSubmission2 frInternationalPaymentSubmission2) {
-        return frInternationalPaymentSubmission2 == null ? null : FRInternationalPaymentSubmission4.builder()
+    public static FRInternationalPaymentSubmission toFRInternationalPaymentSubmission(InternationalPaymentSubmission2 frInternationalPaymentSubmission2) {
+        return frInternationalPaymentSubmission2 == null ? null : FRInternationalPaymentSubmission.builder()
                 .id(frInternationalPaymentSubmission2.getId())
                 .internationalPayment(toOBWriteInternational3(frInternationalPaymentSubmission2.getInternationalPayment()))
                 .created(frInternationalPaymentSubmission2.getCreated())

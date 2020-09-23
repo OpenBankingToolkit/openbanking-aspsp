@@ -24,7 +24,7 @@ import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,13 +58,13 @@ public class InternationalStandingOrderApiController implements InternationalSta
             @PathVariable("paymentId") String paymentId
     ) {
         LOGGER.debug("Find payment by id {}", paymentId);
-        Optional<FRInternationalStandingOrderConsent5> byPaymentId = consentRepository.findById(paymentId);
+        Optional<FRInternationalStandingOrderConsent> byPaymentId = consentRepository.findById(paymentId);
         return byPaymentId.<ResponseEntity>map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment id '" + paymentId + "' not found"));
 
     }
 
     @Override
-    public ResponseEntity<Collection<FRInternationalStandingOrderConsent5>> findByStatus(
+    public ResponseEntity<Collection<FRInternationalStandingOrderConsent>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     ) {
         LOGGER.debug("Find payment by status {}", status);
@@ -72,8 +72,8 @@ public class InternationalStandingOrderApiController implements InternationalSta
     }
 
     @Override
-    public ResponseEntity<FRInternationalStandingOrderConsent5> update(
-            @RequestBody FRInternationalStandingOrderConsent5 paymentSetup
+    public ResponseEntity<FRInternationalStandingOrderConsent> update(
+            @RequestBody FRInternationalStandingOrderConsent paymentSetup
     ) {
         LOGGER.debug("Update payment {}", paymentSetup);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(paymentSetup.getId(), paymentSetup.getStatus().name()));

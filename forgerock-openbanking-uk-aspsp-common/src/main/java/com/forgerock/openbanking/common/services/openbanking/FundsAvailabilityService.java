@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.openbanking;
 
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.Balance;
 import com.forgerock.openbanking.common.services.store.balance.BalanceStoreService;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
@@ -46,10 +46,10 @@ public class FundsAvailabilityService {
         Preconditions.checkArgument(!StringUtils.isEmpty(accountId), "Account Id cannot be empty");
         Preconditions.checkArgument(!StringUtils.isEmpty(amount), "Amount cannot be empty");
 
-        Optional<FRBalance> balanceIf = balanceStoreService.getBalance(accountId, OBBalanceType1Code.INTERIMAVAILABLE);
+        Optional<Balance> balanceIf = balanceStoreService.getBalance(accountId, OBBalanceType1Code.INTERIMAVAILABLE);
 
         //Verify account for a balance
-        FRBalance balance = balanceIf
+        Balance balance = balanceIf
                 .orElseThrow(() -> new IllegalStateException("No balance found of type '"+OBBalanceType1Code.INTERIMAVAILABLE + "' for account id '" + accountId + "'"));
         BigDecimal currentBalance = balance.getAmount();
         BigDecimal requestAmount = new BigDecimal(amount);

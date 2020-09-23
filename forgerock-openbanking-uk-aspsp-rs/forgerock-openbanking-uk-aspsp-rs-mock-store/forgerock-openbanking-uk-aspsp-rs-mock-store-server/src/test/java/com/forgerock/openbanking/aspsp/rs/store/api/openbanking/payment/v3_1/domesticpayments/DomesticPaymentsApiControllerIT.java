@@ -21,14 +21,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.domesticpayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticPaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -72,9 +72,9 @@ public class DomesticPaymentsApiControllerIT {
     private int port;
 
     @Autowired
-    private DomesticConsent5Repository consentRepository;
+    private DomesticConsentRepository consentRepository;
     @Autowired
-    private DomesticPaymentSubmission2Repository submissionRepository;
+    private DomesticPaymentSubmissionRepository submissionRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -91,8 +91,8 @@ public class DomesticPaymentsApiControllerIT {
     public void testGetDomesticPaymentSubmission() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticConsent5 consent = saveConsent();
-        FRDomesticPaymentSubmission2 submission = savePaymentSubmission(consent, UUID.randomUUID().toString());
+        FRDomesticConsent consent = saveConsent();
+        FRDomesticPaymentSubmission submission = savePaymentSubmission(consent, UUID.randomUUID().toString());
 
         // When
         HttpResponse<OBWriteDomesticConsentResponse2> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/domestic-payments/" + submission.getId())
@@ -112,9 +112,9 @@ public class DomesticPaymentsApiControllerIT {
     public void testGetMissingDomesticPaymentSubmissionReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticConsent5 consent = saveConsent();
+        FRDomesticConsent consent = saveConsent();
         OBWriteDomestic2 submissionRequest = JMockData.mock(OBWriteDomestic2.class);
-        FRDomesticPaymentSubmission2 submission = FRDomesticPaymentSubmission2.builder()
+        FRDomesticPaymentSubmission submission = FRDomesticPaymentSubmission.builder()
                 .id(consent.getId())
                 .domesticPayment(submissionRequest)
                 .build();
@@ -133,9 +133,9 @@ public class DomesticPaymentsApiControllerIT {
     public void testGetDomesticPaymentSubmissionMissingConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
+        FRDomesticConsent consent = JMockData.mock(FRDomesticConsent.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
-        FRDomesticPaymentSubmission2 submission = savePaymentSubmission(consent, UUID.randomUUID().toString());
+        FRDomesticPaymentSubmission submission = savePaymentSubmission(consent, UUID.randomUUID().toString());
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/domestic-payments/" + submission.getId())
@@ -151,7 +151,7 @@ public class DomesticPaymentsApiControllerIT {
     public void testCreateDomesticPaymentSubmission() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticConsent5 consent = saveConsent();
+        FRDomesticConsent consent = saveConsent();
         OBWriteDomestic2 submissionRequest = new OBWriteDomestic2()
                 .risk(toOBRisk1(consent.getRisk()))
                 .data(new OBWriteDataDomestic2()
@@ -171,7 +171,7 @@ public class DomesticPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteDomesticResponse2 consentResponse = response.getBody();
-        FRDomesticPaymentSubmission2 submission = submissionRepository.findById(response.getBody().getData().getDomesticPaymentId()).get();
+        FRDomesticPaymentSubmission submission = submissionRepository.findById(response.getBody().getData().getDomesticPaymentId()).get();
         assertThat(submission.getId()).isEqualTo(consentResponse.getData().getConsentId());
         assertThat(submission.getDomesticPayment()).isEqualTo(submissionRequest);
         assertThat(submission.getObVersion()).isEqualTo(OBVersion.v3_1);
@@ -181,8 +181,8 @@ public class DomesticPaymentsApiControllerIT {
     public void testDuplicatePaymentInitiationShouldReturnForbidden() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticConsent5 consent = saveConsent();
-        FRDomesticPaymentSubmission2 submission = savePaymentSubmission(consent, UUID.randomUUID().toString());
+        FRDomesticConsent consent = saveConsent();
+        FRDomesticPaymentSubmission submission = savePaymentSubmission(consent, UUID.randomUUID().toString());
 
         OBWriteDomestic2 obWriteDomestic2 = new OBWriteDomestic2();
         obWriteDomestic2.risk(toOBRisk1(consent.getRisk()));
@@ -209,8 +209,8 @@ public class DomesticPaymentsApiControllerIT {
         // Given
         final String idempotencyKey = UUID.randomUUID().toString();
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticConsent5 consent = saveConsent();
-        FRDomesticPaymentSubmission2 submission = savePaymentSubmission(consent, idempotencyKey);
+        FRDomesticConsent consent = saveConsent();
+        FRDomesticPaymentSubmission submission = savePaymentSubmission(consent, idempotencyKey);
 
         OBWriteDomestic2 obWriteDomestic1 = submission.getDomesticPayment();
 
@@ -233,7 +233,7 @@ public class DomesticPaymentsApiControllerIT {
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
+        FRDomesticConsent consent = JMockData.mock(FRDomesticConsent.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().setInstructedAmount(aValidFRAmount());
         consent.getInitiation().setCreditorPostalAddress(aValidFRPostalAddress());
@@ -262,13 +262,13 @@ public class DomesticPaymentsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(400);
     }
 
-    private FRDomesticPaymentSubmission2 savePaymentSubmission(FRDomesticConsent5 consent, String xIdempotencyKey) {
+    private FRDomesticPaymentSubmission savePaymentSubmission(FRDomesticConsent consent, String xIdempotencyKey) {
         OBWriteDomestic2 submissionRequest = new OBWriteDomestic2()
                 .risk(toOBRisk1(consent.getRisk()))
                 .data(new OBWriteDataDomestic2()
                         .consentId(consent.getId())
                         .initiation(toOBDomestic2(consent.getInitiation())));
-        FRDomesticPaymentSubmission2 submission = FRDomesticPaymentSubmission2.builder()
+        FRDomesticPaymentSubmission submission = FRDomesticPaymentSubmission.builder()
                 .id(consent.getId())
                 .domesticPayment(submissionRequest)
                 .idempotencyKey(xIdempotencyKey)
@@ -277,8 +277,8 @@ public class DomesticPaymentsApiControllerIT {
         return submission;
     }
 
-    private FRDomesticConsent5 saveConsent() {
-        FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
+    private FRDomesticConsent saveConsent() {
+        FRDomesticConsent consent = JMockData.mock(FRDomesticConsent.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         consent.getInitiation().setInstructedAmount(aValidFRAmount());
         consent.getInitiation().setCreditorPostalAddress(aValidFRPostalAddress());

@@ -27,7 +27,7 @@ import com.forgerock.openbanking.analytics.services.PsuCounterEntryKPIService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.IntentTypeService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.constants.RCSConstants;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.data.UserDataService;
 import com.forgerock.openbanking.constants.OIDCConstants;
@@ -99,7 +99,7 @@ public class RCSDetailsGatewayApiController implements RCSDetailsGatewayApi {
             Map<String, String> profile = userProfileService.getProfile(ssoToken, amOpenBankingConfiguration.endpointUserProfile,
                     amOpenBankingConfiguration.cookieName);
             String username = profile.get(amOpenBankingConfiguration.userProfileId);
-            List<FRAccountWithBalance> accounts = getAccountOrGenerateData(username);
+            List<AccountWithBalance> accounts = getAccountOrGenerateData(username);
 
             LOGGER.debug("intent Id from the requested claims '{}'", intentId);
             return intentTypeService.consentDetails(intentId, consentRequestJwt,accounts, username, clientId);
@@ -111,8 +111,8 @@ public class RCSDetailsGatewayApiController implements RCSDetailsGatewayApi {
         }
     }
 
-    private List<FRAccountWithBalance> getAccountOrGenerateData(String username) {
-        List<FRAccountWithBalance> accounts;
+    private List<AccountWithBalance> getAccountOrGenerateData(String username) {
+        List<AccountWithBalance> accounts;
         try {
             accounts = accountsService.getAccountWithBalances(username);
 

@@ -22,12 +22,12 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.fi
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFileType;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -84,7 +84,7 @@ public class FilePaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private FileConsent5Repository repository;
+    private FileConsentRepository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -105,7 +105,7 @@ public class FilePaymentConsentsApiControllerIT {
     public void testGetFileConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFileConsent5 consent = JMockData.mock(FRFileConsent5.class);
+        FRFileConsent consent = JMockData.mock(FRFileConsent.class);
         consent.setStatus(ConsentStatusCode.AWAITINGUPLOAD);
         consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         repository.save(consent);
@@ -171,7 +171,7 @@ public class FilePaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteFileConsentResponse2 consentResponse = response.getBody();
-        FRFileConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRFileConsent consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getPispName()).isEqualTo(MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
@@ -189,7 +189,7 @@ public class FilePaymentConsentsApiControllerIT {
 
         String fileContent = utf8FileToString.apply("OBIEPaymentInitiation_3_0.json");
 
-        FRFileConsent5 existingConsent = JMockData.mock(FRFileConsent5.class);
+        FRFileConsent existingConsent = JMockData.mock(FRFileConsent.class);
         existingConsent.setStatus(ConsentStatusCode.AWAITINGUPLOAD);
         existingConsent.setId(fileConsentId);
         existingConsent.setFileContent(null);
@@ -218,7 +218,7 @@ public class FilePaymentConsentsApiControllerIT {
         // Then
         log.debug("Response: {}",response);
         assertThat(response.getStatus()).isEqualTo(200);
-        FRFileConsent5 consent = repository.findById(fileConsentId).get();
+        FRFileConsent consent = repository.findById(fileConsentId).get();
         assertThat(consent.getId()).isEqualTo(fileConsentId);
         assertThat(consent.getStatus().toOBExternalConsentStatus2Code()).isEqualTo(OBExternalConsentStatus2Code.AWAITINGAUTHORISATION);
         assertThat(consent.getFileContent()).isEqualTo(fileContent);
@@ -230,7 +230,7 @@ public class FilePaymentConsentsApiControllerIT {
         String fileConsentId = UUID.randomUUID().toString();
         String fileContent = "<sample>test</sample>";
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFileConsent5 consent = JMockData.mock(FRFileConsent5.class);
+        FRFileConsent consent = JMockData.mock(FRFileConsent.class);
         consent.setStatus(ConsentStatusCode.AWAITINGAUTHORISATION);
         consent.setId(fileConsentId);
         consent.setFileContent(fileContent);

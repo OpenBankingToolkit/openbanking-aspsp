@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.validator;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Test;
 import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
@@ -48,11 +48,11 @@ public class FileTransactionCountValidatorTest {
                 .hasMessage("The file received contains 12 transactions but the file consent metadata indicated that we are expecting a file with 11 transactions'");
     }
 
-    private static FRFileConsent5 getConsent(int noOfTransactions) {
+    private static FRFileConsent getConsent(int noOfTransactions) {
         OBWriteFileConsent3 consent = new OBWriteFileConsent3()
                 .data(new OBWriteFileConsent3Data()
                         .initiation(new OBWriteFile2DataInitiation().numberOfTransactions(String.valueOf(noOfTransactions))));
-        return FRFileConsent5.builder()
+        return FRFileConsent.builder()
                 .writeFileConsent(toFRWriteFileConsent(consent)).build();
     }
 

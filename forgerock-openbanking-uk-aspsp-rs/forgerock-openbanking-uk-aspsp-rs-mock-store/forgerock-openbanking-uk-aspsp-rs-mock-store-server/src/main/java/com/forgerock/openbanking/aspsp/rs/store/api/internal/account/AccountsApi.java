@@ -25,7 +25,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,7 +42,7 @@ public interface AccountsApi {
     @RequestMapping(value = "/search/findByUserId",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<List<FRAccountWithBalance>> getAccounts(
+    ResponseEntity<List<AccountWithBalance>> getAccounts(
             @RequestParam("userId") String userId,
             @RequestParam(value = "withBalance", required = false, defaultValue = "false") Boolean withBalance
     );

@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,15 +44,15 @@ public interface DomesticStandingOrderApi {
     @RequestMapping(value = "/search/findByStatus",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<Collection<FRDomesticStandingOrderConsent5>> findByStatus(
+    ResponseEntity<Collection<FRDomesticStandingOrderConsent>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     );
 
     @RequestMapping(value = "/",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.PUT)
-    ResponseEntity<FRDomesticStandingOrderConsent5> update(
-            @RequestBody FRDomesticStandingOrderConsent5 payment1
+    ResponseEntity<FRDomesticStandingOrderConsent> update(
+            @RequestBody FRDomesticStandingOrderConsent payment1
     );
 }
 

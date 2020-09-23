@@ -28,7 +28,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
@@ -72,7 +72,7 @@ public class AcceptSinglePaymentTaskTest {
     @Test
     public void shouldDebitAccount() throws CurrencyConverterException {
         // Given
-        FRPaymentSetup1 payment = defaultPayment();
+        FRPaymentSetup payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -89,7 +89,7 @@ public class AcceptSinglePaymentTaskTest {
     @Test
     public void shouldCreditAccount() throws CurrencyConverterException {
         // Given
-        FRPaymentSetup1 payment = defaultPayment();
+        FRPaymentSetup payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(defaultAccount(DEBIT_ACCOUNT));
 
@@ -109,7 +109,7 @@ public class AcceptSinglePaymentTaskTest {
     @Test
     public void shouldRejectPaymentWhenCurrencyConversionException() throws CurrencyConverterException {
         // Given
-        FRPaymentSetup1 payment = defaultPayment();
+        FRPaymentSetup payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -127,7 +127,7 @@ public class AcceptSinglePaymentTaskTest {
     @Test
     public void shouldRejectPaymentWhenAnyException() throws CurrencyConverterException {
         // Given
-        FRPaymentSetup1 payment = defaultPayment();
+        FRPaymentSetup payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
@@ -146,12 +146,12 @@ public class AcceptSinglePaymentTaskTest {
         return FRAccount2.builder().id(payAccount).build();
     }
 
-    private FRPaymentSetup1 defaultPayment() {
+    private FRPaymentSetup defaultPayment() {
         FRWriteDomesticDataInitiation initiation = FRWriteDomesticDataInitiation.builder()
                 .creditorAccount(FRAccount.builder().identification(CREDIT_ACCOUNT).build())
                 .instructedAmount(FRAmount.builder().currency("GBP").amount("3").build())
                 .build();
-        return FRPaymentSetup1.builder()
+        return FRPaymentSetup.builder()
                 .accountId(DEBIT_ACCOUNT)
                 .paymentSetupRequest(FRWriteDomesticConsent.builder()
                         .data(FRWriteDomesticConsentData.builder().initiation(initiation).build())

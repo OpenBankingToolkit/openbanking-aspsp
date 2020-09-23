@@ -28,9 +28,9 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticPaymentConsentDetails;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.SinglePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
@@ -109,7 +109,7 @@ public class RCSConsentDecisionApiControllerIT {
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
         when(userProfileService.getProfile(any(), anyString(), anyString())).thenReturn(ImmutableMap.of("id", USER_ID));
-        when(accountsService.getAccountWithBalances(any())).thenReturn(JMockData.mock(new TypeReference<List<FRAccountWithBalance>>() {}));
+        when(accountsService.getAccountWithBalances(any())).thenReturn(JMockData.mock(new TypeReference<List<AccountWithBalance>>() {}));
         given(tppStoreService.findById(any())).willReturn(Optional.of(Tpp.builder().clientId(PISP_ID).build()));
 
     }
@@ -120,7 +120,7 @@ public class RCSConsentDecisionApiControllerIT {
         FRWriteDomesticConsentData writeDomesticConsentData = FRWriteDomesticConsentData.builder()
                 .initiation(FRWriteDomesticDataInitiation.builder().build())
                 .build();
-        FRPaymentSetup1 payment = FRPaymentSetup1.builder()
+        FRPaymentSetup payment = FRPaymentSetup.builder()
                 .pispId(PISP_ID)
                 .pispName(PISP_NAME)
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
@@ -154,7 +154,7 @@ public class RCSConsentDecisionApiControllerIT {
         FRWriteDomesticConsentData writeDomesticConsentData = FRWriteDomesticConsentData.builder()
                 .initiation(FRWriteDomesticDataInitiation.builder().build())
                 .build();
-        FRDomesticConsent5 payment = FRDomesticConsent5.builder()
+        FRDomesticConsent payment = FRDomesticConsent.builder()
                 .pispId(PISP_ID)
                 .pispName(PISP_NAME)
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
