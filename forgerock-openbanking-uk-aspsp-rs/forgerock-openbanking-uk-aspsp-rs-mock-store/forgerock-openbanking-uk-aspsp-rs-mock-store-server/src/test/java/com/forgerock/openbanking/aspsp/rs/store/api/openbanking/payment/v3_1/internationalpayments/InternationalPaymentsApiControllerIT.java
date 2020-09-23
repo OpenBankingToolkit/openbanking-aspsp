@@ -92,7 +92,7 @@ public class InternationalPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalConsent5 consent = saveConsent();
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         FRInternationalPaymentSubmission2 submission = savePaymentSubmission(consent);
 
         // When
@@ -216,7 +216,7 @@ public class InternationalPaymentsApiControllerIT {
         consent.getInitiation().setExchangeRateInformation(aValidFRExchangeRateInformation());
         consent.getInitiation().setCurrencyOfTransfer("USD");
         consent.getInitiation().setCreditorAgent(aValidFRDataInitiationCreditorAgent());
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
 
@@ -259,7 +259,7 @@ public class InternationalPaymentsApiControllerIT {
         consent.getInitiation().setExchangeRateInformation(aValidFRExchangeRateInformation());
         consent.getInitiation().setCurrencyOfTransfer("USD");
         consent.getInitiation().setCreditorAgent(aValidFRDataInitiationCreditorAgent());
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);

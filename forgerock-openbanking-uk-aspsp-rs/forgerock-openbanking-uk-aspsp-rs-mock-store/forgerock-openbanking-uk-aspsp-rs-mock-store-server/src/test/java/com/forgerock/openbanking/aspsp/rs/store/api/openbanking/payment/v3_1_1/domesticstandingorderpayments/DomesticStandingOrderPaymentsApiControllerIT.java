@@ -282,7 +282,7 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
         initiation.setFrequency("EvryDay");
         initiation.setReference("123");
         initiation.setNumberOfPayments("12");
-        initiation.setSupplementaryData(FRSupplementaryData.builder().build());
+        initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         initiation.setDebtorAccount(FRAccount.builder().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber").build());
         initiation.setCreditorAccount(FRAccount.builder().identification("321").name("test2").schemeName("UK.OBIE.SortCodeAccountNumber").build());
     }

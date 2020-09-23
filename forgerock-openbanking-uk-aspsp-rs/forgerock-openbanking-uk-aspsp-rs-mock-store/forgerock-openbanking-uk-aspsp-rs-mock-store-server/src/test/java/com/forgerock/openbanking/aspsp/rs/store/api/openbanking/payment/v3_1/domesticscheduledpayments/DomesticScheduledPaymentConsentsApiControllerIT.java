@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.Pay
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticScheduledConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPermission;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
@@ -49,16 +50,16 @@ import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
 import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data.PermissionEnum;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse2;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledDataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBDomesticScheduled2;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBWriteDomesticScheduled2DataInitiation;
 
 /**
  * Spring Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.domesticscheduledpayments.DomesticScheduledPaymentConsentsApiController}.
@@ -96,7 +97,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
         consent.setStatus(ConsentStatusCode.CONSUMED);
         DateTime requestedExecutionDateTime = DateTime.now().withMillisOfSecond(0);
         consent.getInitiation().setRequestedExecutionDateTime(DateTime.now().withMillisOfSecond(0));
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         repository.save(consent);
 
         // When
@@ -166,10 +167,10 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
         assertThat(consent.getPispName()).isEqualTo(PaymentTestHelper.MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(toOBWriteDomesticScheduled2DataInitiation(consentResponse.getData().getInitiation()));
+        assertThat(consent.getInitiation()).isEqualTo(toFRWriteDomesticScheduledDataInitiation(consentResponse.getData().getInitiation()));
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
-        assertThat(consent.getRisk()).isEqualTo(consentResponse.getRisk());
-        assertThat(consent.getDomesticScheduledConsent().getData().getPermission()).isEqualTo(PermissionEnum.valueOf(consentResponse.getData().getPermission().name()));
+        assertThat(consent.getRisk()).isEqualTo(toFRRisk(consentResponse.getRisk()));
+        assertThat(consent.getDomesticScheduledConsent().getData().getPermission()).isEqualTo(FRPermission.valueOf(consentResponse.getData().getPermission().name()));
     }
 
 }

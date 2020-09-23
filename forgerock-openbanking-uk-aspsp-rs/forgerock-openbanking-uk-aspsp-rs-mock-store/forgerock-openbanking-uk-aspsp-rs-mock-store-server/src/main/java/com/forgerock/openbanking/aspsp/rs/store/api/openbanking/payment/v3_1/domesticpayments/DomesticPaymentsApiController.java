@@ -70,7 +70,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     public ResponseEntity createDomesticPayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteDomestic2 obWriteDomestic2Param,
+            @RequestBody OBWriteDomestic2 obWriteDomestic2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -101,9 +101,9 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomestic2Param);
+        log.debug("Received payment submission: {}", obWriteDomestic2);
 
-        String paymentId = obWriteDomestic2Param.getData().getConsentId();
+        String paymentId = obWriteDomestic2.getData().getConsentId();
         FRDomesticConsent5 paymentConsent = domesticConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
@@ -113,8 +113,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         log.debug("Found consent '{}' to match this payment id: {} ", paymentConsent, paymentId);
 
         FRDomesticPaymentSubmission2 frPaymentSubmission = FRDomesticPaymentSubmission2.builder()
-                .id(obWriteDomestic2Param.getData().getConsentId())
-                .domesticPayment(obWriteDomestic2Param)
+                .id(obWriteDomestic2.getData().getConsentId())
+                .domesticPayment(obWriteDomestic2)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

@@ -68,7 +68,6 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.setupMockTpp;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBDomestic2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -116,7 +115,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         FRDomesticConsent5 consent = JMockData.mock(FRDomesticConsent5.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         repository.save(consent);
 
         // When
@@ -209,7 +208,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         assertThat(consent.getPispName()).isEqualTo(MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(toFRWriteDomesticDataInitiation(consentResponse.getData().getInitiation()));
+        assertThat(toOBDomestic2(consent.getInitiation())).isEqualTo(consentResponse.getData().getInitiation());
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
         assertThat(consent.getRisk()).isEqualTo(toFRRisk(consentResponse.getRisk()));
         assertThat(consent.getObVersion()).isEqualTo(OBVersion.v3_1);
@@ -252,7 +251,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         OBWriteDomesticConsentResponse2 consentResponse = response.getBody();
         FRDomesticConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(toFRWriteDomesticDataInitiation(consentResponse.getData().getInitiation()));
+        assertThat(toOBDomestic2(consent.getInitiation())).isEqualTo(consentResponse.getData().getInitiation());
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
     }
 

@@ -101,7 +101,7 @@ public class InternationalPaymentConsentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalConsent5 consent = JMockData.mock(FRInternationalConsent5.class);
-        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().build());
+        consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.setStatus(ConsentStatusCode.CONSUMED);
         repository.save(consent);
 

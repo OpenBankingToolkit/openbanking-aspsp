@@ -268,7 +268,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         initiation.setNumberOfPayments("12");
         initiation.setCreditor(aValidFRDataInitiationCreditor());
         initiation.setCreditorAgent(aValidFRDataInitiationCreditorAgent());
-        initiation.setSupplementaryData(FRSupplementaryData.builder().build());
+        initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
     }
 
 }
