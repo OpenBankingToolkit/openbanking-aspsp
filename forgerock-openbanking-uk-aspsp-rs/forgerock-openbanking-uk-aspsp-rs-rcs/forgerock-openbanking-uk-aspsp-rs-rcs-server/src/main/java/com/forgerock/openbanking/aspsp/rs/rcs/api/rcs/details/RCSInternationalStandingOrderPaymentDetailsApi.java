@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.InternationalStandingOrderPaymentConsentDetails;
@@ -34,14 +35,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBStandingOrder5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount5;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j
@@ -96,7 +96,7 @@ public class RCSInternationalStandingOrderPaymentDetailsApi implements RCSDetail
         payment.setUserId(username);
         paymentService.updatePayment(payment);
 
-        final OBWriteInternationalStandingOrder4DataInitiation initiation = payment.getInitiation();
+        FRWriteInternationalStandingOrderDataInitiation initiation = payment.getInitiation();
         OBStandingOrder5 standingOrder = new OBStandingOrder5()
                 .accountId(payment.getAccountId())
                 .standingOrderId(payment.getId())

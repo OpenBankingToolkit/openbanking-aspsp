@@ -24,6 +24,7 @@ import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccount
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRAccount3;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBAccount1;
@@ -43,7 +44,7 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.ac
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification50;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount1;
 import static java.util.Collections.emptyList;
 
 @Service

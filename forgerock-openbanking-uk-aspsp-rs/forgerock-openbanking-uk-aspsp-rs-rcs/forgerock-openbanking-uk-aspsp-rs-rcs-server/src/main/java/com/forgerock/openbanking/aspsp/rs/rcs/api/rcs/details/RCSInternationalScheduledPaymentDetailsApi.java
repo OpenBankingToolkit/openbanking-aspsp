@@ -22,6 +22,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.InternationalSchedulePaymentConsentDetails;
@@ -36,16 +38,14 @@ import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
 import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6DataExchangeRateInformation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j
@@ -99,7 +99,7 @@ public class RCSInternationalScheduledPaymentDetailsApi implements RCSDetailsApi
         payment.setUserId(username);
         paymentService.updatePayment(payment);
 
-        final OBWriteInternationalScheduled3DataInitiation initiation = payment.getInitiation();
+        final FRWriteInternationalScheduledDataInitiation initiation = payment.getInitiation();
         final OBScheduledPayment1 obScheduledPayment = new OBScheduledPayment1()
                 .accountId(payment.getAccountId())
                 .scheduledPaymentId(initiation.getInstructionIdentification())
@@ -125,7 +125,7 @@ public class RCSInternationalScheduledPaymentDetailsApi implements RCSDetailsApi
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .paymentReference(Optional.ofNullable(
                         initiation.getRemittanceInformation())
-                        .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)
+                        .map(FRRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
     }

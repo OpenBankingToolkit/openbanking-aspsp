@@ -20,16 +20,17 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
+import com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter;
 import uk.org.openbanking.datamodel.account.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification2;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification51;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount5;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount51;
 import static uk.org.openbanking.datamodel.service.converter.account.OBCashAccountConverter.toOBCashAccount1;
 
 public class OBStandingOrderConverter {

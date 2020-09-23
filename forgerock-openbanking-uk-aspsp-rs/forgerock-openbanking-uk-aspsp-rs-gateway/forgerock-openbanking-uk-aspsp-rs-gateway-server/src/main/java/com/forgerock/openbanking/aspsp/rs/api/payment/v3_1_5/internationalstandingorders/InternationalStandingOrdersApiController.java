@@ -26,6 +26,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_5.internationalstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
@@ -43,7 +44,6 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
 import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse7;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
@@ -52,10 +52,12 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderDataInitiation;
 
 @Controller("InternationalStandingOrdersApiV3.1.5")
 @Slf4j
@@ -107,7 +109,9 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(obWriteInternationalStandingOrder4.getData().getInitiation(), obWriteInternationalStandingOrder4.getRisk());
+                    f.verifyRiskAndInitiation(
+                            toFRWriteInternationalStandingOrderDataInitiation(obWriteInternationalStandingOrder4.getData().getInitiation()),
+                            toFRRisk(obWriteInternationalStandingOrder4.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
 
                 })
@@ -120,7 +124,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                             log.info("Updating payment");
                             paymentsService.updatePayment(payment);
 
-                            OBWriteInternationalStandingOrder4DataInitiation initiation = payment.getInitiation();
+                            FRWriteInternationalStandingOrderDataInitiation initiation = payment.getInitiation();
                             OBStandingOrder6 standingOrder = new OBStandingOrder6()
                                     .accountId(payment.getAccountId())
                                     .standingOrderStatusCode(OBExternalStandingOrderStatus1Code.ACTIVE)

@@ -1,6 +1,8 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[aea2d305be072d7](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/aea2d305be072d7) Matt Wills *2020-09-17 08:10:15*
+New Payment consent FR model objects (#296)
 [86ee5a444b8ba34](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/86ee5a444b8ba34) Matt Wills *2020-09-10 10:50:20*
 Release candidate: prepare for next development iteration
 ## 1.0.100

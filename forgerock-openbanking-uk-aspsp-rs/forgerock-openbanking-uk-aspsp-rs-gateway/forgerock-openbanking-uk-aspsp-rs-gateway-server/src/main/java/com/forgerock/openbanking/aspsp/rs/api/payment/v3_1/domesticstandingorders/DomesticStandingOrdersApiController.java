@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.domesticstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
@@ -42,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
 import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse2;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,12 +50,13 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -121,7 +122,6 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     ) throws OBErrorResponseException {
         String consentId = obWriteDomesticStandingOrder2.getData().getConsentId();
         FRDomesticStandingOrderConsent5 payment = paymentsService.getPayment(consentId);
-        OBWriteDomesticStandingOrder3DataInitiation paymentInitiation = toOBWriteDomesticStandingOrder3DataInitiation(obWriteDomesticStandingOrder2.getData().getInitiation());
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -132,7 +132,9 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(paymentInitiation, obWriteDomesticStandingOrder2.getRisk());
+                    f.verifyRiskAndInitiation(
+                            toFRWriteDomesticStandingOrderDataInitiation(obWriteDomesticStandingOrder2.getData().getInitiation()),
+                            toFRRisk(obWriteDomesticStandingOrder2.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -140,6 +142,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                             //Modify the status of the payment
                             log.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
 
+                            FRWriteDomesticStandingOrderDataInitiation paymentInitiation = payment.getInitiation();
                             DateTime firstPaymentDateTime = paymentInitiation.getFirstPaymentDateTime();
 
                             OBStandingOrder6 standingOrder = new OBStandingOrder6()

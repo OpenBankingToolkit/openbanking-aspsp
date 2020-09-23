@@ -22,6 +22,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.InternationalPaymentConsentDetails;
@@ -35,15 +37,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
 import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6DataExchangeRateInformation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j
@@ -97,7 +97,7 @@ public class RCSInternationalPaymentDetailsApi implements RCSDetailsApi {
         payment.setUserId(username);
         paymentService.updatePayment(payment);
 
-        OBWriteInternational3DataInitiation initiation = payment.getInitiation();
+        FRWriteInternationalDataInitiation initiation = payment.getInitiation();
         OBWriteInternationalConsentResponse6DataExchangeRateInformation exchangeRateInformation = payment.getCalculatedExchangeRate();
         return ResponseEntity.ok(InternationalPaymentConsentDetails.builder()
                 .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
@@ -114,7 +114,7 @@ public class RCSInternationalPaymentDetailsApi implements RCSDetailsApi {
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .paymentReference(Optional.ofNullable(
                         initiation.getRemittanceInformation())
-                        .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)
+                        .map(FRRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
     }

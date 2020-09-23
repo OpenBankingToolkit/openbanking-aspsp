@@ -20,6 +20,9 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -35,9 +38,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBRisk1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
 
 import java.util.Date;
 
@@ -52,7 +52,7 @@ public class FRInternationalStandingOrderConsent5 implements FRPaymentConsent, P
     public String id;
     @Indexed
     public ConsentStatusCode status;
-    public OBWriteInternationalStandingOrderConsent6 internationalStandingOrderConsent;
+    public FRWriteInternationalStandingOrderConsent internationalStandingOrderConsent;
 
     @Indexed
     public String accountId;
@@ -78,12 +78,12 @@ public class FRInternationalStandingOrderConsent5 implements FRPaymentConsent, P
     }
 
     @Override
-    public OBWriteInternationalStandingOrder4DataInitiation getInitiation() {
+    public FRWriteInternationalStandingOrderDataInitiation getInitiation() {
         return internationalStandingOrderConsent.getData().getInitiation();
     }
 
     @Override
-    public OBRisk1 getRisk() {
+    public FRRisk getRisk() {
         return internationalStandingOrderConsent.getRisk();
     }
 

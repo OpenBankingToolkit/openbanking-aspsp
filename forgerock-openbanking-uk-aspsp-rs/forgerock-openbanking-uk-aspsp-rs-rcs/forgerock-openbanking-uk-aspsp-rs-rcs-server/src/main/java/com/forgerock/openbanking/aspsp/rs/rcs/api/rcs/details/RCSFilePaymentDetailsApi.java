@@ -22,6 +22,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
@@ -35,8 +37,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
@@ -91,7 +91,7 @@ public class RCSFilePaymentDetailsApi implements RCSDetailsApi {
         }
         Tpp tpp = isTpp.get();
 
-        final OBWriteFile2DataInitiation initiation = consent.getWriteFileConsent().getData().getInitiation();
+        FRWriteFileDataInitiation initiation = consent.getWriteFileConsent().getData().getInitiation();
         return ResponseEntity.ok(FilePaymentConsentDetails.builder()
                 .accounts(accounts)
                 .username(username)
@@ -107,7 +107,7 @@ public class RCSFilePaymentDetailsApi implements RCSDetailsApi {
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .paymentReference(Optional.ofNullable(
                         initiation.getRemittanceInformation())
-                        .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)
+                        .map(FRRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
     }

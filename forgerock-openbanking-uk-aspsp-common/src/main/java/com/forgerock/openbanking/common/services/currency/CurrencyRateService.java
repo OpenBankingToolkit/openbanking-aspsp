@@ -20,9 +20,14 @@
  */
 package com.forgerock.openbanking.common.services.currency;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRExchangeRateInformation;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBExchangeRate1;
+import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
+import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4DataExchangeRateInformation;
 
 import java.math.BigDecimal;
 
@@ -98,6 +103,23 @@ public final class CurrencyRateService {
                 .unitCurrency(submittedExchangeRate.getUnitCurrency());
     }
 
+    public static OBWriteInternationalConsentResponse4DataExchangeRateInformation getCalculatedExchangeRate(
+            FRExchangeRateInformation submittedExchangeRate,
+            DateTime createdDateTime) {
+        if (submittedExchangeRate == null) {
+            return null; // Exchange rate is optional in international payment requests
+        }
+        if (submittedExchangeRate.getRateType() == null) {
+            throw new IllegalArgumentException("Missing the exchange rate type");
+        }
+        return (new OBWriteInternationalConsentResponse4DataExchangeRateInformation())
+                .expirationDateTime(getExpirationDate(submittedExchangeRate, createdDateTime))
+                .rateType(OBWriteInternationalConsentResponse4DataExchangeRateInformation.RateTypeEnum.valueOf(submittedExchangeRate.getRateType().name()))
+                .contractIdentification(submittedExchangeRate.getContractIdentification())
+                .exchangeRate(getExchangeRate(submittedExchangeRate))
+                .unitCurrency(submittedExchangeRate.getUnitCurrency());
+    }
+
 
     private static DateTime getExpirationDate(OBExchangeRate1 submittedRate, DateTime createdDateTime) {
         if (submittedRate == null) {
@@ -129,6 +151,21 @@ public final class CurrencyRateService {
         }
     }
 
+    private static DateTime getExpirationDate(FRExchangeRateInformation submittedRate, DateTime createdDateTime) {
+        if (submittedRate == null) {
+            return null;
+        }
+        switch (submittedRate.getRateType()) {
+            case ACTUAL:
+                return ((createdDateTime == null) ? DateTime.now() : createdDateTime).plusMinutes(ACTUAL_RATE_EXPIRATION_MINUTES);
+            case INDICATIVE:
+            case AGREED:
+                return null;
+            default:
+                throw new UnsupportedOperationException("Unsupported currency rate type: " + submittedRate.getRateType());
+        }
+    }
+
     private static BigDecimal getExchangeRate(OBExchangeRate1 submittedRate) {
         switch (submittedRate.getRateType()) {
             case INDICATIVE:
@@ -145,6 +182,21 @@ public final class CurrencyRateService {
     }
 
     private static BigDecimal getExchangeRate(OBWriteInternational3DataInitiationExchangeRateInformation submittedRate) {
+        switch (submittedRate.getRateType()) {
+            case INDICATIVE:
+            case ACTUAL:
+                return new BigDecimal(FIXED_RATE);
+            case AGREED:
+                if (submittedRate.getExchangeRate() == null) {
+                    throw new IllegalArgumentException("Missing the exchange rate value which is mandatory for exchange rate type: '" + OBExchangeRateType2Code.AGREED + "'");
+                }
+                return submittedRate.getExchangeRate();
+            default:
+                throw new UnsupportedOperationException("Unsupported currency rate type: " + submittedRate.getRateType());
+        }
+    }
+
+    private static BigDecimal getExchangeRate(FRExchangeRateInformation submittedRate) {
         switch (submittedRate.getRateType()) {
             case INDICATIVE:
             case ACTUAL:

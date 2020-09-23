@@ -58,8 +58,12 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalConsentResponse6DataStatus;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 
 @Controller("InternationalPaymentConsentsApiV3.1.5")
 @Slf4j
@@ -108,7 +112,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
         FRInternationalConsent5 internationalConsent = FRInternationalConsent5.builder()
                 .id(IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .internationalConsent(obWriteInternationalConsent5)
+                .internationalConsent(toFRWriteInternationalConsent(obWriteInternationalConsent5))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -178,16 +182,16 @@ public class InternationalPaymentConsentsApiController implements InternationalP
     private OBWriteInternationalConsentResponse6 packageResponse(FRInternationalConsent5 internationalConsent) {
         return new OBWriteInternationalConsentResponse6()
                 .data(new OBWriteInternationalConsentResponse6Data()
-                        .initiation(internationalConsent.getInitiation())
+                        .initiation(toOBWriteInternational3DataInitiation(internationalConsent.getInitiation()))
                         .status(toOBWriteInternationalConsentResponse6DataStatus(internationalConsent.getStatus()))
                         .creationDateTime(internationalConsent.getCreated())
                         .statusUpdateDateTime(internationalConsent.getStatusUpdate())
                         .exchangeRateInformation(internationalConsent.getCalculatedExchangeRate())
                         .consentId(internationalConsent.getId())
-                        .authorisation(internationalConsent.getInternationalConsent().getData().getAuthorisation())
-                        .debtor(toDebtorIdentification1(internationalConsent.getInitiation().getDebtorAccount()))
+                        .authorisation(toOBWriteDomesticConsent4DataAuthorisation(internationalConsent.getInternationalConsent().getData().getAuthorisation()))
+                        .debtor(toOBDebtorIdentification1(internationalConsent.getInitiation().getDebtorAccount()))
                 )
-                .risk(internationalConsent.getRisk())
+                .risk(toOBRisk1(internationalConsent.getRisk()))
                 .links(resourceLinkService.toSelfLink(internationalConsent, discovery -> getVersion(discovery).getGetInternationalPaymentConsent()))
                 .meta(new Meta());
     }

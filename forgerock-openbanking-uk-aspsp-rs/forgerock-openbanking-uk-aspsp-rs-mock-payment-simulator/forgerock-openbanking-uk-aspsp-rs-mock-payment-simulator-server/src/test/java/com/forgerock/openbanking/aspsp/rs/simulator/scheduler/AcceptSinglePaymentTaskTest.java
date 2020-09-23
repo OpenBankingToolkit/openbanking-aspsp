@@ -22,6 +22,11 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsentData;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
@@ -35,15 +40,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBCashAccountCreditor1;
-import uk.org.openbanking.datamodel.payment.OBInitiation1;
-import uk.org.openbanking.datamodel.payment.OBPaymentDataSetup1;
-import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetup1;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.mockito.ArgumentMatchers.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -77,7 +81,8 @@ public class AcceptSinglePaymentTaskTest {
         autoAcceptPaymentTask.autoAcceptPayment();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getInitiation().getInstructedAmount()), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        OBActiveOrHistoricCurrencyAndAmount instructedAmount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED)));
     }
 
@@ -96,7 +101,8 @@ public class AcceptSinglePaymentTaskTest {
         autoAcceptPaymentTask.autoAcceptPayment();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getInitiation().getInstructedAmount()), eq(OBCreditDebitCode.CREDIT), eq(payment), any());
+        OBActiveOrHistoricCurrencyAndAmount instructedAmount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.CREDIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED)));
     }
 
@@ -113,7 +119,8 @@ public class AcceptSinglePaymentTaskTest {
         autoAcceptPaymentTask.autoAcceptPayment();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getInitiation().getInstructedAmount()), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        OBActiveOrHistoricCurrencyAndAmount instructedAmount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.REJECTED)));
     }
 
@@ -130,7 +137,8 @@ public class AcceptSinglePaymentTaskTest {
         autoAcceptPaymentTask.autoAcceptPayment();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getInitiation().getInstructedAmount()), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        OBActiveOrHistoricCurrencyAndAmount instructedAmount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.REJECTED)));
     }
 
@@ -139,16 +147,15 @@ public class AcceptSinglePaymentTaskTest {
     }
 
     private FRPaymentSetup1 defaultPayment() {
-        OBInitiation1 initiation = new OBInitiation1()
-                .creditorAccount(new OBCashAccountCreditor1().identification(CREDIT_ACCOUNT))
-                .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount()
-                        .amount("3")
-                        .currency("GBP"));
+        FRWriteDomesticDataInitiation initiation = FRWriteDomesticDataInitiation.builder()
+                .creditorAccount(FRAccount.builder().identification(CREDIT_ACCOUNT).build())
+                .instructedAmount(FRAmount.builder().currency("GBP").amount("3").build())
+                .build();
         return FRPaymentSetup1.builder()
                 .accountId(DEBIT_ACCOUNT)
-                .paymentSetupRequest(new OBPaymentSetup1()
-                        .data(new OBPaymentDataSetup1()
-                                .initiation(initiation)))
+                .paymentSetupRequest(FRWriteDomesticConsent.builder()
+                        .data(FRWriteDomesticConsentData.builder().initiation(initiation).build())
+                        .build())
                 .build();
     }
 

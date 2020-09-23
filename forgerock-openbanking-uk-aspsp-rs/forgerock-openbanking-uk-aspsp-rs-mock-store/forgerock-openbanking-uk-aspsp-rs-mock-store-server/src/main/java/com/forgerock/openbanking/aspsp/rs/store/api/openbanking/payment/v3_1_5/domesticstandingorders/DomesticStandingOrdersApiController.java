@@ -54,7 +54,8 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticStandingOrderResponse6DataStatus;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 
 @Controller("DomesticStandingOrdersApiV3.1.5")
 @Slf4j
@@ -149,11 +150,11 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         return new OBWriteDomesticStandingOrderResponse6()
                 .data(new OBWriteDomesticStandingOrderResponse6Data()
                         .domesticStandingOrderId(frPaymentSubmission.getId())
-                        .initiation(frDomesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getInitiation())
+                        .initiation(toOBWriteDomesticStandingOrder3DataInitiation(frDomesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getInitiation()))
                         .creationDateTime(frDomesticStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(frDomesticStandingOrderConsent.getStatusUpdate())
                         .status(toOBWriteDomesticStandingOrderResponse6DataStatus(frDomesticStandingOrderConsent.getStatus()))
-                        .debtor(toDebtorIdentification1(frDomesticStandingOrderConsent.getInitiation().getDebtorAccount()))
+                        .debtor(toOBDebtorIdentification1(frDomesticStandingOrderConsent.getInitiation().getDebtorAccount()))
                         .consentId(frDomesticStandingOrderConsent.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetDomesticStandingOrder()))
                 .meta(new Meta());

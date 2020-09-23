@@ -22,12 +22,15 @@ package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy;
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.FRFileConsent;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFileType;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.model.Tpp;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -47,7 +50,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Document
-public class FRFileConsent2 implements FRPaymentConsent, FRFileConsent, Persistable<String> {
+public class FRFileConsent2 implements FRFileConsent, Persistable<String> {
     @Id
     @Indexed
     public String id;
@@ -83,18 +86,15 @@ public class FRFileConsent2 implements FRPaymentConsent, FRFileConsent, Persista
 
     public OBVersion obVersion;
 
-    @Override
     public void setPisp(Tpp tpp) {
         this.pispId = tpp.getId();
         this.pispName = tpp.getOfficialName();
     }
 
-    @Override
     public OBFile2 getInitiation() {
         return writeFileConsent.getData().getInitiation();
     }
 
-    @Override
     public OBRisk1 getRisk() { return null; }
 
     public PaymentFileType getFileType() {

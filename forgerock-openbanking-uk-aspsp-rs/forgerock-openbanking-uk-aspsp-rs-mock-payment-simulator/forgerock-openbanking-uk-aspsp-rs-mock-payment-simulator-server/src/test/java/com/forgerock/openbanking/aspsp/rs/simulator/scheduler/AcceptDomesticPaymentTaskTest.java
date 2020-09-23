@@ -22,6 +22,11 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsentData;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
@@ -35,22 +40,17 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationCreditorAccount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
 
 import java.util.Collections;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AcceptDomesticPaymentTaskTest {
@@ -146,16 +146,17 @@ public class AcceptDomesticPaymentTaskTest {
     }
 
     private FRDomesticConsent5 defaultPayment() {
-        OBWriteDomestic2DataInitiation initiation = new OBWriteDomestic2DataInitiation()
-                .creditorAccount(new OBWriteDomestic2DataInitiationCreditorAccount().identification(CREDIT_ACCOUNT))
-                .instructedAmount(new OBWriteDomestic2DataInitiationInstructedAmount()
-                        .amount("3")
-                        .currency("GBP"));
+        FRWriteDomesticDataInitiation initiation = FRWriteDomesticDataInitiation.builder()
+                .creditorAccount(FRAccount.builder().identification(CREDIT_ACCOUNT).build())
+                .instructedAmount(FRAmount.builder().currency("GBP").amount("3").build())
+                .build();
         return FRDomesticConsent5.builder()
                 .accountId(DEBIT_ACCOUNT)
-                .domesticConsent(new OBWriteDomesticConsent4()
-                        .data(new OBWriteDomesticConsent4Data()
-                        .initiation(initiation)))
+                .domesticConsent(FRWriteDomesticConsent.builder()
+                        .data(FRWriteDomesticConsentData.builder()
+                                .initiation(initiation)
+                                .build())
+                        .build())
                 .build();
     }
 

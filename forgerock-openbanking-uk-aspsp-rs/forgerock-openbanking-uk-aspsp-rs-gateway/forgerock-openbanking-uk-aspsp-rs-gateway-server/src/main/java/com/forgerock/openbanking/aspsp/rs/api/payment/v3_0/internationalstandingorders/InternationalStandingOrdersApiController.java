@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.internationalstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
@@ -43,7 +44,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
 import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,12 +51,13 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -88,7 +89,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
     @Override
     public ResponseEntity<OBWriteInternationalStandingOrderResponse1> createInternationalStandingOrders(
-            @ApiParam(value = "Default", required = true) @Valid @RequestBody OBWriteInternationalStandingOrder1 obWriteInternationalStandingOrder1Param,
+            @ApiParam(value = "Default", required = true) @Valid @RequestBody OBWriteInternationalStandingOrder1 obWriteInternationalStandingOrder1,
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
 
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -119,7 +120,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteInternationalStandingOrder1Param.getData().getConsentId();
+        String consentId = obWriteInternationalStandingOrder1.getData().getConsentId();
         FRInternationalStandingOrderConsent5 payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
@@ -131,7 +132,9 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(toOBWriteInternationalStandingOrder4DataInitiation(obWriteInternationalStandingOrder1Param.getData().getInitiation()), obWriteInternationalStandingOrder1Param.getRisk());
+                    f.verifyRiskAndInitiation(
+                            toFRWriteInternationalStandingOrderDataInitiation(obWriteInternationalStandingOrder1.getData().getInitiation()),
+                            toFRRisk(obWriteInternationalStandingOrder1.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -143,19 +146,19 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                             LOGGER.info("Updating payment");
                             paymentsService.updatePayment(payment);
 
-                            OBWriteInternationalStandingOrder4DataInitiation initiation = payment.getInitiation();
+                            FRWriteInternationalStandingOrderDataInitiation paymentInitiation = payment.getInitiation();
                             OBStandingOrder6 standingOrder = new OBStandingOrder6()
                                     .accountId(payment.getAccountId())
                                     .standingOrderStatusCode(OBExternalStandingOrderStatus1Code.ACTIVE)
-                                    .creditorAccount(toOBCashAccount51(initiation.getCreditorAccount()))
-                                    .frequency(initiation.getFrequency())
-                                    .reference(initiation.getReference())
-                                    .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
-                                    .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount2(initiation.getInstructedAmount()))
-                                    .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount3(initiation.getInstructedAmount()))
-                                    .nextPaymentDateTime(frequencyService.getNextDateTime(initiation.getFirstPaymentDateTime(), initiation.getFrequency()))
-                                    .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
-                                    .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount4(initiation.getInstructedAmount()))
+                                    .creditorAccount(toOBCashAccount51(paymentInitiation.getCreditorAccount()))
+                                    .frequency(paymentInitiation.getFrequency())
+                                    .reference(paymentInitiation.getReference())
+                                    .firstPaymentDateTime(paymentInitiation.getFirstPaymentDateTime())
+                                    .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount2(paymentInitiation.getInstructedAmount()))
+                                    .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount3(paymentInitiation.getInstructedAmount()))
+                                    .nextPaymentDateTime(frequencyService.getNextDateTime(paymentInitiation.getFirstPaymentDateTime(), paymentInitiation.getFrequency()))
+                                    .finalPaymentDateTime(paymentInitiation.getFinalPaymentDateTime())
+                                    .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount4(paymentInitiation.getInstructedAmount()))
                                     .standingOrderId(payment.getId());
 
                             String pispId = tppStoreService.findByClientId(tppId)
@@ -165,7 +168,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteInternationalStandingOrderResponse1.class, obWriteInternationalStandingOrder1Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteInternationalStandingOrderResponse1.class, obWriteInternationalStandingOrder1);
                         }
                 );
     }
@@ -207,5 +210,4 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                         }
                 );
     }
-
 }

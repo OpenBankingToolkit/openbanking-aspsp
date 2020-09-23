@@ -58,8 +58,13 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticConsentResponse5DataStatus;
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_5.converter.payment.DebtorIdentificationConverter.toDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toOBWriteDomesticConsent4DataSCASupportData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 
 @Controller("DomesticPaymentConsentsApiV3.1.5")
 @Slf4j
@@ -113,7 +118,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         FRDomesticConsent5 domesticConsent = FRDomesticConsent5.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticConsent(obWriteDomesticConsent4)
+                .domesticConsent(toFRWriteDomesticConsent(obWriteDomesticConsent4))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -187,17 +192,17 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     private OBWriteDomesticConsentResponse5 packageResponse(FRDomesticConsent5 domesticConsent) {
         return new OBWriteDomesticConsentResponse5()
                 .data(new OBWriteDomesticConsentResponse5Data()
-                        .initiation(domesticConsent.getInitiation())
+                        .initiation(toOBWriteDomestic2DataInitiation(domesticConsent.getInitiation()))
                         .status(toOBWriteDomesticConsentResponse5DataStatus(domesticConsent.getStatus()))
                         .creationDateTime(domesticConsent.getCreated())
                         .statusUpdateDateTime(domesticConsent.getStatusUpdate())
                         .consentId(domesticConsent.getId())
-                        .authorisation(domesticConsent.getDomesticConsent().getData().getAuthorisation())
-                        .scASupportData(domesticConsent.getDomesticConsent().getData().getScASupportData())
-                        .debtor(toDebtorIdentification1(domesticConsent.getInitiation().getDebtorAccount()))
+                        .authorisation(toOBWriteDomesticConsent4DataAuthorisation(domesticConsent.getDomesticConsent().getData().getAuthorisation()))
+                        .scASupportData(toOBWriteDomesticConsent4DataSCASupportData(domesticConsent.getDomesticConsent().getData().getScASupportData()))
+                        .debtor(toOBDebtorIdentification1(domesticConsent.getInitiation().getDebtorAccount()))
                 )
                 .links(resourceLinkService.toSelfLink(domesticConsent, discovery -> getVersion(discovery).getGetDomesticPaymentConsent()))
-                .risk(domesticConsent.getRisk())
+                .risk(toOBRisk1(domesticConsent.getRisk()))
                 .meta(new Meta());
     }
 
