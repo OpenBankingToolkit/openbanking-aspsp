@@ -31,6 +31,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.Internationa
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrder;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -84,7 +85,9 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteInternationalStandingOrder4);
+        log.debug("Received payment submission: '{}'", obWriteInternationalStandingOrder4);
+        FRWriteInternationalStandingOrder frInternationalStandingOrder = toFRWriteInternationalStandingOrder(obWriteInternationalStandingOrder4);
+        log.trace("Converted to: '{}'", frInternationalStandingOrder);
 
         String paymentId = obWriteInternationalStandingOrder4.getData().getConsentId();
         FRInternationalStandingOrderConsent paymentConsent = internationalStandingOrderConsentRepository.findById(paymentId)
@@ -97,7 +100,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
         FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = FRInternationalStandingOrderPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalStandingOrder(toFRWriteInternationalStandingOrder(obWriteInternationalStandingOrder4))
+                .internationalStandingOrder(frInternationalStandingOrder)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

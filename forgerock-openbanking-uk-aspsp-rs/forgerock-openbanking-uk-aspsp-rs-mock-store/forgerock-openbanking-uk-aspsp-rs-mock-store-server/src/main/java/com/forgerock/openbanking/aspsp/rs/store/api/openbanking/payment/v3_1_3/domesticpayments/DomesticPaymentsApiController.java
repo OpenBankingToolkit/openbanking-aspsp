@@ -31,6 +31,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticCons
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomestic;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -85,7 +86,9 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomestic2);
+        log.debug("Received payment submission: '{}'", obWriteDomestic2);
+        FRWriteDomestic frWriteDomestic = toFRWriteDomestic(obWriteDomestic2);
+        log.trace("Converted to: '{}'", frWriteDomestic);
 
         String paymentId = obWriteDomestic2.getData().getConsentId();
         FRDomesticConsent paymentConsent = domesticConsentRepository.findById(paymentId)
@@ -98,7 +101,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
                 .id(obWriteDomestic2.getData().getConsentId())
-                .domesticPayment(toFRWriteDomestic(obWriteDomestic2))
+                .domesticPayment(frWriteDomestic)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

@@ -26,14 +26,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.internationalpayments;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternational;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -85,7 +85,9 @@ public class InternationalPaymentsApiController implements InternationalPayments
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteInternational3);
+        log.debug("Received payment submission: '{}'", obWriteInternational3);
+        FRWriteInternational frWriteInternational = toFRWriteInternational(obWriteInternational3);
+        log.trace("Converted to: '{}'", frWriteInternational);
 
         String paymentId = obWriteInternational3.getData().getConsentId();
         FRInternationalConsent paymentConsent = internationalConsentRepository.findById(paymentId)
@@ -98,7 +100,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
         FRInternationalPaymentSubmission frPaymentSubmission = FRInternationalPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalPayment(toFRWriteInternational(obWriteInternational3))
+                .internationalPayment(frWriteInternational)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStan
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrder;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -72,7 +73,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     public ResponseEntity createDomesticStandingOrders(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteDomesticStandingOrder2 obWriteDomesticStandingOrder2Param,
+            @RequestBody OBWriteDomesticStandingOrder2 obWriteDomesticStandingOrder2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -103,9 +104,11 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomesticStandingOrder2Param);
+        log.debug("Received payment submission: '{}'", obWriteDomesticStandingOrder2);
+        FRWriteDomesticStandingOrder frDomesticStandingOrder = toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder2);
+        log.trace("Converted to: '{}'", frDomesticStandingOrder);
 
-        String paymentId = obWriteDomesticStandingOrder2Param.getData().getConsentId();
+        String paymentId = obWriteDomesticStandingOrder2.getData().getConsentId();
         FRDomesticStandingOrderConsent paymentConsent = domesticStandingOrderConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
@@ -116,7 +119,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
         FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission.builder()
                 .id(paymentId)
-                .domesticStandingOrder(toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder2Param))
+                .domesticStandingOrder(frDomesticStandingOrder)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

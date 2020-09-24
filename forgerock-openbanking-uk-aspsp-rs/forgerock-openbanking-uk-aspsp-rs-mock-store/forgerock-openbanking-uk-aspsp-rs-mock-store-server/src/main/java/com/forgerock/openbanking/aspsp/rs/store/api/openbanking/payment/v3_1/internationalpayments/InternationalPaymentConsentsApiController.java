@@ -120,9 +120,9 @@ public class InternationalPaymentConsentsApiController implements InternationalP
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received '{}'.", obWriteInternationalConsent2);
+        log.debug("Received: '{}'", obWriteInternationalConsent2);
         FRWriteInternationalConsent frConsent = toFRWriteInternationalConsent(obWriteInternationalConsent2);
-        //log.trace("Converted to: {}", frConsent.getClass());
+        log.trace("Converted to: '{}'", frConsent);
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
@@ -144,10 +144,10 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 .statusUpdate(DateTime.now())
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
-        log.debug("Saving consent: {}", internationalConsent);
+        log.debug("Saving consent: '{}'", internationalConsent);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(internationalConsent.getId(), internationalConsent.getStatus().name()));
         internationalConsent = internationalConsentRepository.save(internationalConsent);
-        log.info("Created consent id: {}", internationalConsent.getId());
+        log.info("Created consent id: '{}'", internationalConsent.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(internationalConsent));
     }
 

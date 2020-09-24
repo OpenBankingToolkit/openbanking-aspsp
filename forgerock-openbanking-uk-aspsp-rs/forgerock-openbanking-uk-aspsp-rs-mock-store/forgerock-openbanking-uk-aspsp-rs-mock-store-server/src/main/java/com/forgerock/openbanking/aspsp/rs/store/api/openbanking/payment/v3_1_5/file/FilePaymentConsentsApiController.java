@@ -35,6 +35,7 @@ import com.forgerock.openbanking.aspsp.rs.store.validator.FileTransactionCountVa
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFileFactory;
@@ -99,7 +100,9 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received '{}'.", obWriteFileConsent3);
+        log.debug("Received: '{}'", obWriteFileConsent3);
+        FRWriteFileConsent frWriteFileConsent = toFRWriteFileConsent(obWriteFileConsent3);
+        log.trace("Converted to: '{}'", frWriteFileConsent);
 
         final Tpp tpp = Optional.ofNullable(tppRepository.findByClientId(clientId))
                 .orElseThrow(() -> new OBErrorResponseException(
@@ -111,7 +114,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
         Optional<FRFileConsent> consentByIdempotencyKey = fileConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, obWriteFileConsent3, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getWriteFileConsent());
+            validateIdempotencyRequest(xIdempotencyKey, frWriteFileConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getWriteFileConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
@@ -119,7 +122,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
         FRFileConsent fileConsent = FRFileConsent.builder().id(IntentType.PAYMENT_FILE_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGUPLOAD)
-                .writeFileConsent(toFRWriteFileConsent(obWriteFileConsent3))
+                .writeFileConsent(frWriteFileConsent)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -127,10 +130,10 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
-        log.debug("Saving consent: {}", fileConsent);
+        log.debug("Saving consent: '{}'", fileConsent);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(fileConsent.getId(), fileConsent.getStatus().name()));
         fileConsent = fileConsentRepository.save(fileConsent);
-        log.info("Created consent id: {}", fileConsent.getId());
+        log.info("Created consent id: '{}'", fileConsent.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(fileConsent));
     }
 
@@ -147,7 +150,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.trace("Received '{}'.", fileParam);
+        log.trace("Received: '{}'", fileParam);
 
         FRFileConsent fileConsent = fileConsentRepository.findById(consentId)
                 .orElseThrow(() -> new OBErrorResponseException(

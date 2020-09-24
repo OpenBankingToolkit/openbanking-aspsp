@@ -27,6 +27,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStan
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -46,7 +47,6 @@ import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderConsentResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,7 +60,6 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.pa
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsent5;
 
 @Controller("DomesticStandingOrderConsentsApiV3.0")
 @Slf4j
@@ -117,15 +116,15 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received '{}'.", obWriteDomesticStandingOrderConsent1);
-        OBWriteDomesticStandingOrderConsent5 consent5 = toOBWriteDomesticStandingOrderConsent5(obWriteDomesticStandingOrderConsent1);
-        log.trace("Converted request body to {}", consent5.getClass());
+        log.debug("Received: '{}'", obWriteDomesticStandingOrderConsent1);
+        FRWriteDomesticStandingOrderConsent frStandingOrderConsent = toFRWriteDomesticStandingOrderConsent(obWriteDomesticStandingOrderConsent1);
+        log.trace("Converted to: '{}'", frStandingOrderConsent);
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
         Optional<FRDomesticStandingOrderConsent> consentByIdempotencyKey = domesticStandingOrderConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, consent5, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticStandingOrderConsent());
+            validateIdempotencyRequest(xIdempotencyKey, frStandingOrderConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticStandingOrderConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
@@ -134,17 +133,17 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
         FRDomesticStandingOrderConsent domesticStandingOrderConsent = FRDomesticStandingOrderConsent.builder()
                 .id(IntentType.PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .domesticStandingOrderConsent(toFRWriteDomesticStandingOrderConsent(consent5))
+                .domesticStandingOrderConsent(frStandingOrderConsent)
                 .statusUpdate(DateTime.now())
                 .created(DateTime.now())
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
-        log.debug("Saving consent: {}", domesticStandingOrderConsent);
+        log.debug("Saving consent: '{}'", domesticStandingOrderConsent);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(domesticStandingOrderConsent.getId(), domesticStandingOrderConsent.getStatus().name()));
         domesticStandingOrderConsent = domesticStandingOrderConsentRepository.save(domesticStandingOrderConsent);
-        log.info("Created consent id: {}", domesticStandingOrderConsent.getId());
+        log.info("Created consent id: '{}'", domesticStandingOrderConsent.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(domesticStandingOrderConsent));
     }
 

@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticSche
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduled;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -74,7 +75,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     public ResponseEntity createDomesticScheduledPayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteDomesticScheduled2 obWriteDomesticScheduled2Param,
+            @RequestBody OBWriteDomesticScheduled2 obWriteDomesticScheduled2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -105,9 +106,11 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomesticScheduled2Param);
+        log.debug("Received payment submission: '{}'", obWriteDomesticScheduled2);
+        FRWriteDomesticScheduled frWriteDomesticScheduled = toFRWriteDomesticScheduled(obWriteDomesticScheduled2);
+        log.trace("Converted to: '{}'", frWriteDomesticScheduled);
 
-        String paymentId = obWriteDomesticScheduled2Param.getData().getConsentId();
+        String paymentId = obWriteDomesticScheduled2.getData().getConsentId();
         FRDomesticScheduledConsent paymentConsent = domesticScheduledConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
@@ -119,7 +122,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         // Save Payment
         FRDomesticScheduledPaymentSubmission frPaymentSubmission = FRDomesticScheduledPaymentSubmission.builder()
                 .id(paymentId)
-                .domesticScheduledPayment(toFRWriteDomesticScheduled(obWriteDomesticScheduled2Param))
+                .domesticScheduledPayment(frWriteDomesticScheduled)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

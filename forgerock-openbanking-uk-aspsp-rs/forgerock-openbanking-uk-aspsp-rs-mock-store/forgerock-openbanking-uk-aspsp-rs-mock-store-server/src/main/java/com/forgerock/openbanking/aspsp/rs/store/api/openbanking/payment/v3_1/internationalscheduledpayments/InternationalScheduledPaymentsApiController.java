@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.Internationa
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduled;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -106,7 +107,9 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteInternationalScheduled2);
+        log.debug("Received payment submission: '{}'", obWriteInternationalScheduled2);
+        FRWriteInternationalScheduled frInternationalScheduled = toFRWriteInternationalScheduled(obWriteInternationalScheduled2);
+        log.trace("Converted to: '{}'", frInternationalScheduled);
 
         String paymentId = obWriteInternationalScheduled2.getData().getConsentId();
         FRInternationalScheduledConsent paymentConsent = internationalScheduledConsentRepository.findById(paymentId)
@@ -119,7 +122,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
         FRInternationalScheduledPaymentSubmission frPaymentSubmission = FRInternationalScheduledPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalScheduledPayment(toFRWriteInternationalScheduled(obWriteInternationalScheduled2))
+                .internationalScheduledPayment(frInternationalScheduled)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

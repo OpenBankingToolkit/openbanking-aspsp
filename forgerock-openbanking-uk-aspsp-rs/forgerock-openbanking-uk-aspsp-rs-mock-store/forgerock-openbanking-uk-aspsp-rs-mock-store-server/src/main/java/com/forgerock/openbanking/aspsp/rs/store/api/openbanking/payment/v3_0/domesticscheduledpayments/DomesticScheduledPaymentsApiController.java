@@ -106,9 +106,9 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomesticScheduled1);
+        log.debug("Received payment submission: '{}'", obWriteDomesticScheduled1);
         FRWriteDomesticScheduled frScheduledPayment = toFRWriteDomesticScheduled(obWriteDomesticScheduled1);
-        //log.trace("Converted to: {}", frScheduledPayment);
+        log.trace("Converted to: '{}'", frScheduledPayment);
 
         String paymentId = frScheduledPayment.getData().getConsentId();
         FRDomesticScheduledConsent paymentConsent = domesticScheduledConsentRepository.findById(paymentId)

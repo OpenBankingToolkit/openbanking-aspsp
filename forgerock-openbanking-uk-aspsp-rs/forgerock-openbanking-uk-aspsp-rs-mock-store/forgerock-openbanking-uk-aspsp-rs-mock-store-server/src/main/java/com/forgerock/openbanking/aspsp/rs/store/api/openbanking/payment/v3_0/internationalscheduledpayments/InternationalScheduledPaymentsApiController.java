@@ -105,9 +105,9 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteInternationalScheduled1);
+        log.debug("Received payment submission: '{}'", obWriteInternationalScheduled1);
         FRWriteInternationalScheduled frScheduledPayment = toFRWriteInternationalScheduled(obWriteInternationalScheduled1);
-        //log.trace("Converted to: {}", frScheduledPayment.getClass());
+        log.trace("Converted to: '{}'", frScheduledPayment);
 
         String paymentId = frScheduledPayment.getData().getConsentId();
         FRInternationalScheduledConsent paymentConsent = internationalScheduledConsentRepository.findById(paymentId)

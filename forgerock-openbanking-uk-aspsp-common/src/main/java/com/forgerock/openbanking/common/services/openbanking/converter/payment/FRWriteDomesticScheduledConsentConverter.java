@@ -23,13 +23,7 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledDataInitiation;
-import uk.org.openbanking.datamodel.payment.OBDomesticScheduled1;
-import uk.org.openbanking.datamodel.payment.OBDomesticScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduledConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
+import uk.org.openbanking.datamodel.payment.*;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toFRAccount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
@@ -54,10 +48,24 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.pa
 public class FRWriteDomesticScheduledConsentConverter {
 
     // OB to FR
+    public static FRWriteDomesticScheduledConsent toFRWriteDomesticScheduledConsent(OBWriteDomesticScheduledConsent1 obWriteDomesticScheduledConsent1) {
+        return obWriteDomesticScheduledConsent1 == null ? null : FRWriteDomesticScheduledConsent.builder()
+                .data(toFRWriteDomesticScheduledConsentData(obWriteDomesticScheduledConsent1.getData()))
+                .risk(toFRRisk(obWriteDomesticScheduledConsent1.getRisk()))
+                .build();
+    }
+
     public static FRWriteDomesticScheduledConsent toFRWriteDomesticScheduledConsent(OBWriteDomesticScheduledConsent2 obWriteDomesticScheduledConsent2) {
         return obWriteDomesticScheduledConsent2 == null ? null : FRWriteDomesticScheduledConsent.builder()
                 .data(toFRWriteDomesticScheduledConsentData(obWriteDomesticScheduledConsent2.getData()))
                 .risk(toFRRisk(obWriteDomesticScheduledConsent2.getRisk()))
+                .build();
+    }
+
+    public static FRWriteDomesticScheduledConsent toFRWriteDomesticScheduledConsent(OBWriteDomesticScheduledConsent3 obWriteDomesticScheduledConsent3) {
+        return obWriteDomesticScheduledConsent3 == null ? null : FRWriteDomesticScheduledConsent.builder()
+                .data(toFRWriteDomesticScheduledConsentData(obWriteDomesticScheduledConsent3.getData()))
+                .risk(toFRRisk(obWriteDomesticScheduledConsent3.getRisk()))
                 .build();
     }
 
@@ -68,11 +76,28 @@ public class FRWriteDomesticScheduledConsentConverter {
                 .build();
     }
 
+    public static FRWriteDomesticScheduledConsentData toFRWriteDomesticScheduledConsentData(OBWriteDataDomesticScheduledConsent1 data) {
+        return data == null ? null : FRWriteDomesticScheduledConsentData.builder()
+                .permission(toFRPermission(data.getPermission()))
+                .initiation(toFRWriteDomesticScheduledDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
     public static FRWriteDomesticScheduledConsentData toFRWriteDomesticScheduledConsentData(OBWriteDataDomesticScheduledConsent2 data) {
         return data == null ? null : FRWriteDomesticScheduledConsentData.builder()
                 .permission(toFRPermission(data.getPermission()))
                 .initiation(toFRWriteDomesticScheduledDataInitiation(data.getInitiation()))
                 .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
+    public static FRWriteDomesticScheduledConsentData toFRWriteDomesticScheduledConsentData(OBWriteDomesticScheduledConsent3Data data) {
+        return data == null ? null : FRWriteDomesticScheduledConsentData.builder()
+                .permission(toFRPermission(data.getPermission()))
+                .initiation(toFRWriteDomesticScheduledDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .scASupportData(toFRDataSCASupportData(data.getScASupportData()))
                 .build();
     }
 

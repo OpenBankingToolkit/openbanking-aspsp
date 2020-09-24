@@ -34,11 +34,27 @@ public class FRPermissionConverter {
         return permission == null ? null : FRPermission.valueOf(permission.name());
     }
 
+    public static FRPermission toFRPermission(OBWriteDomesticScheduledConsent3Data.PermissionEnum permission) {
+        return permission == null ? null : FRPermission.valueOf(permission.name());
+    }
+
+    public static FRPermission toFRPermission(OBWriteDomesticStandingOrderConsent4Data.PermissionEnum permission) {
+        return permission == null ? null : FRPermission.valueOf(permission.name());
+    }
+
     public static FRPermission toFRPermission(OBWriteDomesticStandingOrderConsent5Data.PermissionEnum permission) {
         return permission == null ? null : FRPermission.valueOf(permission.name());
     }
 
+    public static FRPermission toFRPermission(OBWriteInternationalScheduledConsent4Data.PermissionEnum permission) {
+        return permission == null ? null : FRPermission.valueOf(permission.name());
+    }
+
     public static FRPermission toFRPermission(OBWriteInternationalScheduledConsent5Data.PermissionEnum permission) {
+        return permission == null ? null : FRPermission.valueOf(permission.name());
+    }
+
+    public static FRPermission toFRPermission(OBWriteInternationalStandingOrderConsent5Data.PermissionEnum permission) {
         return permission == null ? null : FRPermission.valueOf(permission.name());
     }
 

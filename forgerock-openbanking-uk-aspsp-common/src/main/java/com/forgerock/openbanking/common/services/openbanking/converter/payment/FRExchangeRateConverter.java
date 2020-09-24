@@ -75,7 +75,7 @@ public class FRExchangeRateConverter {
         return rateType == null ? null : OBWriteInternational3DataInitiationExchangeRateInformation.RateTypeEnum.valueOf(rateType.name());
     }
 
-    private static OBExchangeRateType2Code toOBExchangeRateType2Code(FRExchangeRateInformation.FRRateType rateType) {
+    public static OBExchangeRateType2Code toOBExchangeRateType2Code(FRExchangeRateInformation.FRRateType rateType) {
         return rateType == null ? null : OBExchangeRateType2Code.valueOf(rateType.name());
     }
 

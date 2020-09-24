@@ -111,9 +111,9 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             HttpServletRequest request,
 
             Principal principal) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteFile1);
+        log.debug("Received payment submission: '{}'", obWriteFile1);
         FRWriteFile frWriteFile = toFRWriteFile(obWriteFile1);
-        //log.trace("Converted to: {}", frWriteFile.getClass());
+        log.trace("Converted to: '{}'", frWriteFile);
 
         String paymentId = frWriteFile.getData().getConsentId();
         FRFileConsent paymentConsent = fileConsentRepository.findById(paymentId)
@@ -224,9 +224,9 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                                 OBRIErrorType.PAYMENT_ID_NOT_FOUND
                                         .toOBError1(filePaymentId))
                 );
-        log.debug("Consent '{}' exists with status: {} so generating a report file for type: {}", consent.getId(), consent.getStatus(), consent.getFileType());
+        log.debug("Consent '{}' exists with status: {} so generating a report file for type: '{}'", consent.getId(), consent.getStatus(), consent.getFileType());
         final String reportFile = paymentReportFileService.createPaymentReport(consent);
-        log.debug("Generated report file for consent: {}", consent.getId());
+        log.debug("Generated report file for consent: '{}'", consent.getId());
         return ResponseEntity.ok(reportFile);
     }
 

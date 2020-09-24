@@ -104,9 +104,9 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteInternationalStandingOrder1);
+        log.debug("Received payment submission: '{}'", obWriteInternationalStandingOrder1);
         FRWriteInternationalStandingOrder frStandingOrder = toFRWriteInternationalStandingOrder(obWriteInternationalStandingOrder1);
-        //log.trace("Converted to: {}", frStandingOrder.getClass());
+        log.trace("Converted to: '{}'", frStandingOrder);
 
         String paymentId = frStandingOrder.getData().getConsentId();
         FRInternationalStandingOrderConsent paymentConsent = internationalStandingOrderConsentRepository.findById(paymentId)

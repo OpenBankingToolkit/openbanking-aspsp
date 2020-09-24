@@ -106,9 +106,9 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomestic1);
+        log.debug("Received payment submission: '{}'", obWriteDomestic1);
         FRWriteDomestic frDomesticPayment = toFRWriteDomestic(obWriteDomestic1);
-        //log.trace("Converted to: {}", frDomesticPayment);
+        log.trace("Converted to: '{}'", frDomesticPayment);
 
         String paymentId = obWriteDomestic1.getData().getConsentId();
         FRDomesticConsent paymentConsent = domesticConsentRepository.findById(paymentId)

@@ -33,6 +33,7 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -90,13 +91,15 @@ public class InternationalStandingOrderConsentsApiController implements Internat
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received '{}'.", obWriteInternationalStandingOrderConsent6);
+        log.debug("Received: '{}'", obWriteInternationalStandingOrderConsent6);
+        FRWriteInternationalStandingOrderConsent frStandingOrderConsent = toFRWriteInternationalStandingOrderConsent(obWriteInternationalStandingOrderConsent6);
+        log.trace("Converted to: '{}'", frStandingOrderConsent);
 
         Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
         Optional<FRInternationalStandingOrderConsent> consentByIdempotencyKey = internationalStandingOrderConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, obWriteInternationalStandingOrderConsent6, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalStandingOrderConsent());
+            validateIdempotencyRequest(xIdempotencyKey, frStandingOrderConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalStandingOrderConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
@@ -105,17 +108,17 @@ public class InternationalStandingOrderConsentsApiController implements Internat
         FRInternationalStandingOrderConsent internationalStandingOrderConsent = FRInternationalStandingOrderConsent.builder()
                 .id(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .internationalStandingOrderConsent(toFRWriteInternationalStandingOrderConsent(obWriteInternationalStandingOrderConsent6))
+                .internationalStandingOrderConsent(frStandingOrderConsent)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
                 .idempotencyKey(xIdempotencyKey)
                 .version(VersionPathExtractor.getVersionFromPath(request))
                 .build();
-        log.debug("Saving consent: {}", internationalStandingOrderConsent);
+        log.debug("Saving consent: '{}'", internationalStandingOrderConsent);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(internationalStandingOrderConsent.getId(), internationalStandingOrderConsent.getStatus().name()));
         internationalStandingOrderConsent = internationalStandingOrderConsentRepository.save(internationalStandingOrderConsent);
-        log.info("Created consent id: {}", internationalStandingOrderConsent.getId());
+        log.info("Created consent id: '{}'", internationalStandingOrderConsent.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(internationalStandingOrderConsent));
     }
 
