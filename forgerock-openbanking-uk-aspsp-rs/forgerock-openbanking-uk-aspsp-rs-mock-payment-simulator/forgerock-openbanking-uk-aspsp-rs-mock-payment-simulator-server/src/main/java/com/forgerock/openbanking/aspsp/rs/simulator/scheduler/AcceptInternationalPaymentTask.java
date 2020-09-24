@@ -22,12 +22,11 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
-import com.forgerock.openbanking.common.services.currency.CurrencyRateService;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
@@ -42,14 +41,10 @@ import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode1;
-import uk.org.openbanking.datamodel.account.OBCurrencyExchange5;
 import uk.org.openbanking.datamodel.account.OBEntryStatus1Code;
 import uk.org.openbanking.datamodel.account.OBTransaction6;
 import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
-import uk.org.openbanking.datamodel.payment.OBExchangeRate1;
-import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -60,7 +55,6 @@ import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorCo
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
 
 @Slf4j
 @Component
@@ -170,24 +164,5 @@ public class AcceptInternationalPaymentTask {
                 .build();
         log.info("Transaction created {}", transaction);
         return transaction;
-    }
-
-    private OBCurrencyExchange5 toOBCurrencyExchange(FRInternationalConsent payment, Balance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
-        OBExchangeRate2 exchangeRateInformation = toOBExchangeRate2(payment.getCalculatedExchangeRate());
-        if (exchangeRateInformation == null) {
-            log.debug("Payment: '{}' does not have an exchange rate specified. Using default exchange rate of ACTUAL", payment.getId());
-            exchangeRateInformation = CurrencyRateService.getCalculatedExchangeRate(new OBExchangeRate1()
-                            .rateType(OBExchangeRateType2Code.AGREED)
-                            .unitCurrency("XTS") // XTS	963 Code for testing
-                    , DateTime.now());
-        }
-        log.info("International Payment: '{}' using exchange rate: {}", payment.getId(), exchangeRateInformation);
-        return new OBCurrencyExchange5()
-                .exchangeRate(exchangeRateInformation.getExchangeRate())
-                .sourceCurrency(balance.getCurrency())
-                .targetCurrency(payment.getInitiation().getCurrencyOfTransfer())
-                .unitCurrency(exchangeRateInformation.getUnitCurrency())
-                .instructedAmount(amount)
-                .contractIdentification(exchangeRateInformation.getContractIdentification());
     }
 }

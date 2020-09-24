@@ -22,7 +22,6 @@ package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.version.OBVersion;
-import com.forgerock.openbanking.common.services.currency.CurrencyRateService;
 import com.forgerock.openbanking.model.Tpp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,7 +34,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
 import uk.org.openbanking.datamodel.payment.OBInternationalScheduled2;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent2;
@@ -101,14 +99,5 @@ public class FRInternationalScheduledConsent2 implements Persistable<String> {
     @Override
     public boolean isNew() {
         return created == null;
-    }
-
-    /**
-     * Note: we do not persist the calculated exchange rate fields (such as rate value and expiry date) as the exchange rate object in the initiation must match exactly what the user submitted. We could persist the
-     * calculated exchange rate separately but currently it is easier just to generate dynamically as the rate it always the same value for testing purposes.
-     * @return OBExchangeRate2 with rate nd expiry date fields populated where appropriate
-     */
-    public OBExchangeRate2 getCalculatedExchangeRate() {
-        return CurrencyRateService.getCalculatedExchangeRate(getInitiation().getExchangeRateInformation(), created);
     }
 }
