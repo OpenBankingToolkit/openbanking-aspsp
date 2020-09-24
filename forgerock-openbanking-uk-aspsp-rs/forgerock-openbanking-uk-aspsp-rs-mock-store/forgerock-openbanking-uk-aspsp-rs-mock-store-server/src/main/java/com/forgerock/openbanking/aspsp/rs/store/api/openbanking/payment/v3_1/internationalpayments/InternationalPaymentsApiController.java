@@ -21,12 +21,12 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -43,7 +43,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternational2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse2;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,10 +51,10 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalPaymentSubmissionConverter.toOBWriteInternational3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBInternational2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBInternational2;
 
 @Controller("InternationalPaymentsApiV3.1")
 @Slf4j
@@ -108,8 +107,6 @@ public class InternationalPaymentsApiController implements InternationalPayments
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: {}", obWriteInternational2);
-        OBWriteInternational3 payment = toOBWriteInternational3(obWriteInternational2);
-        log.trace("Converted to: {}", payment.getClass());
 
         String paymentId = obWriteInternational2.getData().getConsentId();
         FRInternationalConsent paymentConsent = internationalConsentRepository.findById(paymentId)
@@ -122,7 +119,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
         FRInternationalPaymentSubmission frPaymentSubmission = FRInternationalPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalPayment(payment)
+                .internationalPayment(toFRWriteInternational(obWriteInternational2))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

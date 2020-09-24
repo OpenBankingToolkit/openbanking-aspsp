@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrder;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +29,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4;
 
 import java.util.Date;
 
@@ -40,7 +40,7 @@ public class FRInternationalStandingOrderPaymentSubmission implements PaymentSub
     @Indexed
     public String id;
 
-    public OBWriteInternationalStandingOrder4 internationalStandingOrder;
+    public FRWriteInternationalStandingOrder internationalStandingOrder;
 
     @CreatedDate
     public Date created;

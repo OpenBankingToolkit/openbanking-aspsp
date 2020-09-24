@@ -21,12 +21,12 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -51,9 +51,9 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalStandingOrderPaymentSubmissionConverter.toOBWriteInternationalStandingOrder4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBInternationalStandingOrder2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder2;
 
 @Controller("InternationalStandingOrdersApiV3.1")
 @Slf4j
@@ -116,7 +116,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
         FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = FRInternationalStandingOrderPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalStandingOrder(toOBWriteInternationalStandingOrder4(obWriteInternationalStandingOrder2))
+                .internationalStandingOrder(toFRWriteInternationalStandingOrder(obWriteInternationalStandingOrder2))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -126,8 +126,6 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .idempotentSave(frPaymentSubmission);
         return ResponseEntity.status(HttpStatus.CREATED).body(packagePayment(frPaymentSubmission, paymentConsent));
     }
-
-
 
     @Override
     public ResponseEntity getInternationalStandingOrdersInternationalStandingOrderPaymentId(

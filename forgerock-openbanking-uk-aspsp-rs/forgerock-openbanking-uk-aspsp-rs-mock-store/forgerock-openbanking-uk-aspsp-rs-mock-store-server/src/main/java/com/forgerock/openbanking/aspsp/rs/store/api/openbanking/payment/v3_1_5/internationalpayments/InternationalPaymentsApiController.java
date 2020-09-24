@@ -31,6 +31,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.Internationa
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternational;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -55,6 +56,8 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
 
 @Controller("InternationalPaymentsApiV3.1.5")
 @Slf4j
@@ -95,7 +98,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
         FRInternationalPaymentSubmission frPaymentSubmission = FRInternationalPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalPayment(obWriteInternational3)
+                .internationalPayment(toFRWriteInternational(obWriteInternational3))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -149,7 +152,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
         return new OBWriteInternationalResponse5()
                 .data(new OBWriteInternationalResponse5Data()
                         .internationalPaymentId(frPaymentSubmission.getId())
-                        .initiation(frPaymentSubmission.getInternationalPayment().getData().getInitiation())
+                        .initiation(toOBWriteInternational3DataInitiation(frPaymentSubmission.getInternationalPayment().getData().getInitiation()))
                         .creationDateTime(frInternationalConsent.getCreated())
                         .statusUpdateDateTime(frInternationalConsent.getStatusUpdate())
                         .status(toOBWriteInternationalResponse5DataStatus(frInternationalConsent.getStatus()))

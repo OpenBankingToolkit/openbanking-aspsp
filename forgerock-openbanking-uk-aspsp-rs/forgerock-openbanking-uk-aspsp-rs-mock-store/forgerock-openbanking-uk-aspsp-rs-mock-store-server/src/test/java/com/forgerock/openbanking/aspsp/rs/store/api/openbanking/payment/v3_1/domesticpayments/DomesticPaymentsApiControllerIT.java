@@ -21,14 +21,16 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.domesticpayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDataDomestic;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomestic;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -58,6 +60,7 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsuppo
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBDomestic2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConverter.toOBWriteDomestic2;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -103,7 +106,7 @@ public class DomesticPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(submission.getDomesticPayment().getData().getInitiation());
+        assertThat(response.getBody().getData().getInitiation()).isEqualTo(toOBDomestic2(submission.getDomesticPayment().getData().getInitiation()));
         assertThat(response.getBody().getData().getCreationDateTime()).isEqualTo(consent.getCreated());
         assertThat(response.getBody().getData().getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdate());
     }
@@ -113,7 +116,7 @@ public class DomesticPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticConsent consent = saveConsent();
-        OBWriteDomestic2 submissionRequest = JMockData.mock(OBWriteDomestic2.class);
+        FRWriteDomestic submissionRequest = JMockData.mock(FRWriteDomestic.class);
         FRDomesticPaymentSubmission submission = FRDomesticPaymentSubmission.builder()
                 .id(consent.getId())
                 .domesticPayment(submissionRequest)
@@ -173,7 +176,7 @@ public class DomesticPaymentsApiControllerIT {
         OBWriteDomesticResponse2 consentResponse = response.getBody();
         FRDomesticPaymentSubmission submission = submissionRepository.findById(response.getBody().getData().getDomesticPaymentId()).get();
         assertThat(submission.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(submission.getDomesticPayment()).isEqualTo(submissionRequest);
+        assertThat(toOBWriteDomestic2(submission.getDomesticPayment())).isEqualTo(submissionRequest);
         assertThat(submission.getObVersion()).isEqualTo(OBVersion.v3_1);
     }
 
@@ -212,7 +215,7 @@ public class DomesticPaymentsApiControllerIT {
         FRDomesticConsent consent = saveConsent();
         FRDomesticPaymentSubmission submission = savePaymentSubmission(consent, idempotencyKey);
 
-        OBWriteDomestic2 obWriteDomestic1 = submission.getDomesticPayment();
+        OBWriteDomestic2 obWriteDomestic1 = toOBWriteDomestic2(submission.getDomesticPayment());
 
         // When
         HttpResponse<String> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.0/pisp/domestic-payments")
@@ -227,7 +230,6 @@ public class DomesticPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
     }
-
 
     @Test
     public void testMissingConsentOnPaymentInitiationShouldReturnNotFound() throws Exception {
@@ -263,11 +265,13 @@ public class DomesticPaymentsApiControllerIT {
     }
 
     private FRDomesticPaymentSubmission savePaymentSubmission(FRDomesticConsent consent, String xIdempotencyKey) {
-        OBWriteDomestic2 submissionRequest = new OBWriteDomestic2()
-                .risk(toOBRisk1(consent.getRisk()))
-                .data(new OBWriteDataDomestic2()
+        FRWriteDomestic submissionRequest = FRWriteDomestic.builder()
+                .risk(consent.getRisk())
+                .data(FRWriteDataDomestic.builder()
                         .consentId(consent.getId())
-                        .initiation(toOBDomestic2(consent.getInitiation())));
+                        .initiation(consent.getInitiation())
+                        .build())
+                .build();
         FRDomesticPaymentSubmission submission = FRDomesticPaymentSubmission.builder()
                 .id(consent.getId())
                 .domesticPayment(submissionRequest)

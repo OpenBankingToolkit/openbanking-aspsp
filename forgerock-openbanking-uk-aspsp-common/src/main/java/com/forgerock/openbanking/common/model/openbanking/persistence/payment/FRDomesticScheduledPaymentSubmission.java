@@ -20,48 +20,35 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduled;
+import com.forgerock.openbanking.common.model.version.OBVersion;
+import lombok.Builder;
+import lombok.Data;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetup1;
 
+import java.util.Date;
+
+@Builder
+@Data
 @Document
-public class FRPaymentRequest {
+public class FRDomesticScheduledPaymentSubmission implements PaymentSubmission {
+    @Id
     @Indexed
-    public String merchantId;
-    @Indexed
-    public String orderId;
-    public OBPaymentSetup1 paymentSetup;
+    public String id;
 
-    public String getMerchantId() {
-        return merchantId;
-    }
+    public FRWriteDomesticScheduled domesticScheduledPayment;
 
-    public void setMerchantId(String merchantId) {
-        this.merchantId = merchantId;
-    }
+    @CreatedDate
+    public Date created;
+    @LastModifiedDate
+    public Date updated;
 
-    public String getOrderId() {
-        return orderId;
-    }
+    public String idempotencyKey;
 
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
+    public OBVersion obVersion;
 
-    public OBPaymentSetup1 getPaymentSetup() {
-        return paymentSetup;
-    }
-
-    public void setPaymentSetup(OBPaymentSetup1 paymentSetup) {
-        this.paymentSetup = paymentSetup;
-    }
-
-    @Override
-    public String toString() {
-        return "FRPaymentRequest1{" +
-                "merchantId='" + merchantId + '\'' +
-                ", orderId='" + orderId + '\'' +
-                ", paymentSetup=" + paymentSetup +
-                '}';
-    }
 }

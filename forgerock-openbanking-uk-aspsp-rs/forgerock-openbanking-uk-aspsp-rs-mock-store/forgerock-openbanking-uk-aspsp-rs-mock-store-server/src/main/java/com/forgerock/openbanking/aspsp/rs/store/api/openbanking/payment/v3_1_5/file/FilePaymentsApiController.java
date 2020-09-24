@@ -26,14 +26,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.file;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -56,7 +56,8 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteFileResponse3DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter.toOBWriteFile2DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConverter.toFRWriteFile;
 
 @Controller("FilePaymentsApiV3.1.5")
 @Slf4j
@@ -99,7 +100,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
         FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
                 .id(paymentId)
-                .filePayment(obWriteFile2)
+                .filePayment(toFRWriteFile(obWriteFile2))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

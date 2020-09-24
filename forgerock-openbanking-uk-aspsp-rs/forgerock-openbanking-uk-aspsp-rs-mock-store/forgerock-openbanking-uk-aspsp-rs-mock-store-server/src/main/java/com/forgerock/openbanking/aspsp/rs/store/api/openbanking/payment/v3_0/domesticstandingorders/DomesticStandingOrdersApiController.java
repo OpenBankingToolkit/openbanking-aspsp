@@ -21,12 +21,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.domesticstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrder;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -44,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,9 +53,9 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3;
 
 @Controller("DomesticStandingOrdersApiV3.0")
 @Slf4j
@@ -107,10 +107,10 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received payment submission: {}", obWriteDomesticStandingOrder1);
-        OBWriteDomesticStandingOrder3 payment = toOBWriteDomesticStandingOrder3(obWriteDomesticStandingOrder1);
-        log.trace("Converted to OBWriteDomesticStandingOrder2: {}", payment);
+        FRWriteDomesticStandingOrder frStandingOrder = toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder1);
+        log.trace("Converted to: {}", frStandingOrder);
 
-        String paymentId = payment.getData().getConsentId();
+        String paymentId = frStandingOrder.getData().getConsentId();
         FRDomesticStandingOrderConsent paymentConsent = domesticStandingOrderConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
@@ -121,7 +121,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
         FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission.builder()
                 .id(paymentId)
-                .domesticStandingOrder(payment)
+                .domesticStandingOrder(frStandingOrder)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

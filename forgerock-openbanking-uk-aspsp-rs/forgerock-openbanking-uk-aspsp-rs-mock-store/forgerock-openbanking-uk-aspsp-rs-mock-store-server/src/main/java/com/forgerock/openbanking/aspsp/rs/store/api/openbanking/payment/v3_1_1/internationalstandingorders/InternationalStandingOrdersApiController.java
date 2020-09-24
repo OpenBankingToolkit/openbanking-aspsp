@@ -51,9 +51,9 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalStandingOrderPaymentSubmissionConverter.toOBWriteInternationalStandingOrder4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBInternationalStandingOrder3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder3;
 
 @Controller("InternationalStandingOrdersApiV3.1.1")
 @Slf4j
@@ -116,7 +116,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
         FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = FRInternationalStandingOrderPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalStandingOrder(toOBWriteInternationalStandingOrder4(OBWriteInternationalStandingOrder3))
+                .internationalStandingOrder(toFRWriteInternationalStandingOrder(OBWriteInternationalStandingOrder3))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

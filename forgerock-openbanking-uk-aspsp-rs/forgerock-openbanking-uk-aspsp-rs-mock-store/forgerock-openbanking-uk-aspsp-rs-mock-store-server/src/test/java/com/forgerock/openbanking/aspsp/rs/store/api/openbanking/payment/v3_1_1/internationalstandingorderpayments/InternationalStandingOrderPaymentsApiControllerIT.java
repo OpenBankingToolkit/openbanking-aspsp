@@ -21,17 +21,19 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.internationalstandingorderpayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternational;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrder;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -49,20 +51,15 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse3;
-import uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorAgentTestDataFactory.aValidFRDataInitiationCreditorAgent;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorTestDataFactory.aValidFRDataInitiationCreditor;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBInternationalStandingOrder3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -107,8 +104,8 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        OBWriteInternationalStandingOrder4DataInitiation initiation = submission.getInternationalStandingOrder().getData().getInitiation();
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(OBInternationalStandingOrderConverter.toOBInternationalStandingOrder3(initiation));
+        FRWriteInternationalStandingOrderDataInitiation initiation = submission.getInternationalStandingOrder().getData().getInitiation();
+        assertThat(response.getBody().getData().getInitiation()).isEqualTo(toOBInternationalStandingOrder3(initiation));
         assertThat(response.getBody().getData().getCreationDateTime()).isEqualTo(consent.getCreated());
         assertThat(response.getBody().getData().getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdate());
     }
@@ -118,7 +115,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRInternationalStandingOrderConsent consent = saveConsent();
-        OBWriteInternational3 submissionRequest = JMockData.mock(OBWriteInternational3.class);
+        FRWriteInternational submissionRequest = JMockData.mock(FRWriteInternational.class);
         FRInternationalPaymentSubmission submission = FRInternationalPaymentSubmission.builder()
                 .id(consent.getId())
                 .internationalPayment(submissionRequest)
@@ -240,9 +237,9 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
     }
 
     private FRInternationalStandingOrderPaymentSubmission savePaymentSubmission(FRInternationalStandingOrderConsent consent) {
-        OBWriteInternationalStandingOrder4 submissionRequest = JMockData.mock(OBWriteInternationalStandingOrder4.class);
+        FRWriteInternationalStandingOrder submissionRequest = JMockData.mock(FRWriteInternationalStandingOrder.class);
         setupTestConsentInitiation(consent.getInitiation());
-        submissionRequest.getData().initiation(toOBWriteInternationalStandingOrder4DataInitiation(consent.getInitiation()));
+        submissionRequest.getData().setInitiation(consent.getInitiation());
         FRInternationalStandingOrderPaymentSubmission submission = FRInternationalStandingOrderPaymentSubmission.builder()
                 .id(consent.getId())
                 .internationalStandingOrder(submissionRequest)

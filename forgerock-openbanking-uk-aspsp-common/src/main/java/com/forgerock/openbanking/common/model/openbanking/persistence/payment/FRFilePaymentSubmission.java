@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFile;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +29,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
 
 import java.util.Date;
 
@@ -41,7 +41,7 @@ public class FRFilePaymentSubmission implements PaymentSubmission {
     @Indexed
     public String id;
 
-    public OBWriteFile2 filePayment;
+    public FRWriteFile filePayment;
 
     @CreatedDate
     public Date created;

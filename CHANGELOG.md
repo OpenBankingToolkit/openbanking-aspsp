@@ -3,6 +3,8 @@ Changelog of Git Changelog Maven plugin.
 ## Unreleased
 [aea2d305be072d7](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/aea2d305be072d7) Matt Wills *2020-09-17 08:10:15*
 New Payment consent FR model objects (#296)
+[2fa17af225eb155](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2fa17af225eb155) JamieB *2020-09-23 14:11:38*
+Updated ui project version to updating-ui-version-to-3.1.6-rem-rc1
 [86ee5a444b8ba34](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/86ee5a444b8ba34) Matt Wills *2020-09-10 10:50:20*
 Release candidate: prepare for next development iteration
 ## 1.0.100
@@ -233,6 +235,7 @@ Fix for conversion of scheme name (#258)
 ### GitHub [#262](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/262) Release/1.0.100
 [cf9422ca60afade](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/cf9422ca60afade) Matt Wills *2020-07-07 13:41:26*
 Prevented the inclusion of the b64 claim header if version is 3.1.4 or greater (#262)
+### GitHub [#272](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/272) Bump forgerock-openbanking-auth from 1.0.59 to 1.0.60
 [389c96e83405f2a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/389c96e83405f2a) Matt Wills *2020-08-26 14:43:24*
 Validation of b64 header if version if 3.1.3 or lower. Moved generation and verification of detached JWS into separate classes (#272)
 [39e8f371f8cbcf9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/39e8f371f8cbcf9) Matt Wills *2020-08-25 08:30:05*

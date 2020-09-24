@@ -26,13 +26,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.domesticpayments;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -56,6 +56,7 @@ import java.util.Optional;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
 
 @Controller("DomesticPaymentsApiV3.1.5")
 @Slf4j
@@ -96,7 +97,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
                 .id(obWriteDomestic2.getData().getConsentId())
-                .domesticPayment(obWriteDomestic2)
+                .domesticPayment(toFRWriteDomestic(obWriteDomestic2))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

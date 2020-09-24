@@ -51,6 +51,8 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBDomestic2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("DomesticPaymentsApiV3.1")
@@ -114,7 +116,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
                 .id(obWriteDomestic2.getData().getConsentId())
-                .domesticPayment(obWriteDomestic2)
+                .domesticPayment(toFRWriteDomestic(obWriteDomestic2))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -170,7 +172,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     private OBWriteDomesticResponse2 packagePayment(FRDomesticPaymentSubmission frPaymentSubmission, FRDomesticConsent frDomesticConsent2) {
         return new OBWriteDomesticResponse2().data(new OBWriteDataDomesticResponse2()
                 .domesticPaymentId(frPaymentSubmission.getId())
-                .initiation(frPaymentSubmission.getDomesticPayment().getData().getInitiation())
+                .initiation(toOBDomestic2(frPaymentSubmission.getDomesticPayment().getData().getInitiation()))
                 .creationDateTime(frDomesticConsent2.getCreated())
                 .statusUpdateDateTime(frDomesticConsent2.getStatusUpdate())
                 .status(frDomesticConsent2.getStatus().toOBTransactionIndividualStatus1Code())

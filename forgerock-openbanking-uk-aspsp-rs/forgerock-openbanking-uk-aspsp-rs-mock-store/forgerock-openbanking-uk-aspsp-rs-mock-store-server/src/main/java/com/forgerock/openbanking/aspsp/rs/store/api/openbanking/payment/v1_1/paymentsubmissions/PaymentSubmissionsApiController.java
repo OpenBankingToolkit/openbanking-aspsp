@@ -26,7 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FRPaymentSub
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.v1_0.FRPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
