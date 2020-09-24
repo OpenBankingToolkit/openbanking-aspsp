@@ -105,9 +105,9 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteInternational1);
+        log.debug("Received payment submission: '{}'", obWriteInternational1);
         FRWriteInternational frInternationalPayment = toFRWriteInternational(obWriteInternational1);
-        //log.trace("Converted to: {}", frInternationalPayment.getClass());
+        log.trace("Converted to: '{}'", frInternationalPayment);
 
         String paymentId = frInternationalPayment.getData().getConsentId();
         FRInternationalConsent paymentConsent = internationalConsentRepository.findById(paymentId)

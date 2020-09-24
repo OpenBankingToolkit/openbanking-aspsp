@@ -96,7 +96,7 @@ public class PaymentSubmissionsApiController implements PaymentSubmissionsApi {
 
             HttpServletRequest httpServletRequest
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", paymentSubmission);
+        log.debug("Received payment submission: '{}'", paymentSubmission);
 
         Optional<FRPaymentSetup> isPaymentSetup = frPaymentSetupRepository.findById(paymentId);
         if (isPaymentSetup.isEmpty()) {

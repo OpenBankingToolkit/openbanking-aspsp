@@ -25,8 +25,10 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
 import uk.org.openbanking.datamodel.payment.OBFile1;
 import uk.org.openbanking.datamodel.payment.OBFile2;
+import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteFile2DataInitiation;
+import uk.org.openbanking.datamodel.payment.OBWriteFileConsent1;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
@@ -45,6 +47,12 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.pa
 public class FRWriteFileConsentConverter {
 
     // OB to FR
+    public static FRWriteFileConsent toFRWriteFileConsent(OBWriteFileConsent1 obWriteFileConsent1) {
+        return obWriteFileConsent1 == null ? null : FRWriteFileConsent.builder()
+                .data(toFRWriteFileConsentData(obWriteFileConsent1.getData()))
+                .build();
+    }
+
     public static FRWriteFileConsent toFRWriteFileConsent(OBWriteFileConsent2 obWriteFileConsent2) {
         return obWriteFileConsent2 == null ? null : FRWriteFileConsent.builder()
                 .data(toFRWriteFileConsentData(obWriteFileConsent2.getData()))
@@ -54,6 +62,13 @@ public class FRWriteFileConsentConverter {
     public static FRWriteFileConsent toFRWriteFileConsent(OBWriteFileConsent3 obWriteFileConsent3) {
         return obWriteFileConsent3 == null ? null : FRWriteFileConsent.builder()
                 .data(toFRWriteFileConsentData(obWriteFileConsent3.getData()))
+                .build();
+    }
+
+    public static FRWriteFileConsentData toFRWriteFileConsentData(OBWriteDataFileConsent1 data) {
+        return data == null ? null : FRWriteFileConsentData.builder()
+                .initiation(toFRWriteFileDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
                 .build();
     }
 

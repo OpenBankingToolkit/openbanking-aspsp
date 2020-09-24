@@ -85,7 +85,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomesticStandingOrder3);
+        log.debug("Received payment submission: '{}'", obWriteDomesticStandingOrder3);
 
         String paymentId = obWriteDomesticStandingOrder3.getData().getConsentId();
         FRDomesticStandingOrderConsent paymentConsent = domesticStandingOrderConsentRepository.findById(paymentId)

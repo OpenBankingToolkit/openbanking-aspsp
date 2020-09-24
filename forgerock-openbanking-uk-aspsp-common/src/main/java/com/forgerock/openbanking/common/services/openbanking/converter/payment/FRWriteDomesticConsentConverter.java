@@ -45,10 +45,24 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.pa
 public class FRWriteDomesticConsentConverter {
 
     // OB to FR
+    public static FRWriteDomesticConsent toFRWriteDomesticConsent(OBWriteDomesticConsent1 obWriteDomesticConsent1) {
+        return obWriteDomesticConsent1 == null ? null : FRWriteDomesticConsent.builder()
+                .data(toFRWriteDomesticConsentData(obWriteDomesticConsent1.getData()))
+                .risk(toFRRisk(obWriteDomesticConsent1.getRisk()))
+                .build();
+    }
+
     public static FRWriteDomesticConsent toFRWriteDomesticConsent(OBWriteDomesticConsent2 obWriteDomesticConsent2) {
         return obWriteDomesticConsent2 == null ? null : FRWriteDomesticConsent.builder()
                 .data(toFRWriteDomesticConsentData(obWriteDomesticConsent2.getData()))
                 .risk(toFRRisk(obWriteDomesticConsent2.getRisk()))
+                .build();
+    }
+
+    public static FRWriteDomesticConsent toFRWriteDomesticConsent(OBWriteDomesticConsent3 obWriteDomesticConsent3) {
+        return obWriteDomesticConsent3 == null ? null : FRWriteDomesticConsent.builder()
+                .data(toFRWriteDomesticConsentData(obWriteDomesticConsent3.getData()))
+                .risk(toFRRisk(obWriteDomesticConsent3.getRisk()))
                 .build();
     }
 
@@ -59,10 +73,25 @@ public class FRWriteDomesticConsentConverter {
                 .build();
     }
 
+    public static FRWriteDomesticConsentData toFRWriteDomesticConsentData(OBWriteDataDomesticConsent1 data) {
+        return data == null ? null : FRWriteDomesticConsentData.builder()
+                .initiation(toFRWriteDomesticDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
     public static FRWriteDomesticConsentData toFRWriteDomesticConsentData(OBWriteDataDomesticConsent2 data) {
         return data == null ? null : FRWriteDomesticConsentData.builder()
                 .initiation(toFRWriteDomesticDataInitiation(data.getInitiation()))
                 .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
+    public static FRWriteDomesticConsentData toFRWriteDomesticConsentData(OBWriteDomesticConsent3Data data) {
+        return data == null ? null : FRWriteDomesticConsentData.builder()
+                .initiation(toFRWriteDomesticDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .scASupportData(toFRDataSCASupportData(data.getScASupportData()))
                 .build();
     }
 

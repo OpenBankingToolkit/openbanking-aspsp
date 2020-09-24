@@ -89,7 +89,7 @@ public class FRDataAuthorisationConverter {
         return authorisationType == null ? null : OBWriteDomesticConsent4DataAuthorisation.AuthorisationTypeEnum.valueOf(authorisationType.name());
     }
 
-    private static OBExternalAuthorisation1Code toOBExternalAuthorisation1Code(FRDataAuthorisation.AuthorisationType authorisationType) {
+    public static OBExternalAuthorisation1Code toOBExternalAuthorisation1Code(FRDataAuthorisation.AuthorisationType authorisationType) {
         return authorisationType == null ? null : OBExternalAuthorisation1Code.valueOf(authorisationType.name());
     }
 }

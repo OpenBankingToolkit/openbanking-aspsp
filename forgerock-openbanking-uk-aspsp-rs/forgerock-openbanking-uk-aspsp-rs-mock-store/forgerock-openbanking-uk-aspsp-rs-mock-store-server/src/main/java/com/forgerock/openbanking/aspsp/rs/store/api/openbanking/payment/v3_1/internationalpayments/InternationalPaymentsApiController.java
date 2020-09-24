@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.Internationa
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternational;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -106,7 +107,9 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteInternational2);
+        log.debug("Received payment submission: '{}'", obWriteInternational2);
+        FRWriteInternational frWriteInternational = toFRWriteInternational(obWriteInternational2);
+        log.trace("Converted to: '{}'", frWriteInternational);
 
         String paymentId = obWriteInternational2.getData().getConsentId();
         FRInternationalConsent paymentConsent = internationalConsentRepository.findById(paymentId)
@@ -119,7 +122,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
         FRInternationalPaymentSubmission frPaymentSubmission = FRInternationalPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalPayment(toFRWriteInternational(obWriteInternational2))
+                .internationalPayment(frWriteInternational)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

@@ -31,6 +31,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStan
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrder;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -84,7 +85,9 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomesticStandingOrder3);
+        log.debug("Received payment submission: '{}'", obWriteDomesticStandingOrder3);
+        FRWriteDomesticStandingOrder frWriteDomesticStandingOrder = toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder3);
+        log.trace("Converted to: '{}'", frWriteDomesticStandingOrder);
 
         String paymentId = obWriteDomesticStandingOrder3.getData().getConsentId();
         FRDomesticStandingOrderConsent paymentConsent = domesticStandingOrderConsentRepository.findById(paymentId)
@@ -97,7 +100,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
         FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission.builder()
                 .id(paymentId)
-                .domesticStandingOrder(toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder3))
+                .domesticStandingOrder(frWriteDomesticStandingOrder)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

@@ -24,13 +24,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalDataInitiation;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
-import uk.org.openbanking.datamodel.payment.OBInternational1;
-import uk.org.openbanking.datamodel.payment.OBInternational2;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5Data;
+import uk.org.openbanking.datamodel.payment.*;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toFRAccount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
@@ -62,10 +56,24 @@ import static uk.org.openbanking.datamodel.service.converter.payment.CountryCode
 public class FRWriteInternationalConsentConverter {
 
     // OB to FR
+    public static FRWriteInternationalConsent toFRWriteInternationalConsent(OBWriteInternationalConsent1 obWriteInternationalConsent1) {
+        return obWriteInternationalConsent1 == null ? null : FRWriteInternationalConsent.builder()
+                .data(toFRWriteInternationalConsentData(obWriteInternationalConsent1.getData()))
+                .risk(toFRRisk(obWriteInternationalConsent1.getRisk()))
+                .build();
+    }
+
     public static FRWriteInternationalConsent toFRWriteInternationalConsent(OBWriteInternationalConsent2 obWriteInternationalConsent2) {
         return obWriteInternationalConsent2 == null ? null : FRWriteInternationalConsent.builder()
                 .data(toFRWriteInternationalConsentData(obWriteInternationalConsent2.getData()))
                 .risk(toFRRisk(obWriteInternationalConsent2.getRisk()))
+                .build();
+    }
+
+    public static FRWriteInternationalConsent toFRWriteInternationalConsent(OBWriteInternationalConsent4 obWriteInternationalConsent4) {
+        return obWriteInternationalConsent4 == null ? null : FRWriteInternationalConsent.builder()
+                .data(toFRWriteInternationalConsentData(obWriteInternationalConsent4.getData()))
+                .risk(toFRRisk(obWriteInternationalConsent4.getRisk()))
                 .build();
     }
 
@@ -76,10 +84,25 @@ public class FRWriteInternationalConsentConverter {
                 .build();
     }
 
+    public static FRWriteInternationalConsentData toFRWriteInternationalConsentData(OBWriteDataInternationalConsent1 data) {
+        return data == null ? null : FRWriteInternationalConsentData.builder()
+                .initiation(toFRWriteInternationalDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
     public static FRWriteInternationalConsentData toFRWriteInternationalConsentData(OBWriteDataInternationalConsent2 data) {
         return data == null ? null : FRWriteInternationalConsentData.builder()
                 .initiation(toFRWriteInternationalDataInitiation(data.getInitiation()))
                 .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
+    public static FRWriteInternationalConsentData toFRWriteInternationalConsentData(OBWriteInternationalConsent4Data data) {
+        return data == null ? null : FRWriteInternationalConsentData.builder()
+                .initiation(toFRWriteInternationalDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .scASupportData(toFRDataSCASupportData(data.getScASupportData()))
                 .build();
     }
 

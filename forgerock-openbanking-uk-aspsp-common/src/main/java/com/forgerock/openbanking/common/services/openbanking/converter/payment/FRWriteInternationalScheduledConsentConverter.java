@@ -24,13 +24,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
-import uk.org.openbanking.datamodel.payment.OBInternationalScheduled1;
-import uk.org.openbanking.datamodel.payment.OBInternationalScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduledConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5Data;
+import uk.org.openbanking.datamodel.payment.*;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toFRAccount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
@@ -63,10 +57,24 @@ import static uk.org.openbanking.datamodel.service.converter.payment.CountryCode
 public class FRWriteInternationalScheduledConsentConverter {
 
     // OB to FR
+    public static FRWriteInternationalScheduledConsent toFRWriteInternationalScheduledConsent(OBWriteInternationalScheduledConsent1 obWriteInternationalScheduledConsent1) {
+        return obWriteInternationalScheduledConsent1 == null ? null : FRWriteInternationalScheduledConsent.builder()
+                .data(toFRWriteInternationalScheduledConsentData(obWriteInternationalScheduledConsent1.getData()))
+                .risk(toFRRisk(obWriteInternationalScheduledConsent1.getRisk()))
+                .build();
+    }
+
     public static FRWriteInternationalScheduledConsent toFRWriteInternationalScheduledConsent(OBWriteInternationalScheduledConsent2 obWriteInternationalScheduledConsent2) {
         return obWriteInternationalScheduledConsent2 == null ? null : FRWriteInternationalScheduledConsent.builder()
                 .data(toFRWriteInternationalScheduledConsentData(obWriteInternationalScheduledConsent2.getData()))
                 .risk(toFRRisk(obWriteInternationalScheduledConsent2.getRisk()))
+                .build();
+    }
+
+    public static FRWriteInternationalScheduledConsent toFRWriteInternationalScheduledConsent(OBWriteInternationalScheduledConsent4 obWriteInternationalScheduledConsent4) {
+        return obWriteInternationalScheduledConsent4 == null ? null : FRWriteInternationalScheduledConsent.builder()
+                .data(toFRWriteInternationalScheduledConsentData(obWriteInternationalScheduledConsent4.getData()))
+                .risk(toFRRisk(obWriteInternationalScheduledConsent4.getRisk()))
                 .build();
     }
 
@@ -77,11 +85,28 @@ public class FRWriteInternationalScheduledConsentConverter {
                 .build();
     }
 
+    public static FRWriteInternationalScheduledConsentData toFRWriteInternationalScheduledConsentData(OBWriteDataInternationalScheduledConsent1 data) {
+        return data == null ? null : FRWriteInternationalScheduledConsentData.builder()
+                .permission(toFRPermission(data.getPermission()))
+                .initiation(toFRWriteInternationalScheduledDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
     public static FRWriteInternationalScheduledConsentData toFRWriteInternationalScheduledConsentData(OBWriteDataInternationalScheduledConsent2 data) {
         return data == null ? null : FRWriteInternationalScheduledConsentData.builder()
                 .permission(toFRPermission(data.getPermission()))
                 .initiation(toFRWriteInternationalScheduledDataInitiation(data.getInitiation()))
                 .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
+    public static FRWriteInternationalScheduledConsentData toFRWriteInternationalScheduledConsentData(OBWriteInternationalScheduledConsent4Data data) {
+        return data == null ? null : FRWriteInternationalScheduledConsentData.builder()
+                .permission(toFRPermission(data.getPermission()))
+                .initiation(toFRWriteInternationalScheduledDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .scASupportData(toFRDataSCASupportData(data.getScASupportData()))
                 .build();
     }
 

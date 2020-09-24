@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentS
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFile;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
@@ -78,7 +79,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     public ResponseEntity createFilePayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteFile2 obWriteFile2Param,
+            @RequestBody OBWriteFile2 obWriteFile2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -108,9 +109,11 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             HttpServletRequest request,
 
             Principal principal) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteFile2Param);
+        log.debug("Received payment submission: '{}'", obWriteFile2);
+        FRWriteFile frWriteFile = toFRWriteFile(obWriteFile2);
+        log.trace("Converted to: '{}'", frWriteFile);
 
-        String paymentId = obWriteFile2Param.getData().getConsentId();
+        String paymentId = obWriteFile2.getData().getConsentId();
         FRFileConsent paymentConsent = fileConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
@@ -121,7 +124,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
         FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
                 .id(paymentId)
-                .filePayment(toFRWriteFile(obWriteFile2Param))
+                .filePayment(frWriteFile)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -219,9 +222,9 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                                 OBRIErrorType.PAYMENT_ID_NOT_FOUND
                                         .toOBError1(filePaymentId))
                 );
-        log.debug("Consent '{}' exists so generating a report file for type: {}", consent.getId(), consent.getStatus(), consent.getFileType());
+        log.debug("Consent '{}' exists so generating a report file for type: '{}'", consent.getId(), consent.getStatus(), consent.getFileType());
         final String reportFile = paymentReportFileService.createPaymentReport(consent);
-        log.debug("Generated report file for consent: {}", consent.getId());
+        log.debug("Generated report file for consent: '{}'", consent.getId());
         return ResponseEntity.ok(reportFile);
     }
 

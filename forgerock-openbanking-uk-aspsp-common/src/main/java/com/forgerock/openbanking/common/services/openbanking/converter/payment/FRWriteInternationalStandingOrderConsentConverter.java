@@ -24,15 +24,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
-import uk.org.openbanking.datamodel.payment.OBCashAccountCreditor3;
-import uk.org.openbanking.datamodel.payment.OBInternationalStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBInternationalStandingOrder2;
-import uk.org.openbanking.datamodel.payment.OBInternationalStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrderConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6Data;
+import uk.org.openbanking.datamodel.payment.*;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
@@ -54,10 +46,31 @@ import static uk.org.openbanking.datamodel.service.converter.payment.CountryCode
 public class FRWriteInternationalStandingOrderConsentConverter {
 
     // OB to FR
+    public static FRWriteInternationalStandingOrderConsent toFRWriteInternationalStandingOrderConsent(OBWriteInternationalStandingOrderConsent1 obWriteInternationalStandingOrderConsent1) {
+        return obWriteInternationalStandingOrderConsent1 == null ? null : FRWriteInternationalStandingOrderConsent.builder()
+                .data(toFRWriteInternationalStandingOrderConsentData(obWriteInternationalStandingOrderConsent1.getData()))
+                .risk(toFRRisk(obWriteInternationalStandingOrderConsent1.getRisk()))
+                .build();
+    }
+
+    public static FRWriteInternationalStandingOrderConsent toFRWriteInternationalStandingOrderConsent(OBWriteInternationalStandingOrderConsent2 obWriteInternationalStandingOrderConsent2) {
+        return obWriteInternationalStandingOrderConsent2 == null ? null : FRWriteInternationalStandingOrderConsent.builder()
+                .data(toFRWriteInternationalStandingOrderConsentData(obWriteInternationalStandingOrderConsent2.getData()))
+                .risk(toFRRisk(obWriteInternationalStandingOrderConsent2.getRisk()))
+                .build();
+    }
+
     public static FRWriteInternationalStandingOrderConsent toFRWriteInternationalStandingOrderConsent(OBWriteInternationalStandingOrderConsent3 obWriteInternationalStandingOrderConsent3) {
         return obWriteInternationalStandingOrderConsent3 == null ? null : FRWriteInternationalStandingOrderConsent.builder()
                 .data(toFRWriteInternationalStandingOrderConsentData(obWriteInternationalStandingOrderConsent3.getData()))
                 .risk(toFRRisk(obWriteInternationalStandingOrderConsent3.getRisk()))
+                .build();
+    }
+
+    public static FRWriteInternationalStandingOrderConsent toFRWriteInternationalStandingOrderConsent(OBWriteInternationalStandingOrderConsent5 obWriteInternationalStandingOrderConsent5) {
+        return obWriteInternationalStandingOrderConsent5 == null ? null : FRWriteInternationalStandingOrderConsent.builder()
+                .data(toFRWriteInternationalStandingOrderConsentData(obWriteInternationalStandingOrderConsent5.getData()))
+                .risk(toFRRisk(obWriteInternationalStandingOrderConsent5.getRisk()))
                 .build();
     }
 
@@ -68,11 +81,36 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .build();
     }
 
+    public static FRWriteInternationalStandingOrderConsentData toFRWriteInternationalStandingOrderConsentData(OBWriteDataInternationalStandingOrderConsent1 data) {
+        return data == null ? null : FRWriteInternationalStandingOrderConsentData.builder()
+                .permission(toFRPermission(data.getPermission()))
+                .initiation(toFRWriteInternationalStandingOrderDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
+    public static FRWriteInternationalStandingOrderConsentData toFRWriteInternationalStandingOrderConsentData(OBWriteDataInternationalStandingOrderConsent2 data) {
+        return data == null ? null : FRWriteInternationalStandingOrderConsentData.builder()
+                .permission(toFRPermission(data.getPermission()))
+                .initiation(toFRWriteInternationalStandingOrderDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
     public static FRWriteInternationalStandingOrderConsentData toFRWriteInternationalStandingOrderConsentData(OBWriteDataInternationalStandingOrderConsent3 data) {
         return data == null ? null : FRWriteInternationalStandingOrderConsentData.builder()
                 .permission(toFRPermission(data.getPermission()))
                 .initiation(toFRWriteInternationalStandingOrderDataInitiation(data.getInitiation()))
                 .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
+    public static FRWriteInternationalStandingOrderConsentData toFRWriteInternationalStandingOrderConsentData(OBWriteInternationalStandingOrderConsent5Data data) {
+        return data == null ? null : FRWriteInternationalStandingOrderConsentData.builder()
+                .permission(toFRPermission(data.getPermission()))
+                .initiation(toFRWriteInternationalStandingOrderDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .scASupportData(toFRDataSCASupportData(data.getScASupportData()))
                 .build();
     }
 

@@ -23,14 +23,7 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
-import uk.org.openbanking.datamodel.payment.OBDomesticStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBDomesticStandingOrder2;
-import uk.org.openbanking.datamodel.payment.OBDomesticStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data;
+import uk.org.openbanking.datamodel.payment.*;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.*;
@@ -45,10 +38,31 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.pa
 public class FRWriteDomesticStandingOrderConsentConverter {
 
     // OB to FR
+    public static FRWriteDomesticStandingOrderConsent toFRWriteDomesticStandingOrderConsent(OBWriteDomesticStandingOrderConsent1 obWriteDomesticStandingOrderConsent1) {
+        return obWriteDomesticStandingOrderConsent1 == null ? null : FRWriteDomesticStandingOrderConsent.builder()
+                .data(toFRWriteDomesticStandingOrderConsent(obWriteDomesticStandingOrderConsent1.getData()))
+                .risk(toFRRisk(obWriteDomesticStandingOrderConsent1.getRisk()))
+                .build();
+    }
+
+    public static FRWriteDomesticStandingOrderConsent toFRWriteDomesticStandingOrderConsent(OBWriteDomesticStandingOrderConsent2 obWriteDomesticStandingOrderConsent2) {
+        return obWriteDomesticStandingOrderConsent2 == null ? null : FRWriteDomesticStandingOrderConsent.builder()
+                .data(toFRWriteDomesticStandingOrderConsent(obWriteDomesticStandingOrderConsent2.getData()))
+                .risk(toFRRisk(obWriteDomesticStandingOrderConsent2.getRisk()))
+                .build();
+    }
+
     public static FRWriteDomesticStandingOrderConsent toFRWriteDomesticStandingOrderConsent(OBWriteDomesticStandingOrderConsent3 obWriteDomesticStandingOrderConsent3) {
         return obWriteDomesticStandingOrderConsent3 == null ? null : FRWriteDomesticStandingOrderConsent.builder()
                 .data(toFRWriteDomesticStandingOrderConsent(obWriteDomesticStandingOrderConsent3.getData()))
                 .risk(toFRRisk(obWriteDomesticStandingOrderConsent3.getRisk()))
+                .build();
+    }
+
+    public static FRWriteDomesticStandingOrderConsent toFRWriteDomesticStandingOrderConsent(OBWriteDomesticStandingOrderConsent4 obWriteDomesticStandingOrderConsent4) {
+        return obWriteDomesticStandingOrderConsent4 == null ? null : FRWriteDomesticStandingOrderConsent.builder()
+                .data(toFRWriteDomesticStandingOrderConsent(obWriteDomesticStandingOrderConsent4.getData()))
+                .risk(toFRRisk(obWriteDomesticStandingOrderConsent4.getRisk()))
                 .build();
     }
 
@@ -59,11 +73,36 @@ public class FRWriteDomesticStandingOrderConsentConverter {
                 .build();
     }
 
+    public static FRWriteDomesticStandingOrderConsentData toFRWriteDomesticStandingOrderConsent(OBWriteDataDomesticStandingOrderConsent1 data) {
+        return data == null ? null : FRWriteDomesticStandingOrderConsentData.builder()
+                .permission(toFRPermission(data.getPermission()))
+                .initiation(toFRWriteDomesticStandingOrderDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
+    public static FRWriteDomesticStandingOrderConsentData toFRWriteDomesticStandingOrderConsent(OBWriteDataDomesticStandingOrderConsent2 data) {
+        return data == null ? null : FRWriteDomesticStandingOrderConsentData.builder()
+                .permission(toFRPermission(data.getPermission()))
+                .initiation(toFRWriteDomesticStandingOrderDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
     public static FRWriteDomesticStandingOrderConsentData toFRWriteDomesticStandingOrderConsent(OBWriteDataDomesticStandingOrderConsent3 data) {
         return data == null ? null : FRWriteDomesticStandingOrderConsentData.builder()
                 .permission(toFRPermission(data.getPermission()))
                 .initiation(toFRWriteDomesticStandingOrderDataInitiation(data.getInitiation()))
                 .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .build();
+    }
+
+    public static FRWriteDomesticStandingOrderConsentData toFRWriteDomesticStandingOrderConsent(OBWriteDomesticStandingOrderConsent4Data data) {
+        return data == null ? null : FRWriteDomesticStandingOrderConsentData.builder()
+                .permission(toFRPermission(data.getPermission()))
+                .initiation(toFRWriteDomesticStandingOrderDataInitiation(data.getInitiation()))
+                .authorisation(toFRDataAuthorisation(data.getAuthorisation()))
+                .scASupportData(toFRDataSCASupportData(data.getScASupportData()))
                 .build();
     }
 

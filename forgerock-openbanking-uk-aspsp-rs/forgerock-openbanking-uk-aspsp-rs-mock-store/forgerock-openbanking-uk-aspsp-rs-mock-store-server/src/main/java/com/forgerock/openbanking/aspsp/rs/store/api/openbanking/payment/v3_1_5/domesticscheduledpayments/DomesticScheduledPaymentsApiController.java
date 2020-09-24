@@ -31,6 +31,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticSche
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduled;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -86,7 +87,9 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomesticScheduled2);
+        log.debug("Received payment submission: '{}'", obWriteDomesticScheduled2);
+        FRWriteDomesticScheduled frWriteDomesticScheduled = toFRWriteDomesticScheduled(obWriteDomesticScheduled2);
+        log.trace("Converted to: '{}'", frWriteDomesticScheduled);
 
         String paymentId = obWriteDomesticScheduled2.getData().getConsentId();
         FRDomesticScheduledConsent paymentConsent = domesticScheduledConsentRepository.findById(paymentId)
@@ -100,7 +103,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
         // Save Payment
         FRDomesticScheduledPaymentSubmission frPaymentSubmission = FRDomesticScheduledPaymentSubmission.builder()
                 .id(paymentId)
-                .domesticScheduledPayment(toFRWriteDomesticScheduled(obWriteDomesticScheduled2))
+                .domesticScheduledPayment(frWriteDomesticScheduled)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
