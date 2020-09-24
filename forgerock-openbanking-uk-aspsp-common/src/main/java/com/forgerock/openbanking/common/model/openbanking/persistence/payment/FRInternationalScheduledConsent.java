@@ -97,11 +97,12 @@ public class FRInternationalScheduledConsent implements PaymentConsent, Persista
     }
 
     /**
-     * Note: we do not persist the calculated exchange rate fields (such as rate value and expiry date) as the exchange rate object in the initiation must match exactly what the user submitted. We could persist the
-     * calculated exchange rate separately but currently it is easier just to generate dynamically as the rate it always the same value for testing purposes.
-     * @return OBExchangeRate2 with rate nd expiry date fields populated where appropriate
+     * Note: we do not persist the calculated exchange rate fields (such as rate value and expiry date) as the exchange rate object in the initiation must match exactly what the
+     * user submitted. We could persist the calculated exchange rate separately but currently it is easier just to generate dynamically as the rate it always the same value
+     * for testing purposes.
+     *
+     * @return {@link OBWriteInternationalConsentResponse6DataExchangeRateInformation} with rate nd expiry date fields populated where appropriate.
      */
-    // TODO #296 - return FR exchange rate
     public OBWriteInternationalConsentResponse6DataExchangeRateInformation getCalculatedExchangeRate() {
         OBWriteInternationalConsentResponse4DataExchangeRateInformation exchangeRate = CurrencyRateService.getCalculatedExchangeRate(getInitiation().getExchangeRateInformation(), created);
         return toOBWriteInternationalConsentResponse6DataExchangeRateInformation(exchangeRate);
