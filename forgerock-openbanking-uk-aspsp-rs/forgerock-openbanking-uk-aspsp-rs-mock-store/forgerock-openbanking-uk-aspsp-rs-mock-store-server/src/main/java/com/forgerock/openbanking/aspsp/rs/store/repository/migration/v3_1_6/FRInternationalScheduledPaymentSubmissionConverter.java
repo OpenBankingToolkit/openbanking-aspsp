@@ -22,49 +22,19 @@ package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.InternationalScheduledPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledPaymentSubmission;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduled1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3Data;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
 
 public class FRInternationalScheduledPaymentSubmissionConverter {
 
     public static FRInternationalScheduledPaymentSubmission toFRInternationalScheduledPaymentSubmission(InternationalScheduledPaymentSubmission2 frInternationalScheduledPaymentSubmission2) {
         return frInternationalScheduledPaymentSubmission2 == null ? null : FRInternationalScheduledPaymentSubmission.builder()
                 .id(frInternationalScheduledPaymentSubmission2.getId())
-                .internationalScheduledPayment(toOBWriteInternationalScheduled3(frInternationalScheduledPaymentSubmission2.getInternationalScheduledPayment()))
+                .internationalScheduledPayment(toFRWriteInternationalScheduled(frInternationalScheduledPaymentSubmission2.getInternationalScheduledPayment()))
                 .created(frInternationalScheduledPaymentSubmission2.getCreated())
                 .updated(frInternationalScheduledPaymentSubmission2.getUpdated())
                 .idempotencyKey(frInternationalScheduledPaymentSubmission2.getIdempotencyKey())
                 .obVersion(frInternationalScheduledPaymentSubmission2.getObVersion())
                 .build();
-    }
-
-    public static OBWriteInternationalScheduled3 toOBWriteInternationalScheduled2(OBWriteInternationalScheduled1 obWriteInternationalScheduled1) {
-        return obWriteInternationalScheduled1 == null ? null : (new OBWriteInternationalScheduled3())
-                .data(toOBWriteInternationalScheduled3Data(obWriteInternationalScheduled1.getData()))
-                .risk(obWriteInternationalScheduled1.getRisk());
-    }
-
-    public static OBWriteInternationalScheduled3 toOBWriteInternationalScheduled3(OBWriteInternationalScheduled2 obWriteInternationalScheduled2) {
-        return obWriteInternationalScheduled2 == null ? null : (new OBWriteInternationalScheduled3())
-                .data(toOBWriteInternationalScheduled3Data(obWriteInternationalScheduled2.getData()))
-                .risk(obWriteInternationalScheduled2.getRisk());
-    }
-
-    public static OBWriteInternationalScheduled3Data toOBWriteInternationalScheduled3Data(OBWriteDataInternationalScheduled1 data) {
-        return data == null ? null : new OBWriteInternationalScheduled3Data()
-                .consentId(data.getConsentId())
-                .initiation(toOBWriteInternationalScheduled3DataInitiation(data.getInitiation()));
-    }
-
-    public static OBWriteInternationalScheduled3Data toOBWriteInternationalScheduled3Data(OBWriteDataInternationalScheduled2 data) {
-        return data == null ? null : new OBWriteInternationalScheduled3Data()
-                .consentId(data.getConsentId())
-                .initiation(toOBWriteInternationalScheduled3DataInitiation(data.getInitiation()));
     }
 }

@@ -21,12 +21,12 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -51,6 +51,8 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("DomesticStandingOrdersApiV3.1.1")
@@ -114,7 +116,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
         FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission.builder()
                 .id(paymentId)
-                .domesticStandingOrder(obWriteDomesticStandingOrder3Param)
+                .domesticStandingOrder(toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder3Param))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -170,7 +172,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
     private OBWriteDomesticStandingOrderResponse3 packagePayment(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission, FRDomesticStandingOrderConsent frDomesticStandingOrderConsent3) {
         return new OBWriteDomesticStandingOrderResponse3().data(new OBWriteDataDomesticStandingOrderResponse3()
                 .domesticStandingOrderId(frPaymentSubmission.getId())
-                .initiation(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation())
+                .initiation(toOBDomesticStandingOrder3(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))
                 .creationDateTime(frDomesticStandingOrderConsent3.getCreated())
                 .statusUpdateDateTime(frDomesticStandingOrderConsent3.getStatusUpdate())
                 .status(frDomesticStandingOrderConsent3.getStatus().toOBExternalStatusCode1())

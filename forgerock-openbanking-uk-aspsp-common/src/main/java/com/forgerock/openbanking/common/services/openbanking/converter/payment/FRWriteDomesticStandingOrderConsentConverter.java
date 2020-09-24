@@ -32,15 +32,8 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent3
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toFRAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBWriteDomesticStandingOrder3DataInitiationCreditorAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBWriteDomesticStandingOrder3DataInitiationDebtorAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBWriteDomesticStandingOrder3DataInitiationFinalPaymentAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBWriteDomesticStandingOrder3DataInitiationRecurringPaymentAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toFRDataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toFRDataSCASupportData;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toFRPermission;
@@ -196,6 +189,22 @@ public class FRWriteDomesticStandingOrderConsentConverter {
                 .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getFinalPaymentAmount()))
                 .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
                 .creditorAccount(toOBCashAccount3(initiation.getCreditorAccount()))
+                .supplementaryData(toOBSupplementaryData1(initiation.getSupplementaryData()));
+    }
+
+    public static OBDomesticStandingOrder3 toOBDomesticStandingOrder3(FRWriteDomesticStandingOrderDataInitiation initiation) {
+        return initiation == null ? null : new OBDomesticStandingOrder3()
+                .frequency(initiation.getFrequency())
+                .reference(initiation.getReference())
+                .numberOfPayments(initiation.getNumberOfPayments())
+                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
+                .recurringPaymentDateTime(initiation.getRecurringPaymentDateTime())
+                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
+                .firstPaymentAmount(toOBDomesticStandingOrder3FirstPaymentAmount(initiation.getFirstPaymentAmount()))
+                .recurringPaymentAmount(toOBDomesticStandingOrder3RecurringPaymentAmount(initiation.getRecurringPaymentAmount()))
+                .finalPaymentAmount(toOBDomesticStandingOrder3FinalPaymentAmount(initiation.getFinalPaymentAmount()))
+                .debtorAccount(toOBCashAccountDebtor4(initiation.getDebtorAccount()))
+                .creditorAccount(toOBCashAccountCreditor3(initiation.getCreditorAccount()))
                 .supplementaryData(toOBSupplementaryData1(initiation.getSupplementaryData()));
     }
 }

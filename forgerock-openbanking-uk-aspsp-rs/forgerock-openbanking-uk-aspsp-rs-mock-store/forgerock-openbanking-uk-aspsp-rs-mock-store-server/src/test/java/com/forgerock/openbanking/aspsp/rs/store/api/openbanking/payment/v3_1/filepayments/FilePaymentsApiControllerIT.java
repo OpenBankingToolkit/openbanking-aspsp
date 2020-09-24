@@ -21,15 +21,16 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.filepayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFile;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
@@ -52,7 +53,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFile2;
 import uk.org.openbanking.datamodel.payment.OBWriteFile2;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse2;
@@ -61,6 +61,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileResponse2;
 import java.math.BigDecimal;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBFile2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConverter.toOBWriteFile2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -109,7 +110,7 @@ public class FilePaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(submission.getFilePayment().getData().getInitiation());
+        assertThat(response.getBody().getData().getInitiation()).isEqualTo(toOBFile2(submission.getFilePayment().getData().getInitiation()));
         assertThat(response.getBody().getData().getCreationDateTime()).isEqualTo(consent.getCreated());
     }
 
@@ -118,7 +119,7 @@ public class FilePaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent consent = saveConsent();
-        OBWriteFile2 submissionRequest = JMockData.mock(OBWriteFile2.class);
+        FRWriteFile submissionRequest = JMockData.mock(FRWriteFile.class);
         FRFilePaymentSubmission submission = FRFilePaymentSubmission.builder()
                 .id(consent.getId())
                 .filePayment(submissionRequest)
@@ -179,7 +180,7 @@ public class FilePaymentsApiControllerIT {
         OBWriteFileResponse2 consentResponse = response.getBody();
         FRFilePaymentSubmission submission = submissionRepository.findById(response.getBody().getData().getFilePaymentId()).get();
         assertThat(submission.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(submission.getFilePayment()).isEqualTo(submissionRequest);
+        assertThat(toOBWriteFile2(submission.getFilePayment())).isEqualTo(submissionRequest);
         assertThat(submission.getObVersion()).isEqualTo(OBVersion.v3_1);
     }
 
@@ -311,9 +312,9 @@ public class FilePaymentsApiControllerIT {
     }
 
     private FRFilePaymentSubmission savePaymentSubmission(FRFileConsent consent) {
-        OBWriteFile2 submissionRequest = JMockData.mock(OBWriteFile2.class);
+        FRWriteFile submissionRequest = JMockData.mock(FRWriteFile.class);
         submissionRequest.getData().getInitiation().setRequestedExecutionDateTime(null);
-        submissionRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
+        submissionRequest.getData().getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         FRFilePaymentSubmission submission = FRFilePaymentSubmission.builder()
                 .id(consent.getId())
                 .filePayment(submissionRequest)

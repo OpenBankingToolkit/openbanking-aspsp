@@ -54,6 +54,8 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_3.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalResponse4DataStatus;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -97,7 +99,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
         FRInternationalPaymentSubmission frPaymentSubmission = FRInternationalPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalPayment(obWriteInternational3)
+                .internationalPayment(toFRWriteInternational(obWriteInternational3))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -151,7 +153,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
         return new OBWriteInternationalResponse4()
                 .data(new OBWriteInternationalResponse4Data()
                         .internationalPaymentId(frPaymentSubmission.getId())
-                        .initiation(frPaymentSubmission.getInternationalPayment().getData().getInitiation())
+                        .initiation(toOBWriteInternational3DataInitiation(frPaymentSubmission.getInternationalPayment().getData().getInitiation()))
                         .creationDateTime(frInternationalConsent.getCreated())
                         .statusUpdateDateTime(frInternationalConsent.getStatusUpdate())
                         .status(toOBWriteInternationalResponse4DataStatus(frInternationalConsent.getStatus()))

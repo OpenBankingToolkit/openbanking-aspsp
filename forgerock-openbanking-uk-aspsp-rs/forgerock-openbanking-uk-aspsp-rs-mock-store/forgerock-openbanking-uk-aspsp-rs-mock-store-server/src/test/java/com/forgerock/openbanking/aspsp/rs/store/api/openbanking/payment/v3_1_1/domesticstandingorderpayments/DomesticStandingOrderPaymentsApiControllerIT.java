@@ -21,19 +21,21 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorderpayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomestic;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrder;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -51,22 +53,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse2;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccountCreditor3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccountDebtor4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBDomesticStandingOrder3FinalPaymentAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBDomesticStandingOrder3FirstPaymentAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBDomesticStandingOrder3RecurringPaymentAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder3;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -111,7 +106,7 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(submission.getDomesticStandingOrder().getData().getInitiation());
+        assertThat(response.getBody().getData().getInitiation()).isEqualTo(toOBDomesticStandingOrder3(submission.getDomesticStandingOrder().getData().getInitiation()));
         assertThat(response.getBody().getData().getCreationDateTime()).isEqualTo(consent.getCreated());
         assertThat(response.getBody().getData().getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdate());
     }
@@ -121,7 +116,7 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticStandingOrderConsent consent = saveConsent();
-        OBWriteDomestic2 submissionRequest = JMockData.mock(OBWriteDomestic2.class);
+        FRWriteDomestic submissionRequest = JMockData.mock(FRWriteDomestic.class);
         FRDomesticPaymentSubmission submission = FRDomesticPaymentSubmission.builder()
                 .id(consent.getId())
                 .domesticPayment(submissionRequest)
@@ -243,9 +238,9 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
     }
 
     private FRDomesticStandingOrderPaymentSubmission savePaymentSubmission(FRDomesticStandingOrderConsent consent) {
-        OBWriteDomesticStandingOrder3 submissionRequest = JMockData.mock(OBWriteDomesticStandingOrder3.class);
+        FRWriteDomesticStandingOrder submissionRequest = JMockData.mock(FRWriteDomesticStandingOrder.class);
         setupTestConsentInitiation(consent.getInitiation());
-        submissionRequest.getData().initiation(toOBDomesticStandingOrder3(consent.getInitiation()));
+        submissionRequest.getData().setInitiation(consent.getInitiation());
         FRDomesticStandingOrderPaymentSubmission submission = FRDomesticStandingOrderPaymentSubmission.builder()
                 .id(consent.getId())
                 .domesticStandingOrder(submissionRequest)
@@ -285,22 +280,6 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
         initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         initiation.setDebtorAccount(FRAccount.builder().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber").build());
         initiation.setCreditorAccount(FRAccount.builder().identification("321").name("test2").schemeName("UK.OBIE.SortCodeAccountNumber").build());
-    }
-
-    private OBDomesticStandingOrder3 toOBDomesticStandingOrder3(FRWriteDomesticStandingOrderDataInitiation initiation) {
-        return initiation == null ? null : new OBDomesticStandingOrder3()
-                .frequency(initiation.getFrequency())
-                .reference(initiation.getReference())
-                .numberOfPayments(initiation.getNumberOfPayments())
-                .firstPaymentDateTime(initiation.getFirstPaymentDateTime())
-                .recurringPaymentDateTime(initiation.getRecurringPaymentDateTime())
-                .finalPaymentDateTime(initiation.getFinalPaymentDateTime())
-                .firstPaymentAmount(toOBDomesticStandingOrder3FirstPaymentAmount(initiation.getFirstPaymentAmount()))
-                .recurringPaymentAmount(toOBDomesticStandingOrder3RecurringPaymentAmount(initiation.getRecurringPaymentAmount()))
-                .finalPaymentAmount(toOBDomesticStandingOrder3FinalPaymentAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toOBCashAccountDebtor4(initiation.getDebtorAccount()))
-                .creditorAccount(toOBCashAccountCreditor3(initiation.getCreditorAccount()))
-                .supplementaryData(toOBSupplementaryData1(initiation.getSupplementaryData()));
     }
 
 }

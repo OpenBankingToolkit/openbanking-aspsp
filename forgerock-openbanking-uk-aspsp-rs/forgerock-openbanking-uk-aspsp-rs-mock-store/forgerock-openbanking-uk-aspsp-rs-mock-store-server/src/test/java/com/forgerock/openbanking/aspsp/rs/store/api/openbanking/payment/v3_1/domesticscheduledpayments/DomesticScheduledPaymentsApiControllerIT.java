@@ -21,15 +21,17 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.domesticscheduledpayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledPaymentSubmissionRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomestic;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduled;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledPayment;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledPaymentSubmission;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -47,7 +49,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse2;
@@ -57,6 +58,7 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsuppo
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBDomesticScheduled2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConverter.toOBWriteDomesticScheduled2;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -91,7 +93,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent consent = saveConsent();
-        FRDomesticScheduledPayment submission = savePaymentSubmission(consent);
+        FRDomesticScheduledPaymentSubmission submission = savePaymentSubmission(consent);
 
         // When
         HttpResponse<OBWriteDomesticScheduledConsentResponse2> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/domestic-scheduled-payments/" + submission.getId())
@@ -102,7 +104,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(response.getBody().getData().getInitiation()).isEqualTo(submission.getDomesticScheduledPayment().getData().getInitiation());
+        assertThat(response.getBody().getData().getInitiation()).isEqualTo(toOBDomesticScheduled2(submission.getDomesticScheduledPayment().getData().getInitiation()));
         assertThat(response.getBody().getData().getCreationDateTime()).isEqualTo(consent.getCreated());
         assertThat(response.getBody().getData().getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdate());
     }
@@ -112,7 +114,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent consent = saveConsent();
-        OBWriteDomestic2 submissionRequest = JMockData.mock(OBWriteDomestic2.class);
+        FRWriteDomestic submissionRequest = JMockData.mock(FRWriteDomestic.class);
         FRDomesticPaymentSubmission submission = FRDomesticPaymentSubmission.builder()
                 .id(consent.getId())
                 .domesticPayment(submissionRequest)
@@ -134,7 +136,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent consent = JMockData.mock(FRDomesticScheduledConsent.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
-        FRDomesticScheduledPayment submission = savePaymentSubmission(consent);
+        FRDomesticScheduledPaymentSubmission submission = savePaymentSubmission(consent);
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.1/pisp/domestic-scheduled-payments/" + submission.getId())
@@ -170,9 +172,9 @@ public class DomesticScheduledPaymentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteDomesticScheduledResponse2 consentResponse = response.getBody();
-        FRDomesticScheduledPayment submission = submissionRepository.findById(response.getBody().getData().getDomesticScheduledPaymentId()).get();
+        FRDomesticScheduledPaymentSubmission submission = submissionRepository.findById(response.getBody().getData().getDomesticScheduledPaymentId()).get();
         assertThat(submission.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(submission.getDomesticScheduledPayment()).isEqualTo(submissionRequest);
+        assertThat(toOBWriteDomesticScheduled2(submission.getDomesticScheduledPayment())).isEqualTo(submissionRequest);
     }
 
     @Test
@@ -180,7 +182,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRDomesticScheduledConsent consent = saveConsent();
-        FRDomesticScheduledPayment submission = savePaymentSubmission(consent);
+        FRDomesticScheduledPaymentSubmission submission = savePaymentSubmission(consent);
 
         OBWriteDomesticScheduled2 obWriteDomestic2 = new OBWriteDomesticScheduled2();
         obWriteDomestic2.risk(toOBRisk1(consent.getRisk()));
@@ -235,10 +237,10 @@ public class DomesticScheduledPaymentsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(400);
     }
 
-    private FRDomesticScheduledPayment savePaymentSubmission(FRDomesticScheduledConsent consent) {
-        OBWriteDomesticScheduled2 submissionRequest = JMockData.mock(OBWriteDomesticScheduled2.class);
-        submissionRequest.getData().initiation(toOBDomesticScheduled2(consent.getInitiation()));
-        FRDomesticScheduledPayment submission = FRDomesticScheduledPayment.builder()
+    private FRDomesticScheduledPaymentSubmission savePaymentSubmission(FRDomesticScheduledConsent consent) {
+        FRWriteDomesticScheduled submissionRequest = JMockData.mock(FRWriteDomesticScheduled.class);
+        submissionRequest.getData().setInitiation(consent.getInitiation());
+        FRDomesticScheduledPaymentSubmission submission = FRDomesticScheduledPaymentSubmission.builder()
                 .id(consent.getId())
                 .domesticScheduledPayment(submissionRequest)
                 .build();

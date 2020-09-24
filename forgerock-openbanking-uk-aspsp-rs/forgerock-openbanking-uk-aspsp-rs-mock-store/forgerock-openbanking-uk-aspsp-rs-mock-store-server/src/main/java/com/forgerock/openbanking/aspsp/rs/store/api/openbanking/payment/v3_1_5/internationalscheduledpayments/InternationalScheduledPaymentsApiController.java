@@ -26,14 +26,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.internationalscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -44,7 +44,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationExchangeRateInformation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse6;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse6Data;
@@ -57,7 +56,8 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalScheduledResponse6DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternational3DataInitiationExchangeRateInformation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
 
 @Controller("InternationalScheduledPaymentsApiV3.1.5")
 @Slf4j
@@ -98,7 +98,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
         FRInternationalScheduledPaymentSubmission frPaymentSubmission = FRInternationalScheduledPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalScheduledPayment(obWriteInternationalScheduled3)
+                .internationalScheduledPayment(toFRWriteInternationalScheduled(obWriteInternationalScheduled3))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -149,11 +149,10 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
     private OBWriteInternationalScheduledResponse6 packagePayment(FRInternationalScheduledPaymentSubmission frPaymentSubmission, FRInternationalScheduledConsent frInternationalScheduledConsent) {
         FRWriteInternationalScheduledDataInitiation initiation = frInternationalScheduledConsent.getInitiation();
-        OBWriteInternational3DataInitiationExchangeRateInformation exchangeRateInformation = toOBWriteInternational3DataInitiationExchangeRateInformation(initiation.getExchangeRateInformation());
         return new OBWriteInternationalScheduledResponse6()
                 .data(new OBWriteInternationalScheduledResponse6Data()
                         .internationalScheduledPaymentId(frPaymentSubmission.getId())
-                        .initiation(frPaymentSubmission.getInternationalScheduledPayment().getData().getInitiation())
+                        .initiation(toOBWriteInternationalScheduled3DataInitiation(frPaymentSubmission.getInternationalScheduledPayment().getData().getInitiation()))
                         .creationDateTime(frInternationalScheduledConsent.getCreated())
                         .statusUpdateDateTime(frInternationalScheduledConsent.getStatusUpdate())
                         .consentId(frInternationalScheduledConsent.getId())

@@ -18,35 +18,42 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
+package com.forgerock.openbanking.common.model.openbanking.persistence.payment.v1_0;
 
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
+import uk.org.openbanking.datamodel.payment.paymentsubmission.OBPaymentSubmission1;
 
 import java.util.Date;
 
-@Builder
-@Data
+/**
+ * FRPaymentConsent submission entity for storing in DB
+ */
 @Document
-public class FRDomesticScheduledPayment implements PaymentSubmission {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class FRPaymentSubmission implements PaymentSubmission {
     @Id
     @Indexed
     public String id;
 
-    public OBWriteDomesticScheduled2 domesticScheduledPayment;
+    public OBPaymentSubmission1 paymentSubmission;
 
     @CreatedDate
     public Date created;
     @LastModifiedDate
     public Date updated;
-
     public String idempotencyKey;
 
     public OBVersion obVersion;

@@ -52,6 +52,8 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBFile2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConverter.toFRWriteFile;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("FilePaymentsApiV3.1")
@@ -119,7 +121,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
         FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
                 .id(paymentId)
-                .filePayment(obWriteFile2Param)
+                .filePayment(toFRWriteFile(obWriteFile2Param))
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -226,7 +228,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     private OBWriteFileResponse2 packagePayment(FRFilePaymentSubmission frPaymentSubmission, FRFileConsent frFileConsent) {
         return new OBWriteFileResponse2().data(new OBWriteDataFileResponse2()
                 .filePaymentId(frPaymentSubmission.getId())
-                .initiation(frPaymentSubmission.getFilePayment().getData().getInitiation())
+                .initiation(toOBFile2(frPaymentSubmission.getFilePayment().getData().getInitiation()))
                 .creationDateTime(frFileConsent.getCreated())
                 .statusUpdateDateTime(DateTime.now())
                 .status(frFileConsent.getStatus().toOBExternalStatusCode1())

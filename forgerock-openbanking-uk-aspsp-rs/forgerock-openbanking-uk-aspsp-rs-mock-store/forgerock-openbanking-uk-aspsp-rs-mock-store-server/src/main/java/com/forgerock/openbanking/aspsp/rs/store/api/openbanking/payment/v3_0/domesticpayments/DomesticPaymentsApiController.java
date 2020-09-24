@@ -21,13 +21,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.domesticpayments;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomestic;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -44,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,9 +53,9 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBDomestic1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBDomestic1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomestic2;
 
 @Controller("DomesticPaymentsApiV3.0")
 @Slf4j
@@ -75,7 +75,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     public ResponseEntity createDomesticPayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteDomestic1 obWriteDomestic1Param,
+            @RequestBody OBWriteDomestic1 obWriteDomestic1,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -106,11 +106,11 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomestic1Param);
-        OBWriteDomestic2 payment = toOBWriteDomestic2(obWriteDomestic1Param);
-        log.trace("Converted to: {}", payment.getClass());
+        log.debug("Received payment submission: {}", obWriteDomestic1);
+        FRWriteDomestic frDomesticPayment = toFRWriteDomestic(obWriteDomestic1);
+        //log.trace("Converted to: {}", frDomesticPayment);
 
-        String paymentId = payment.getData().getConsentId();
+        String paymentId = obWriteDomestic1.getData().getConsentId();
         FRDomesticConsent paymentConsent = domesticConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                     // OB specifies a 400 when the id does not match an existing consent
@@ -119,10 +119,9 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                     OBRIErrorType.PAYMENT_CONSENT_BEHIND_SUBMISSION_NOT_FOUND.toOBError1(paymentId))
                 );
         log.debug("Found consent '{}' to match this payment id: {} ", paymentConsent, paymentId);
-
         FRDomesticPaymentSubmission frPaymentSubmission = FRDomesticPaymentSubmission.builder()
-                .id(payment.getData().getConsentId())
-                .domesticPayment(payment)
+                .id(obWriteDomestic1.getData().getConsentId())
+                .domesticPayment(frDomesticPayment)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)

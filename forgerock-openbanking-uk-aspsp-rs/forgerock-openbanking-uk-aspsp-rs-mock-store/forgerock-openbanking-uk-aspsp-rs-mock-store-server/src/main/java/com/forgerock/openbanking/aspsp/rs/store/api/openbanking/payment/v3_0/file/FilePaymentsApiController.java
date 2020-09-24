@@ -21,13 +21,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.file;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFile;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -45,9 +46,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFileResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteFile1;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
 import uk.org.openbanking.datamodel.payment.OBWriteFileResponse1;
-import uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -55,8 +54,9 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBFile1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConverter.toFRWriteFile;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFile2;
 
 @Controller("FilePaymentsApiV3.0")
 @Slf4j
@@ -112,10 +112,10 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
             Principal principal) throws OBErrorResponseException {
         log.debug("Received payment submission: {}", obWriteFile1);
-        OBWriteFile2 payment = toOBWriteFile2(obWriteFile1);
-        log.trace("Converted to: {}", payment.getClass());
+        FRWriteFile frWriteFile = toFRWriteFile(obWriteFile1);
+        //log.trace("Converted to: {}", frWriteFile.getClass());
 
-        String paymentId = payment.getData().getConsentId();
+        String paymentId = frWriteFile.getData().getConsentId();
         FRFileConsent paymentConsent = fileConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
@@ -126,7 +126,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
 
         FRFilePaymentSubmission frPaymentSubmission = FRFilePaymentSubmission.builder()
                 .id(paymentId)
-                .filePayment(payment)
+                .filePayment(frWriteFile)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -233,7 +233,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
     private OBWriteFileResponse1 packagePayment(FRFilePaymentSubmission frPaymentSubmission, FRFileConsent frFileConsent) {
         return new OBWriteFileResponse1().data(new OBWriteDataFileResponse1()
                 .filePaymentId(frPaymentSubmission.getId())
-                .initiation(OBFileConverter.toOBFile1(frPaymentSubmission.getFilePayment().getData().getInitiation()))
+                .initiation(toOBFile1(frPaymentSubmission.getFilePayment().getData().getInitiation()))
                 .creationDateTime(frFileConsent.getCreated())
                 .statusUpdateDateTime(DateTime.now())
                 .status(frFileConsent.getStatus().toOBExternalStatusCode1())
