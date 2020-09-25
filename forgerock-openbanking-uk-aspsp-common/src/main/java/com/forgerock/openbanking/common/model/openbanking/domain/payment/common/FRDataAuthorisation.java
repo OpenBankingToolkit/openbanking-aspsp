@@ -28,6 +28,15 @@ import org.joda.time.DateTime;
 
 import java.util.stream.Stream;
 
+/**
+ * Represents an equivalent object in the OB data model. It is stored within mongo (instead of the OB object), in order to make it easier to introduce new
+ * versions of the Read/Write API.
+ *
+ * <p>
+ * Note that this object is used across multiple versions of the Read/Write API, meaning that some values won't be populated. For this reason it is
+ * a mutable {@link lombok.Data} rather than an immutable {@link lombok.Value} one.
+ * </p>
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
