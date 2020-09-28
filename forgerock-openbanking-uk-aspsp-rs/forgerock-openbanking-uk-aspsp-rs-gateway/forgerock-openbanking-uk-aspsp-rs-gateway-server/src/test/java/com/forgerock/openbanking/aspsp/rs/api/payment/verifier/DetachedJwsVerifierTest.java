@@ -27,6 +27,7 @@ import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -120,18 +121,14 @@ public class DetachedJwsVerifierTest {
         assertThat(exception).hasMessage("Invalid detached signature " + detachedJws + ". Reason: b64 claim header not set to false");
     }
 
-    @Test
-    public void shouldFailToVerifyB64HeaderGivenVersionBefore3_1_4AndB64HeaderIsNonBoolean() throws Exception {
+    @Test(expected = OBErrorException.class)
+    public void shouldFailToVerifyB64HeaderGivenVersionBefore3_1_4AndB64HeaderIsNonBoolean() throws ParseException, IOException, OBErrorException {
         // Given
         String detachedJws = "eyJiNjQiOiJub3RfZmFsc2UiLCJodHRwOlwvXC9vcGVuYmFua2luZy5vcmcudWtcL2lhdCI6MTU5ODQzNjgxMiwiaHR0cDpcL1wvb3BlbmJhbmtpbmcub3JnLnVrXC90YW4iOiJvcGVuYmFua2luZy5vcmcudWsiLCJjcml0IjpbImI2NCIsImh0dHA6XC9cL29wZW5iYW5raW5nLm9yZy51a1wvaWF0IiwiaHR0cDpcL1wvb3BlbmJhbmtpbmcub3JnLnVrXC90YW4iLCJodHRwOlwvXC9vcGVuYmFua2luZy5vcmcudWtcL2lzcyJdLCJraWQiOiJ0X0l1NnhYWUV0Mnhod01Bc19ybGFjR3hrRVkiLCJodHRwOlwvXC9vcGVuYmFua2luZy5vcmcudWtcL2lzcyI6Imh0dHA6XC9cL29wZW5iYW5raW5nLm9yZy51a1wvaWF0IiwiYWxnIjoiUFMyNTYifQ..G3SB5PVYpdeh9G_ihr-WKVb0JZPERG6AkvgmprD7NfrXnyiOYNowJzAPyIB4AqEZepzAxUsynL5yYBkCKT411YUjj7BcWnwDVeUeohoBxGIx3dM15Jz4KTaVS6qepNFfigwuovhO9avg498xKwOeLUULrRPJ9Er2Sy5h52UUV2mdJe_7xxzC1scET49hYqwdwrEaseN0HoCUno6-93rx7SSa6Btcz-bnTu6erLB1PUsTHB9pRzauxpf6AZ2YwC9a8lu4z0sz1hb6Y5RqUgToXTTj-MMl8win65WNV3puMmhuPIQI4Ij6iYwiC32qRyipfaqspfpp7s9kq_EMw6-Wrw";
         HttpServletRequest request = setupHttpServletRequestMock();
         Authentication principal = mock(Authentication.class);
 
-        // When
-        OBErrorException exception = catchThrowableOfType(() -> detachedJwsVerifier.verifyDetachedJws(detachedJws, OBVersion.v3_1_3, request, principal), OBErrorException.class);
-
-        // Then
-        assertThat(exception).hasMessage("Invalid detached signature " + detachedJws + ". Reason: b64 claim header not set to false");
+        detachedJwsVerifier.verifyDetachedJws(detachedJws, OBVersion.v3_1_3, request, principal);
     }
 
     @Test
@@ -160,6 +157,21 @@ public class DetachedJwsVerifierTest {
 
         // Then
         assertThat(exception).hasMessage("Invalid detached signature " + detachedJws + ". Reason: b64 claim header must not be present");
+    }
+
+    @Test
+    public void shouldVerifyIfB64HeaderGivenVersion3_1_4AndB64HeaderIsMissing() throws Exception {
+        // Given
+        String detachedJws = "eyJodHRwOlwvXC9vcGVuYmFua2luZy5vcmcudWtcL2lhdCI6MTU5ODQzNjcwOCwiaHR0cDpcL1wvb3BlbmJhbmtpbmcub3JnLnVrXC90YW4iOiJvcGVuYmFua2luZy5vcmcudWsiLCJodHRwOlwvXC9vcGVuYmFua2luZy5vcmcudWtcL2lzcyI6Imh0dHA6XC9cL29wZW5iYW5raW5nLm9yZy51a1wvaWF0IiwiY3JpdCI6WyJodHRwOlwvXC9vcGVuYmFua2luZy5vcmcudWtcL2lhdCIsImh0dHA6XC9cL29wZW5iYW5raW5nLm9yZy51a1wvdGFuIiwiaHR0cDpcL1wvb3BlbmJhbmtpbmcub3JnLnVrXC9pc3MiXSwiYWxnIjoiUFMyNTYiLCJraWQiOiJ0X0l1NnhYWUV0Mnhod01Bc19ybGFjR3hrRVkifQ..cxZkqGmnxApJcU8oKgNP3PVXhAVtO37ULnCIaNo6ayZrbaQp_6u4Ap4mTXOCvPtl6AfE_SF89xcAqipJV6l_hsOL4UKrmmcT5TNgXnHTOGFwx1lCrdFl0dZWXYvyT4WUctc3laLLmrQjyAfZqsmScT9b63ewx6R6aJ6qwe171OOFVSSFbpKVLXkPevcIltdmpX9rn_m_6nVYRrzRG4eeaTYAmd-nTZxHiJ0FWJ348G4y8E9WW7so4fwooYfoAjWq716ZTwNC7iEsJuGO6X8JpQYn66bYlYSeiyV-q41V5cu9R_QmAwKs2leYsB34YiHp6VteilcmyF9H19zRTkyTeg";
+        HttpServletRequest request = setupHttpServletRequestMock();
+        Authentication principal = setupUserPrincipalMock();
+        setupMocksForValidJws();
+
+        // When
+        detachedJwsVerifier.verifyDetachedJws(detachedJws, OBVersion.v3_1_4, request, principal);
+
+        // Then
+        // No exception is thrown
     }
 
     private HttpServletRequest setupHttpServletRequestMock() throws IOException {

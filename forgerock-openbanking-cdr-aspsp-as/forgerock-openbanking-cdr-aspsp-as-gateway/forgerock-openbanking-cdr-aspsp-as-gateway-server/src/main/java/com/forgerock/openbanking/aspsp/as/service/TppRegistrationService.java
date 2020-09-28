@@ -37,11 +37,13 @@ import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
+import com.mongodb.util.JSON;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import dev.openbanking4.spring.security.multiauth.model.authentication.X509Authentication;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
+import com.nimbusds.jose.shaded.json.JSONObject;
+import com.nimbusds.jose.shaded.json.JSONArray;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -167,18 +169,30 @@ public class TppRegistrationService {
     public List<String> parseContacts(JWTClaimsSet ssaClaims) {
         List<String> contacts = new ArrayList<>();
         JSONArray contactsJsonArray = (JSONArray) ssaClaims.getClaim(OpenBankingConstants.SSAClaims.ORG_CONTACTS);
+
         if (contactsJsonArray != null) {
             for (Object contactJson : contactsJsonArray) {
                 JSONObject contactJsonObject = ((JSONObject) contactJson);
                 StringBuilder contact = new StringBuilder();
-                contact.append("email:").append(contactJsonObject.getAsString("email")).append(";");
-                contact.append("name:").append(contactJsonObject.getAsString("name")).append(";");
-                contact.append("phone:").append(contactJsonObject.getAsString("phone")).append(";");
-                contact.append("type:").append(contactJsonObject.getAsString("type")).append(";");
+                contact.append("email:").append(getContactField(contactJsonObject, "email")).append(";");
+                contact.append("name:").append(getContactField(contactJsonObject, "name")).append(";");
+                contact.append("phone:").append(getContactField(contactJsonObject, "phone")).append(";");
+                contact.append("type:").append(getContactField(contactJsonObject, "type")).append(";");
                 contacts.add(contact.toString());
             }
         }
         return contacts;
+    }
+
+    private String getContactField(JSONObject contactJsonObject, String field){
+        String fieldValue = null;
+        try{
+            fieldValue = JSONObjectUtils.getString(contactJsonObject, field);
+        } catch(ParseException pe) {
+            log.debug("Warning: ParseException getting field '$1' as string from '$2'",
+                    field, JSONObjectUtils.toJSONString(contactJsonObject));
+        }
+        return fieldValue;
     }
     
     public Tpp registerTpp(String cn, String registrationRequestJson,

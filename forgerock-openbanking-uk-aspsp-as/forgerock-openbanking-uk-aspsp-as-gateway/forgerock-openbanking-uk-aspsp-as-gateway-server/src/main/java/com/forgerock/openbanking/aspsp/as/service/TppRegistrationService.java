@@ -39,8 +39,8 @@ import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jwt.JWTClaimsSet;
 import dev.openbanking4.spring.security.multiauth.model.authentication.X509Authentication;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
+import com.nimbusds.jose.shaded.json.JSONArray;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -168,10 +168,10 @@ public class TppRegistrationService {
             for (Object contactJson : contactsJsonArray) {
                 JSONObject contactJsonObject = ((JSONObject) contactJson);
                 StringBuilder contact = new StringBuilder();
-                contact.append("email:").append(contactJsonObject.getAsString("email")).append(";");
-                contact.append("name:").append(contactJsonObject.getAsString("name")).append(";");
-                contact.append("phone:").append(contactJsonObject.getAsString("phone")).append(";");
-                contact.append("type:").append(contactJsonObject.getAsString("type")).append(";");
+                contact.append("email:").append(contactJsonObject.get("email").toString()).append(";");
+                contact.append("name:").append(contactJsonObject.get("name").toString()).append(";");
+                contact.append("phone:").append(contactJsonObject.get("phone").toString()).append(";");
+                contact.append("type:").append(contactJsonObject.get("type").toString()).append(";");
                 contacts.add(contact.toString());
             }
         }

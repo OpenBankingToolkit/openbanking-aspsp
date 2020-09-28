@@ -25,6 +25,7 @@ import com.forgerock.openbanking.core.services.ApplicationApiClientImpl;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.KeyUse;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -59,6 +60,8 @@ public class JwkUriApiController implements JwkUriApi {
                 .filter(k -> !k.getKeyUse().equals(KeyUse.ENCRYPTION)).collect(Collectors.toList());
         asJwkSet.addAll(jwkSetFromApp.getKeys());
 
-        return ResponseEntity.ok(new JWKSet(asJwkSet).toJSONObject().toJSONString());
+        JWKSet jwkSet = new JWKSet(asJwkSet);
+        String jsonString = JSONObjectUtils.toJSONString(jwkSet.toJSONObject());
+        return ResponseEntity.ok(jsonString);
     }
 }

@@ -38,6 +38,8 @@ import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.claim.Claims;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.shaded.json.JSONObject;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
@@ -90,8 +92,9 @@ public class AutodecisionsApiController implements AutodecisionsApi {
 
             log.debug("Read payment ID from the claims");
             //Read the claims
-            Claims claims = Claims.parseClaims(signedJWT.getJWTClaimsSet().getJSONObjectClaim(OIDCConstants
-                    .OIDCClaim.CLAIMS));
+            JWTClaimsSet claimSet = signedJWT.getJWTClaimsSet();
+            Map<String, Object> jsonClaimSet = claimSet.getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS);
+            Claims claims = Claims.parseClaims(new JSONObject(jsonClaimSet));
             if (!claims.getIdTokenClaims().containsKey(OpenBankingConstants.IdTokenClaim.INTENT_ID)) {
                 return rcsErrorService.error(OBRIErrorType.RCS_CONSENT_REQUEST_INVALID, "No intent ID");
             }

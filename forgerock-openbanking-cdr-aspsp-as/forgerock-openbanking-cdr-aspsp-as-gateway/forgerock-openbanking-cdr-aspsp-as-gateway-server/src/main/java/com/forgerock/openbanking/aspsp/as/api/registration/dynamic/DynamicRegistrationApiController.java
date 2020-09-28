@@ -44,12 +44,13 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.util.Base64;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import dev.openbanking4.spring.security.multiauth.model.authentication.X509Authentication;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -185,7 +186,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                     .getStringClaim(RegistrationTppRequestClaims.SOFTWARE_STATEMENT);
 
             //Convert in json for convenience
-            String registrationRequestJson = registrationRequestJws.getJWTClaimsSet().toJSONObject().toJSONString();
+            String registrationRequestJson =
+                    JSONObjectUtils.toJSONString(registrationRequestJws.getJWTClaimsSet().toJSONObject());
 
             OIDCRegistrationRequest oidcRegistrationRequest = objectMapper.readValue(
                     registrationRequestJson, OIDCRegistrationRequest.class);
@@ -208,7 +210,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             }
             SignedJWT ssaJws = SignedJWT.parse(ssaSerialised);
             JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
-            JSONObject ssaJwsJson = ssaClaims.toJSONObject();
+            JSONObject ssaJwsJson = new JSONObject(ssaClaims.toJSONObject());
 
             log.debug("SSA {}", ssaSerialised);
             log.debug("SSA json payload {}", ssaJwsJson.toJSONString());
@@ -283,7 +285,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                             .getStringClaim(RegistrationTppRequestClaims.SOFTWARE_STATEMENT);
 
                     //Convert in json for convenience
-                    String registrationRequestJson = registrationRequestJws.getJWTClaimsSet().toJSONObject().toJSONString();
+                    String registrationRequestJson =
+                            JSONObjectUtils.toJSONString(registrationRequestJws.getJWTClaimsSet().toJSONObject());
                     OIDCRegistrationRequest oidcRegistrationRequest = objectMapper.readValue(
                             registrationRequestJson, OIDCRegistrationRequest.class);
 
@@ -300,7 +303,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                     }
                     SignedJWT ssaJws = SignedJWT.parse(ssaSerialised);
                     JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
-                    JSONObject ssaJwsJson = ssaClaims.toJSONObject();
+                    JSONObject ssaJwsJson = new JSONObject(ssaClaims.toJSONObject());
                     //delete client ID
                     oidcRegistrationRequest.setClientId(null);
 

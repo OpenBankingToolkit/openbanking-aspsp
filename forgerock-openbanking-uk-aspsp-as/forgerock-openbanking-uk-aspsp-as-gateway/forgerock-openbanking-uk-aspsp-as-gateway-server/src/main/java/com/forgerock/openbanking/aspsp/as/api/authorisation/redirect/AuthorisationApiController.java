@@ -39,11 +39,12 @@ import com.forgerock.openbanking.model.claim.Claims;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.EncryptedJWT;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -326,8 +327,9 @@ public class AuthorisationApiController implements AuthorisationApi {
     }
 
     private void verifyRequestparameterClaims(SignedJWT requestParameters) throws OBErrorException, ParseException {
-        JSONObject claims = requestParameters.getJWTClaimsSet().getJSONObjectClaim(OIDCConstants
-                .OIDCClaim.CLAIMS);
+
+        JWTClaimsSet claimSet = requestParameters.getJWTClaimsSet();
+        JSONObject claims = new JSONObject(claimSet.getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS));
 
         if (!claims.containsKey(OpenBankingConstants.RequestParameterClaim.ID_TOKEN)) {
             throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID, "No id token claims");

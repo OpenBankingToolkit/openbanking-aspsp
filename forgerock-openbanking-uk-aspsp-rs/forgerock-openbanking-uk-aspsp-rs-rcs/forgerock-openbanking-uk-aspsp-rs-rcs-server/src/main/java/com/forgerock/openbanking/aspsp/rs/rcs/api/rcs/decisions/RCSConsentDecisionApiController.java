@@ -39,6 +39,8 @@ import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.claim.Claims;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.shaded.json.JSONObject;
+import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
@@ -112,8 +114,9 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
                 log.debug("The decision is '{}'", decision);
 
                 //here is a good time to actually saved that the consent has been approved by our resource owner
-                Claims claims = Claims.parseClaims(consentContextJwt.getJWTClaimsSet()
-                        .getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS));
+                JWTClaimsSet claimSet = consentContextJwt.getJWTClaimsSet();
+                Map<String, Object> jsonClaimSet = claimSet.getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS);
+                Claims claims = Claims.parseClaims(new JSONObject(jsonClaimSet));
                 String intentId = claims.getIdTokenClaims().get(OpenBankingConstants.IdTokenClaim.INTENT_ID)
                         .getValue();
                 String csrf = consentContextJwt.getJWTClaimsSet().getStringClaim(RCSConstants.Claims.CSRF);
