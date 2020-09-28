@@ -75,12 +75,11 @@ public class DetachedJwsVerifier {
             log.debug("Verify detached signature {} with payload {}", detachedJws, body);
 
             // obVersion is only set from 3.1.3 onwards
-            if ((obVersion == null || obVersion.isBeforeVersion(v3_1_4)) && !isB64ClaimHeaderSetToFalse(detachedJws, body)) {
+            if ((obVersion == null || obVersion.isBeforeVersion(v3_1_4)) && isBase64Encoded(detachedJws)) {
                 log.warn("Invalid detached signature {}", detachedJws, "b64 claim header not set to false in version: " + obVersion);
                 throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, "b64 claim header not set to false");
             }
-            if (obVersion != null && obVersion.isAfterVersion(v3_1_3) && isB64ClaimHeaderPresent(detachedJws,
-                    body)) {
+            if (obVersion != null && obVersion.isAfterVersion(v3_1_3) && isB64ClaimHeaderPresent(detachedJws)) {
                 log.warn("Invalid detached signature {}", detachedJws, "b64 claim header must not be present in version: " + obVersion);
                 throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, "b64 claim header must not be present");
             }
@@ -103,17 +102,22 @@ public class DetachedJwsVerifier {
         }
     }
 
-    private boolean isB64ClaimHeaderSetToFalse(String jwsDetachedSignature, String payload) throws OBErrorException, ParseException {
-        String jwsSerialized = rebuildJWS(jwsDetachedSignature, payload);
-        log.debug("The reconstructed JWS from the detached signature: {}", jwsSerialized);
-        SignedJWT jws = (SignedJWT) JWTParser.parse(jwsSerialized);
-        boolean isSetToFalse = jws.getHeader().isBase64URLEncodePayload();
-        return !isSetToFalse;
+
+    /**
+     * Returns true if the b64 header is true. This indicates that the base 64 encoded payload is included in the jws.
+     * @param jwsDetachedSignature
+     * @return true if the jws b64 header is set to true or not set and returns false if set to false
+     * @throws OBErrorException
+     * @throws ParseException
+     */
+    private boolean isBase64Encoded(String jwsDetachedSignature) throws OBErrorException,
+            ParseException {
+        SignedJWT jws = (SignedJWT) JWTParser.parse(jwsDetachedSignature);
+        return jws.getHeader().isBase64URLEncodePayload();
     }
 
-    private boolean isB64ClaimHeaderPresent(String jwsDetachedSignature, String payload) throws OBErrorException {
-        String jwsSerialised = rebuildJWS(jwsDetachedSignature, payload);
-        String[] splitJws = jwsSerialised.split("\\.");
+    private boolean isB64ClaimHeaderPresent(String jwsDetachedSignature) throws OBErrorException {
+        String[] splitJws = jwsDetachedSignature.split("\\.");
         Base64.Decoder b64Decoder = Base64.getDecoder();
         String headerString = new String(b64Decoder.decode(splitJws[0]), StandardCharset.UTF_8);
         return headerString.contains("\"b64\":");

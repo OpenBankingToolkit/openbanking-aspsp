@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * Utility method(s) for manipulating a JWT's claims
  */
-public class ClaimsUtils {
+public class JwsClaimsUtils {
 
     /**
      * getClaims extracts the claims from a JWT

@@ -32,15 +32,13 @@ import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount
 import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.data.UserDataService;
-import com.forgerock.openbanking.common.utils.ClaimsUtils;
+import com.forgerock.openbanking.common.utils.JwsClaimsUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.claim.Claims;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.shaded.json.JSONObject;
-import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +91,7 @@ public class AutodecisionsApiController implements AutodecisionsApi {
 
             log.debug("Read payment ID from the claims");
             //Read the claims
-            Claims claims = ClaimsUtils.getClaims(signedJWT);
+            Claims claims = JwsClaimsUtils.getClaims(signedJWT);
             if (!claims.getIdTokenClaims().containsKey(OpenBankingConstants.IdTokenClaim.INTENT_ID)) {
                 return rcsErrorService.error(OBRIErrorType.RCS_CONSENT_REQUEST_INVALID, "No intent ID");
             }
