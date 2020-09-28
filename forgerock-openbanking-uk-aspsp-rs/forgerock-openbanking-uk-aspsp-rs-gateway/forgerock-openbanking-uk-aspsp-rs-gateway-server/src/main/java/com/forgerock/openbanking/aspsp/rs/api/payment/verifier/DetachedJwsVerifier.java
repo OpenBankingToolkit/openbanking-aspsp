@@ -28,8 +28,6 @@ import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
-import com.nimbusds.jose.shaded.json.JSONUtil;
-import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jose.util.StandardCharset;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
@@ -44,12 +42,9 @@ import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 import java.util.Base64;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import com.google.gson.Gson;
 
 import static com.forgerock.openbanking.common.model.version.OBVersion.v3_1_3;
 import static com.forgerock.openbanking.common.model.version.OBVersion.v3_1_4;
@@ -84,7 +79,7 @@ public class DetachedJwsVerifier {
                 log.warn("Invalid detached signature {}", detachedJws, "b64 claim header not set to false in version: " + obVersion);
                 throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, "b64 claim header not set to false");
             }
-            if (obVersion != null && obVersion.isAfterVersion(v3_1_3) && newIsB64ClaimHeaderPresent(detachedJws,
+            if (obVersion != null && obVersion.isAfterVersion(v3_1_3) && isB64ClaimHeaderPresent(detachedJws,
                     body)) {
                 log.warn("Invalid detached signature {}", detachedJws, "b64 claim header must not be present in version: " + obVersion);
                 throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, "b64 claim header must not be present");
@@ -116,22 +111,12 @@ public class DetachedJwsVerifier {
         return !isSetToFalse;
     }
 
-    private boolean isB64ClaimHeaderPresent(String jwsDetachedSignature, String payload) throws OBErrorException, ParseException {
-        String jwsSerialized = rebuildJWS(jwsDetachedSignature, payload);
-        log.debug("The reconstructed JWS from the detached signature: {}", jwsSerialized);
-        SignedJWT jws = (SignedJWT) JWTParser.parse(jwsSerialized);
-        Set<String> params = jws.getHeader().getIncludedParams();
-        return params.contains("b64");
-    }
-
-
-    private boolean newIsB64ClaimHeaderPresent(String jwsDetachedSignature, String payload) throws OBErrorException {
+    private boolean isB64ClaimHeaderPresent(String jwsDetachedSignature, String payload) throws OBErrorException {
         String jwsSerialised = rebuildJWS(jwsDetachedSignature, payload);
         String[] splitJws = jwsSerialised.split("\\.");
         Base64.Decoder b64Decoder = Base64.getDecoder();
-        byte[] jsonBytes = b64Decoder.decode(splitJws[0]);
-        String jsonString = new String(jsonBytes, StandardCharset.UTF_8);
-        return jsonString.contains("\"b64\":");
+        String headerString = new String(b64Decoder.decode(splitJws[0]), StandardCharset.UTF_8);
+        return headerString.contains("\"b64\":");
     }
 
     private String rebuildJWS(String jwsDetachedSignature, String bodySerialised) throws OBErrorException {

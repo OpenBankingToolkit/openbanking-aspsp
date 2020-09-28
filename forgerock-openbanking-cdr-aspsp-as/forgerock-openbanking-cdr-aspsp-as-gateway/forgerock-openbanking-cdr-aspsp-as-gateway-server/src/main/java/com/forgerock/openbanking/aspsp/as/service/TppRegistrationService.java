@@ -189,7 +189,7 @@ public class TppRegistrationService {
         try{
             fieldValue = JSONObjectUtils.getString(contactJsonObject, field);
         } catch(ParseException pe) {
-            log.debug("Warning: ParseException getting field '$1' as string from '$2'",
+            log.warn("Warning: ParseException getting field '$1' as string from '$2'",
                     field, JSONObjectUtils.toJSONString(contactJsonObject));
         }
         return fieldValue;
