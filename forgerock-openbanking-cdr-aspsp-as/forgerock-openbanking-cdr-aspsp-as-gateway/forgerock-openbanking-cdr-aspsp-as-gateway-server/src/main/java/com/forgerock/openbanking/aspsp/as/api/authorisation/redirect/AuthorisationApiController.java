@@ -40,13 +40,13 @@ import com.forgerock.openbanking.model.claim.Claims;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.shaded.json.JSONObject;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -143,7 +143,7 @@ public class AuthorisationApiController implements AuthorisationApi {
         try {
             JWTClaimsSet jwtClaimsSet = requestParameterJwt.getJWTClaimsSet();
             JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder(jwtClaimsSet);
-            JSONObject claims = jwtClaimsSet.getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS);
+            JSONObject claims = new JSONObject(jwtClaimsSet.getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS));
 
             Map<String, Claim> idTokenClaims = Claims.parseClaimsFrom(OpenBankingConstants.RequestParameterClaim.ID_TOKEN, claims);
             if (idTokenClaims.containsKey(("openbanking_intent_id"))) {
@@ -363,8 +363,9 @@ public class AuthorisationApiController implements AuthorisationApi {
     }
 
     private void verifyRequestparameterClaims(SignedJWT requestParameters) throws OBErrorException, ParseException {
-        JSONObject claims = requestParameters.getJWTClaimsSet().getJSONObjectClaim(OIDCConstants
-                .OIDCClaim.CLAIMS);
+        JWTClaimsSet jwtClaims = requestParameters.getJWTClaimsSet();
+        Map<String, Object> jwtClaimsLocal = jwtClaims.getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS);
+        JSONObject claims = new JSONObject(jwtClaimsLocal);
 
         if (!claims.containsKey(OpenBankingConstants.RequestParameterClaim.ID_TOKEN)) {
             throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID, "No id token claims");

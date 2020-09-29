@@ -27,6 +27,7 @@ import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.DynamicRegist
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.utils.JwsClaimsUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -37,11 +38,13 @@ import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
+import com.mongodb.util.JSON;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import dev.openbanking4.spring.security.multiauth.model.authentication.X509Authentication;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
+import com.nimbusds.jose.shaded.json.JSONObject;
+import com.nimbusds.jose.shaded.json.JSONArray;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -167,20 +170,21 @@ public class TppRegistrationService {
     public List<String> parseContacts(JWTClaimsSet ssaClaims) {
         List<String> contacts = new ArrayList<>();
         JSONArray contactsJsonArray = (JSONArray) ssaClaims.getClaim(OpenBankingConstants.SSAClaims.ORG_CONTACTS);
+
         if (contactsJsonArray != null) {
             for (Object contactJson : contactsJsonArray) {
                 JSONObject contactJsonObject = ((JSONObject) contactJson);
                 StringBuilder contact = new StringBuilder();
-                contact.append("email:").append(contactJsonObject.getAsString("email")).append(";");
-                contact.append("name:").append(contactJsonObject.getAsString("name")).append(";");
-                contact.append("phone:").append(contactJsonObject.getAsString("phone")).append(";");
-                contact.append("type:").append(contactJsonObject.getAsString("type")).append(";");
+                contact.append("email:").append(JwsClaimsUtils.getContactField(contactJsonObject, "email")).append(";");
+                contact.append("name:").append(JwsClaimsUtils.getContactField(contactJsonObject, "name")).append(";");
+                contact.append("phone:").append(JwsClaimsUtils.getContactField(contactJsonObject, "phone")).append(";");
+                contact.append("type:").append(JwsClaimsUtils.getContactField(contactJsonObject, "type")).append(";");
                 contacts.add(contact.toString());
             }
         }
         return contacts;
     }
-    
+
     public Tpp registerTpp(String cn, String registrationRequestJson,
                            JWTClaimsSet ssaClaims, JSONObject ssaJwsJson,
                            OIDCRegistrationRequest oidcRegistrationRequest,

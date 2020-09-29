@@ -31,6 +31,7 @@ import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.Tpp;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import net.minidev.json.JSONObject;
 import org.junit.Before;
@@ -215,7 +216,7 @@ public class SignedJwtEventBuilderTest {
         String expectedNotificationJwt = utf8FileToString.apply("expectedNotificationJwt.json");
 
         // Then
-        JSONObject jwt = new JWTClaimsSet.Builder()
+        Map<String, Object> jwtArray = new JWTClaimsSet.Builder()
                 .issuer(ISSUER_ID_VALUE)
                 .issueTime(new Date())
                 .jwtID(UUID.randomUUID().toString())
@@ -224,9 +225,9 @@ public class SignedJwtEventBuilderTest {
                 .claim("txn", UUID.randomUUID().toString())
                 .claim("toe", new Date())
                 .claim("events", Collections.singletonMap(EventType.RESOURCE_UPDATE_EVENT.getEventName(), resourceUpdateEvent))
-                .build()
-                .toJSONObject();
+                .build().toJSONObject();
 
+        JSONObject jwt = new JSONObject(jwtArray);
         // Expect
         assertThat(jwt.get("sub")).isEqualTo("https://test");
         assertThat(jwt.get("iss")).isEqualTo(ISSUER_ID_VALUE);

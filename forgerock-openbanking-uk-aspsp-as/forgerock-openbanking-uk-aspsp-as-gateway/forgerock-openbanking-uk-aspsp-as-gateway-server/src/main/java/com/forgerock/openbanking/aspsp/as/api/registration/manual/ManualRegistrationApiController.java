@@ -34,12 +34,12 @@ import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import dev.openbanking4.spring.security.multiauth.model.authentication.X509Authentication;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -135,7 +135,7 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
             //Convert in json for conveniency
             JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
             //Verify the SSA
-            JSONObject ssaJwsJson = ssaClaims.toJSONObject();
+            JSONObject ssaJwsJson = new JSONObject(ssaClaims.toJSONObject());
 
             Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims, oidcRegistrationRequest, authentication);
 

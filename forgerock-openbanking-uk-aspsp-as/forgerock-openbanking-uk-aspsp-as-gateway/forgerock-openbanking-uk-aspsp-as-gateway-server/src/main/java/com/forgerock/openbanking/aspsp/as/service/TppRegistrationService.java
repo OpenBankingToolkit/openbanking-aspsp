@@ -26,6 +26,7 @@ import com.forgerock.openbanking.analytics.services.TppEntriesKPIService;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.utils.JwsClaimsUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -39,8 +40,8 @@ import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jwt.JWTClaimsSet;
 import dev.openbanking4.spring.security.multiauth.model.authentication.X509Authentication;
 import lombok.extern.slf4j.Slf4j;
-import net.minidev.json.JSONArray;
-import net.minidev.json.JSONObject;
+import com.nimbusds.jose.shaded.json.JSONArray;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -168,10 +169,10 @@ public class TppRegistrationService {
             for (Object contactJson : contactsJsonArray) {
                 JSONObject contactJsonObject = ((JSONObject) contactJson);
                 StringBuilder contact = new StringBuilder();
-                contact.append("email:").append(contactJsonObject.getAsString("email")).append(";");
-                contact.append("name:").append(contactJsonObject.getAsString("name")).append(";");
-                contact.append("phone:").append(contactJsonObject.getAsString("phone")).append(";");
-                contact.append("type:").append(contactJsonObject.getAsString("type")).append(";");
+                contact.append("email:").append(JwsClaimsUtils.getContactField(contactJsonObject, "email")).append(";");
+                contact.append("name:").append(JwsClaimsUtils.getContactField(contactJsonObject, "name")).append(";");
+                contact.append("phone:").append(JwsClaimsUtils.getContactField(contactJsonObject, "phone")).append(";");
+                contact.append("type:").append(JwsClaimsUtils.getContactField(contactJsonObject, "type")).append(";");
                 contacts.add(contact.toString());
             }
         }
