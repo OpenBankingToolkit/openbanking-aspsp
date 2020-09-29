@@ -27,13 +27,13 @@
     <name>ForgeRock OpenBanking Reference Implementation - ASPSP</name>
     <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>forgerock-openbanking-aspsp</artifactId>
-    <version>1.0.101-SNAPSHOT</version>
+    <version>1.0.102-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>com.forgerock.openbanking</groupId>
         <artifactId>forgerock-openbanking-starter-parent</artifactId>
-        <version>1.0.82</version>
+        <version>1.0.83</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
