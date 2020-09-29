@@ -5,6 +5,55 @@ Changelog of Git Changelog Maven plugin.
 New Payment consent FR model objects (#296)
 [2fa17af225eb155](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2fa17af225eb155) JamieB *2020-09-23 14:11:38*
 Updated ui project version to updating-ui-version-to-3.1.6-rem-rc1
+[b43e7382a8f9c7d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b43e7382a8f9c7d) JamieB *2020-09-29 08:56:28*
+Improved error when incorrect type is used in b64 jws header
+[f2aec21fa339ddd](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f2aec21fa339ddd) JamieB *2020-09-29 08:39:03*
+Remove duplicate test
+[e99722e3becea3d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e99722e3becea3d) JamieB *2020-09-29 08:27:14*
+Remove unused import
+[01e82666a58b8af](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/01e82666a58b8af) JamieB *2020-09-29 08:10:06*
+More refactoring and addressing of PR comments
+[92126b6c2976f10](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92126b6c2976f10) JamieB *2020-09-28 15:54:13*
+Refactor and Optimise DetachedJwsVerifier
+
+Fix bad format in debug string
+Refactoring of DetachedJwsVerifier
+Optimisation of DetachedJwsVerifier
+Removed needless reconstruction of full jws in methods just
+manipulating/using the header
+Made newly added test work like other tests
+Add missing javadoc
+Makes ClaimsUtils naming more explicit - Now called JwsClaimsUtils
+[2dac7dd056b5484](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2dac7dd056b5484) JamieB *2020-09-28 14:00:01*
+Address PR comments
+
+https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/281/
+[97e8718e4238aaf](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/97e8718e4238aaf) JamieB *2020-09-28 13:07:10*
+Use nimbusds shaded minidev library
+
+Latest nimbusds is packaged with a shaded version of minidev. aspsp used
+to have minidev as a package, the version of which was controlled in the
+openbanking-parent pom. We now need to remove that dependency and
+changes our code to use classes directly from the shaded nimbusds
+libary.
+[68fd47483d0596b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/68fd47483d0596b) dependabot-preview[bot] *2020-09-28 08:45:21*
+Bump ob-clients.version from 1.0.36 to 1.0.40
+
+Bumps `ob-clients.version` from 1.0.36 to 1.0.40.
+
+Updates `forgerock-openbanking-jwkms-client` from 1.0.36 to 1.0.40
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/1.0.36...1.0.40)
+
+Updates `forgerock-openbanking-analytics-client` from 1.0.36 to 1.0.40
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/1.0.36...1.0.40)
+
+Updates `forgerock-openbanking-analytics-webclient` from 1.0.36 to 1.0.40
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/1.0.36...1.0.40)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
 [86ee5a444b8ba34](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/86ee5a444b8ba34) Matt Wills *2020-09-10 10:50:20*
 Release candidate: prepare for next development iteration
 ## 1.0.100
