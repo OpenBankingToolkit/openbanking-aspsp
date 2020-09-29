@@ -23,8 +23,10 @@ package com.forgerock.openbanking.common.utils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.model.claim.Claims;
 import com.nimbusds.jose.shaded.json.JSONObject;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import lombok.extern.slf4j.Slf4j;
 
 import java.text.ParseException;
 import java.util.Map;
@@ -32,6 +34,7 @@ import java.util.Map;
 /**
  * Utility method(s) for manipulating a JWT's claims
  */
+@Slf4j
 public class JwsClaimsUtils {
 
     /**
@@ -46,5 +49,16 @@ public class JwsClaimsUtils {
         Map<String, Object> jsonClaimSet = claimSet.getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS);
         Claims claims = Claims.parseClaims(new JSONObject(jsonClaimSet));
         return claims;
+    }
+
+    public static String getContactField(JSONObject contactJsonObject, String field){
+        String fieldValue = null;
+        try{
+            fieldValue = JSONObjectUtils.getString(contactJsonObject, field);
+        } catch(ParseException pe) {
+            log.warn("Warning: ParseException getting field {} as string from {}",
+                    field, JSONObjectUtils.toJSONString(contactJsonObject));
+        }
+        return fieldValue;
     }
 }

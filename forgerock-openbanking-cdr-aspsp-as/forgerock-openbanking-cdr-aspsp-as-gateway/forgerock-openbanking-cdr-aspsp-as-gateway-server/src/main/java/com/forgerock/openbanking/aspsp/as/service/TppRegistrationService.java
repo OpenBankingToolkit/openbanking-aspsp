@@ -27,6 +27,7 @@ import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.DynamicRegist
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.utils.JwsClaimsUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -174,27 +175,16 @@ public class TppRegistrationService {
             for (Object contactJson : contactsJsonArray) {
                 JSONObject contactJsonObject = ((JSONObject) contactJson);
                 StringBuilder contact = new StringBuilder();
-                contact.append("email:").append(getContactField(contactJsonObject, "email")).append(";");
-                contact.append("name:").append(getContactField(contactJsonObject, "name")).append(";");
-                contact.append("phone:").append(getContactField(contactJsonObject, "phone")).append(";");
-                contact.append("type:").append(getContactField(contactJsonObject, "type")).append(";");
+                contact.append("email:").append(JwsClaimsUtils.getContactField(contactJsonObject, "email")).append(";");
+                contact.append("name:").append(JwsClaimsUtils.getContactField(contactJsonObject, "name")).append(";");
+                contact.append("phone:").append(JwsClaimsUtils.getContactField(contactJsonObject, "phone")).append(";");
+                contact.append("type:").append(JwsClaimsUtils.getContactField(contactJsonObject, "type")).append(";");
                 contacts.add(contact.toString());
             }
         }
         return contacts;
     }
 
-    private String getContactField(JSONObject contactJsonObject, String field){
-        String fieldValue = null;
-        try{
-            fieldValue = JSONObjectUtils.getString(contactJsonObject, field);
-        } catch(ParseException pe) {
-            log.warn("Warning: ParseException getting field {} as string from {}",
-                    field, JSONObjectUtils.toJSONString(contactJsonObject));
-        }
-        return fieldValue;
-    }
-    
     public Tpp registerTpp(String cn, String registrationRequestJson,
                            JWTClaimsSet ssaClaims, JSONObject ssaJwsJson,
                            OIDCRegistrationRequest oidcRegistrationRequest,

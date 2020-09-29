@@ -26,6 +26,7 @@ import com.forgerock.openbanking.analytics.services.TppEntriesKPIService;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.common.utils.JwsClaimsUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -168,10 +169,10 @@ public class TppRegistrationService {
             for (Object contactJson : contactsJsonArray) {
                 JSONObject contactJsonObject = ((JSONObject) contactJson);
                 StringBuilder contact = new StringBuilder();
-                contact.append("email:").append(contactJsonObject.get("email").toString()).append(";");
-                contact.append("name:").append(contactJsonObject.get("name").toString()).append(";");
-                contact.append("phone:").append(contactJsonObject.get("phone").toString()).append(";");
-                contact.append("type:").append(contactJsonObject.get("type").toString()).append(";");
+                contact.append("email:").append(JwsClaimsUtils.getContactField(contactJsonObject, "email")).append(";");
+                contact.append("name:").append(JwsClaimsUtils.getContactField(contactJsonObject, "name")).append(";");
+                contact.append("phone:").append(JwsClaimsUtils.getContactField(contactJsonObject, "phone")).append(";");
+                contact.append("type:").append(JwsClaimsUtils.getContactField(contactJsonObject, "type")).append(";");
                 contacts.add(contact.toString());
             }
         }
