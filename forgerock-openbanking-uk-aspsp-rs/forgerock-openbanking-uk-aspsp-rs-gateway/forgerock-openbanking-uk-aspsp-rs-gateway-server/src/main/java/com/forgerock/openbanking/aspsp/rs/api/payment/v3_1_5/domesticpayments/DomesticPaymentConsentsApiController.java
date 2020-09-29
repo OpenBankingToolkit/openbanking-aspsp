@@ -31,13 +31,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.payment.OBAuthorisation1;
-import uk.org.openbanking.datamodel.payment.OBExternalAuthorisation1Code;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4DataAuthorisation;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
 
@@ -46,7 +41,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBDomestic2;
+import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
 
 @Controller("DomesticPaymentConsentsApiV3.1.5")
 public class DomesticPaymentConsentsApiController implements DomesticPaymentConsentsApi {
@@ -103,24 +98,6 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticConsentResponse5.class, obWriteDomesticConsent4);
                         }
                 );
-    }
-
-    private OBWriteDomesticConsent2 toOBWriteDomesticConsent2(OBWriteDomesticConsent4 obWriteDomesticConsent4) {
-        return (new OBWriteDomesticConsent2())
-                .data(toOBWriteDataDomesticConsent2(obWriteDomesticConsent4.getData()))
-                .risk(obWriteDomesticConsent4.getRisk());
-    }
-
-    private OBWriteDataDomesticConsent2 toOBWriteDataDomesticConsent2(OBWriteDomesticConsent4Data data) {
-        return data == null ? null : (new OBWriteDataDomesticConsent2())
-                .initiation(toOBDomestic2(data.getInitiation()))
-                .authorisation(toOBAuthorisation1(data.getAuthorisation()));
-    }
-
-    private OBAuthorisation1 toOBAuthorisation1(OBWriteDomesticConsent4DataAuthorisation authorisation) {
-        return authorisation == null ? null : (new OBAuthorisation1())
-                .authorisationType(OBExternalAuthorisation1Code.valueOf(authorisation.getAuthorisationType().name()))
-                .completionDateTime(authorisation.getCompletionDateTime());
     }
 
     @Override

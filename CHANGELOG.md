@@ -9,6 +9,15 @@ Feature/lbg/issue obdeploy 606 (#283)
 - changed the mediaType to `text/plain` instead of `text/csv`
 
 * badge release changed to github release
+### GitHub [#284](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/284) Release/1.0.102
+[d2c38ec9e36f729](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d2c38ec9e36f729) Jorge Sanchez Perez *2020-09-30 12:09:46*
+Release/1.0.102 (#284)
+
+* Release candidate: prepare release 1.0.102
+
+* Release candidate: prepare for next development iteration
+
+* changelog updated
 [43bb526864e027b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/43bb526864e027b) JamieB *2020-09-29 09:37:28*
 Release candidate: prepare for next development iteration
 ## 1.0.101
