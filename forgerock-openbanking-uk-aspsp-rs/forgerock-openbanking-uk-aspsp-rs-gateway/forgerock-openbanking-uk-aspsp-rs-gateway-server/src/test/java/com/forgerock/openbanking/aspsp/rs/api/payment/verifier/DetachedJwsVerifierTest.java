@@ -131,7 +131,7 @@ public class DetachedJwsVerifierTest {
         OBErrorException exception = catchThrowableOfType(() -> detachedJwsVerifier.verifyDetachedJws(detachedJws, OBVersion.v3_1_3, request, principal), OBErrorException.class);
 
         // Then
-        assertThat(exception).hasMessage("Internal Server Error");
+        assertThat(exception).hasMessage("Invalid detached signature " + detachedJws + ". Reason: Invalid JWS header: Unexpected type of JSON object member with key \"b64\"");
     }
 
     @Test

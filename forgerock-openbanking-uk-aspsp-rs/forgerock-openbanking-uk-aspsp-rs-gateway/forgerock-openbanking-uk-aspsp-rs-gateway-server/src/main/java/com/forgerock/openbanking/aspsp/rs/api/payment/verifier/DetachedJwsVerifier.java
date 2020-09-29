@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
 
 import static com.forgerock.openbanking.common.model.version.OBVersion.v3_1_3;
 import static com.forgerock.openbanking.common.model.version.OBVersion.v3_1_4;
-import static com.forgerock.openbanking.model.error.OBRIErrorType.SERVER_ERROR;
 
 @Component
 @Slf4j
@@ -98,7 +97,7 @@ public class DetachedJwsVerifier {
             throw new OBErrorException(OBRIErrorType.DETACHED_JWS_UN_ACCESSIBLE);
         } catch (ParseException e) {
             log.error("Can't parse JWS", e);
-            throw new OBErrorException(SERVER_ERROR);
+            throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, e.getMessage());
         }
     }
 
