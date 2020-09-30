@@ -1,10 +1,25 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#283](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/283) Feature/lbg/issue obdeploy 606
+[81188506085341e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/81188506085341e) Jorge Sanchez Perez *2020-09-30 11:32:23*
+Feature/lbg/issue obdeploy 606 (#283)
+
+* Payment File Type - MediaType changed (Batch and Bulk)
+- changed the mediaType to `text/plain` instead of `text/csv`
+
+* badge release changed to github release
+[43bb526864e027b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/43bb526864e027b) JamieB *2020-09-29 09:37:28*
+Release candidate: prepare for next development iteration
+## 1.0.101
 [aea2d305be072d7](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/aea2d305be072d7) Matt Wills *2020-09-17 08:10:15*
 New Payment consent FR model objects (#296)
 [2fa17af225eb155](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2fa17af225eb155) JamieB *2020-09-23 14:11:38*
 Updated ui project version to updating-ui-version-to-3.1.6-rem-rc1
+[00bf3b045b6951c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/00bf3b045b6951c) JamieB *2020-09-29 09:37:20*
+Release candidate: prepare release 1.0.101
+[d2a5578aae14713](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d2a5578aae14713) JamieB *2020-09-29 09:28:26*
+Use latest openbanking-starter-parent 1.0.83
 [b43e7382a8f9c7d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b43e7382a8f9c7d) JamieB *2020-09-29 08:56:28*
 Improved error when incorrect type is used in b64 jws header
 [f2aec21fa339ddd](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f2aec21fa339ddd) JamieB *2020-09-29 08:39:03*
@@ -329,6 +344,7 @@ Added mongobee ChangeLog classes to migrate OB model objects from v3.1.2 to 3.1.
 ### GitHub [#280](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/280) Bump forgerock-openbanking-jwkms-embedded from 1.1.71 to 1.1.73
 [183df0b0c098b2d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/183df0b0c098b2d) Matt Wills *2020-09-01 10:22:10*
 Ensured detached JWS headers containing a b64 claim are rejected from 3.1.4 onwards (#280)
+### GitHub [#282](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/282) Make release 1.0.101
 [0893846c278ec7b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0893846c278ec7b) Matt Wills *2020-09-10 09:50:16*
 Fix for idempotency verification. Removed redundant repositories (#282)
 [9f6afb8063341ee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f6afb8063341ee) Jorge Sanchez Perez *2020-04-24 17:06:53*
