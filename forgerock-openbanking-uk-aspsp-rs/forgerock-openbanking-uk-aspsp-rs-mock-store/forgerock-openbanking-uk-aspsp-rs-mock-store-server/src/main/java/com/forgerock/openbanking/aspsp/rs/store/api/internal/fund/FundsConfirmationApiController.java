@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.fund;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfirmationConsentRepository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationConsentRepository;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +55,7 @@ public class FundsConfirmationApiController implements FundsConfirmationApi {
     }
 
     @Override
-    public ResponseEntity<Collection<FRFundsConfirmationConsent1>> findByStatus(
+    public ResponseEntity<Collection<FRFundsConfirmationConsent>> findByStatus(
             @RequestParam("status") String status
     ) {
         log.debug("Find payment by status {}", status);
@@ -63,8 +63,8 @@ public class FundsConfirmationApiController implements FundsConfirmationApi {
     }
 
     @Override
-    public ResponseEntity<FRFundsConfirmationConsent1> update(
-            @RequestBody FRFundsConfirmationConsent1 consent
+    public ResponseEntity<FRFundsConfirmationConsent> update(
+            @RequestBody FRFundsConfirmationConsent consent
     ) {
         log.debug("Update consent {}", consent);
         return ResponseEntity.ok(fundsConfirmationConsentRepository.save(consent));

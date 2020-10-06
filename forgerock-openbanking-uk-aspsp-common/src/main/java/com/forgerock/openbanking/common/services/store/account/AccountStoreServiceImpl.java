@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.account;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,27 +48,27 @@ public class AccountStoreServiceImpl implements AccountStoreService {
     private String rsStoreRoot;
 
     @Override
-    public FRAccount2 getAccount(String accountId) {
-        ParameterizedTypeReference<FRAccount2> ptr = new ParameterizedTypeReference<FRAccount2>() {};
+    public FRAccount getAccount(String accountId) {
+        ParameterizedTypeReference<FRAccount> ptr = new ParameterizedTypeReference<FRAccount>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + "/api/accounts/" + accountId);
 
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<FRAccount2> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<FRAccount> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
         return entity.getBody();
     }
 
     @Override
     public Optional findAccountByIdentification(String identification) {
-        ParameterizedTypeReference<Optional<FRAccount2>> ptr = new ParameterizedTypeReference<Optional<FRAccount2>>() {};
+        ParameterizedTypeReference<Optional<FRAccount>> ptr = new ParameterizedTypeReference<Optional<FRAccount>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + "/api/accounts/search/findByIdentification");
         builder.queryParam("identification", identification);
 
         URI uri = builder.build().encode().toUri();
         try {
-            ResponseEntity<Optional<FRAccount2>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+            ResponseEntity<Optional<FRAccount>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
             return entity.getBody();
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
@@ -79,18 +79,18 @@ public class AccountStoreServiceImpl implements AccountStoreService {
     }
 
     @Override
-    public List<FRAccount2> get(String userID) {
+    public List<FRAccount> get(String userID) {
         // This is necessary as auth server always uses lowercase user id
         String lowercaseUserId = userID.toLowerCase();
         log.debug("Searching for accounts with user ID: {}", lowercaseUserId);
 
-        ParameterizedTypeReference<List<FRAccount2>> ptr = new ParameterizedTypeReference<List<FRAccount2>>() {};
+        ParameterizedTypeReference<List<FRAccount>> ptr = new ParameterizedTypeReference<List<FRAccount>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + "/api/accounts/search/findByUserId");
         builder.queryParam("userId", lowercaseUserId);
 
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRAccount2>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<List<FRAccount>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
         return entity.getBody();
     }
 

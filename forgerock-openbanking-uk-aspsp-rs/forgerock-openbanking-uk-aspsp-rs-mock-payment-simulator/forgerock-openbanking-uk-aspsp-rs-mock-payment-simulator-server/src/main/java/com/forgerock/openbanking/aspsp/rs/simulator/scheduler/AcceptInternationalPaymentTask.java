@@ -22,9 +22,10 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
@@ -44,7 +45,6 @@ import uk.org.openbanking.datamodel.account.OBCreditDebitCode1;
 import uk.org.openbanking.datamodel.account.OBEntryStatus1Code;
 import uk.org.openbanking.datamodel.account.OBTransaction6;
 import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,8 +52,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 
 @Slf4j
@@ -115,8 +114,7 @@ public class AcceptInternationalPaymentTask {
         Account accountFrom = accountStoreService.getAccount(payment.getAccountId());
         log.info("We are going to pay from this account: {}", accountFrom);
 
-        moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
-                OBCreditDebitCode.DEBIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountFrom, payment.getInitiation().getInstructedAmount(), OBCreditDebitCode.DEBIT, payment, this::createTransaction);
 
         String identificationFrom = payment.getInitiation().getCreditorAccount().getIdentification();
         log.debug("Find if the 'to' account '{}' is own by this ASPSP", identificationFrom);
@@ -126,11 +124,10 @@ public class AcceptInternationalPaymentTask {
     private void moveCreditPayment(FRInternationalConsent payment, String identificationTo, Account accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationTo, accountFrom);
         log.info("Move the money to this account");
-        moneyService.moveMoney(accountFrom, toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()),
-                OBCreditDebitCode.CREDIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountFrom, payment.getInitiation().getInstructedAmount(), OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction6 createTransaction(Account account, FRInternationalConsent payment, OBCreditDebitCode creditDebitCode, Balance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction createTransaction(Account account, FRInternationalConsent payment, OBCreditDebitCode creditDebitCode, Balance balance, FRAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());
@@ -156,7 +153,7 @@ public class AcceptInternationalPaymentTask {
                     .transactionInformation(payment.getInitiation().getRemittanceInformation().getUnstructured());
         }
 
-        FRTransaction6 transaction = FRTransaction6.builder()
+        FRTransaction transaction = FRTransaction.builder()
                 .id(transactionId)
                 .bookingDateTime(bookingDate)
                 .accountId(account.getId())

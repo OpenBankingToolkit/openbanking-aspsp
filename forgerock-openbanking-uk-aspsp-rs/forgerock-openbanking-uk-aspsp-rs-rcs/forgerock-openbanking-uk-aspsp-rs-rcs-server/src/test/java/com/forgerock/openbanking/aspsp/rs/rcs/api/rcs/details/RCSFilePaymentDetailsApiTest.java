@@ -22,14 +22,14 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FilePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
@@ -72,7 +72,7 @@ public class RCSFilePaymentDetailsApiTest {
     private static final String PISP_NAME = "MyApp";
     private static final String CONSENT_ID = "PFC_123";
 
-    private static final AccountWithBalance DEBTOR_ACCOUNT = new AccountWithBalance(FRAccount4.builder()
+    private static final AccountWithBalance DEBTOR_ACCOUNT = new AccountWithBalance(FRAccount.builder()
             .id("111")
             .account(new OBAccount6().account(singletonList(
                     new OBAccount3Account().identification("123")
@@ -141,7 +141,7 @@ public class RCSFilePaymentDetailsApiTest {
         // Given
         List<AccountWithBalance> accounts = singletonList(DEBTOR_ACCOUNT);
         FRWriteFileDataInitiation validOBFileWithAccount = getValidOBFile()
-                .debtorAccount(FRAccount.builder().identification("123").build())
+                .debtorAccount(FRFinancialAccount.builder().identification("123").build())
                 .build();
         FRWriteFileConsent frWriteFileConsent = FRWriteFileConsent.builder()
                 .data(FRWriteFileConsentData.builder().initiation(validOBFileWithAccount).build())
@@ -178,7 +178,7 @@ public class RCSFilePaymentDetailsApiTest {
         // Given
         List<AccountWithBalance> accounts = Collections.emptyList();
         FRWriteFileDataInitiation validOBFileWithAccount = getValidOBFile()
-                .debtorAccount(FRAccount.builder().identification("123").build())
+                .debtorAccount(FRFinancialAccount.builder().identification("123").build())
                 .build();
         FRWriteFileConsent writeFileConsent = FRWriteFileConsent.builder()
                 .data(FRWriteFileConsentData.builder().initiation(validOBFileWithAccount).build())

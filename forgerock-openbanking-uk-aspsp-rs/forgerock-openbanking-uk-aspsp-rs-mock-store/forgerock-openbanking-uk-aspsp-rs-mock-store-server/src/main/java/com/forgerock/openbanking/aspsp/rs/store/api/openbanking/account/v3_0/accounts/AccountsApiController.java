@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_0.accounts;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.OBAccount3Account;
 import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification3Code;
@@ -36,7 +36,7 @@ public class AccountsApiController extends com.forgerock.openbanking.aspsp.rs.st
      * Because we always use latest model in persistent store, older API controller may need to do conversions on some of values e.g. the Account identifier codes.
      * This can be overidden is later versions of controller.
      */
-    protected FRAccount4 convertAccounts(FRAccount4 account) {
+    protected FRAccount convertAccounts(FRAccount account) {
         if (account.getAccount().getAccount() != null) {
             account.getAccount().getAccount()
                     .forEach(this::checkAndConvertV2SchemeNameToV3);

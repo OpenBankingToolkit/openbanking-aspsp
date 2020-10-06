@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.accounts.accountaccessconsents;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
@@ -29,10 +29,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface FRAccountAccessConsent1Repository extends MongoRepository<FRAccountAccessConsent1, String> {
+public interface FRAccountAccessConsent1Repository extends MongoRepository<FRAccountAccessConsent, String> {
 
-    Optional<FRAccountAccessConsent1> findByConsentId(@Param("consentId") String consentId);
-    Collection<FRAccountAccessConsent1> findByUserId(@Param("userId") String userId);
-    Collection<FRAccountAccessConsent1> findByUserIdAndClientId(@Param("userId") String userId, @Param("clientId") String clientId);
-    Collection<FRAccountAccessConsent1> findByUserIdAndAccountAccessConsentDataStatusIn(@Param("userId") String userId, @Param("statuses") List<OBExternalRequestStatus1Code> status);
+    Optional<FRAccountAccessConsent> findByConsentId(@Param("consentId") String consentId);
+    Collection<FRAccountAccessConsent> findByUserId(@Param("userId") String userId);
+    Collection<FRAccountAccessConsent> findByUserIdAndClientId(@Param("userId") String userId, @Param("clientId") String clientId);
+    Collection<FRAccountAccessConsent> findByUserIdAndAccountAccessConsentDataStatusIn(@Param("userId") String userId, @Param("statuses") List<OBExternalRequestStatus1Code> status);
 }

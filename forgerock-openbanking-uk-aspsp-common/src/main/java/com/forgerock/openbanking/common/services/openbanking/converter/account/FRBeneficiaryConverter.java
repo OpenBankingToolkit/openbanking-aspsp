@@ -1,6 +1,6 @@
 /**
  * Copyright 2019 ForgeRock AS.
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -8,9 +8,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,10 +20,6 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBeneficiary1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRBeneficiary3;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRBeneficiary4;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRBeneficiary5;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBBeneficiary1;
 import uk.org.openbanking.datamodel.account.OBBeneficiary3;
@@ -37,39 +33,40 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.co
 @Service
 public class FRBeneficiaryConverter {
 
+// TODO #296 - add required methods once FRAccount is using FR domain classes
 
-    public static FRBeneficiary1 toBeneficiary1(FRBeneficiary4 frBeneficiary4) {
-        if (frBeneficiary4 == null) return null;
-        FRBeneficiary1 frBeneficiary1 = new FRBeneficiary1();
-        frBeneficiary1.setAccountId(frBeneficiary4.getAccountId());
-        frBeneficiary1.setBeneficiary(OBBeneficiaryConverter.toOBBeneficiary1(frBeneficiary4.getBeneficiary()));
-        frBeneficiary1.setId(frBeneficiary4.getId());
-        frBeneficiary1.setCreated(frBeneficiary4.getCreated());
-        frBeneficiary1.setUpdated(frBeneficiary4.getUpdated());
-        return frBeneficiary1;
-    }
-
-    public static FRBeneficiary1 toBeneficiary1(FRBeneficiary5 frBeneficiary5) {
-        if (frBeneficiary5 == null) return null;
-        FRBeneficiary1 frBeneficiary1 = new FRBeneficiary1();
-        frBeneficiary1.setAccountId(frBeneficiary5.getAccountId());
-        frBeneficiary1.setBeneficiary(toOBBeneficiary1(frBeneficiary5.getBeneficiary()));
-        frBeneficiary1.setId(frBeneficiary5.getId());
-        frBeneficiary1.setCreated(frBeneficiary5.getCreated());
-        frBeneficiary1.setUpdated(frBeneficiary5.getUpdated());
-        return frBeneficiary1;
-    }
-
-    public static FRBeneficiary5 toFRBeneficiary5(FRBeneficiary3 frBeneficiary3) {
-        if (frBeneficiary3 == null) return null;
-        FRBeneficiary5 frBeneficiary5 = new FRBeneficiary5();
-        frBeneficiary5.setAccountId(frBeneficiary3.getAccountId());
-        frBeneficiary5.setBeneficiary(toOBBeneficiary5(frBeneficiary3.getBeneficiary()));
-        frBeneficiary5.setId(frBeneficiary3.getId());
-        frBeneficiary5.setCreated(frBeneficiary3.getCreated());
-        frBeneficiary5.setUpdated(frBeneficiary3.getUpdated());
-        return frBeneficiary5;
-    }
+//    public static FRBeneficiary1 toBeneficiary1(FRBeneficiary4 frBeneficiary4) {
+//        if (frBeneficiary4 == null) return null;
+//        FRBeneficiary1 frBeneficiary1 = new FRBeneficiary1();
+//        frBeneficiary1.setAccountId(frBeneficiary4.getAccountId());
+//        frBeneficiary1.setBeneficiary(OBBeneficiaryConverter.toOBBeneficiary1(frBeneficiary4.getBeneficiary()));
+//        frBeneficiary1.setId(frBeneficiary4.getId());
+//        frBeneficiary1.setCreated(frBeneficiary4.getCreated());
+//        frBeneficiary1.setUpdated(frBeneficiary4.getUpdated());
+//        return frBeneficiary1;
+//    }
+//
+//    public static FRBeneficiary1 toBeneficiary1(FRBeneficiary frBeneficiary) {
+//        if (frBeneficiary == null) return null;
+//        FRBeneficiary1 frBeneficiary1 = new FRBeneficiary1();
+//        frBeneficiary1.setAccountId(frBeneficiary.getAccountId());
+//        frBeneficiary1.setBeneficiary(toOBBeneficiary1(frBeneficiary.getBeneficiary()));
+//        frBeneficiary1.setId(frBeneficiary.getId());
+//        frBeneficiary1.setCreated(frBeneficiary.getCreated());
+//        frBeneficiary1.setUpdated(frBeneficiary.getUpdated());
+//        return frBeneficiary1;
+//    }
+//
+//    public static FRBeneficiary toFRBeneficiary5(FRBeneficiary3 frBeneficiary3) {
+//        if (frBeneficiary3 == null) return null;
+//        FRBeneficiary frBeneficiary = new FRBeneficiary();
+//        frBeneficiary.setAccountId(frBeneficiary3.getAccountId());
+//        frBeneficiary.setBeneficiary(toOBBeneficiary5(frBeneficiary3.getBeneficiary()));
+//        frBeneficiary.setId(frBeneficiary3.getId());
+//        frBeneficiary.setCreated(frBeneficiary3.getCreated());
+//        frBeneficiary.setUpdated(frBeneficiary3.getUpdated());
+//        return frBeneficiary;
+//    }
 
     public static OBBeneficiary1 toOBBeneficiary1(OBBeneficiary5 obBeneficiary5) {
         return obBeneficiary5 == null ? null : (new OBBeneficiary1())

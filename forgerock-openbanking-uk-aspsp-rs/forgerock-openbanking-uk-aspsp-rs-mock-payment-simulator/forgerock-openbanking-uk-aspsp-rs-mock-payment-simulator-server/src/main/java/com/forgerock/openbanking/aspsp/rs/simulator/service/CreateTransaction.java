@@ -20,12 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 public interface CreateTransaction<T> {
-    FRTransaction6 createTransaction(Account account, T payment, OBCreditDebitCode creditDebitCode, Balance balance, OBActiveOrHistoricCurrencyAndAmount amount);
+    FRTransaction createTransaction(Account account, T payment, OBCreditDebitCode creditDebitCode, Balance balance, FRAmount amount);
   }

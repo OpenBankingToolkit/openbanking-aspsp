@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.callbackurl;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl1;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.CallbackUrlsRepository;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -40,7 +40,7 @@ public class CallbackUrlApiController implements CallbackUrlsApi {
     }
 
     @Override
-    public ResponseEntity<Collection<FRCallbackUrl1>> findByTppId(
+    public ResponseEntity<Collection<FRCallbackUrl>> findByTppId(
             @RequestParam("tppId")  String tppId) {
         log.debug("Find all callback URLs for TPP: {}", tppId);
         return ResponseEntity.ok(callbackUrlsRepository.findByTppId(tppId));

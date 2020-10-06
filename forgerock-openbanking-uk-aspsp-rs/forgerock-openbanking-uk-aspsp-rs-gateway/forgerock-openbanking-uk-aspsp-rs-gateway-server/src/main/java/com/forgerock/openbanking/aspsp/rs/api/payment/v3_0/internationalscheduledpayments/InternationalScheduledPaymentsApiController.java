@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.OBExternalScheduleType1Code;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
+import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse1;
 
@@ -50,8 +50,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.domesticscheduledpayments.DomesticScheduledPaymentsApiController.toOBActiveOrHistoricCurrencyAndAmount1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBCashAccount51;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
@@ -138,10 +138,10 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                             //Modify the status of the payment
                             LOGGER.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
                             FRWriteInternationalScheduledDataInitiation paymentInitiation = payment.getInitiation();
-                            OBScheduledPayment1 scheduledPayment = new OBScheduledPayment1()
+                            OBScheduledPayment3 scheduledPayment = new OBScheduledPayment3()
                                     .accountId(payment.getAccountId())
-                                    .creditorAccount(toOBCashAccount3(paymentInitiation.getCreditorAccount()))
-                                    .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(paymentInitiation.getInstructedAmount()))
+                                    .creditorAccount(toOBCashAccount51(paymentInitiation.getCreditorAccount()))
+                                    .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount1(paymentInitiation.getInstructedAmount()))
                                     .reference(paymentInitiation.getRemittanceInformation().getReference())
                                     // Set to EXECUTION because we are creating the creditor payment
                                     .scheduledType(OBExternalScheduleType1Code.EXECUTION)

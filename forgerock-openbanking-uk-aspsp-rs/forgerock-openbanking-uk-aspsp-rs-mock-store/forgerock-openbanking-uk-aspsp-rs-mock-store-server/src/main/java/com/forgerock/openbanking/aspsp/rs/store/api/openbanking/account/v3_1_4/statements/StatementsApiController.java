@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_4.statements;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements.FRStatement4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.service.statement.StatementPDFService;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,9 +30,9 @@ import org.springframework.stereotype.Controller;
 public class StatementsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_3.statements.StatementsApiController implements StatementsApi {
 
     public StatementsApiController(@Value("${rs.page.default.statement.size}") int pageLimitStatements,
-                                   FRStatement4Repository frStatement4Repository,
+                                   FRStatementRepository frStatementRepository,
                                    AccountDataInternalIdFilter accountDataInternalIdFilter,
                                    StatementPDFService statementPDFService) {
-        super(pageLimitStatements, frStatement4Repository, accountDataInternalIdFilter, statementPDFService);
+        super(pageLimitStatements, frStatementRepository, accountDataInternalIdFilter, statementPDFService);
     }
 }

@@ -20,11 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.InternationalPaymentSubmission2;
+import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.payments.InternationalPaymentSubmission2;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternational1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternational2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3Data;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBWriteInternational3DataInitiation;

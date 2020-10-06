@@ -23,10 +23,10 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.ac
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.accountrequests.FRAccountRequest1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accountrequests.FRAccountRequestRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRAccountRequest1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -62,7 +62,7 @@ public class AccountRequestsApiController implements AccountRequestsApi {
     @Autowired
     private TppRepository tppRepository;
     @Autowired
-    private FRAccountRequest1Repository frAccountRequest1Repository;
+    private FRAccountRequestRepository frAccountRequestRepository;
     @Autowired
     private ConsentMetricService consentMetricService;
 
@@ -115,13 +115,13 @@ public class AccountRequestsApiController implements AccountRequestsApi {
                         .transactionToDateTime(body.getData().getTransactionToDateTime()))
                 .risk(body.getRisk());
 
-        FRAccountRequest1 accountRequest = new FRAccountRequest1();
+        FRAccountRequest accountRequest = new FRAccountRequest();
         accountRequest.setId(accountRequestId);
         accountRequest.setAccountRequestId(accountRequestId);
         accountRequest.setAccountRequest(response);
         accountRequest.setAisp(tppRepository.findByClientId(aispId));
         accountRequest.setObVersion(VersionPathExtractor.getVersionFromPath(request));
-        accountRequest = frAccountRequest1Repository.save(accountRequest);
+        accountRequest = frAccountRequestRepository.save(accountRequest);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(accountRequest.getId(), accountRequest.getStatus().name()));
 
         LOGGER.debug("Account request created {}",
@@ -146,7 +146,7 @@ public class AccountRequestsApiController implements AccountRequestsApi {
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent
     ) throws OBErrorResponseException {
 
-        Optional<FRAccountRequest1> accountRequest = frAccountRequest1Repository.findByAccountRequestId(accountRequestId);
+        Optional<FRAccountRequest> accountRequest = frAccountRequestRepository.findByAccountRequestId(accountRequestId);
         if (!accountRequest.isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -154,12 +154,12 @@ public class AccountRequestsApiController implements AccountRequestsApi {
 
         }
         LOGGER.debug("Account request revoked with id {}", accountRequestId);
-        FRAccountRequest1 frAccountRequest1 = accountRequest.get();
-        frAccountRequest1.getAccountRequest().getData().setStatus(OBExternalRequestStatus1Code.REVOKED);
+        FRAccountRequest frAccountRequest = accountRequest.get();
+        frAccountRequest.getAccountRequest().getData().setStatus(OBExternalRequestStatus1Code.REVOKED);
         consentMetricService.sendConsentActivity(
-                new ConsentStatusEntry(frAccountRequest1.getAccountRequest().getData().getAccountRequestId(),
-                frAccountRequest1.getAccountRequest().getData().getStatus().name()));
-        frAccountRequest1Repository.save(frAccountRequest1);
+                new ConsentStatusEntry(frAccountRequest.getAccountRequest().getData().getAccountRequestId(),
+                frAccountRequest.getAccountRequest().getData().getStatus().name()));
+        frAccountRequestRepository.save(frAccountRequest);
         LOGGER.debug("Account request revoked");
 
         return ResponseEntity.ok("Account request '" + accountRequestId + "' deleted");
@@ -190,7 +190,7 @@ public class AccountRequestsApiController implements AccountRequestsApi {
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent
     ) throws OBErrorResponseException {
         LOGGER.debug("Read account request with id {}", accountRequestId);
-        Optional<FRAccountRequest1> accountRequest = frAccountRequest1Repository.findById(accountRequestId);
+        Optional<FRAccountRequest> accountRequest = frAccountRequestRepository.findById(accountRequestId);
         LOGGER.debug("Read successful with id {}", accountRequestId);
         MultiValueMap<String, String> headers = new HttpHeaders();
         headers.put(OBHeaders.X_FAPI_INTERACTION_ID, Arrays.asList(xFapiInteractionId));

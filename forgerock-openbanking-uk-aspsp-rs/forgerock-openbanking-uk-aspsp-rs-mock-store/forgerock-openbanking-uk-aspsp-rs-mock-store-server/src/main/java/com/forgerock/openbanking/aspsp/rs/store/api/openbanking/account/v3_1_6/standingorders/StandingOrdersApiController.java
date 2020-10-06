@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_6.standingorders;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.standingorders.FRStandingOrder6Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Controller;
 public class StandingOrdersApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_5.standingorders.StandingOrdersApiController implements StandingOrdersApi {
 
     public StandingOrdersApiController(@Value("${rs.page.default.standing-order.size}") int pageLimitStandingOrders,
-                                       FRStandingOrder6Repository frStandingOrderRepository,
+                                       FRStandingOrderRepository frStandingOrderRepository,
                                        AccountDataInternalIdFilter accountDataInternalIdFilter) {
         super(pageLimitStandingOrders, frStandingOrderRepository, accountDataInternalIdFilter);
     }

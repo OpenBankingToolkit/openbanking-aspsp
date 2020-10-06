@@ -22,11 +22,12 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRStandingOrder6;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.account.standingorder.StandingOrderService;
@@ -47,15 +48,14 @@ import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
 import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 import uk.org.openbanking.datamodel.account.OBTransaction6;
 import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 
 @Slf4j
@@ -85,7 +85,7 @@ public class AcceptDueStandingOrderTask {
         log.info("Standing order payment task waking up. The time is now {}.", format.print(DateTime.now()));
 
         final DateTime now = DateTime.now();
-        for (FRStandingOrder6 frStandingOrder : standingOrderService.getActiveStandingOrders()) {
+        for (FRStandingOrder frStandingOrder : standingOrderService.getActiveStandingOrders()) {
             OBStandingOrder6 obStandingOrder = frStandingOrder.getStandingOrder();
 
             // Check the OB status code has an ACTIVE status (because standing orders could be imported on /data endpoint with INACTIVE status).
@@ -108,21 +108,21 @@ public class AcceptDueStandingOrderTask {
                         && isBeforeFinalPayment)
                 {
                     log.info("Active standing order '{}' has passed recurring payment date but not reached final payment date - make payment and calculate next recurring payment", frStandingOrder.getId());
-                    doCreditAndDebitPayment(frStandingOrder, (toOBActiveOrHistoricCurrencyAndAmount(obStandingOrder.getNextPaymentAmount())));
+                    doCreditAndDebitPayment(frStandingOrder, toFRAmount(obStandingOrder.getNextPaymentAmount()));
                     frStandingOrder.getStandingOrder().setNextPaymentDateTime(frequencyService.getNextDateTime(obStandingOrder.getNextPaymentDateTime(), obStandingOrder.getFrequency()));
                 }
                 else if (StandingOrderStatus.ACTIVE == frStandingOrder.getStatus()
                         && isFinalPaymentDue)
                 {
                     log.info("Active standing order '{}' has passed final payment date - make final payment and set to COMPLETE", frStandingOrder.getId());
-                    doCreditAndDebitPayment(frStandingOrder, toOBActiveOrHistoricCurrencyAndAmount(obStandingOrder.getFinalPaymentAmount()));
+                    doCreditAndDebitPayment(frStandingOrder, toFRAmount(obStandingOrder.getFinalPaymentAmount()));
                     frStandingOrder.setStatus(StandingOrderStatus.COMPLETED);
                 }
                 else if (StandingOrderStatus.PENDING == frStandingOrder.getStatus()
                         && isFirstPaymentDue)
                 {
                     log.info("Pending standing order '{}' has passed start payment date - make first payment and set to active", frStandingOrder.getId());
-                    doCreditAndDebitPayment(frStandingOrder, toOBActiveOrHistoricCurrencyAndAmount(obStandingOrder.getFirstPaymentAmount()));
+                    doCreditAndDebitPayment(frStandingOrder, toFRAmount(obStandingOrder.getFirstPaymentAmount()));
                     frStandingOrder.setStatus(StandingOrderStatus.ACTIVE);
                 } else {
                     log.debug("Active standing order '{}' is not due for payment", frStandingOrder.getId());
@@ -149,7 +149,7 @@ public class AcceptDueStandingOrderTask {
 
     }
 
-    private void doCreditAndDebitPayment(FRStandingOrder6 frStandingOrder, OBActiveOrHistoricCurrencyAndAmount amount) throws Exception {
+    private void doCreditAndDebitPayment(FRStandingOrder frStandingOrder, FRAmount amount) throws Exception {
         moveDebitPayment(frStandingOrder, amount);
 
         String identificationFrom = frStandingOrder.getStandingOrder().getCreditorAccount().getIdentification();
@@ -163,21 +163,19 @@ public class AcceptDueStandingOrderTask {
         log.debug("Payment {}", frStandingOrder.getStandingOrder());
     }
 
-    private void moveDebitPayment(FRStandingOrder6 payment, OBActiveOrHistoricCurrencyAndAmount amount) throws CurrencyConverterException {
+    private void moveDebitPayment(FRStandingOrder payment, FRAmount amount) throws CurrencyConverterException {
         Account accountTo = accountStoreService.getAccount(payment.getAccountId());
         log.info("We are going to pay from this account: {}", accountTo);
-        moneyService.moveMoney(accountTo, amount,
-                OBCreditDebitCode.DEBIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountTo, amount, OBCreditDebitCode.DEBIT, payment, this::createTransaction);
     }
 
-    private void moveCreditPayment(FRStandingOrder6 payment, String identificationFrom, Account accountFrom, OBActiveOrHistoricCurrencyAndAmount amount) throws CurrencyConverterException {
+    private void moveCreditPayment(FRStandingOrder payment, String identificationFrom, Account accountFrom, FRAmount amount) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationFrom, accountFrom);
         log.info("Move the money to this account");
-        moneyService.moveMoney(accountFrom, amount,
-                OBCreditDebitCode.CREDIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountFrom, amount, OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction6 createTransaction(Account account, FRStandingOrder6 payment, OBCreditDebitCode creditDebitCode, Balance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction createTransaction(Account account, FRStandingOrder payment, OBCreditDebitCode creditDebitCode, Balance balance, FRAmount amount) {
         log.debug("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());
@@ -201,7 +199,7 @@ public class AcceptDueStandingOrderTask {
             obTransaction.transactionReference(payment.getStandingOrder().getReference());
         }
 
-        FRTransaction6 transaction = FRTransaction6.builder()
+        FRTransaction transaction = FRTransaction.builder()
                 .id(transactionId)
                 .bookingDateTime(bookingDate)
                 .accountId(account.getId())

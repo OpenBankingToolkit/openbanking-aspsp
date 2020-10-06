@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRParty2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -35,25 +35,25 @@ public class FRParty2RepositoryImpl implements FRParty2RepositoryCustom {
     private FRParty2Repository party1Repository;
 
     @Override
-    public FRParty2 byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions) {
+    public FRParty byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions) {
         return filter(party1Repository.findByAccountId(accountId), permissions);
     }
 
     @Override
-    public FRParty2 byUserIdWithPermissions(String userId, List<OBExternalPermissions1Code> permissions) {
+    public FRParty byUserIdWithPermissions(String userId, List<OBExternalPermissions1Code> permissions) {
         return filter(party1Repository.findByUserId(userId), permissions);
     }
 
     @Override
-    public Page<FRParty2> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRParty> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
         return filter(party1Repository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FRParty2> filter(Page<FRParty2> parties, List<OBExternalPermissions1Code> permissions) {
+    private Page<FRParty> filter(Page<FRParty> parties, List<OBExternalPermissions1Code> permissions) {
         return parties;
     }
 
-    private FRParty2 filter(FRParty2 party, List<OBExternalPermissions1Code> permissions) {
+    private FRParty filter(FRParty party, List<OBExternalPermissions1Code> permissions) {
         return party;
     }
 }

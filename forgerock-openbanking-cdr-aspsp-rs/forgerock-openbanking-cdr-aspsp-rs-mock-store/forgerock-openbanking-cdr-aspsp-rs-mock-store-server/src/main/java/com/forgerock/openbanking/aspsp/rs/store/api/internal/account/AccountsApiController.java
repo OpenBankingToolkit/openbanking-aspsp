@@ -21,11 +21,11 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalance1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccount4Repository;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBalance1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -64,7 +64,7 @@ public class AccountsApiController implements AccountsApi {
             @RequestParam(value = "withBalance", required = false, defaultValue = "false") Boolean withBalance
     ) {
         log.info("Read all accounts for user ID '{}', with Balances: {}", userId, withBalance);
-        Collection<FRAccount4> accountsByUserID = accountsRepository.findByUserID(Objects.requireNonNull(userId));
+        Collection<FRAccount> accountsByUserID = accountsRepository.findByUserID(Objects.requireNonNull(userId));
         if (!withBalance || accountsByUserID.isEmpty()) {
             log.debug("No balances required so returning {} accounts for userId: {}", accountsByUserID.size(), userId);
             return ResponseEntity.ok(
@@ -73,13 +73,13 @@ public class AccountsApiController implements AccountsApi {
                             .collect(Collectors.toList()));
         }
 
-        final Map<String, List<FRBalance1>> balancesByAccountId  =
+        final Map<String, List<FRBalance>> balancesByAccountId  =
                 balanceRepository.findByAccountIdIn(accountsByUserID.stream()
-                        .map(FRAccount4::getId)
+                        .map(FRAccount::getId)
                         .collect(Collectors.toList())
                 ).stream().collect(
                         Collectors.groupingBy(
-                                FRBalance1::getAccountId,
+                                FRBalance::getAccountId,
                                 HashMap::new,
                                 Collectors.toCollection(ArrayList::new))
                         );
@@ -94,7 +94,7 @@ public class AccountsApiController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<FRAccount4> findByAccountId(
+    public ResponseEntity<FRAccount> findByAccountId(
             @PathVariable("accountId") String accountId,
             @RequestParam("permissions") List<String> permissions
     ) {
@@ -107,7 +107,7 @@ public class AccountsApiController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<Optional<FRAccount4>> findByIdentification(
+    public ResponseEntity<Optional<FRAccount>> findByIdentification(
             @RequestParam("identification") String identification
     ) {
         log.debug("Find accounts by identification {}", identification);
@@ -115,18 +115,18 @@ public class AccountsApiController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<FRAccount4> getAccount(
+    public ResponseEntity<FRAccount> getAccount(
             @PathVariable("accountId") String accountId
     ) {
         log.debug("Read accounts with id {}", accountId);
         return new ResponseEntity(accountsRepository.findById(accountId), HttpStatus.OK);
     }
 
-    private AccountWithBalance toFRAccountWithBalance(FRAccount4 account, Map<String, List<FRBalance1>> balanceMap) {
+    private AccountWithBalance toFRAccountWithBalance(FRAccount account, Map<String, List<FRBalance>> balanceMap) {
         final List<OBCashBalance1> balances = Optional.ofNullable(balanceMap.get(account.getId()))
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(FRBalance1::getBalance)
+                .map(FRBalance::getBalance)
                 .collect(Collectors.toList());
 
         return new AccountWithBalance(account, balances);

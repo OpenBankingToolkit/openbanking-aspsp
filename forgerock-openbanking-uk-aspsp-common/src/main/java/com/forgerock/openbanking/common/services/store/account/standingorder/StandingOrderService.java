@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.account.standingorder;
 
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRStandingOrder6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,31 +52,31 @@ public class StandingOrderService {
         this.rsStoreRoot = rsStoreRoot;
     }
 
-    public FRStandingOrder6 createStandingOrder(OBStandingOrder6 standingOrder, String pispId) {
+    public FRStandingOrder createStandingOrder(OBStandingOrder6 standingOrder, String pispId) {
         log.debug("Create a standing order in the store. {}", standingOrder);
-        FRStandingOrder6 frStandingOrder = FRStandingOrder6.builder()
+        FRStandingOrder frStandingOrder = FRStandingOrder.builder()
                 .standingOrder(standingOrder)
                 .accountId(standingOrder.getAccountId())
                 .id(standingOrder.getStandingOrderId())
                 .status(StandingOrderStatus.PENDING)
                 .pispId(pispId)
                 .build();
-        return restTemplate.postForObject(rsStoreRoot + BASE_RESOURCE_PATH, frStandingOrder, FRStandingOrder6.class);
+        return restTemplate.postForObject(rsStoreRoot + BASE_RESOURCE_PATH, frStandingOrder, FRStandingOrder.class);
     }
 
-    public Collection<FRStandingOrder6> getActiveStandingOrders() {
+    public Collection<FRStandingOrder> getActiveStandingOrders() {
         log.debug("Get active standing orders in the store. {}");
-        ParameterizedTypeReference<List<FRStandingOrder6>> ptr =
-                new ParameterizedTypeReference<List<FRStandingOrder6>>() {};
+        ParameterizedTypeReference<List<FRStandingOrder>> ptr =
+                new ParameterizedTypeReference<List<FRStandingOrder>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + BASE_RESOURCE_PATH + "search/active"
         );
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRStandingOrder6>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<List<FRStandingOrder>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
         return entity.getBody();
     }
 
-    public void updateStandingOrder(FRStandingOrder6 standingOrder) {
+    public void updateStandingOrder(FRStandingOrder standingOrder) {
         log.debug("Update a standing order in the store. {}", standingOrder);
         restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH+"/"+standingOrder.getId(), standingOrder);
     }

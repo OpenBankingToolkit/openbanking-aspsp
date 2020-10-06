@@ -20,12 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1.transactions;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions.FRTransaction6Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1.FRTransaction4;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
-import com.forgerock.openbanking.common.services.openbanking.converter.transaction.FRTransactionConverter;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
+import com.forgerock.openbanking.common.services.openbanking.converter.transaction.OBTransactionConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -50,7 +49,9 @@ import uk.org.openbanking.datamodel.account.OBTransaction4;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.openbanking.constants.OpenBankingConstants.*;
+import static com.forgerock.openbanking.constants.OpenBankingConstants.AVAILABLE_DATE_FORMAT;
+import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
+import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.TO_BOOKING_DATE_TIME;
 
@@ -61,7 +62,7 @@ public class TransactionsApiController implements TransactionsApi {
     @Value("${rs.page.default.transaction.size}")
     private int PAGE_LIMIT_TRANSACTIONS;
     @Autowired
-    private FRTransaction6Repository FRTransaction6Repository;
+    private FRTransactionRepository FRTransactionRepository;
     @Autowired
     private AccountDataInternalIdFilter accountDataInternalIdFilter;
 
@@ -122,13 +123,13 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
-        Page<FRTransaction6> response = FRTransaction6Repository.byAccountIdAndBookingDateTimeBetweenWithPermissions(accountId,
+        Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndBookingDateTimeBetweenWithPermissions(accountId,
                 fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction4> transactions = response.getContent()
                 .stream()
-                .map(FRTransactionConverter::toTransaction4)
-                .map(FRTransaction4::getTransaction)
+                .map(FRTransaction::getTransaction)
+                .map(OBTransactionConverter::toOBTransaction4)
                 .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
 
@@ -200,13 +201,13 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
-        Page<FRTransaction6> body = FRTransaction6Repository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(accountIds,
+        Page<FRTransaction> body = FRTransactionRepository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(accountIds,
                 fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction4> transactions = body.getContent()
                 .stream()
-                .map(FRTransactionConverter::toTransaction4)
-                .map(FRTransaction4::getTransaction)
+                .map(FRTransaction::getTransaction)
+                .map(OBTransactionConverter::toOBTransaction4)
                 .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
 
@@ -281,13 +282,13 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
-        Page<FRTransaction6> response = FRTransaction6Repository.byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(accountId, statementId,
+        Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(accountId, statementId,
                 fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction4> transactions = response.getContent()
                 .stream()
-                .map(FRTransactionConverter::toTransaction4)
-                .map(FRTransaction4::getTransaction)
+                .map(FRTransaction::getTransaction)
+                .map(OBTransactionConverter::toOBTransaction4)
                 .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
 

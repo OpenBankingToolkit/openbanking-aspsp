@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.accountrequest;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRAccountRequest1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,8 +33,8 @@ public interface AccountRequestApi {
     @RequestMapping(value = "/",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT)
-    ResponseEntity<FRAccountRequest1> save(
-            @RequestBody FRAccountRequest1 accountRequest1
+    ResponseEntity<FRAccountRequest> save(
+            @RequestBody FRAccountRequest accountRequest1
     );
 
 

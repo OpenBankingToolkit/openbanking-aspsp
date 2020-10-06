@@ -20,10 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.offers;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.offers.FROffer1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.offers.FROfferRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FROffer1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FROffer;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -56,7 +56,7 @@ public class OffersApiController implements OffersApi {
     @Value("${rs.page.default.offers.size}")
     private int PAGE_LIMIT_OFFERS;
     @Autowired
-    private FROffer1Repository frOffer1Repository;
+    private FROfferRepository frOfferRepository;
     @Autowired
     private AccountDataInternalIdFilter accountDataInternalIdFilter;
 
@@ -95,14 +95,14 @@ public class OffersApiController implements OffersApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Read offers for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FROffer1> offers = frOffer1Repository.byAccountIdWithPermissions(accountId, permissions,
+        Page<FROffer> offers = frOfferRepository.byAccountIdWithPermissions(accountId, permissions,
                 PageRequest.of(page, PAGE_LIMIT_OFFERS));
         int totalPages = offers.getTotalPages();
 
         return ResponseEntity.ok(new OBReadOffer1().data(new OBReadOffer1Data().offer(
                 offers.getContent()
                         .stream()
-                        .map(FROffer1::getOffer)
+                        .map(FROffer::getOffer)
                         .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
@@ -146,14 +146,14 @@ public class OffersApiController implements OffersApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Reading offers from account ids {}", accountIds);
-        Page<FROffer1> offers = frOffer1Repository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FROffer> offers = frOfferRepository.byAccountIdInWithPermissions(accountIds, permissions,
                 PageRequest.of(page, PAGE_LIMIT_OFFERS));
         int totalPages = offers.getTotalPages();
 
         return ResponseEntity.ok(new OBReadOffer1().data(new OBReadOffer1Data().offer(
                 offers.getContent()
                         .stream()
-                        .map(FROffer1::getOffer)
+                        .map(FROffer::getOffer)
                         .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

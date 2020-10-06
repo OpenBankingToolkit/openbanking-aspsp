@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.accounts;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -58,7 +58,7 @@ public class AccountsApiController implements AccountsApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountsApiController.class);
 
     @Autowired
-    private FRAccount4Repository frAccountRepository;
+    private FRAccountRepository frAccountRepository;
 
     public ResponseEntity<OBReadAccount2> getAccount(
             @ApiParam(value = "A unique identifier used to identify the account resource.",required=true )
@@ -88,7 +88,7 @@ public class AccountsApiController implements AccountsApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount4 response = frAccountRepository.byAccountId(accountId, permissions);
+        FRAccount response = frAccountRepository.byAccountId(accountId, permissions);
         convertAccounts(response);
 
         final List<OBAccount2> obAccount2s = Collections.singletonList(
@@ -135,7 +135,7 @@ public class AccountsApiController implements AccountsApi {
         List<OBAccount2> accounts = frAccountRepository.byAccountIds(accountIds, permissions)
                 .stream()
                 .map(this::convertAccounts)
-                .map(FRAccount4::getAccount)
+                .map(FRAccount::getAccount)
                 .map(FRAccountConverter::toOBAccount2)
                 .collect(Collectors.toList());
 
@@ -149,7 +149,7 @@ public class AccountsApiController implements AccountsApi {
      * Because we always use latest model in persistent store, older API controller may need to do conversions on some of values e.g. the Account identifier codes.
      * This can be overidden is later versions of controller.
      */
-    protected FRAccount4 convertAccounts(FRAccount4 account) {
+    protected FRAccount convertAccounts(FRAccount account) {
         if (account.getAccount().getAccount() != null) {
             account.getAccount().getAccount()
                     .forEach(this::checkAndConvertV3SchemeNameToV2);

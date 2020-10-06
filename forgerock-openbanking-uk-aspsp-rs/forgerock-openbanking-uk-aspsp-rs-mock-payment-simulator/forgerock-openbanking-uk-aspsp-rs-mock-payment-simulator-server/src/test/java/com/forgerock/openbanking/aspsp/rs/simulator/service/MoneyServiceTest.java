@@ -20,10 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
 import com.forgerock.openbanking.common.services.store.balance.BalanceStoreService;
 import com.forgerock.openbanking.common.services.store.transaction.TransactionStoreService;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -89,14 +90,14 @@ public class MoneyServiceTest {
     @Test
     public void shouldCreateTransaction() throws CurrencyConverterException {
         // Given
-        FRBalance1 balance = defaultBalance(DEBIT_ACCOUNT, "20");
+        FRBalance balance = defaultBalance(DEBIT_ACCOUNT, "20");
         given(balanceStoreService.getBalance(DEBIT_ACCOUNT, OBBalanceType1Code.INTERIMAVAILABLE))
                 .willReturn(Optional.of(balance));
         CreateTransaction<FRPaymentSetup> createTransaction = mock(CreateTransaction.class);
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         FRPaymentSetup payment = new FRPaymentSetup();
-        FRTransaction6 transaction = JMockData.mock(FRTransaction6.class);
-        OBActiveOrHistoricCurrencyAndAmount amount = defaultAmount();
+        FRTransaction transaction = JMockData.mock(FRTransaction.class);
+        FRAmount amount = defaultAmount();
         given(createTransaction.createTransaction(account, payment, OBCreditDebitCode.DEBIT, balance, amount)).willReturn(transaction);
 
         // When
@@ -106,18 +107,19 @@ public class MoneyServiceTest {
         verify(transactionStoreService).create(transaction);
     }
 
-    private FRAccount2 defaultAccount(String payAccount) {
-        return FRAccount2.builder().id(payAccount).build();
+    private FRAccount defaultAccount(String payAccount) {
+        return FRAccount.builder().id(payAccount).build();
     }
 
-    private OBActiveOrHistoricCurrencyAndAmount defaultAmount() {
-        return new OBActiveOrHistoricCurrencyAndAmount()
+    private FRAmount defaultAmount() {
+        return FRAmount.builder()
                 .amount("3")
-                .currency("GBP");
+                .currency("GBP")
+                .build();
     }
 
-    private FRBalance1 defaultBalance(String accountId, String amount) {
-        return FRBalance1.builder()
+    private FRBalance defaultBalance(String accountId, String amount) {
+        return FRBalance.builder()
                 .accountId(accountId)
                 .balance(new OBCashBalance1()
                         .creditDebitIndicator(OBCreditDebitCode.DEBIT)

@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.eventsubscription;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events.EventSubscriptionsRepository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription1;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.EventSubscriptionsRepository;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -39,7 +39,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
     }
 
     @Override
-    public ResponseEntity<Collection<FREventSubscription1>> findByTppId(
+    public ResponseEntity<Collection<FREventSubscription>> findByTppId(
             @RequestParam("tppId")  String tppId) {
         log.debug("Find all Event Subscriptions for TPP: {}", tppId);
         return ResponseEntity.ok(eventSubscriptionsRepository.findByTppId(tppId));

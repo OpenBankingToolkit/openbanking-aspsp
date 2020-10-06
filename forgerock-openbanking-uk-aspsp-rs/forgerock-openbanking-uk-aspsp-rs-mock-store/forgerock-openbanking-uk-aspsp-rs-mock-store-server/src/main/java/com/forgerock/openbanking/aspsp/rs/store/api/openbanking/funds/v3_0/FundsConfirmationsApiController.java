@@ -20,12 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.funds.v3_0;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfirmationConsentRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfirmationRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmation1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -98,9 +98,9 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
         log.debug("Create funds confirmation: {}", obFundsConfirmation);
 
         String consentId = obFundsConfirmation.getData().getConsentId();
-        Optional<FRFundsConfirmation1> isSubmission = fundsConfirmationRepository.findById(consentId);
+        Optional<FRFundsConfirmation> isSubmission = fundsConfirmationRepository.findById(consentId);
 
-        Optional<FRFundsConfirmationConsent1> isConsent = fundsConfirmationConsentRepository.findById(consentId);
+        Optional<FRFundsConfirmationConsent> isConsent = fundsConfirmationConsentRepository.findById(consentId);
         if (!isConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Consent behind funds confirmation submission '" + consentId + "' can't be found");
         }
@@ -111,9 +111,9 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
                 obFundsConfirmation.getData().getInstructedAmount().getAmount());
 
 
-        FRFundsConfirmation1 frFundsConfirmation = isSubmission
+        FRFundsConfirmation frFundsConfirmation = isSubmission
                 .orElseGet(() ->
-                        FRFundsConfirmation1.builder()
+                        FRFundsConfirmation.builder()
                                 .id(consentId)
                                 .created(DateTime.now())
                                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
@@ -154,20 +154,20 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
 
             Principal principal
     ) {
-        Optional<FRFundsConfirmation1> isFundsConfirmation = fundsConfirmationRepository.findById(fundsConfirmationId);
+        Optional<FRFundsConfirmation> isFundsConfirmation = fundsConfirmationRepository.findById(fundsConfirmationId);
         if (!isFundsConfirmation.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + fundsConfirmationId + "' can't be found");
         }
-        FRFundsConfirmation1 frPaymentSubmission = isFundsConfirmation.get();
+        FRFundsConfirmation frPaymentSubmission = isFundsConfirmation.get();
 
-        Optional<FRFundsConfirmationConsent1> isSetup = fundsConfirmationConsentRepository.findById(frPaymentSubmission.getFundsConfirmation().getData().getConsentId());
+        Optional<FRFundsConfirmationConsent> isSetup = fundsConfirmationConsentRepository.findById(frPaymentSubmission.getFundsConfirmation().getData().getConsentId());
         return isSetup
                 .<ResponseEntity>map(frFundsConfirmationConsent1 -> ResponseEntity.ok(packageResponse(frPaymentSubmission, frFundsConfirmationConsent1)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + fundsConfirmationId + "' can't be found"));
 
     }
 
-    private OBFundsConfirmationResponse1 packageResponse(FRFundsConfirmation1 fundsConfirmation, FRFundsConfirmationConsent1 consent) {
+    private OBFundsConfirmationResponse1 packageResponse(FRFundsConfirmation fundsConfirmation, FRFundsConfirmationConsent consent) {
         final OBFundsConfirmationData1 obFundsConfirmationData = fundsConfirmation.getFundsConfirmation().getData();
         return new OBFundsConfirmationResponse1()
                 .data(new OBFundsConfirmationDataResponse1()

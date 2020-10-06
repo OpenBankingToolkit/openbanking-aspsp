@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.FRDomesticScheduledConsent2;
+import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.payments.FRDomesticScheduledConsent2;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent;

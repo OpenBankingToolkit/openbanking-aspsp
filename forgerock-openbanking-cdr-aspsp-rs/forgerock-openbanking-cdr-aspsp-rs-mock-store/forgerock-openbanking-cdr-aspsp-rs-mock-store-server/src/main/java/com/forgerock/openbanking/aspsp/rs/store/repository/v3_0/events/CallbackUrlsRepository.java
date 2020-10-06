@@ -20,13 +20,13 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 
-public interface CallbackUrlsRepository extends MongoRepository<FRCallbackUrl1, String> {
+public interface CallbackUrlsRepository extends MongoRepository<FRCallbackUrl, String> {
 
-    Collection<FRCallbackUrl1> findByTppId(@Param("tppId") String tppId);
+    Collection<FRCallbackUrl> findByTppId(@Param("tppId") String tppId);
 }

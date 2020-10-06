@@ -22,14 +22,14 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
@@ -39,12 +39,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -74,14 +72,14 @@ public class AcceptSinglePaymentTaskTest {
         // Given
         FRPaymentSetup payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
 
         // When
         autoAcceptPaymentTask.autoAcceptPayment();
 
         // Then
-        OBActiveOrHistoricCurrencyAndAmount instructedAmount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        FRAmount instructedAmount = payment.getInitiation().getInstructedAmount();
         verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED)));
     }
@@ -93,7 +91,7 @@ public class AcceptSinglePaymentTaskTest {
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(defaultAccount(DEBIT_ACCOUNT));
 
-        FRAccount2 account = defaultAccount(CREDIT_ACCOUNT);
+        FRAccount account = defaultAccount(CREDIT_ACCOUNT);
         given(account2StoreService.findAccountByIdentification(CREDIT_ACCOUNT))
                 .willReturn(Optional.of(account));
 
@@ -101,7 +99,7 @@ public class AcceptSinglePaymentTaskTest {
         autoAcceptPaymentTask.autoAcceptPayment();
 
         // Then
-        OBActiveOrHistoricCurrencyAndAmount instructedAmount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        FRAmount instructedAmount = payment.getInitiation().getInstructedAmount();
         verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.CREDIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED)));
     }
@@ -111,7 +109,7 @@ public class AcceptSinglePaymentTaskTest {
         // Given
         FRPaymentSetup payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
         doThrow(CurrencyConverterException.class).when(moneyService).moveMoney(any(), any(), any(), any(), any());
 
@@ -119,7 +117,7 @@ public class AcceptSinglePaymentTaskTest {
         autoAcceptPaymentTask.autoAcceptPayment();
 
         // Then
-        OBActiveOrHistoricCurrencyAndAmount instructedAmount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        FRAmount instructedAmount = payment.getInitiation().getInstructedAmount();
         verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.REJECTED)));
     }
@@ -129,7 +127,7 @@ public class AcceptSinglePaymentTaskTest {
         // Given
         FRPaymentSetup payment = defaultPayment();
         given(paymentsService.getAllPaymentsInProcess()).willReturn(Collections.singleton(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
         doThrow(new RuntimeException()).when(moneyService).moveMoney(any(), any(), any(), any(), any());
 
@@ -137,18 +135,18 @@ public class AcceptSinglePaymentTaskTest {
         autoAcceptPaymentTask.autoAcceptPayment();
 
         // Then
-        OBActiveOrHistoricCurrencyAndAmount instructedAmount = toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount());
+        FRAmount instructedAmount = payment.getInitiation().getInstructedAmount();
         verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.REJECTED)));
     }
 
-    private FRAccount2 defaultAccount(String payAccount) {
-        return FRAccount2.builder().id(payAccount).build();
+    private FRAccount defaultAccount(String payAccount) {
+        return FRAccount.builder().id(payAccount).build();
     }
 
     private FRPaymentSetup defaultPayment() {
         FRWriteDomesticDataInitiation initiation = FRWriteDomesticDataInitiation.builder()
-                .creditorAccount(FRAccount.builder().identification(CREDIT_ACCOUNT).build())
+                .creditorAccount(FRFinancialAccount.builder().identification(CREDIT_ACCOUNT).build())
                 .instructedAmount(FRAmount.builder().currency("GBP").amount("3").build())
                 .build();
         return FRPaymentSetup.builder()

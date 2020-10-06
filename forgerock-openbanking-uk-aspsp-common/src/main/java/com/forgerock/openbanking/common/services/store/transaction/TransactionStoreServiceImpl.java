@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.transaction;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -42,10 +42,10 @@ public class TransactionStoreServiceImpl implements TransactionStoreService {
      * @param transaction a transaction
      */
     @Override
-    public FRTransaction6 create(FRTransaction6 transaction) {
-        HttpEntity<FRTransaction6> request = new HttpEntity<>(transaction, new HttpHeaders());
+    public FRTransaction create(FRTransaction transaction) {
+        HttpEntity<FRTransaction> request = new HttpEntity<>(transaction, new HttpHeaders());
         return restTemplate.exchange(
-                rsStoreRoot + "/api/transactions/", HttpMethod.POST, request, FRTransaction6.class).getBody();
+                rsStoreRoot + "/api/transactions/", HttpMethod.POST, request, FRTransaction.class).getBody();
     }
 
 }

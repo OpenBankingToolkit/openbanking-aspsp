@@ -1,6 +1,6 @@
 /**
  * Copyright 2019 ForgeRock AS.
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -8,9 +8,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,54 +20,52 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRScheduledPayment1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRScheduledPayment2;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRScheduledPayment4;
 import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment2;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount51;
 
 public class FRScheduledPaymentConverter {
 
-    public static FRScheduledPayment2 toFRScheduledPayment2(FRScheduledPayment1 frScheduledPayment1) {
-        FRScheduledPayment2 frScheduledPayment2 = FRScheduledPayment2.builder()
-                .accountId(frScheduledPayment1.getAccountId())
-                .created(frScheduledPayment1.getCreated())
-                .updated(frScheduledPayment1.getUpdated())
-                .accountId(frScheduledPayment1.getAccountId())
-                .pispId(frScheduledPayment1.getPispId())
-                .rejectionReason(frScheduledPayment1.getRejectionReason())
-                .status(frScheduledPayment1.getStatus())
-                .id(frScheduledPayment1.getId())
-                .build();
-
-        frScheduledPayment2.setScheduledPayment(toOBScheduledPayment2(frScheduledPayment1.getScheduledPayment()));
-        return frScheduledPayment2;
-    }
-
-    public static FRScheduledPayment4 toFRScheduledPayment4(FRScheduledPayment2 frScheduledPayment2) {
-        return frScheduledPayment2 == null ? null : FRScheduledPayment4.builder()
-                .id(frScheduledPayment2.getId())
-                .accountId(frScheduledPayment2.getAccountId())
-                .scheduledPayment(toOBScheduledPayment3(frScheduledPayment2.getScheduledPayment()))
-                .pispId(frScheduledPayment2.getPispId())
-                .created(frScheduledPayment2.getCreated())
-                .updated(frScheduledPayment2.getUpdated())
-                .rejectionReason(frScheduledPayment2.getRejectionReason())
-                .status(frScheduledPayment2.getStatus())
-                .build();
-    }
+    // TODO #296 - add required methods once FRAccount is using FR domain classes
+//    public static FRScheduledPayment2 toFRScheduledPayment2(FRScheduledPayment1 frScheduledPayment1) {
+//        FRScheduledPayment2 frScheduledPayment2 = FRScheduledPayment2.builder()
+//                .accountId(frScheduledPayment1.getAccountId())
+//                .created(frScheduledPayment1.getCreated())
+//                .updated(frScheduledPayment1.getUpdated())
+//                .accountId(frScheduledPayment1.getAccountId())
+//                .pispId(frScheduledPayment1.getPispId())
+//                .rejectionReason(frScheduledPayment1.getRejectionReason())
+//                .status(frScheduledPayment1.getStatus())
+//                .id(frScheduledPayment1.getId())
+//                .build();
+//
+//        frScheduledPayment2.setScheduledPayment(toOBScheduledPayment2(frScheduledPayment1.getScheduledPayment()));
+//        return frScheduledPayment2;
+//    }
+//
+//    public static FRScheduledPayment toFRScheduledPayment4(FRScheduledPayment2 frScheduledPayment2) {
+//        return frScheduledPayment2 == null ? null : FRScheduledPayment.builder()
+//                .id(frScheduledPayment2.getId())
+//                .accountId(frScheduledPayment2.getAccountId())
+//                .scheduledPayment(toOBScheduledPayment3(frScheduledPayment2.getScheduledPayment()))
+//                .pispId(frScheduledPayment2.getPispId())
+//                .created(frScheduledPayment2.getCreated())
+//                .updated(frScheduledPayment2.getUpdated())
+//                .rejectionReason(frScheduledPayment2.getRejectionReason())
+//                .status(frScheduledPayment2.getStatus())
+//                .build();
+//    }
 
     public static OBScheduledPayment1 toOBScheduledPayment1(OBScheduledPayment2 obScheduledPayment2) {
         OBScheduledPayment1 obScheduledPayment1 = new OBScheduledPayment1()

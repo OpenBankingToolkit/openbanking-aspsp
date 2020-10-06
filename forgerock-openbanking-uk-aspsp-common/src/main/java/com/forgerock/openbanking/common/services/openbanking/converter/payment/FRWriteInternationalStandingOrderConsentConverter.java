@@ -26,7 +26,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.payment.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBDomestic2InstructedAmount;
@@ -137,10 +137,10 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .destinationCountryCode(determineCountryCode(creditorAccount.getSchemeName(), creditorAccount.getIdentification())) // default value to prevent validation error
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
+                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
                 .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
                 .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRAccount(creditorAccount))
+                .creditorAccount(toFRFinancialAccount(creditorAccount))
                 .build();
     }
 
@@ -157,10 +157,10 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .destinationCountryCode(determineCountryCode(creditorAccount.getSchemeName(), creditorAccount.getIdentification())) // default value to prevent validation error
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
+                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
                 .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
                 .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRAccount(creditorAccount))
+                .creditorAccount(toFRFinancialAccount(creditorAccount))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }
@@ -178,10 +178,10 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .destinationCountryCode(determineCountryCode(creditorAccount.getSchemeName(), creditorAccount.getIdentification())) // default value to prevent validation error
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
+                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
                 .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
                 .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRAccount(creditorAccount))
+                .creditorAccount(toFRFinancialAccount(creditorAccount))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }
@@ -199,10 +199,10 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .destinationCountryCode(initiation.getDestinationCountryCode())
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
+                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
                 .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
                 .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRAccount(initiation.getCreditorAccount()))
+                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }

@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.balance;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBalance1;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalance1Repository;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ public class BalanceApiController implements BalanceApi {
     private FRBalance1Repository balanceRepository;
 
     @Override
-    public ResponseEntity<Optional<FRBalance1>> findByAcountId(
+    public ResponseEntity<Optional<FRBalance>> findByAcountId(
             @RequestParam("accountId") String accountId,
             @RequestParam("type") OBBalanceType1Code type
     ) {
@@ -51,7 +51,7 @@ public class BalanceApiController implements BalanceApi {
 
     @Override
     public ResponseEntity save(
-            @RequestBody FRBalance1 balance1
+            @RequestBody FRBalance balance1
     ) {
         LOGGER.debug("Save balance1 {}", balance1);
         return ResponseEntity.ok(balanceRepository.save(balance1));

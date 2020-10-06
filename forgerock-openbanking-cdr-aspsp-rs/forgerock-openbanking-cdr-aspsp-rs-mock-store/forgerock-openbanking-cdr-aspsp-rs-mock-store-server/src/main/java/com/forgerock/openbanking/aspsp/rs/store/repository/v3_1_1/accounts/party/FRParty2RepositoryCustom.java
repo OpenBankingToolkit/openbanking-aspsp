@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRParty2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
@@ -30,15 +30,15 @@ import java.util.List;
 
 public interface FRParty2RepositoryCustom {
 
-    FRParty2 byAccountIdWithPermissions(
+    FRParty byAccountIdWithPermissions(
             @Param("accountId") String accountId,
             @Param("permissions") List<OBExternalPermissions1Code> permissions);
 
-    FRParty2 byUserIdWithPermissions(
+    FRParty byUserIdWithPermissions(
             @Param("userId") String userId,
             @Param("permissions") List<OBExternalPermissions1Code> permissions);
 
-    Page<FRParty2> byAccountIdInWithPermissions(
+    Page<FRParty> byAccountIdInWithPermissions(
             @Param("accountIds") List<String> accountIds,
             @Param("permissions") List<OBExternalPermissions1Code> permissions,
             Pageable pageable);

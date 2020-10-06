@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRScheduledPayment1;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
@@ -34,18 +34,24 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.org.openbanking.datamodel.account.OBCashAccount3;
+import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount1;
+import uk.org.openbanking.datamodel.account.OBCashAccount51;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 
 import java.util.Collections;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AcceptDomesticScheduledPaymentTaskTest {
@@ -67,28 +73,28 @@ public class AcceptDomesticScheduledPaymentTaskTest {
 
     @Test
     public void scheduledPaymentDue_shouldDebitAccount() throws CurrencyConverterException {
-        // Given
-        FRScheduledPayment1 payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
+        // Givn
+        FRScheduledPayment payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
         given(paymentsService.getPendingAndDueScheduledPayments()).willReturn(Collections.singletonList(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
 
         // When
         acceptDueScheduledPaymentTask.payDueScheduledPayments();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getScheduledPayment().getInstructedAmount()), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(toFRAmount(payment.getScheduledPayment().getInstructedAmount())), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updateSchedulePayment(argThat(p -> p.getStatus().equals(ScheduledPaymentStatus.COMPLETED)));
     }
 
     @Test
     public void scheduledPaymentDue_shouldCreditAccount() throws CurrencyConverterException {
-        // Given
-        FRScheduledPayment1 payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
+        // Givn
+        FRScheduledPayment payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
         given(paymentsService.getPendingAndDueScheduledPayments()).willReturn(Collections.singletonList(payment));
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(defaultAccount(DEBIT_ACCOUNT));
 
-        FRAccount2 account = defaultAccount(CREDIT_ACCOUNT);
+        FRAccount account = defaultAccount(CREDIT_ACCOUNT);
         given(account2StoreService.findAccountByIdentification(CREDIT_ACCOUNT))
                 .willReturn(Optional.of(account));
 
@@ -96,7 +102,7 @@ public class AcceptDomesticScheduledPaymentTaskTest {
         acceptDueScheduledPaymentTask.payDueScheduledPayments();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getScheduledPayment().getInstructedAmount()), eq(OBCreditDebitCode.CREDIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(toFRAmount(payment.getScheduledPayment().getInstructedAmount())), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updateSchedulePayment(argThat(p -> p.getStatus().equals(ScheduledPaymentStatus.COMPLETED)));
     }
 
@@ -114,10 +120,10 @@ public class AcceptDomesticScheduledPaymentTaskTest {
 
     @Test
     public void shouldRejectPaymentWhenCurrencyConversionException() throws CurrencyConverterException {
-        // Given
-        FRScheduledPayment1 payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
+        // Givn
+        FRScheduledPayment payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
         given(paymentsService.getPendingAndDueScheduledPayments()).willReturn(Collections.singletonList(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
         doThrow(new CurrencyConverterException("Simulated failure")).when(moneyService).moveMoney(any(), any(), any(), any(), any());
 
@@ -125,17 +131,17 @@ public class AcceptDomesticScheduledPaymentTaskTest {
         acceptDueScheduledPaymentTask.payDueScheduledPayments();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getScheduledPayment().getInstructedAmount()), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(toFRAmount(payment.getScheduledPayment().getInstructedAmount())), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updateSchedulePayment(argThat(p -> p.getStatus().equals(ScheduledPaymentStatus.REJECTED)));
         assertThat(payment.getRejectionReason()).isEqualTo("Can't convert amount in the right currency: Simulated failure");
     }
 
     @Test
     public void shouldRejectPaymentWhenAnyException() throws CurrencyConverterException {
-        // Given
-        FRScheduledPayment1 payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
+        // Givn
+        FRScheduledPayment payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
         given(paymentsService.getPendingAndDueScheduledPayments()).willReturn(Collections.singletonList(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
         doThrow(new RuntimeException("Simulated failure")).when(moneyService).moveMoney(any(), any(), any(), any(), any());
 
@@ -143,15 +149,15 @@ public class AcceptDomesticScheduledPaymentTaskTest {
         acceptDueScheduledPaymentTask.payDueScheduledPayments();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(payment.getScheduledPayment().getInstructedAmount()), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(toFRAmount(payment.getScheduledPayment().getInstructedAmount())), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
         verify(paymentsService).updateSchedulePayment(argThat(p -> p.getStatus().equals(ScheduledPaymentStatus.REJECTED)));
         assertThat(payment.getRejectionReason()).isEqualTo("Failed to execute payment: Simulated failure");
     }
 
     @Test
     public void scheduledPayment_ignoreIfNotDue() throws CurrencyConverterException {
-        // Given
-        FRScheduledPayment1 payment = defaultPayment(DateTime.now().plusDays(1), ScheduledPaymentStatus.PENDING);
+        // Givn
+        FRScheduledPayment payment = defaultPayment(DateTime.now().plusDays(1), ScheduledPaymentStatus.PENDING);
         given(paymentsService.getPendingAndDueScheduledPayments()).willReturn(Collections.singletonList(payment));
 
         // When
@@ -162,23 +168,22 @@ public class AcceptDomesticScheduledPaymentTaskTest {
         assertThat(payment.getStatus()).isEqualTo(ScheduledPaymentStatus.PENDING);
     }
 
-    private FRAccount2 defaultAccount(String payAccount) {
-        return FRAccount2.builder().id(payAccount).build();
+    private FRAccount defaultAccount(String payAccount) {
+        return FRAccount.builder().id(payAccount).build();
     }
 
-    private FRScheduledPayment1 defaultPayment(DateTime scheduledExecution, ScheduledPaymentStatus status) {
-        OBScheduledPayment1 scheduledPayment = new OBScheduledPayment1()
+    private FRScheduledPayment defaultPayment(DateTime scheduledExecution, ScheduledPaymentStatus status) {
+        OBScheduledPayment3 scheduledPayment = new OBScheduledPayment3()
                 .scheduledPaymentDateTime(scheduledExecution)
-                .creditorAccount(new OBCashAccount3().identification(CREDIT_ACCOUNT))
-                .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount()
+                .creditorAccount(new OBCashAccount51().identification(CREDIT_ACCOUNT))
+                .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount1()
                         .amount("3")
                         .currency("GBP"));
-        return FRScheduledPayment1.builder()
+        return FRScheduledPayment.builder()
                 .accountId(DEBIT_ACCOUNT)
                 .status(status)
                 .id("111")
                 .scheduledPayment(scheduledPayment)
                 .build();
     }
-
 }

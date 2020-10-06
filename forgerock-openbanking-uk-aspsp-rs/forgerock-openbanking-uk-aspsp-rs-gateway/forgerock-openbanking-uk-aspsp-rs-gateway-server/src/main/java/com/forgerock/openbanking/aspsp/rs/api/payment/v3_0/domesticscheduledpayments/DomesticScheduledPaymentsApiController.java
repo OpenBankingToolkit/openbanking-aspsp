@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.domesticscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
@@ -42,8 +43,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount1;
 import uk.org.openbanking.datamodel.account.OBExternalScheduleType1Code;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
+import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse1;
 
@@ -52,8 +54,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBCashAccount51;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
@@ -140,10 +141,10 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                             //Modify the status of the payment
                             LOGGER.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
                             FRWriteDomesticScheduledDataInitiation paymentInitiation = paymentConsent.getInitiation();
-                            OBScheduledPayment1 scheduledPayment = new OBScheduledPayment1()
+                            OBScheduledPayment3 scheduledPayment = new OBScheduledPayment3()
                                     .accountId(paymentConsent.getAccountId())
-                                    .creditorAccount(toOBCashAccount3(paymentInitiation.getCreditorAccount()))
-                                    .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(paymentInitiation.getInstructedAmount()))
+                                    .creditorAccount(toOBCashAccount51(paymentInitiation.getCreditorAccount()))
+                                    .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount1(paymentInitiation.getInstructedAmount()))
                                     // Set to EXECUTION because we are creating the creditor payment
                                     .scheduledType(OBExternalScheduleType1Code.EXECUTION)
                                     .scheduledPaymentDateTime(paymentInitiation.getRequestedExecutionDateTime())
@@ -207,6 +208,13 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticScheduledResponse1.class);
                         }
                 );
+    }
+
+    // TODO #296 - convert to FRAmount when ScheduledPaymentService is using FR equivalent of OBScheduledPayment3
+    public static OBActiveOrHistoricCurrencyAndAmount1 toOBActiveOrHistoricCurrencyAndAmount1(FRAmount amount) {
+        return amount == null ? null : new OBActiveOrHistoricCurrencyAndAmount1()
+                .currency(amount.getCurrency())
+                .amount(amount.getAmount());
     }
 
 }

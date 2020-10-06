@@ -23,12 +23,13 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledDataInitiation;
+import com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter;
 import uk.org.openbanking.datamodel.payment.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toFRAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBWriteDomestic2DataInitiationCreditorAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toFRFinancialAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBWriteDomestic2DataInitiationCreditorAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBWriteDomestic2DataInitiationInstructedAmount;
@@ -118,8 +119,8 @@ public class FRWriteDomesticScheduledConsentConverter {
                 .localInstrument(initiation.getLocalInstrument())
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRAccount(initiation.getCreditorAccount()))
+                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
+                .creditorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getCreditorAccount()))
                 .creditorPostalAddress(toFRPostalAddress(initiation.getCreditorPostalAddress()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .build();
@@ -132,8 +133,8 @@ public class FRWriteDomesticScheduledConsentConverter {
                 .localInstrument(initiation.getLocalInstrument())
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRAccount(initiation.getCreditorAccount()))
+                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
+                .creditorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getCreditorAccount()))
                 .creditorPostalAddress(toFRPostalAddress(initiation.getCreditorPostalAddress()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
@@ -147,8 +148,8 @@ public class FRWriteDomesticScheduledConsentConverter {
                 .localInstrument(initiation.getLocalInstrument())
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRAccount(initiation.getCreditorAccount()))
+                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
+                .creditorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getCreditorAccount()))
                 .creditorPostalAddress(toFRPostalAddress(initiation.getCreditorPostalAddress()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))

@@ -22,8 +22,8 @@ package com.forgerock.openbanking.common.services.store.accountrequest;
 
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRAccountRequest1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,15 +69,15 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
                 saveAccountRequest(accountRequest);
                 break;
             case ACCOUNT_ACCESS_CONSENT:
-                saveAccountAccessConsent((FRAccountAccessConsent1) accountRequest);
+                saveAccountAccessConsent((FRAccountAccessConsent) accountRequest);
                 break;
             default:
                 throw new IllegalArgumentException("Consent ID '" + accountRequest.getId() + "' doesn't correspond to an account access");
         }
     }
 
-    private Optional<FRAccountRequest1> getAccountRequest(String accountRequestId) {
-        ParameterizedTypeReference<Optional<FRAccountRequest1>> ptr = new ParameterizedTypeReference<Optional<FRAccountRequest1>>() {};
+    private Optional<FRAccountRequest> getAccountRequest(String accountRequestId) {
+        ParameterizedTypeReference<Optional<FRAccountRequest>> ptr = new ParameterizedTypeReference<Optional<FRAccountRequest>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + "/api/account-requests/" + accountRequestId);
         URI uri = builder.build().encode().toUri();
@@ -85,8 +85,8 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
         return restTemplate.exchange(uri, HttpMethod.GET, null, ptr).getBody();
     }
 
-    private Optional<FRAccountAccessConsent1> getAccountAccessConsent(String consentId) {
-        ParameterizedTypeReference<Optional<FRAccountAccessConsent1>> ptr = new ParameterizedTypeReference<Optional<FRAccountAccessConsent1>>() {};
+    private Optional<FRAccountAccessConsent> getAccountAccessConsent(String consentId) {
+        ParameterizedTypeReference<Optional<FRAccountAccessConsent>> ptr = new ParameterizedTypeReference<Optional<FRAccountAccessConsent>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + "/api/account-access-consents/" + consentId);
         URI uri = builder.build().encode().toUri();
@@ -100,7 +100,7 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
                 request, Void.class);
     }
 
-    private void saveAccountAccessConsent(FRAccountAccessConsent1 accountAccessConsent1) {
+    private void saveAccountAccessConsent(FRAccountAccessConsent accountAccessConsent1) {
         HttpEntity<AccountRequest> request = new HttpEntity<>(accountAccessConsent1, new HttpHeaders());
         try {
             restTemplate.exchange(rsStoreRoot + "/api/account-access-consents/", HttpMethod.PUT,

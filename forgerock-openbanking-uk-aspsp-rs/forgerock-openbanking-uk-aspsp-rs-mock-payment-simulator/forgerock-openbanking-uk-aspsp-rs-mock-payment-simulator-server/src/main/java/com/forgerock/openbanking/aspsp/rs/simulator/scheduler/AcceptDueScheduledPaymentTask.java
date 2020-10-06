@@ -1,6 +1,6 @@
 /**
  * Copyright 2019 ForgeRock AS.
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -8,9 +8,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -22,11 +22,12 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRScheduledPayment1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
@@ -42,17 +43,17 @@ import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
 import uk.org.openbanking.datamodel.account.OBCreditDebitCode1;
 import uk.org.openbanking.datamodel.account.OBEntryStatus1Code;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
+import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 import uk.org.openbanking.datamodel.account.OBTransaction6;
 import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 
 @Slf4j
@@ -78,8 +79,8 @@ public class AcceptDueScheduledPaymentTask {
     public void payDueScheduledPayments() {
         log.info("Scheduled payments payment task waking up. The time is now {}.", format.print(DateTime.now()));
 
-        for (FRScheduledPayment1 scheduledPayment : scheduledPaymentService.getPendingAndDueScheduledPayments()) {
-            OBScheduledPayment1 payment = scheduledPayment.getScheduledPayment();
+        for (FRScheduledPayment scheduledPayment : scheduledPaymentService.getPendingAndDueScheduledPayments()) {
+            OBScheduledPayment3 payment = scheduledPayment.getScheduledPayment();
 
             if (!payment.getScheduledPaymentDateTime().isBefore(DateTime.now())) {
                 log.warn("Scheduled payment: {} with scheduledPaymentDateTime: {} is not due yet and should not have been loaded", scheduledPayment.getId(), payment.getScheduledPaymentDateTime());
@@ -101,13 +102,13 @@ public class AcceptDueScheduledPaymentTask {
             } catch (CurrencyConverterException e) {
                 log.info("Can't convert amount in the right currency", e);
                 log.info("Update payment status to rejected");
-                scheduledPayment.setRejectionReason("Can't convert amount in the right currency: "+e.getMessage());
+                scheduledPayment.setRejectionReason("Can't convert amount in the right currency: " + e.getMessage());
                 scheduledPayment.setStatus(ScheduledPaymentStatus.REJECTED);
                 log.info("Payment {}", payment);
             } catch (Exception e) {
                 log.error("Couldn't pay scheduled payment.", e);
                 log.info("Update payment status to rejected");
-                scheduledPayment.setRejectionReason("Failed to execute payment: "+e.getMessage());
+                scheduledPayment.setRejectionReason("Failed to execute payment: " + e.getMessage());
                 scheduledPayment.setStatus(ScheduledPaymentStatus.REJECTED);
                 log.info("Payment {}", payment);
             } finally {
@@ -119,25 +120,23 @@ public class AcceptDueScheduledPaymentTask {
                 format.print(DateTime.now()));
     }
 
-    private String moveDebitPayment(FRScheduledPayment1 payment) throws CurrencyConverterException {
+    private String moveDebitPayment(FRScheduledPayment payment) throws CurrencyConverterException {
         Account accountFrom = accountStoreService.getAccount(payment.getAccountId());
         log.info("We are going to pay from this account: {}", accountFrom);
-        moneyService.moveMoney(accountFrom, payment.getScheduledPayment().getInstructedAmount(),
-                OBCreditDebitCode.DEBIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountFrom, toFRAmount(payment.getScheduledPayment().getInstructedAmount()), OBCreditDebitCode.DEBIT, payment, this::createTransaction);
 
         String identificationFrom = payment.getScheduledPayment().getCreditorAccount().getIdentification();
         log.debug("Find if the 'to' account '{}' is own by this ASPSP", identificationFrom);
         return identificationFrom;
     }
 
-    private void moveCreditPayment(FRScheduledPayment1 payment, String identificationTo, Account accountFrom) throws CurrencyConverterException {
+    private void moveCreditPayment(FRScheduledPayment payment, String identificationTo, Account accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationTo, accountFrom);
         log.info("Move the money to this account");
-        moneyService.moveMoney(accountFrom, payment.getScheduledPayment().getInstructedAmount(),
-                OBCreditDebitCode.CREDIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountFrom, toFRAmount(payment.getScheduledPayment().getInstructedAmount()), OBCreditDebitCode.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction6 createTransaction(Account account, FRScheduledPayment1 payment, OBCreditDebitCode creditDebitCode, Balance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction createTransaction(Account account, FRScheduledPayment payment, OBCreditDebitCode creditDebitCode, Balance balance, FRAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());
@@ -161,7 +160,7 @@ public class AcceptDueScheduledPaymentTask {
             obTransaction.transactionReference(payment.getScheduledPayment().getReference());
         }
 
-        FRTransaction6 transaction = FRTransaction6.builder()
+        FRTransaction transaction = FRTransaction.builder()
                 .id(transactionId)
                 .bookingDateTime(bookingDate)
                 .accountId(account.getId())

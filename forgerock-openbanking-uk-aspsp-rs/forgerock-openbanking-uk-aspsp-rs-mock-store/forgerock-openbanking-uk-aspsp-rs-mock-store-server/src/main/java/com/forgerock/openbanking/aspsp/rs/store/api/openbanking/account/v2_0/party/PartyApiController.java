@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.party;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party.FRParty2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRParty2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -49,7 +49,7 @@ public class PartyApiController implements PartyApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(PartyApiController.class);
 
     @Autowired
-    private FRParty2Repository frParty2Repository;
+    private FRPartyRepository frPartyRepository;
 
     @Override
     public ResponseEntity<OBReadParty1> getAccountParty(
@@ -86,7 +86,7 @@ public class PartyApiController implements PartyApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Read party for account {} with minimumPermissions {}", accountId, permissions);
-        FRParty2 party = frParty2Repository.byAccountIdWithPermissions(accountId, permissions);
+        FRParty party = frPartyRepository.byAccountIdWithPermissions(accountId, permissions);
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadParty1().data(new OBReadParty1Data().party(
@@ -129,7 +129,7 @@ public class PartyApiController implements PartyApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Reading party from user id {}", userId);
-        FRParty2 party = frParty2Repository.byUserIdWithPermissions(userId, permissions);
+        FRParty party = frPartyRepository.byUserIdWithPermissions(userId, permissions);
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadParty1().data(new OBReadParty1Data().party(

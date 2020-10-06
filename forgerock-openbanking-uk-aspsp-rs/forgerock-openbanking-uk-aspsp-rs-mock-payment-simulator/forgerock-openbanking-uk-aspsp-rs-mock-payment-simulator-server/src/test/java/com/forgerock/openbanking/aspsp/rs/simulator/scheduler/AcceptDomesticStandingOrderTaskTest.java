@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRStandingOrder6;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.account.standingorder.StandingOrderService;
@@ -79,9 +79,9 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void pendingStandingOrder_firstPaymentDue_shouldDebitAccount() throws CurrencyConverterException {
         // Given
-        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.PENDING);
+        FRStandingOrder payment = defaultPayment(StandingOrderStatus.PENDING);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
 
         // When
@@ -95,11 +95,11 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void pendingStandingOrder_firstPaymentDue_shouldCreditAccount() throws CurrencyConverterException {
         // Given
-        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.PENDING);
+        FRStandingOrder payment = defaultPayment(StandingOrderStatus.PENDING);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(defaultAccount(DEBIT_ACCOUNT));
 
-        FRAccount2 account = defaultAccount(CREDIT_ACCOUNT);
+        FRAccount account = defaultAccount(CREDIT_ACCOUNT);
         given(account2StoreService.findAccountByIdentification(CREDIT_ACCOUNT))
                 .willReturn(Optional.of(account));
 
@@ -114,9 +114,9 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void pendingStandingOrder_recurringPaymentDue_shouldDebitAccount() throws CurrencyConverterException {
         // Given
-        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.ACTIVE);
+        FRStandingOrder payment = defaultPayment(StandingOrderStatus.ACTIVE);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
         given(frequencyService.getNextDateTime(any(), any())).willReturn(DateTime.now().minusDays(1));
 
@@ -131,10 +131,10 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void pendingStandingOrder_finalPaymentDue_shouldDebitAccount() throws CurrencyConverterException {
         // Given
-        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.ACTIVE);
+        FRStandingOrder payment = defaultPayment(StandingOrderStatus.ACTIVE);
         payment.getStandingOrder().setNextPaymentDateTime(payment.getStandingOrder().getFinalPaymentDateTime());
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
 
         // When
@@ -160,9 +160,9 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void shouldRejectPaymentWhenCurrencyConversionException() throws CurrencyConverterException {
         // Given
-        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.PENDING);
+        FRStandingOrder payment = defaultPayment(StandingOrderStatus.PENDING);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
         doThrow(new CurrencyConverterException("Simulated failure")).when(moneyService).moveMoney(any(), any(), any(), any(), any());
 
@@ -178,9 +178,9 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void shouldRejectPaymentWhenAnyException() throws CurrencyConverterException {
         // Given
-        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.PENDING);
+        FRStandingOrder payment = defaultPayment(StandingOrderStatus.PENDING);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
-        FRAccount2 account = defaultAccount(DEBIT_ACCOUNT);
+        FRAccount account = defaultAccount(DEBIT_ACCOUNT);
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(account);
         doThrow(new RuntimeException("Simulated failure")).when(moneyService).moveMoney(any(), any(), any(), any(), any());
 
@@ -196,7 +196,7 @@ public class AcceptDomesticStandingOrderTaskTest {
     @Test
     public void scheduledPayment_ignoreIfInactive() {
         // Given
-        FRStandingOrder6 payment = defaultPayment(StandingOrderStatus.PENDING);
+        FRStandingOrder payment = defaultPayment(StandingOrderStatus.PENDING);
         payment.getStandingOrder().setStandingOrderStatusCode(OBExternalStandingOrderStatus1Code.INACTIVE);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
 
@@ -207,11 +207,11 @@ public class AcceptDomesticStandingOrderTaskTest {
         verifyZeroInteractions(moneyService);
     }
 
-    private FRAccount2 defaultAccount(String payAccount) {
-        return FRAccount2.builder().id(payAccount).build();
+    private FRAccount defaultAccount(String payAccount) {
+        return FRAccount.builder().id(payAccount).build();
     }
 
-    private FRStandingOrder6 defaultPayment(StandingOrderStatus status) {
+    private FRStandingOrder defaultPayment(StandingOrderStatus status) {
 
         OBStandingOrder6 standingOrder = new OBStandingOrder6()
                 .creditorAccount(new OBCashAccount51().identification(CREDIT_ACCOUNT))
@@ -224,7 +224,7 @@ public class AcceptDomesticStandingOrderTaskTest {
                 .frequency("EvryDay")
                 .standingOrderStatusCode(OBExternalStandingOrderStatus1Code.ACTIVE)
                 .reference("test");
-        return FRStandingOrder6.builder()
+        return FRStandingOrder.builder()
                 .accountId(DEBIT_ACCOUNT)
                 .status(status)
                 .id("111")

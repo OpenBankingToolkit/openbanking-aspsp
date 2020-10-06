@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.scheduledpayment;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.scheduledpayments.FRScheduledPayment4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRScheduledPayment4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -40,28 +40,28 @@ import java.util.Optional;
 @Slf4j
 public class ScheduledPaymentApiController implements ScheduledPaymentApi {
 
-    private FRScheduledPayment4Repository scheduledPaymentRepository;
+    private FRScheduledPaymentRepository scheduledPaymentRepository;
 
     @Autowired
-    public ScheduledPaymentApiController(FRScheduledPayment4Repository scheduledPaymentRepository) {
+    public ScheduledPaymentApiController(FRScheduledPaymentRepository scheduledPaymentRepository) {
         this.scheduledPaymentRepository = scheduledPaymentRepository;
     }
 
-    public ResponseEntity<FRScheduledPayment4> create(
-            @RequestBody FRScheduledPayment4 scheduledPayment
+    public ResponseEntity<FRScheduledPayment> create(
+            @RequestBody FRScheduledPayment scheduledPayment
     ) {
         log.debug("Create scheduled payment {}", scheduledPayment);
         return new ResponseEntity<>(scheduledPaymentRepository.save(scheduledPayment), HttpStatus.CREATED);
     }
 
     public ResponseEntity update(
-            @RequestBody FRScheduledPayment4 scheduledPayment,
+            @RequestBody FRScheduledPayment scheduledPayment,
             @PathVariable("id") String id
     ) {
         Preconditions.checkArgument(id.equals(scheduledPayment.getId()), "id in URL does not match id in provided update");
         log.debug("Update scheduled payment {}", scheduledPayment);
 
-        Optional<FRScheduledPayment4> byId = scheduledPaymentRepository.findById(id);
+        Optional<FRScheduledPayment> byId = scheduledPaymentRepository.findById(id);
         if (byId.isPresent()) {
             scheduledPayment.setId(id);
             return ResponseEntity.ok(scheduledPaymentRepository.save(scheduledPayment));
@@ -73,7 +73,7 @@ public class ScheduledPaymentApiController implements ScheduledPaymentApi {
     }
 
     @Override
-    public ResponseEntity<List<FRScheduledPayment4>> getAll(ScheduledPaymentStatus status, DateTime toDateTime) {
+    public ResponseEntity<List<FRScheduledPayment>> getAll(ScheduledPaymentStatus status, DateTime toDateTime) {
         log.debug("Find FR Scheduled Payment by status {} and before date/time: {}", status, toDateTime);
         return ResponseEntity.ok(scheduledPaymentRepository.findByStatus(status, toDateTime));
     }

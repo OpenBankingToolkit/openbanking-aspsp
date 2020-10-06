@@ -21,11 +21,11 @@
 package com.forgerock.openbanking.common.conf.discovery;
 
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmation1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,15 +50,15 @@ public class ResourceLinkService {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getPayments()), payment.getId());
     }
 
-    public Links toSelfLink(FRFundsConfirmationConsent1 fundsConfirmation, Function<DiscoveryConfigurationProperties.FundsConfirmationApis, String> getUrl) {
+    public Links toSelfLink(FRFundsConfirmationConsent fundsConfirmation, Function<DiscoveryConfigurationProperties.FundsConfirmationApis, String> getUrl) {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getFundsConfirmations()), fundsConfirmation.getId());
     }
 
-    public Links toSelfLink(FRFundsConfirmation1 fundsConfirmation, Function<DiscoveryConfigurationProperties.FundsConfirmationApis, String> getUrl) {
+    public Links toSelfLink(FRFundsConfirmation fundsConfirmation, Function<DiscoveryConfigurationProperties.FundsConfirmationApis, String> getUrl) {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getFundsConfirmations()), fundsConfirmation.getId());
     }
 
-    public Links toSelfLink(FREventSubscription1 event, Function<DiscoveryConfigurationProperties.EventNotificationApis, String> getUrl) {
+    public Links toSelfLink(FREventSubscription event, Function<DiscoveryConfigurationProperties.EventNotificationApis, String> getUrl) {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getEventNotifications()), event.getId());
     }
 
@@ -66,7 +66,7 @@ public class ResourceLinkService {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getEventNotifications()));
     }
 
-    public Links toSelfLink(FRCallbackUrl1 callback, Function<DiscoveryConfigurationProperties.EventNotificationApis, String> getUrl) {
+    public Links toSelfLink(FRCallbackUrl callback, Function<DiscoveryConfigurationProperties.EventNotificationApis, String> getUrl) {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getEventNotifications()), callback.getId());
     }
 

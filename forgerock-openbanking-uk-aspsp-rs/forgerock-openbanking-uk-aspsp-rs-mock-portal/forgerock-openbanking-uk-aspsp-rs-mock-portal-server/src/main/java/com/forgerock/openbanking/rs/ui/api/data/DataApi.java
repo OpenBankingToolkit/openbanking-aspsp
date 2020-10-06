@@ -20,9 +20,14 @@
  */
 package com.forgerock.openbanking.rs.ui.api.data;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.data.FRUserData3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRUserData;
 import com.forgerock.openbanking.exceptions.OBErrorException;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,14 +59,14 @@ public interface DataApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET
     )
-    ResponseEntity<FRUserData3> hasData(
+    ResponseEntity<FRUserData> hasData(
             Principal principal
     );
 
     @ApiOperation(
             value = "Export User Data",
             notes = "Export the user financial data as OB format",
-            response = FRUserData3.class,
+            response = FRUserData.class,
             authorizations = {
                     @Authorization(value = "SSOToken")
             },
@@ -69,14 +74,14 @@ public interface DataApi {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Export the user financial data",
-                    response = FRUserData3.class),
+                    response = FRUserData.class),
     })
     @RequestMapping(
             value = "/user",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET
     )
-    ResponseEntity<FRUserData3> exportUserData(
+    ResponseEntity<FRUserData> exportUserData(
             Principal principal
     );
 
@@ -86,7 +91,7 @@ public interface DataApi {
             value = "Import User Data",
             notes = "This import method will update the existing data, it will not erase the previous data. You are also in" +
                     " charge of importing consistent data ;)",
-            response = FRUserData3.class,
+            response = FRUserData.class,
             authorizations = {
                     @Authorization(value = "SSOToken")
             },
@@ -94,7 +99,7 @@ public interface DataApi {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User financial data updated with success",
-                    response = FRUserData3.class),
+                    response = FRUserData.class),
     })
     @PreAuthorize("hasAuthority('ROLE_DATA')")
 
@@ -104,9 +109,9 @@ public interface DataApi {
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT
     )
-    ResponseEntity<FRUserData3> updateUserData(
+    ResponseEntity<FRUserData> updateUserData(
             @ApiParam(value = "User financial data", required = true)
-            @RequestBody FRUserData3 userData,
+            @RequestBody FRUserData userData,
 
             Principal principal
     ) throws OBErrorException;
@@ -115,7 +120,7 @@ public interface DataApi {
     @ApiOperation(
             value = "Import User Data",
             notes = "This import method will create new objects. Meaning it would ignore the ID you may have set and create the new object. Therefore, you may want to delete your data first",
-            response = FRUserData3.class,
+            response = FRUserData.class,
             authorizations = {
                     @Authorization(value = "SSOToken")
             },
@@ -123,7 +128,7 @@ public interface DataApi {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 201, message = "User financial data created with success",
-                    response = FRUserData3.class),
+                    response = FRUserData.class),
     })
 
     @PreAuthorize("hasAuthority('ROLE_DATA')")
@@ -133,9 +138,9 @@ public interface DataApi {
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.POST
     )
-    ResponseEntity<FRUserData3> createUserData(
+    ResponseEntity<FRUserData> createUserData(
             @ApiParam(value = "User financial data", required = true)
-            @RequestBody FRUserData3 userData,
+            @RequestBody FRUserData userData,
 
             Principal principal
     ) throws OBErrorException;
@@ -144,7 +149,7 @@ public interface DataApi {
     @ApiOperation(
             value = "Import User Data",
             notes = "This import method will delete all the financial data associated with this user",
-            response = FRUserData3.class,
+            response = FRUserData.class,
             authorizations = {
                     @Authorization(value = "SSOToken")
             },
@@ -152,7 +157,7 @@ public interface DataApi {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User financial data deleted with success",
-                    response = FRUserData3.class),
+                    response = FRUserData.class),
     })
     @PreAuthorize("hasRole('ROLE_DATA')")
     @RequestMapping(
@@ -166,7 +171,7 @@ public interface DataApi {
     @ApiOperation(
             value = "Generate new financial Data",
             notes = "This endpoint will delete all the previous data and generate randomly sample data",
-            response = FRUserData3.class,
+            response = FRUserData.class,
             authorizations = {
                     @Authorization(value = "SSOToken")
             },
@@ -174,7 +179,7 @@ public interface DataApi {
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "User financial data generated with success",
-                    response = FRUserData3.class),
+                    response = FRUserData.class),
     })
     @PreAuthorize("hasRole('ROLE_DATA')")
     @RequestMapping(

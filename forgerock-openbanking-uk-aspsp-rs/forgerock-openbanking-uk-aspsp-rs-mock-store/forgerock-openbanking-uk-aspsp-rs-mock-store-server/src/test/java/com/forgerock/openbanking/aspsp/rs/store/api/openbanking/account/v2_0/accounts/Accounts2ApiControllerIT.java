@@ -21,9 +21,9 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -52,7 +52,7 @@ public class Accounts2ApiControllerIT {
     private int port;
 
     @Autowired
-    private FRAccount4Repository frAccountRepository;
+    private FRAccountRepository frAccountRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -69,7 +69,7 @@ public class Accounts2ApiControllerIT {
     public void testGetAnAccount() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
-        FRAccount4 account = JMockData.mock(FRAccount4.class);
+        FRAccount account = JMockData.mock(FRAccount.class);
         frAccountRepository.save(account);
 
         // When

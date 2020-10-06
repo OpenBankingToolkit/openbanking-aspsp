@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.transaction;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions.FRTransaction6Repository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +35,11 @@ public class TransactionApiController implements TransactionApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionApiController.class);
 
     @Autowired
-    private FRTransaction6Repository transactionRepository;
+    private FRTransactionRepository transactionRepository;
 
     @Override
-    public ResponseEntity<FRTransaction6> create(
-            @RequestBody FRTransaction6 transaction
+    public ResponseEntity<FRTransaction> create(
+            @RequestBody FRTransaction transaction
     ) {
         LOGGER.debug("Create transaction {}", transaction);
         return new ResponseEntity<>(transactionRepository.save(transaction), HttpStatus.OK);

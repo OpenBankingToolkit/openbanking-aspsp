@@ -36,6 +36,7 @@ public interface AccountRequest {
 
     String getAispName();
 
+    // TODO 296 - change references of OBExternalPermissions1Code to FR equivalent?
     List<OBExternalPermissions1Code> getPermissions();
 
     DateTime getExpirationDateTime();

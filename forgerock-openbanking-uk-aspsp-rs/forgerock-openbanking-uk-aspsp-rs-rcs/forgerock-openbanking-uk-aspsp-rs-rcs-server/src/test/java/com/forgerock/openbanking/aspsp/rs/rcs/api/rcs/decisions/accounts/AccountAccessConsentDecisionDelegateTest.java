@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -43,13 +43,13 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDelegateTest {
     private AccountRequestStoreService accountRequestStoreService;
-    private FRAccountAccessConsent1 consent;
+    private FRAccountAccessConsent consent;
     private AccountAccessConsentDecisionDelegate decisionDelegate;
 
     @Before
     public void setup() {
         accountRequestStoreService = mock(AccountRequestStoreService.class);
-        consent = new FRAccountAccessConsent1();
+        consent = new FRAccountAccessConsent();
         consent.setId(CONSENT_ID);
         consent.setAispId(PISP_ID);
         consent.setUserId(USER_ID);

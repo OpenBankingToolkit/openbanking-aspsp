@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.accountaccessconse
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.accounts.accountaccessconsents.FRAccountAccessConsent1Repository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +46,8 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
     private ConsentMetricService consentMetricService;
 
     @Override
-    public ResponseEntity<FRAccountAccessConsent1> save(
-            @RequestBody FRAccountAccessConsent1 accountAccessConsent1
+    public ResponseEntity<FRAccountAccessConsent> save(
+            @RequestBody FRAccountAccessConsent accountAccessConsent1
     ) {
         LOGGER.debug("Create an account access consent {}", accountAccessConsent1);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(accountAccessConsent1.getConsentId(), accountAccessConsent1.getStatus().name()));
@@ -59,7 +59,7 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
             @PathVariable("consentId") String consentId
     ) {
         LOGGER.debug("get an account access consent {}", consentId);
-        Optional<FRAccountAccessConsent1> isConsent = accountAccessConsent1Repository.findById(consentId);
+        Optional<FRAccountAccessConsent> isConsent = accountAccessConsent1Repository.findById(consentId);
         if (isConsent.isPresent()) {
             return ResponseEntity.ok(isConsent.get());
 

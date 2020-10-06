@@ -23,6 +23,7 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
+import com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter;
 import uk.org.openbanking.datamodel.payment.OBFile1;
 import uk.org.openbanking.datamodel.payment.OBFile2;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsent1;
@@ -33,9 +34,9 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toFRAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toFRFinancialAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toFRDataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toFRDataSCASupportData;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.toFRRemittanceInformation;
@@ -96,7 +97,7 @@ public class FRWriteFileConsentConverter {
                 .controlSum(initiation.getControlSum())
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .localInstrument(initiation.getLocalInstrument())
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
+                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .build();
     }
@@ -110,7 +111,7 @@ public class FRWriteFileConsentConverter {
                 .controlSum(initiation.getControlSum())
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .localInstrument(initiation.getLocalInstrument())
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
+                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
@@ -125,7 +126,7 @@ public class FRWriteFileConsentConverter {
                 .controlSum(initiation.getControlSum())
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .localInstrument(initiation.getLocalInstrument())
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
+                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();

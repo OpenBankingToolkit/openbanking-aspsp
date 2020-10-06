@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.products;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.products.FRProduct2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.products.FRProductRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRProduct2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRProduct;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -54,7 +54,7 @@ public class ProductsApiController implements ProductsApi {
     @Value("${rs.page.default.products.size}")
     private int PAGE_LIMIT_PRODUCTS;
     @Autowired
-    private FRProduct2Repository frProduct2Repository;
+    private FRProductRepository frProductRepository;
 
     @Override
     public ResponseEntity<OBReadProduct2> getAccountProduct(
@@ -87,7 +87,7 @@ public class ProductsApiController implements ProductsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Read product for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FRProduct2> products = frProduct2Repository.byAccountIdWithPermissions(accountId, permissions,
+        Page<FRProduct> products = frProductRepository.byAccountIdWithPermissions(accountId, permissions,
                 PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
 
         int totalPage = products.getTotalPages();
@@ -135,7 +135,7 @@ public class ProductsApiController implements ProductsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Reading products from account ids {}", accountIds);
-        Page<FRProduct2> products = frProduct2Repository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRProduct> products = frProductRepository.byAccountIdInWithPermissions(accountIds, permissions,
                 PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
 
         int totalPage = products.getTotalPages();

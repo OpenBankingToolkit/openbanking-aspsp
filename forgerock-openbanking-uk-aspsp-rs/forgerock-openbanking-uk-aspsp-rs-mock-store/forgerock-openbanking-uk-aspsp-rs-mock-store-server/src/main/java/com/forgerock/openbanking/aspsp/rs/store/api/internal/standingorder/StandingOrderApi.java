@@ -25,7 +25,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.standingorder;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRStandingOrder6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,22 +41,22 @@ public interface StandingOrderApi {
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<FRStandingOrder6> create(
-            @RequestBody FRStandingOrder6 standingOrder
+    ResponseEntity<FRStandingOrder> create(
+            @RequestBody FRStandingOrder standingOrder
     );
 
     @RequestMapping(value = "/{id}",
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT)
-    ResponseEntity<FRStandingOrder6> update(
-            @RequestBody FRStandingOrder6 standingOrder,
+    ResponseEntity<FRStandingOrder> update(
+            @RequestBody FRStandingOrder standingOrder,
             @PathVariable("id") String id
     );
 
     @RequestMapping(value = "/search/active",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<List<FRStandingOrder6>> getActive();
+    ResponseEntity<List<FRStandingOrder>> getActive();
 
 }

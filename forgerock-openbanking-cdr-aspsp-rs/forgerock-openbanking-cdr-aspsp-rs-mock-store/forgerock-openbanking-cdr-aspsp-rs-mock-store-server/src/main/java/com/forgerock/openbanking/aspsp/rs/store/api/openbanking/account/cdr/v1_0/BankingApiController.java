@@ -21,11 +21,11 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.cdr.v1_0;
 
 import com.forgerock.openbanking.aspsp.rs.model.v0_9.*;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalance1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.accounts.FRAccount3Repository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.transactions.FRTransaction5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtilCdr;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRAccount3;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRTransaction5;
 import lombok.extern.slf4j.Slf4j;
@@ -224,12 +224,12 @@ public class BankingApiController implements BankingApi {
             @RequestHeader(value = "x-ob-url", required = false) String httpUrl) {
 
         log.info("Read balances for account  {} with minimumPermissions {}", accountId, permissions);
-        Page<FRBalance1> balances = frBalance1Repository.findByAccountId(accountId, PageRequest.of(0, PAGE_LIMIT_BALANCES));
+        Page<FRBalance> balances = frBalance1Repository.findByAccountId(accountId, PageRequest.of(0, PAGE_LIMIT_BALANCES));
         int totalPage = balances.getTotalPages();
         BankingBalance bankingBalance = new BankingBalance()
                 .accountId(accountId);
 
-        Optional<FRBalance1> currentBalance = balances.get().filter(b -> b.getBalance().getType() == INTERIMAVAILABLE).findFirst();
+        Optional<FRBalance> currentBalance = balances.get().filter(b -> b.getBalance().getType() == INTERIMAVAILABLE).findFirst();
         if (currentBalance.isPresent()) {
             bankingBalance.currentBalance(currentBalance.get().getBalance().getAmount().getAmount());
             bankingBalance.availableBalance(currentBalance.get().getBalance().getAmount().getAmount());

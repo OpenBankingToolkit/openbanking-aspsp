@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.AccountConsentDecision;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
@@ -70,7 +70,7 @@ class AccountAccessConsentDecisionDelegate implements ConsentDecisionDelegate {
         AccountConsentDecision accountConsentDecision = objectMapper.readValue(consentDecisionSerialised, AccountConsentDecision.class);
 
         if (decision) {
-            List<FRAccount2> accounts = accountsService.get(accountRequest.getUserId());
+            List<FRAccount> accounts = accountsService.get(accountRequest.getUserId());
             List<String> accountsId = accounts.stream().map(Account::getId).collect(Collectors.toList());
             if (!accountsId.containsAll(accountConsentDecision.getSharedAccounts())) {
                 log.error("The PSU {} is trying to share an account '{}' he doesn't own. List of his accounts '{}'",
@@ -91,9 +91,9 @@ class AccountAccessConsentDecisionDelegate implements ConsentDecisionDelegate {
     }
 
     @Override
-    public void autoaccept(List<FRAccount2> accounts, String username) {
+    public void autoaccept(List<FRAccount> accounts, String username) {
         accountRequest.setUserId(username);
-        accountRequest.setAccountIds(accounts.stream().map(FRAccount2::getId).collect(Collectors.toList()));
+        accountRequest.setAccountIds(accounts.stream().map(FRAccount::getId).collect(Collectors.toList()));
         accountRequest.setStatus(OBExternalRequestStatus1Code.AUTHORISED);
         accountRequestStoreService.save(accountRequest);
     }

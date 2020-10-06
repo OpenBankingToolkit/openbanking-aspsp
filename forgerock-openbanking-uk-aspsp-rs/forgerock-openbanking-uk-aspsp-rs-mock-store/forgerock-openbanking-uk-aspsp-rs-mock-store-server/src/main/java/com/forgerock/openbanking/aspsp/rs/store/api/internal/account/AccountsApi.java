@@ -26,7 +26,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,7 +50,7 @@ public interface AccountsApi {
     @RequestMapping(value = "/permissions/{accountId}",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<FRAccount4> findByAccountId(
+    ResponseEntity<FRAccount> findByAccountId(
             @PathVariable("accountId") String accountId,
             @RequestParam("permissions") List<String> permissions
     );
@@ -58,14 +58,14 @@ public interface AccountsApi {
     @RequestMapping(value = "/search/findByIdentification",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<Optional<FRAccount4>> findByIdentification(
+    ResponseEntity<Optional<FRAccount>> findByIdentification(
             @RequestParam("identification") String identification
     );
 
     @RequestMapping(value = "/{accountId}",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<FRAccount4> getAccount(
+    ResponseEntity<FRAccount> getAccount(
             @PathVariable("accountId") String accountId
     );
 }

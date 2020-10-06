@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.balances;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -53,7 +53,7 @@ public class BalancesApiController implements BalancesApi {
     @Value("${rs.page.default.balances.size}")
     private int PAGE_LIMIT_BALANCES;
     @Autowired
-    private FRBalance1Repository frBalance1Repository;
+    private FRBalanceRepository frBalanceRepository;
 
     @Override
     public ResponseEntity<OBReadBalance1> getAccountBalances(
@@ -80,12 +80,12 @@ public class BalancesApiController implements BalancesApi {
 
     ) {
         LOGGER.info("Read balances for account  {} with minimumPermissions {}", accountId, permissions);
-        Page<FRBalance1> balances = frBalance1Repository.findByAccountId(accountId, PageRequest.of(page, PAGE_LIMIT_BALANCES));
+        Page<FRBalance> balances = frBalanceRepository.findByAccountId(accountId, PageRequest.of(page, PAGE_LIMIT_BALANCES));
         int totalPage = balances.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBalance1()
                 .data(new OBReadBalance1Data().balance(balances.getContent().stream()
-                        .map(FRBalance1::getBalance).collect(Collectors.toList())))
+                        .map(FRBalance::getBalance).collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }
@@ -116,13 +116,13 @@ public class BalancesApiController implements BalancesApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Reading balances from account ids {}", accountIds);
-        Page<FRBalance1> balances = frBalance1Repository.findByAccountIdIn(accountIds, PageRequest.of(page, PAGE_LIMIT_BALANCES));
+        Page<FRBalance> balances = frBalanceRepository.findByAccountIdIn(accountIds, PageRequest.of(page, PAGE_LIMIT_BALANCES));
 
         int totalPage = balances.getTotalPages();
 
         return ResponseEntity.ok(new OBReadBalance1()
                 .data(new OBReadBalance1Data().balance(balances.getContent().stream()
-                        .map(FRBalance1::getBalance).collect(Collectors.toList())))
+                        .map(FRBalance::getBalance).collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }

@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_1;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.CallbackUrlsRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 

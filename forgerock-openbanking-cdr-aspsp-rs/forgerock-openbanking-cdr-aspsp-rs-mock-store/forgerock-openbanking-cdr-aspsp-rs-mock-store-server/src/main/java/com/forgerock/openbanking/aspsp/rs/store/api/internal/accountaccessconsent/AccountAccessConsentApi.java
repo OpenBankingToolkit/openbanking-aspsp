@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.accountaccessconsent;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,8 +33,8 @@ public interface AccountAccessConsentApi {
     @RequestMapping(value = "/",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT)
-    ResponseEntity<FRAccountAccessConsent1> save(
-            @RequestBody FRAccountAccessConsent1 accountAccessConsent1
+    ResponseEntity<FRAccountAccessConsent> save(
+            @RequestBody FRAccountAccessConsent accountAccessConsent1
     );
 
 

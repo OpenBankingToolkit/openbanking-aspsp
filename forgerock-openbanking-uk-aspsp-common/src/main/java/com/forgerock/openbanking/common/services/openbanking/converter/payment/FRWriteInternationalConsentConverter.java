@@ -23,13 +23,14 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalDataInitiation;
+import com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.payment.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toFRAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBWriteDomestic2DataInitiationCreditorAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toFRFinancialAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBWriteDomestic2DataInitiationCreditorAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBWriteDomestic2DataInitiationInstructedAmount;
@@ -128,10 +129,10 @@ public class FRWriteInternationalConsentConverter {
                 .destinationCountryCode(determineCountryCode(creditorAccount.getSchemeName(), creditorAccount.getIdentification())) // default value to prevent validation error
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
                 .exchangeRateInformation(toFRExchangeRateInformation(initiation.getExchangeRateInformation()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
+                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
                 .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
                 .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRAccount(creditorAccount))
+                .creditorAccount(FRFinancialAccountConverter.toFRFinancialAccount(creditorAccount))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .build();
     }
@@ -149,10 +150,10 @@ public class FRWriteInternationalConsentConverter {
                 .destinationCountryCode(determineCountryCode(creditorAccount.getSchemeName(), creditorAccount.getIdentification())) // default value to prevent validation error
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
                 .exchangeRateInformation(toFRExchangeRateInformation(initiation.getExchangeRateInformation()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
+                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
                 .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
                 .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRAccount(creditorAccount))
+                .creditorAccount(FRFinancialAccountConverter.toFRFinancialAccount(creditorAccount))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
@@ -171,10 +172,10 @@ public class FRWriteInternationalConsentConverter {
                 .destinationCountryCode(initiation.getDestinationCountryCode())
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
                 .exchangeRateInformation(toFRExchangeRateInformation(initiation.getExchangeRateInformation()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
+                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
                 .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
                 .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRAccount(initiation.getCreditorAccount()))
+                .creditorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getCreditorAccount()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();

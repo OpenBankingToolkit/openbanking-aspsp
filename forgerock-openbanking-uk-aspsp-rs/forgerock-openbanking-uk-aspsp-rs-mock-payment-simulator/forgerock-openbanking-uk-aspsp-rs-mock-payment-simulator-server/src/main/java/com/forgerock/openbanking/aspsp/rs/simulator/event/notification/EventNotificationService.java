@@ -26,9 +26,9 @@ import com.forgerock.openbanking.analytics.services.CallBackCountersKPIService;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.store.AggregatedPollingService;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.store.CallbackUrlsService;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.store.EventSubscriptionService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.v3_0.FREventNotification;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import com.forgerock.openbanking.common.services.notification.EventSubject;
 import com.forgerock.openbanking.common.services.notification.EventType;
 import com.forgerock.openbanking.model.Tpp;
@@ -76,7 +76,7 @@ public class EventNotificationService {
         log.debug("Built an event notification with signed jwt: {}", eventNotification);
 
         // Check event subscription exists
-        Optional<FREventSubscription1> eventSubscriptions = eventSubscriptionService.findByTppId(tpp.getId())
+        Optional<FREventSubscription> eventSubscriptions = eventSubscriptionService.findByTppId(tpp.getId())
                 .stream().findFirst();
         if (eventSubscriptions.isPresent()) {
             // Event subscription exists to use this to notify
@@ -87,7 +87,7 @@ public class EventNotificationService {
         }
     }
 
-    private void notifyToEventSubscription(Tpp tpp, FREventSubscription1 eventSubscription, FREventNotification eventNotification, EventSubject eventSubject, EventType eventType) {
+    private void notifyToEventSubscription(Tpp tpp, FREventSubscription eventSubscription, FREventNotification eventNotification, EventSubject eventSubject, EventType eventType) {
         log.debug("Found event subscription {} for the PISP Id: {}", eventSubscription, tpp.getId());
         OBEventSubscription1Data eventSubscription1Data = eventSubscription.getObEventSubscription1().getData();
         List<String> eventTypesForTpp = eventSubscription1Data.getEventTypes();
@@ -120,7 +120,7 @@ public class EventNotificationService {
      */
     private void notifyToLegacyCallbackUrl(Tpp tpp, FREventNotification eventNotification, EventSubject eventSubject, EventType eventType) throws CallbackFailedException {
         // Fall back to legacy callback
-        final Optional<FRCallbackUrl1> isCallbackUrl = callbackUrlsService.findByTppId(tpp.getId())
+        final Optional<FRCallbackUrl> isCallbackUrl = callbackUrlsService.findByTppId(tpp.getId())
                 .stream().findFirst();
         if (isCallbackUrl.isPresent() && EventType.RESOURCE_UPDATE_EVENT == eventType) {
             log.debug("Found callback URL: {} for the PISP Id: {}", isCallbackUrl.get(), tpp.getId());

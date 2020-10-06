@@ -21,9 +21,9 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.eventsubscription;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events.EventSubscriptionsRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.EventSubscriptionsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
 import com.forgerock.openbanking.common.services.openbanking.event.EventValidationService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
@@ -96,7 +96,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         }
 
         // Check if an event already exists for this TPP
-        final Collection<FREventSubscription1> byClientId = eventSubscriptionsRepository.findByTppId(isTpp.get().getId());
+        final Collection<FREventSubscription> byClientId = eventSubscriptionsRepository.findByTppId(isTpp.get().getId());
         if (!byClientId.isEmpty()) {
             log.debug("An event subscription already exists for this TPP client id: '{}' for the version: {}", clientId, byClientId.stream().findFirst().get());
             throw new OBErrorResponseException(
@@ -107,16 +107,16 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         }
 
         // Persist the event subscription
-        FREventSubscription1 frEventSubscription1 = FREventSubscription1.builder()
+        FREventSubscription frEventSubscription = FREventSubscription.builder()
                 .id(UUID.randomUUID().toString())
                 .tppId(isTpp.get().getId())
                 .obEventSubscription1(obEventSubscription)
                 .build();
-        eventSubscriptionsRepository.save(frEventSubscription1);
+        eventSubscriptionsRepository.save(frEventSubscription);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(packageResponse(frEventSubscription1));
+                .body(packageResponse(frEventSubscription));
     }
 
     public ResponseEntity<OBEventSubscriptionsResponse1> readEventSubscription(
@@ -179,9 +179,9 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
                         .eventTypes(obEventSubscriptionParam.getData().getEventTypes())
                         .version(obEventSubscriptionParam.getData().getVersion())
                 );
-        final Optional<FREventSubscription1> byId = eventSubscriptionsRepository.findById(eventSubscriptionId);
+        final Optional<FREventSubscription> byId = eventSubscriptionsRepository.findById(eventSubscriptionId);
         if (byId.isPresent()) {
-            FREventSubscription1 existingEventSubscription = byId.get();
+            FREventSubscription existingEventSubscription = byId.get();
             EventValidationService.checkEqualOrNewerVersion(existingEventSubscription.getObEventSubscription1(), updatedSubscription);
 
             existingEventSubscription.setObEventSubscription1(updatedSubscription);
@@ -214,7 +214,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        final Optional<FREventSubscription1> byId = eventSubscriptionsRepository.findById(eventSubscriptionId);
+        final Optional<FREventSubscription> byId = eventSubscriptionsRepository.findById(eventSubscriptionId);
         if (byId.isPresent()) {
             log.debug("Deleting event subscriptions URL: {}", byId.get());
             eventSubscriptionsRepository.deleteById(eventSubscriptionId);
@@ -228,7 +228,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         }
     }
 
-    private OBEventSubscriptionsResponse1 packageResponse(Collection<FREventSubscription1> eventSubs) {
+    private OBEventSubscriptionsResponse1 packageResponse(Collection<FREventSubscription> eventSubs) {
         List<OBEventSubscriptionsResponse1DataEventSubscription> eventSubsByClient = eventSubs.stream()
                 .map(e -> new OBEventSubscriptionsResponse1DataEventSubscription()
                         .callbackUrl(e.getObEventSubscription1().getData().getCallbackUrl())
@@ -251,16 +251,16 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         }
     }
 
-    private OBEventSubscriptionResponse1 packageResponse(FREventSubscription1 frEventSubscription1) {
-        OBEventSubscription1Data obEventSubs = frEventSubscription1.getObEventSubscription1().getData();
+    private OBEventSubscriptionResponse1 packageResponse(FREventSubscription frEventSubscription) {
+        OBEventSubscription1Data obEventSubs = frEventSubscription.getObEventSubscription1().getData();
         return new OBEventSubscriptionResponse1()
                 .data(new OBEventSubscriptionResponse1Data()
                         .callbackUrl(obEventSubs.getCallbackUrl())
-                        .eventSubscriptionId(frEventSubscription1.getId())
+                        .eventSubscriptionId(frEventSubscription.getId())
                         .eventTypes(obEventSubs.getEventTypes())
                         .version(obEventSubs.getVersion())
                 )
-                .links(resourceLinkService.toSelfLink(frEventSubscription1, discovery -> discovery.getV_3_1_2().getGetCallbackUrls()))
+                .links(resourceLinkService.toSelfLink(frEventSubscription, discovery -> discovery.getV_3_1_2().getGetCallbackUrls()))
                 .meta(new Meta());
     }
 }

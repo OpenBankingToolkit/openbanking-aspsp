@@ -20,29 +20,32 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRTransaction5;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBCreditDebitCode1;
+import uk.org.openbanking.datamodel.account.OBTransaction5;
+import uk.org.openbanking.datamodel.account.OBTransaction5ProprietaryBankTransactionCode;
+import uk.org.openbanking.datamodel.account.OBTransaction6;
+import uk.org.openbanking.datamodel.account.OBTransactionMutability1Code;
+import uk.org.openbanking.datamodel.account.ProprietaryBankTransactionCodeStructure1;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount10;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification61;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification62;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount10;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount60;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount61;
 
 public class FRTransactionConverter {
 
-    public static FRTransaction6 toFRTransaction6(FRTransaction5 frTransaction5) {
-        return frTransaction5 == null ? null : FRTransaction6.builder()
-                .id(frTransaction5.getId())
-                .accountId(frTransaction5.getAccountId())
-                .statementIds(frTransaction5.getStatementIds())
-                .transaction(toOBTransaction6(frTransaction5.getTransaction()))
-                .created(frTransaction5.getCreated())
-                .updated(frTransaction5.getUpdated())
-                .build();
-    }
+//    public static FRTransaction toFRTransaction6(FRTransaction5 frTransaction5) {
+//        return frTransaction5 == null ? null : FRTransaction.builder()
+//                .id(frTransaction5.getId())
+//                .accountId(frTransaction5.getAccountId())
+//                .statementIds(frTransaction5.getStatementIds())
+//                .transaction(toOBTransaction6(frTransaction5.getTransaction()))
+//                .created(frTransaction5.getCreated())
+//                .updated(frTransaction5.getUpdated())
+//                .build();
+//    }
 
     public static OBTransaction6 toOBTransaction6(OBTransaction5 obTransaction5) {
         return obTransaction5 == null ? null : (new OBTransaction6())

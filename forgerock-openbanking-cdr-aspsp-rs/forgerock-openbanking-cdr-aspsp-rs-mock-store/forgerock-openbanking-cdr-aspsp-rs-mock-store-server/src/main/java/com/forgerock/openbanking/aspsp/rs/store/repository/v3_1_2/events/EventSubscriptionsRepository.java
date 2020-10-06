@@ -21,13 +21,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events;
 
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 
-public interface EventSubscriptionsRepository extends MongoRepository<FREventSubscription1, String> {
+public interface EventSubscriptionsRepository extends MongoRepository<FREventSubscription, String> {
 
-        Collection<FREventSubscription1> findByTppId(@Param("tppId") String tppId);
+        Collection<FREventSubscription> findByTppId(@Param("tppId") String tppId);
 }

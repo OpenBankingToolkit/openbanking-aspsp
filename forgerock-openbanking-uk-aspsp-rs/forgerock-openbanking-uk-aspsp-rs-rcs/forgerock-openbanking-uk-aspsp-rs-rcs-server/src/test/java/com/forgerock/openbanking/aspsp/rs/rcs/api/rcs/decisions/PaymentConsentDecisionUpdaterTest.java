@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -53,7 +53,7 @@ public class PaymentConsentDecisionUpdaterTest {
     @Test
     public void paymentDecisionAllowed_applyUpdateToConsent() throws Exception {
         // Given
-        FRAccount2 account = new FRAccount2();
+        FRAccount account = new FRAccount();
         account.id = ACCOUNT_ID;
         when(accountStoreService.get(USER_ID)).thenReturn(Collections.singletonList(account));
         FRDomesticConsent paymentConsent = new FRDomesticConsent();
@@ -69,7 +69,7 @@ public class PaymentConsentDecisionUpdaterTest {
     @Test
     public void paymentDecisionAllowed_butUserDoesNotOwnAccount_rejectWithException() {
         // Given
-        FRAccount2 account = new FRAccount2();
+        FRAccount account = new FRAccount();
         account.id = "differentId";
         when(accountStoreService.get(USER_ID)).thenReturn(Collections.singletonList(account));
         FRDomesticConsent paymentConsent = new FRDomesticConsent();
@@ -79,7 +79,7 @@ public class PaymentConsentDecisionUpdaterTest {
             paymentConsentDecisionUpdater.applyUpdate(USER_ID, ACCOUNT_ID, true, p -> {}, paymentConsent))
         // Then
         .isExactlyInstanceOf(OBErrorException.class)
-        .hasMessage("The PSU user1 is trying to share an account 'acc123' he doesn't own. List of his accounts '[FRAccount2(id=differentId, userID=null, account=null, latestStatementId=null, created=null, updated=null)]'");
+        .hasMessage("The PSU user1 is trying to share an account 'acc123' he doesn't own. List of his accounts '[FRAccount(id=differentId, userID=null, account=null, latestStatementId=null, created=null, updated=null)]'");
 
     }
 

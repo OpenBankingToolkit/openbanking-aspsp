@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_6.transactions;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions.FRTransaction6Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -29,8 +29,8 @@ import org.springframework.stereotype.Controller;
 public class TransactionsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_5.transactions.TransactionsApiController implements TransactionsApi {
 
     public TransactionsApiController(@Value("${rs.page.default.transaction.size}") int pageLimitTransactions,
-                                     FRTransaction6Repository FRTransaction6Repository,
+                                     FRTransactionRepository FRTransactionRepository,
                                      AccountDataInternalIdFilter accountDataInternalIdFilter) {
-        super(pageLimitTransactions, FRTransaction6Repository, accountDataInternalIdFilter);
+        super(pageLimitTransactions, FRTransactionRepository, accountDataInternalIdFilter);
     }
 }

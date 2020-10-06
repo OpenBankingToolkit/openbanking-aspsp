@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import lombok.AllArgsConstructor;
@@ -53,7 +53,7 @@ public class FRWriteDomesticStandingOrderDataInitiation {
     private FRAmount firstPaymentAmount;
     private FRAmount recurringPaymentAmount;
     private FRAmount finalPaymentAmount;
-    private FRAccount debtorAccount;
-    private FRAccount creditorAccount;
+    private FRFinancialAccount debtorAccount;
+    private FRFinancialAccount creditorAccount;
     private FRSupplementaryData supplementaryData;
 }

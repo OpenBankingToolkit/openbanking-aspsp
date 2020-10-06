@@ -21,10 +21,10 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.aggregatedpolling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.FRPendingEventsRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.FRPendingEventsRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.v3_0.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventNotification;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;

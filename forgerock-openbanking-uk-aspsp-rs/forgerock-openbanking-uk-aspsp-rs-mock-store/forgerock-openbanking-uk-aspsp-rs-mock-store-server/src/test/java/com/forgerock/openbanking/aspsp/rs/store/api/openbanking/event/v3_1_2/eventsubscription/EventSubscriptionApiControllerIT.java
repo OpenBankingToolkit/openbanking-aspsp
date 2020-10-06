@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.ev
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events.EventSubscriptionsRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.EventSubscriptionsRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
@@ -115,7 +115,7 @@ public class EventSubscriptionApiControllerIT {
         assertThat(response.getBody().getData().getCallbackUrl()).isEqualTo(url);
         assertThat(response.getBody().getData().getVersion()).isEqualTo("3.0");
 
-        final Collection<FREventSubscription1> byTpp = eventSubscriptionsRepository.findByTppId(tpp.getId());
+        final Collection<FREventSubscription> byTpp = eventSubscriptionsRepository.findByTppId(tpp.getId());
         assertThat(byTpp.stream().findFirst().orElseThrow(AssertionError::new).getObEventSubscription1().getData().getCallbackUrl()).isEqualTo(url);
     }
 
@@ -124,7 +124,7 @@ public class EventSubscriptionApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         String id = UUID.randomUUID().toString();
-        eventSubscriptionsRepository.save(FREventSubscription1.builder()
+        eventSubscriptionsRepository.save(FREventSubscription.builder()
                 .tppId(tpp.getId())
                 .obEventSubscription1(new OBEventSubscription1())
                 .build());
@@ -146,7 +146,7 @@ public class EventSubscriptionApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
 
-        final Collection<FREventSubscription1> byClientId = eventSubscriptionsRepository.findByTppId(tpp.getId());
+        final Collection<FREventSubscription> byClientId = eventSubscriptionsRepository.findByTppId(tpp.getId());
         assertThat(byClientId.size()).isEqualTo(1); // Should still be just 1
     }
 
@@ -154,7 +154,7 @@ public class EventSubscriptionApiControllerIT {
     public void readEventSubscription() {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        eventSubscriptionsRepository.save(FREventSubscription1.builder()
+        eventSubscriptionsRepository.save(FREventSubscription.builder()
                 .tppId(tpp.getId())
                 .obEventSubscription1(new OBEventSubscription1()
                 .data(new OBEventSubscription1Data()
@@ -184,7 +184,7 @@ public class EventSubscriptionApiControllerIT {
                         .callbackUrl("http://callback/update")
                         .version("3.1")
                 );
-        FREventSubscription1 frEventSubscription1 = FREventSubscription1.builder()
+        FREventSubscription frEventSubscription = FREventSubscription.builder()
                 .id(eventSubsId)
                 .obEventSubscription1(new OBEventSubscription1()
                         .data(new OBEventSubscription1Data()
@@ -192,7 +192,7 @@ public class EventSubscriptionApiControllerIT {
                                 .version("3.1")
                         ))
                 .build();
-        eventSubscriptionsRepository.save(frEventSubscription1);
+        eventSubscriptionsRepository.save(frEventSubscription);
 
         // When
         HttpResponse<OBEventSubscriptionsResponse1> response = Unirest.put(BASE_URL + port + RESOURCE_URI+"/"+eventSubsId)
@@ -207,7 +207,7 @@ public class EventSubscriptionApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getEventSubscription().get(0).getCallbackUrl()).isEqualTo("http://callback/update");
 
-        final Optional<FREventSubscription1> byId = eventSubscriptionsRepository.findById(eventSubsId);
+        final Optional<FREventSubscription> byId = eventSubscriptionsRepository.findById(eventSubsId);
         assertThat(byId.orElseThrow(AssertionError::new).getObEventSubscription1().getData().getCallbackUrl()).isEqualTo("http://callback/update");
     }
 
@@ -223,7 +223,7 @@ public class EventSubscriptionApiControllerIT {
                         .callbackUrl("http://callback/update")
                         .version("3.0")
                 );
-        FREventSubscription1 frEventSubscription1 = FREventSubscription1.builder()
+        FREventSubscription frEventSubscription = FREventSubscription.builder()
                 .id(eventSubsId)
                 .obEventSubscription1(new OBEventSubscription1()
                         .data(new OBEventSubscription1Data()
@@ -231,7 +231,7 @@ public class EventSubscriptionApiControllerIT {
                                 .version("3.1.2") // Upating to older version than one in DB - not permitted
                         ))
                 .build();
-        eventSubscriptionsRepository.save(frEventSubscription1);
+        eventSubscriptionsRepository.save(frEventSubscription);
 
         // When
         HttpResponse<OBEventSubscriptionResponse1> response = Unirest.put(BASE_URL + port + RESOURCE_URI+"/"+eventSubsId)
@@ -277,12 +277,12 @@ public class EventSubscriptionApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         String eventSubsId = UUID.randomUUID().toString();
-        FREventSubscription1 frEventSubscription1 = FREventSubscription1.builder()
+        FREventSubscription frEventSubscription = FREventSubscription.builder()
                 .obEventSubscription1(new OBEventSubscription1().data(new OBEventSubscription1Data()))
                 .id(eventSubsId)
                 .tppId(tpp.getId())
                 .build();
-        eventSubscriptionsRepository.save(frEventSubscription1);
+        eventSubscriptionsRepository.save(frEventSubscription);
 
         // When
         HttpResponse response = Unirest.delete(BASE_URL + port + RESOURCE_URI+"/"+eventSubsId)
@@ -294,7 +294,7 @@ public class EventSubscriptionApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(204);
 
-        final Optional<FREventSubscription1> byId = eventSubscriptionsRepository.findById(eventSubsId);
+        final Optional<FREventSubscription> byId = eventSubscriptionsRepository.findById(eventSubsId);
         assertThat(byId.isPresent()).isFalse();
     }
 

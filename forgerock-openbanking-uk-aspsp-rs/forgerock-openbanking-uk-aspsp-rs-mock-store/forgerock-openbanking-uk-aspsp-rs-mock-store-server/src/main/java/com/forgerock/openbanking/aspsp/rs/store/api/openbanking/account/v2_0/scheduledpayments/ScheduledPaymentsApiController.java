@@ -20,10 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.scheduledpayments;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.scheduledpayments.FRScheduledPayment4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRScheduledPayment4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRScheduledPaymentConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -56,7 +56,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
     @Value("${rs.page.default.schedule-payments.size}")
     private int PAGE_LIMIT_SCHEDULE_PAYMENTS;
     @Autowired
-    private FRScheduledPayment4Repository frScheduledPayment4Repository;
+    private FRScheduledPaymentRepository frScheduledPaymentRepository;
     @Autowired
     private AccountDataInternalIdFilter accountDataInternalIdFilter;
 
@@ -95,14 +95,14 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Read scheduled payments for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FRScheduledPayment4> scheduledPayments = frScheduledPayment4Repository.byAccountIdWithPermissions(accountId, permissions,
+        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdWithPermissions(accountId, permissions,
                 PageRequest.of(page, PAGE_LIMIT_SCHEDULE_PAYMENTS));
         int totalPages = scheduledPayments.getTotalPages();
 
         return ResponseEntity.ok(new OBReadScheduledPayment1().data(new OBReadScheduledPayment1Data().scheduledPayment(
                 scheduledPayments.getContent()
                         .stream()
-                        .map(FRScheduledPayment4::getScheduledPayment)
+                        .map(FRScheduledPayment::getScheduledPayment)
                         .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .map(FRScheduledPaymentConverter::toOBScheduledPayment1)
                         .collect(Collectors.toList())))
@@ -146,14 +146,14 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Reading schedule payment from account ids {}", accountIds);
-        Page<FRScheduledPayment4> scheduledPayments = frScheduledPayment4Repository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdInWithPermissions(accountIds, permissions,
                 PageRequest.of(page, PAGE_LIMIT_SCHEDULE_PAYMENTS));
         int totalPages = scheduledPayments.getTotalPages();
 
         return ResponseEntity.ok(new OBReadScheduledPayment1().data(new OBReadScheduledPayment1Data().scheduledPayment(
                 scheduledPayments.getContent()
                         .stream()
-                        .map(FRScheduledPayment4::getScheduledPayment)
+                        .map(FRScheduledPayment::getScheduledPayment)
                         .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .map(FRScheduledPaymentConverter::toOBScheduledPayment1)
                         .collect(Collectors.toList())))

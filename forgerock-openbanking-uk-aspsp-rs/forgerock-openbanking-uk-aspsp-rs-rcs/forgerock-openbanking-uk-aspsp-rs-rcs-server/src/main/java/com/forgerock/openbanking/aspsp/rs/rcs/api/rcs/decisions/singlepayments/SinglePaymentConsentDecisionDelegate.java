@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.SinglePaymentConsentDecision;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
@@ -66,8 +66,8 @@ class SinglePaymentConsentDecisionDelegate implements ConsentDecisionDelegate {
         SinglePaymentConsentDecision singlePaymentConsentDecision = objectMapper.readValue(consentDecisionSerialised, SinglePaymentConsentDecision.class);
 
         if (decision) {
-            List<FRAccount2> accounts = accountsService.get(getUserIDBehindConsent());
-            Optional<FRAccount2> isAny = accounts.stream().filter(account -> account.getId().equals(singlePaymentConsentDecision
+            List<FRAccount> accounts = accountsService.get(getUserIDBehindConsent());
+            Optional<FRAccount> isAny = accounts.stream().filter(account -> account.getId().equals(singlePaymentConsentDecision
                     .getAccountId())).findAny();
             if (!isAny.isPresent()) {
                 log.error("The account selected {} is not own by this user {}. List accounts {}", singlePaymentConsentDecision
@@ -87,7 +87,7 @@ class SinglePaymentConsentDecisionDelegate implements ConsentDecisionDelegate {
     }
 
     @Override
-    public void autoaccept(List<FRAccount2> accounts, String username) throws OBErrorException {
+    public void autoaccept(List<FRAccount> accounts, String username) throws OBErrorException {
         payment.setStatus(ConsentStatusCode.ACCEPTEDCUSTOMERPROFILE);
         payment.setAccountId(accounts.get(0).getId());
         paymentsService.updatePayment(payment);

@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.fundconfirmatio
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
-import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ public class FundsConfirmationConsentDecisionFactory {
     }
 
     public ConsentDecisionDelegate create(final String intentId) {
-        FRFundsConfirmationConsent1 consent = fundsConfirmationService.getConsent(intentId);
+        FRFundsConfirmationConsent consent = fundsConfirmationService.getConsent(intentId);
         return new FundsConfirmationConsentDecisionDelegate(fundsConfirmationService, accountStoreService, objectMapper, consent);
     }
 

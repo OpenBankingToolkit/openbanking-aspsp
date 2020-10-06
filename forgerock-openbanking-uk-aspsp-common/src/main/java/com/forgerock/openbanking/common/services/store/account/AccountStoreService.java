@@ -22,7 +22,7 @@ package com.forgerock.openbanking.common.services.store.account;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +33,7 @@ public interface AccountStoreService {
 
     Optional<Account> findAccountByIdentification(String identification);
 
-    List<FRAccount2> get(String userID);
+    List<FRAccount> get(String userID);
 
     List<AccountWithBalance> getAccountWithBalances(String userID);
 

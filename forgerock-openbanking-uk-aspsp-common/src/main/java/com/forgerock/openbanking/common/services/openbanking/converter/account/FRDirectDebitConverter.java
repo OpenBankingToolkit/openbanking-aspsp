@@ -1,6 +1,6 @@
 /**
  * Copyright 2019 ForgeRock AS.
- *
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -8,9 +8,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -20,8 +20,6 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRDirectDebit1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRDirectDebit4;
 import uk.org.openbanking.datamodel.account.OBDirectDebit1;
 import uk.org.openbanking.datamodel.account.OBReadDirectDebit2DataDirectDebit;
 
@@ -33,15 +31,16 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.co
  */
 public class FRDirectDebitConverter {
 
-    public static FRDirectDebit4 toFRDirectDebit4(FRDirectDebit1 frDirectDebit1) {
-        return frDirectDebit1 == null ? null : FRDirectDebit4.builder()
-                .id(frDirectDebit1.getId())
-                .accountId(frDirectDebit1.getAccountId())
-                .directDebit(toOBReadDirectDebit2DataDirectDebit(frDirectDebit1.getDirectDebit()))
-                .created(frDirectDebit1.getCreated())
-                .updated(frDirectDebit1.getUpdated())
-                .build();
-    }
+    // TODO #296 - add required methods once FRAccount is using FR domain classes
+//    public static FRDirectDebit toFRDirectDebit4(FRDirectDebit1 frDirectDebit1) {
+//        return frDirectDebit1 == null ? null : FRDirectDebit.builder()
+//                .id(frDirectDebit1.getId())
+//                .accountId(frDirectDebit1.getAccountId())
+//                .directDebit(toOBReadDirectDebit2DataDirectDebit(frDirectDebit1.getDirectDebit()))
+//                .created(frDirectDebit1.getCreated())
+//                .updated(frDirectDebit1.getUpdated())
+//                .build();
+//    }
 
     public static OBDirectDebit1 toOBDirectDebit1(OBReadDirectDebit2DataDirectDebit obReadDirectDebit2DataDirectDebit) {
         return obReadDirectDebit2DataDirectDebit == null ? null : (new OBDirectDebit1())

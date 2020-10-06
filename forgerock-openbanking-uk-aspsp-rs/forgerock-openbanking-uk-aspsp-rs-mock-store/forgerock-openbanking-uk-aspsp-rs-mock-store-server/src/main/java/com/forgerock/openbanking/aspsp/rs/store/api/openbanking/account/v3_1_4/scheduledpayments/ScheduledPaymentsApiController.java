@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_4.scheduledpayments;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.scheduledpayments.FRScheduledPayment4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,9 +31,9 @@ import org.springframework.stereotype.Controller;
 public class ScheduledPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_3.scheduledpayments.ScheduledPaymentsApiController implements ScheduledPaymentsApi {
 
     public ScheduledPaymentsApiController(@Value("${rs.page.default.schedule-payments.size}") int pageLimitSchedulePayments,
-                                          FRScheduledPayment4Repository frScheduledPayment4Repository,
+                                          FRScheduledPaymentRepository frScheduledPaymentRepository,
                                           AccountDataInternalIdFilter accountDataInternalIdFilter) {
-        super(pageLimitSchedulePayments, frScheduledPayment4Repository, accountDataInternalIdFilter);
+        super(pageLimitSchedulePayments, frScheduledPaymentRepository, accountDataInternalIdFilter);
     }
 
 }

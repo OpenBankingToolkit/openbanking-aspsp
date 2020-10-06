@@ -20,18 +20,26 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
+import com.forgerock.openbanking.common.services.openbanking.converter.FRModelMapper;
 import com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBCashAccount1;
+import uk.org.openbanking.datamodel.account.OBCashAccount3;
+import uk.org.openbanking.datamodel.account.OBCashAccount51;
+import uk.org.openbanking.datamodel.account.OBStandingOrder1;
+import uk.org.openbanking.datamodel.account.OBStandingOrder2;
+import uk.org.openbanking.datamodel.account.OBStandingOrder3;
+import uk.org.openbanking.datamodel.account.OBStandingOrder4;
+import uk.org.openbanking.datamodel.account.OBStandingOrder5;
+import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification2;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBAmountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount51;
-import static uk.org.openbanking.datamodel.service.converter.account.OBCashAccountConverter.toOBCashAccount1;
 
 public class OBStandingOrderConverter {
 
@@ -66,6 +74,25 @@ public class OBStandingOrderConverter {
                 .standingOrderStatusCode(obStandingOrder.getStandingOrderStatusCode())
                 .creditorAgent(toOBBranchAndFinancialInstitutionIdentification2(obStandingOrder.getCreditorAgent()))
                 .creditorAccount(toOBCashAccount1(obStandingOrder.getCreditorAccount()));
+    }
+
+    public static OBStandingOrder2 toOBStandingOrder2(OBStandingOrder6 obStandingOrder) {
+        return obStandingOrder == null ? null : (new OBStandingOrder2())
+                .accountId(obStandingOrder.getAccountId())
+                .frequency(obStandingOrder.getFrequency())
+                .nextPaymentDateTime(obStandingOrder.getNextPaymentDateTime())
+                .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(obStandingOrder.getNextPaymentAmount()))
+                .standingOrderId(obStandingOrder.getStandingOrderId())
+                .standingOrderStatusCode(obStandingOrder.getStandingOrderStatusCode())
+                .creditorAccount(toOBCashAccount1(obStandingOrder.getCreditorAccount()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification2(obStandingOrder.getCreditorAgent()))
+                .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(obStandingOrder.getFinalPaymentAmount()))
+                .finalPaymentDateTime(obStandingOrder.getFirstPaymentDateTime())
+                .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(obStandingOrder.getFirstPaymentAmount()))
+                .firstPaymentDateTime((obStandingOrder.getFirstPaymentDateTime()))
+                .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(obStandingOrder.getNextPaymentAmount()))
+                .nextPaymentDateTime((obStandingOrder.getNextPaymentDateTime()))
+                .reference(obStandingOrder.getReference());
     }
 
     public static OBStandingOrder3 toOBStandingOrder3(OBStandingOrder6 obStandingOrder) {
@@ -160,6 +187,14 @@ public class OBStandingOrderConverter {
                 .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount3(obStandingOrder.getNextPaymentAmount()))
                 .nextPaymentDateTime(obStandingOrder.getNextPaymentDateTime())
                 .reference(obStandingOrder.getReference());
+    }
+
+    private static OBCashAccount1 toOBCashAccount1(OBCashAccount3 account) {
+        return FRModelMapper.map(account, OBCashAccount1.class);
+    }
+
+    public static OBCashAccount1 toOBCashAccount1(OBCashAccount51 account) {
+        return FRModelMapper.map(account, OBCashAccount1.class);
     }
 
 }

@@ -21,12 +21,12 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBalance1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.data.FRAccountData5;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.data.FRUserData5;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRAccountData;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRUserData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,20 +59,20 @@ public class DataApiControllerIT {
     @Autowired
     private ObjectMapper mapper;
     @Autowired
-    private FRAccount4Repository frAccountRepository;
+    private FRAccountRepository frAccountRepository;
     @Autowired
-    private FRBalance1Repository frBalanceRepository;
+    private FRBalanceRepository frBalanceRepository;
 
     @Test
     public void shouldReturnPayloadTooLargeWhenCreatingNewData() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData5> accountDatas = Collections.singletonList(FRAccountData5.builder()
+        List<FRAccountData> accountDatas = Collections.singletonList(FRAccountData.builder()
                 .account(account)
                 .balances(Arrays.asList(new OBCashBalance1(),
                         new OBCashBalance1()))
                 .build());
-        FRUserData5 userData = new FRUserData5();
+        FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(UUID.randomUUID().toString());
 
@@ -90,13 +90,13 @@ public class DataApiControllerIT {
     public void shouldReturnPayloadTooLargeWhenCreatingNewDataWithDataAlreadySaved() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData5> accountDatas = Collections.singletonList(FRAccountData5.builder()
+        List<FRAccountData> accountDatas = Collections.singletonList(FRAccountData.builder()
                 .account(account)
                 .balances(Collections.singletonList(new OBCashBalance1().accountId(account.getAccountId()).type(OBBalanceType1Code.INTERIMAVAILABLE)))
                 .build());
-        FRAccount4 savedAccount = frAccountRepository.save(FRAccount4.builder().id(account.getAccountId()).userID(UUID.randomUUID().toString()).build());
-        frBalanceRepository.save(FRBalance1.builder().accountId(account.getAccountId()).build());
-        FRUserData5 userData = new FRUserData5();
+        FRAccount savedAccount = frAccountRepository.save(FRAccount.builder().id(account.getAccountId()).userID(UUID.randomUUID().toString()).build());
+        frBalanceRepository.save(FRBalance.builder().accountId(account.getAccountId()).build());
+        FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(savedAccount.getUserID());
 
@@ -114,11 +114,11 @@ public class DataApiControllerIT {
     public void shouldCreateNewData() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData5> accountDatas = Collections.singletonList(FRAccountData5.builder()
+        List<FRAccountData> accountDatas = Collections.singletonList(FRAccountData.builder()
                 .account(account)
                 .balances(Collections.singletonList(new OBCashBalance1()))
                 .build());
-        FRUserData5 userData = new FRUserData5();
+        FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(UUID.randomUUID().toString());
 
@@ -136,13 +136,13 @@ public class DataApiControllerIT {
     public void shouldReturnPayloadTooLargeWhenCreatingNewDataUsingUpdate() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData5> accountDatas = Collections.singletonList(FRAccountData5.builder()
+        List<FRAccountData> accountDatas = Collections.singletonList(FRAccountData.builder()
                 .account(account)
                 .balances(Arrays.asList(new OBCashBalance1().type(OBBalanceType1Code.INTERIMAVAILABLE),
                         new OBCashBalance1().type(OBBalanceType1Code.INTERIMBOOKED)))
                 .build());
-        FRAccount4 savedAccount = frAccountRepository.save(FRAccount4.builder().id(account.getAccountId()).userID(UUID.randomUUID().toString()).build());
-        FRUserData5 userData = new FRUserData5();
+        FRAccount savedAccount = frAccountRepository.save(FRAccount.builder().id(account.getAccountId()).userID(UUID.randomUUID().toString()).build());
+        FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(savedAccount.getUserID());
 
@@ -159,12 +159,12 @@ public class DataApiControllerIT {
     public void shouldCreateNewDataUsingUpdate() throws Exception {
         // Given
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
-        List<FRAccountData5> accountDatas = Collections.singletonList(FRAccountData5.builder()
+        List<FRAccountData> accountDatas = Collections.singletonList(FRAccountData.builder()
                 .account(account)
                 .balances(Collections.singletonList(new OBCashBalance1()))
                 .build());
-        FRAccount4 savedAccount = frAccountRepository.save(FRAccount4.builder().id(account.getAccountId()).userID(UUID.randomUUID().toString()).build());
-        FRUserData5 userData = new FRUserData5();
+        FRAccount savedAccount = frAccountRepository.save(FRAccount.builder().id(account.getAccountId()).userID(UUID.randomUUID().toString()).build());
+        FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(savedAccount.getUserID());
 

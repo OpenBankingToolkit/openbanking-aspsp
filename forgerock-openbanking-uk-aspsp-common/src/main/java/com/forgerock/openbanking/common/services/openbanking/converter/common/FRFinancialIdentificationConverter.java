@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.common;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataInitiationCreditor;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataInitiationCreditorAgent;
 import uk.org.openbanking.datamodel.payment.OBBranchAndFinancialInstitutionIdentification3;
@@ -133,8 +133,8 @@ public class FRFinancialIdentificationConverter {
     }
 
     // TODO #296 - check FRAccount is the correct object here
-    public static OBDebtorIdentification1 toOBDebtorIdentification1(FRAccount frAccount) {
-        return frAccount == null ? null : new OBDebtorIdentification1()
-                .name(frAccount.getName());
+    public static OBDebtorIdentification1 toOBDebtorIdentification1(FRFinancialAccount frFinancialAccount) {
+        return frFinancialAccount == null ? null : new OBDebtorIdentification1()
+                .name(frFinancialAccount.getName());
     }
 }

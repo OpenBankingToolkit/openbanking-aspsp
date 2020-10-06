@@ -20,32 +20,32 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.offers.FROffer1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.products.FRProduct2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party.FRParty2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.directdebits.FRDirectDebit4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.scheduledpayments.FRScheduledPayment4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements.FRStatement4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.beneficiaries.FRBeneficiary5Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.standingorders.FRStandingOrder6Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions.FRTransaction6Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.offers.FROfferRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.products.FRProductRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.directdebits.FRDirectDebitRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.beneficiaries.FRBeneficiaryRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBalance1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FROffer1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRProduct2;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRParty2;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRDirectDebit4;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRScheduledPayment4;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRStatement4;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRBeneficiary5;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRStandingOrder6;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRTransaction6;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.data.FRAccountData5;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.data.FRUserData5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FROffer;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRProduct;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRDirectDebit;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStatement;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBeneficiary;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRAccountData;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRUserData;
 import com.google.common.collect.ImmutableList;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,26 +66,26 @@ import java.util.UUID;
 @NoArgsConstructor
 public class DataUpdater {
 
-    private FRAccount4Repository accountsRepository;
-    private FRBalance1Repository balanceRepository;
-    private FRBeneficiary5Repository beneficiaryRepository;
-    private FRDirectDebit4Repository directDebitRepository;
-    private FRProduct2Repository productRepository;
-    private FRStandingOrder6Repository standingOrderRepository;
-    private FRTransaction6Repository transactionRepository;
-    private FRStatement4Repository statementRepository;
-    private FRScheduledPayment4Repository scheduledPaymentRepository;
-    private FRParty2Repository partyRepository;
-    private FROffer1Repository offerRepository;
+    private FRAccountRepository accountsRepository;
+    private FRBalanceRepository balanceRepository;
+    private FRBeneficiaryRepository beneficiaryRepository;
+    private FRDirectDebitRepository directDebitRepository;
+    private FRProductRepository productRepository;
+    private FRStandingOrderRepository standingOrderRepository;
+    private FRTransactionRepository transactionRepository;
+    private FRStatementRepository statementRepository;
+    private FRScheduledPaymentRepository scheduledPaymentRepository;
+    private FRPartyRepository partyRepository;
+    private FROfferRepository offerRepository;
     private int documentLimit;
 
     @Autowired
-    public DataUpdater(FRAccount4Repository accountsRepository, FRBalance1Repository balanceRepository,
-                       FRBeneficiary5Repository beneficiaryRepository, FRDirectDebit4Repository directDebitRepository,
-                       FRProduct2Repository productRepository, FRStandingOrder6Repository standingOrderRepository,
-                       FRTransaction6Repository transactionRepository, FRStatement4Repository statementRepository,
-                       FRScheduledPayment4Repository scheduledPaymentRepository, FRParty2Repository partyRepository,
-                       FROffer1Repository offerRepository, @Value("${rs.data.upload.limit.documents}") Integer documentLimit) {
+    public DataUpdater(FRAccountRepository accountsRepository, FRBalanceRepository balanceRepository,
+                       FRBeneficiaryRepository beneficiaryRepository, FRDirectDebitRepository directDebitRepository,
+                       FRProductRepository productRepository, FRStandingOrderRepository standingOrderRepository,
+                       FRTransactionRepository transactionRepository, FRStatementRepository statementRepository,
+                       FRScheduledPaymentRepository scheduledPaymentRepository, FRPartyRepository partyRepository,
+                       FROfferRepository offerRepository, @Value("${rs.data.upload.limit.documents}") Integer documentLimit) {
         this.accountsRepository = accountsRepository;
         this.balanceRepository = balanceRepository;
         this.beneficiaryRepository = beneficiaryRepository;
@@ -100,11 +100,11 @@ public class DataUpdater {
         this.documentLimit = documentLimit;
     }
 
-    void updateParty(FRUserData5 userData) {
+    void updateParty(FRUserData userData) {
         if (userData.getParty() == null) {
             return;
         }
-        FRParty2 party1 = partyRepository.findByUserId(userData.getUserName());
+        FRParty party1 = partyRepository.findByUserId(userData.getUserName());
         if (!party1.getId().equals(userData.getParty().getPartyId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                     String.format("the party ID '%s' doesn't match '%s' for user '%s'",
@@ -136,7 +136,7 @@ public class DataUpdater {
         partyRepository.save(party1);
     }
 
-    void updateAccount(FRAccountData5 accountDataDiff, FRAccount4 account, Set<String> accountIds) {
+    void updateAccount(FRAccountData accountDataDiff, FRAccount account, Set<String> accountIds) {
         OBAccount6 accountDiff = accountDataDiff.getAccount();
         if (accountDiff.getCurrency() != null) {
             account.getAccount().setCurrency(accountDiff.getCurrency());
@@ -153,10 +153,10 @@ public class DataUpdater {
         accountsRepository.save(account);
     }
 
-    void updateBalances(FRAccountData5 accountDataDiff, Set<String> accountIds) {
+    void updateBalances(FRAccountData accountDataDiff, Set<String> accountIds) {
         //Balance
-        List<FRBalance1> balancesToSave = new ArrayList<>();
-        List<FRBalance1> newBalancesToSave = new ArrayList<>();
+        List<FRBalance> balancesToSave = new ArrayList<>();
+        List<FRBalance> newBalancesToSave = new ArrayList<>();
         Set<OBBalanceType1Code> types = new HashSet<>();
         for (OBCashBalance1 obBalanceDiff : accountDataDiff.getBalances()) {
             String accountId = accountDataDiff.getAccount().getAccountId();
@@ -174,7 +174,7 @@ public class DataUpdater {
 
             }
             types.add(obBalanceDiff.getType());
-            Optional<FRBalance1> isBalance = balanceRepository.findByAccountIdAndBalanceType(
+            Optional<FRBalance> isBalance = balanceRepository.findByAccountIdAndBalanceType(
                     accountId,
                     obBalanceDiff.getType());
 
@@ -198,7 +198,7 @@ public class DataUpdater {
                 }
                 balancesToSave.add(isBalance.get());
             } else {
-                FRBalance1 balance1 = new FRBalance1();
+                FRBalance balance1 = new FRBalance();
                 balance1.setBalance(obBalanceDiff);
                 balance1.setAccountId(accountId);
                 newBalancesToSave.add(balance1);
@@ -208,25 +208,25 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add balances as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRBalance1> allBalances = ImmutableList.<FRBalance1>builder()
+        List<FRBalance> allBalances = ImmutableList.<FRBalance>builder()
                 .addAll(balancesToSave)
                 .addAll(newBalancesToSave)
                 .build();
         balanceRepository.saveAll(allBalances);
     }
 
-    void updateProducts(FRAccountData5 accountDataDiff, Set<String> accountIds) {
+    void updateProducts(FRAccountData accountDataDiff, Set<String> accountIds) {
         //Product
         if (accountDataDiff.getProduct() == null) {
             return;
         }
-        Optional<FRProduct2> isProduct = productRepository.findById(accountDataDiff.getProduct().getProductId());
+        Optional<FRProduct> isProduct = productRepository.findById(accountDataDiff.getProduct().getProductId());
         if (isProduct.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                     String.format("The product id doesn't exist '%s'",
                             accountDataDiff.getProduct().getProductId()));
         }
-        FRProduct2 product = isProduct.get();
+        FRProduct product = isProduct.get();
 
         String accountId = accountDataDiff.getAccount().getAccountId();
         OBReadProduct2DataProduct productDiff = accountDataDiff.getProduct();
@@ -245,18 +245,18 @@ public class DataUpdater {
         productRepository.save(product);
     }
 
-    void updateParty(FRAccountData5 accountDataDiff, Set<String> accountIds) {
+    void updateParty(FRAccountData accountDataDiff, Set<String> accountIds) {
         //Party
         if (accountDataDiff.getParty() == null) {
             return;
         }
-        Optional<FRParty2> isParty = partyRepository.findById(accountDataDiff.getParty().getPartyId());
+        Optional<FRParty> isParty = partyRepository.findById(accountDataDiff.getParty().getPartyId());
         if (isParty.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format("The party id '%s' doesn't exist",
                             accountDataDiff.getParty().getPartyId()));
         }
-        FRParty2 party1 = isParty.get();
+        FRParty party1 = isParty.get();
 
         OBParty2 partyDiff = accountDataDiff.getParty();
 
@@ -284,11 +284,11 @@ public class DataUpdater {
         partyRepository.save(party1);
     }
 
-    void updateBeneficiaries(FRAccountData5 accountDataDiff, Set<String> accountIds) {
+    void updateBeneficiaries(FRAccountData accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Beneficiaries
-        List<FRBeneficiary5> beneficiariesToSave = new ArrayList<>();
-        List<FRBeneficiary5> newBeneficiariesToSave = new ArrayList<>();
+        List<FRBeneficiary> beneficiariesToSave = new ArrayList<>();
+        List<FRBeneficiary> newBeneficiariesToSave = new ArrayList<>();
         for (OBBeneficiary5 obBeneficiaryDiff : accountDataDiff.getBeneficiaries()) {
 
             if (obBeneficiaryDiff.getAccountId() != null && !obBeneficiaryDiff.getAccountId().equals(accountId)) {
@@ -298,13 +298,13 @@ public class DataUpdater {
             if (obBeneficiaryDiff.getBeneficiaryId() == null) {
                 obBeneficiaryDiff.setAccountId(accountId);
                 obBeneficiaryDiff.setBeneficiaryId(UUID.randomUUID().toString());
-                FRBeneficiary5 beneficiary = new FRBeneficiary5();
+                FRBeneficiary beneficiary = new FRBeneficiary();
                 beneficiary.setAccountId(accountId);
                 beneficiary.setBeneficiary(obBeneficiaryDiff);
                 beneficiary.setId(obBeneficiaryDiff.getBeneficiaryId());
                 newBeneficiariesToSave.add(beneficiary);
             } else {
-                Optional<FRBeneficiary5> isBeneficiary = beneficiaryRepository.findById(obBeneficiaryDiff.getBeneficiaryId());
+                Optional<FRBeneficiary> isBeneficiary = beneficiaryRepository.findById(obBeneficiaryDiff.getBeneficiaryId());
                 if (isBeneficiary.isEmpty() || !isBeneficiary.get().getAccountId().equals(obBeneficiaryDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The beneficiary id '"
                             + obBeneficiaryDiff.getBeneficiaryId() + "' doesn't exist or doesn't belongs to this account ID.");
@@ -324,18 +324,18 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add beneficiaries as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRBeneficiary5> allBeneficiaries = ImmutableList.<FRBeneficiary5>builder()
+        List<FRBeneficiary> allBeneficiaries = ImmutableList.<FRBeneficiary>builder()
                 .addAll(beneficiariesToSave)
                 .addAll(newBeneficiariesToSave)
                 .build();
         beneficiaryRepository.saveAll(allBeneficiaries);
     }
 
-    void updateDirectDebits(FRAccountData5 accountDataDiff, Set<String> accountIds) {
+    void updateDirectDebits(FRAccountData accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Direct Debits
-        List<FRDirectDebit4> directDebitsToSave = new ArrayList<>();
-        List<FRDirectDebit4> newDirectDebitsToSave = new ArrayList<>();
+        List<FRDirectDebit> directDebitsToSave = new ArrayList<>();
+        List<FRDirectDebit> newDirectDebitsToSave = new ArrayList<>();
         for (OBReadDirectDebit2DataDirectDebit obDirectDebitDiff : accountDataDiff.getDirectDebits()) {
 
             if (obDirectDebitDiff.getAccountId() != null && !obDirectDebitDiff.getAccountId().equals(accountId)) {
@@ -345,13 +345,13 @@ public class DataUpdater {
             if (obDirectDebitDiff.getDirectDebitId() == null) {
                 obDirectDebitDiff.setAccountId(accountId);
                 obDirectDebitDiff.setDirectDebitId(UUID.randomUUID().toString());
-                FRDirectDebit4 directDebit = new FRDirectDebit4();
+                FRDirectDebit directDebit = new FRDirectDebit();
                 directDebit.setAccountId(accountId);
                 directDebit.setDirectDebit(obDirectDebitDiff);
                 directDebit.setId(obDirectDebitDiff.getDirectDebitId());
                 newDirectDebitsToSave.add(directDebit);
             } else {
-                Optional<FRDirectDebit4> isDirectDebit = directDebitRepository.findById(obDirectDebitDiff.getDirectDebitId());
+                Optional<FRDirectDebit> isDirectDebit = directDebitRepository.findById(obDirectDebitDiff.getDirectDebitId());
                 if (isDirectDebit.isEmpty() || !isDirectDebit.get().getAccountId().equals(obDirectDebitDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The direct debit id '"
                             + obDirectDebitDiff.getDirectDebitId() + "' doesn't exist or doesn't belongs to this account ID.");
@@ -379,18 +379,18 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add direct debits as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRDirectDebit4> allDirectDebits = ImmutableList.<FRDirectDebit4>builder()
+        List<FRDirectDebit> allDirectDebits = ImmutableList.<FRDirectDebit>builder()
                 .addAll(directDebitsToSave)
                 .addAll(newDirectDebitsToSave)
                 .build();
         directDebitRepository.saveAll(allDirectDebits);
     }
 
-    void updateStandingOrders(FRAccountData5 accountDataDiff, Set<String> accountIds) {
+    void updateStandingOrders(FRAccountData accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Standing orders
-        List<FRStandingOrder6> standingOrdersToSave = new ArrayList<>();
-        List<FRStandingOrder6> newStandingOrdersToSave = new ArrayList<>();
+        List<FRStandingOrder> standingOrdersToSave = new ArrayList<>();
+        List<FRStandingOrder> newStandingOrdersToSave = new ArrayList<>();
         for (OBStandingOrder6 obStandingOrderDiff : accountDataDiff.getStandingOrders()) {
 
             if (obStandingOrderDiff.getAccountId() != null && !obStandingOrderDiff.getAccountId().equals(accountId)) {
@@ -400,14 +400,14 @@ public class DataUpdater {
             if (obStandingOrderDiff.getStandingOrderId() == null) {
                 obStandingOrderDiff.setAccountId(accountId);
                 obStandingOrderDiff.setStandingOrderId(UUID.randomUUID().toString());
-                FRStandingOrder6 standingOrder = new FRStandingOrder6();
+                FRStandingOrder standingOrder = new FRStandingOrder();
                 standingOrder.setAccountId(accountId);
                 standingOrder.setStandingOrder(obStandingOrderDiff);
                 standingOrder.setId(obStandingOrderDiff.getStandingOrderId());
                 standingOrder.setStatus(StandingOrderStatus.PENDING);
                 newStandingOrdersToSave.add(standingOrder);
             } else {
-                Optional<FRStandingOrder6> isStandingOrder = standingOrderRepository.findById(obStandingOrderDiff.getStandingOrderId());
+                Optional<FRStandingOrder> isStandingOrder = standingOrderRepository.findById(obStandingOrderDiff.getStandingOrderId());
                 if (isStandingOrder.isEmpty() || !isStandingOrder.get().getAccountId().equals(obStandingOrderDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The standing order id '"
                             + obStandingOrderDiff.getStandingOrderId() + "' doesn't exist or doesn't belongs to this account ID.");
@@ -448,18 +448,18 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add standing orders as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRStandingOrder6> allStandingOrders = ImmutableList.<FRStandingOrder6>builder()
+        List<FRStandingOrder> allStandingOrders = ImmutableList.<FRStandingOrder>builder()
                 .addAll(standingOrdersToSave)
                 .addAll(newStandingOrdersToSave)
                 .build();
         standingOrderRepository.saveAll(allStandingOrders);
     }
 
-    void updateTransactions(FRAccountData5 accountDataDiff, Set<String> accountIds) {
+    void updateTransactions(FRAccountData accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Transactions
-        List<FRTransaction6> transactionsToSave = new ArrayList<>();
-        List<FRTransaction6> newTransactionsToSave = new ArrayList<>();
+        List<FRTransaction> transactionsToSave = new ArrayList<>();
+        List<FRTransaction> newTransactionsToSave = new ArrayList<>();
         for (OBTransaction6 obTransactionDiff : accountDataDiff.getTransactions()) {
 
             if (obTransactionDiff.getAccountId() != null && !obTransactionDiff.getAccountId().equals(accountId)) {
@@ -469,14 +469,14 @@ public class DataUpdater {
             if (obTransactionDiff.getTransactionId() == null) {
                 obTransactionDiff.setAccountId(accountId);
                 obTransactionDiff.setTransactionId(UUID.randomUUID().toString());
-                FRTransaction6 transaction = new FRTransaction6();
+                FRTransaction transaction = new FRTransaction();
                 transaction.setAccountId(accountId);
                 transaction.setBookingDateTime((obTransactionDiff.getBookingDateTime()));
                 transaction.setTransaction(obTransactionDiff);
                 transaction.setId(obTransactionDiff.getTransactionId());
                 newTransactionsToSave.add(transaction);
             } else {
-                Optional<FRTransaction6> isTransaction = transactionRepository.findById(obTransactionDiff.getTransactionId());
+                Optional<FRTransaction> isTransaction = transactionRepository.findById(obTransactionDiff.getTransactionId());
                 if (isTransaction.isEmpty() || !isTransaction.get().getAccountId().equals(obTransactionDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The transaction id '"
                             + obTransactionDiff.getTransactionId() + "' doesn't exist or doesn't belongs to this account ID.");
@@ -520,18 +520,18 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add transactions as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRTransaction6> allTransactions = ImmutableList.<FRTransaction6>builder()
+        List<FRTransaction> allTransactions = ImmutableList.<FRTransaction>builder()
                 .addAll(transactionsToSave)
                 .addAll(newTransactionsToSave)
                 .build();
         transactionRepository.saveAll(allTransactions);
     }
 
-    void updateStatements(FRAccountData5 accountDataDiff, Set<String> accountIds) {
+    void updateStatements(FRAccountData accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Statements
-        List<FRStatement4> statementsToSave = new ArrayList<>();
-        List<FRStatement4> newStatementsToSave = new ArrayList<>();
+        List<FRStatement> statementsToSave = new ArrayList<>();
+        List<FRStatement> newStatementsToSave = new ArrayList<>();
         for (OBStatement2 obStatement1Diff : accountDataDiff.getStatements()) {
 
             if (obStatement1Diff.getAccountId() != null && !obStatement1Diff.getAccountId().equals(accountId)) {
@@ -541,13 +541,13 @@ public class DataUpdater {
             if (obStatement1Diff.getStatementId() == null) {
                 obStatement1Diff.setAccountId(accountId);
                 obStatement1Diff.setStatementId(UUID.randomUUID().toString());
-                FRStatement4 statement1 = new FRStatement4();
+                FRStatement statement1 = new FRStatement();
                 statement1.setAccountId(accountId);
                 statement1.setStatement(obStatement1Diff);
                 statement1.setId(obStatement1Diff.getStatementId());
                 newStatementsToSave.add(statement1);
             } else {
-                Optional<FRStatement4> isStatement = statementRepository.findById(obStatement1Diff.getStatementId());
+                Optional<FRStatement> isStatement = statementRepository.findById(obStatement1Diff.getStatementId());
                 if (isStatement.isEmpty() || !isStatement.get().getAccountId().equals(obStatement1Diff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The statement id '"
                             + obStatement1Diff.getStatementId() + "' doesn't exist or doesn't belongs to this account ID.");
@@ -602,18 +602,18 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add statements as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRStatement4> allStatements = ImmutableList.<FRStatement4>builder()
+        List<FRStatement> allStatements = ImmutableList.<FRStatement>builder()
                 .addAll(statementsToSave)
                 .addAll(newStatementsToSave)
                 .build();
         statementRepository.saveAll(allStatements);
     }
 
-    void updateScheduledPayments(FRAccountData5 accountDataDiff, Set<String> accountIds) {
+    void updateScheduledPayments(FRAccountData accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Scheduled Payment
-        List<FRScheduledPayment4> scheduledPaymentToSave = new ArrayList<>();
-        List<FRScheduledPayment4> newScheduledPaymentToSave = new ArrayList<>();
+        List<FRScheduledPayment> scheduledPaymentToSave = new ArrayList<>();
+        List<FRScheduledPayment> newScheduledPaymentToSave = new ArrayList<>();
         for (OBScheduledPayment3 OBScheduledPayment3Diff : accountDataDiff.getScheduledPayments()) {
 
             if (OBScheduledPayment3Diff.getAccountId() != null && !OBScheduledPayment3Diff.getAccountId().equals(accountId)) {
@@ -623,14 +623,14 @@ public class DataUpdater {
             if (OBScheduledPayment3Diff.getScheduledPaymentId() == null) {
                 OBScheduledPayment3Diff.setAccountId(accountId);
                 OBScheduledPayment3Diff.setScheduledPaymentId(UUID.randomUUID().toString());
-                FRScheduledPayment4 scheduledPayment1 = new FRScheduledPayment4();
+                FRScheduledPayment scheduledPayment1 = new FRScheduledPayment();
                 scheduledPayment1.setAccountId(accountId);
                 scheduledPayment1.setScheduledPayment(OBScheduledPayment3Diff);
                 scheduledPayment1.setId(OBScheduledPayment3Diff.getScheduledPaymentId());
                 scheduledPayment1.setStatus(ScheduledPaymentStatus.PENDING);
                 newScheduledPaymentToSave.add(scheduledPayment1);
             } else {
-                Optional<FRScheduledPayment4> isScheduledPayment = scheduledPaymentRepository.findById(OBScheduledPayment3Diff.getScheduledPaymentId());
+                Optional<FRScheduledPayment> isScheduledPayment = scheduledPaymentRepository.findById(OBScheduledPayment3Diff.getScheduledPaymentId());
                 if (isScheduledPayment.isEmpty() || !isScheduledPayment.get().getAccountId().equals(OBScheduledPayment3Diff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The scheduled payment id '"
                             + OBScheduledPayment3Diff.getScheduledPaymentId() + "' doesn't exist or doesn't belongs to this account ID.");
@@ -662,18 +662,18 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add schedule payments as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FRScheduledPayment4> allScheduledPayments = ImmutableList.<FRScheduledPayment4>builder()
+        List<FRScheduledPayment> allScheduledPayments = ImmutableList.<FRScheduledPayment>builder()
                 .addAll(scheduledPaymentToSave)
                 .addAll(newScheduledPaymentToSave)
                 .build();
         scheduledPaymentRepository.saveAll(allScheduledPayments);
     }
 
-    void updateOffers(FRAccountData5 accountDataDiff, Set<String> accountIds) {
+    void updateOffers(FRAccountData accountDataDiff, Set<String> accountIds) {
         String accountId = accountDataDiff.getAccount().getAccountId();
         //Offers
-        List<FROffer1> offersToSave = new ArrayList<>();
-        List<FROffer1> newOffersToSave = new ArrayList<>();
+        List<FROffer> offersToSave = new ArrayList<>();
+        List<FROffer> newOffersToSave = new ArrayList<>();
         for (OBOffer1 offersDiff : accountDataDiff.getOffers()) {
 
             if (offersDiff.getAccountId() != null && !offersDiff.getAccountId().equals(accountId)) {
@@ -683,13 +683,13 @@ public class DataUpdater {
             if (offersDiff.getOfferId() == null) {
                 offersDiff.setAccountId(accountId);
                 offersDiff.setOfferId(UUID.randomUUID().toString());
-                FROffer1 offer1 = new FROffer1();
+                FROffer offer1 = new FROffer();
                 offer1.setAccountId(accountId);
                 offer1.setOffer(offersDiff);
                 offer1.setId(offersDiff.getOfferId());
                 newOffersToSave.add(offer1);
             } else {
-                Optional<FROffer1> isOffers = offerRepository.findById(offersDiff.getOfferId());
+                Optional<FROffer> isOffers = offerRepository.findById(offersDiff.getOfferId());
                 if (isOffers.isEmpty() || !isOffers.get().getAccountId().equals(offersDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The offer id '"
                             + offersDiff.getOfferId() + "' doesn't exist or doesn't belongs to this account ID.");
@@ -733,7 +733,7 @@ public class DataUpdater {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
                     String.format("Cannot add offers as it has exceeded maximum limit of %s", documentLimit));
         }
-        List<FROffer1> allOffers = ImmutableList.<FROffer1>builder()
+        List<FROffer> allOffers = ImmutableList.<FROffer>builder()
                 .addAll(offersToSave)
                 .addAll(newOffersToSave)
                 .build();

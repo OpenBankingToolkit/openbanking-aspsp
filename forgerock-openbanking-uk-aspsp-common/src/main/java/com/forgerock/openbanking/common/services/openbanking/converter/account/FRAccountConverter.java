@@ -20,10 +20,6 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRAccount1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRAccount3;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
 import com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Service;
@@ -35,7 +31,6 @@ import uk.org.openbanking.datamodel.account.OBAccount4;
 import uk.org.openbanking.datamodel.account.OBAccount6;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.account.OBCashAccount5;
-import uk.org.openbanking.datamodel.service.converter.account.OBAccountConverter;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,69 +45,70 @@ import static java.util.Collections.emptyList;
 @Service
 public class FRAccountConverter {
 
-    public FRAccount1 toAccount1(FRAccount2 account2) {
-        FRAccount1 frAccount1 = new FRAccount1();
-        frAccount1.setId(account2.getId());
-        frAccount1.setCreated(account2.getCreated());
-        frAccount1.setUserID(account2.getUserID());
-        frAccount1.setAccount(OBAccountConverter.toAccount1(account2.getAccount()));
-        frAccount1.setCreated(account2.getCreated());
-        frAccount1.setUpdated(account2.getUpdated());
-        return frAccount1;
-    }
-
-    public FRAccount1 toAccount1(FRAccount3 account3) {
-        FRAccount1 frAccount1 = new FRAccount1();
-        frAccount1.setId(account3.getId());
-        frAccount1.setUserID(account3.getUserID());
-        frAccount1.setAccount(toOBAccount1(account3.getAccount()));
-        frAccount1.setCreated(account3.getCreated());
-        frAccount1.setUpdated(account3.getUpdated());
-        return frAccount1;
-    }
-
-    public FRAccount1 toAccount1(FRAccount4 account4) {
-        FRAccount1 frAccount1 = new FRAccount1();
-        frAccount1.setId(account4.getId());
-        frAccount1.setUserID(account4.getUserID());
-        frAccount1.setAccount(toOBAccount1(account4.getAccount()));
-        frAccount1.setCreated(account4.getCreated());
-        frAccount1.setUpdated(account4.getUpdated());
-        return frAccount1;
-    }
-
-    public FRAccount2 toAccount2(FRAccount1 account1) {
-        FRAccount2 frAccount2 = new FRAccount2();
-        frAccount2.setId(account1.getId());
-        frAccount2.setCreated(account1.getCreated());
-        frAccount2.setUserID(account1.getUserID());
-        frAccount2.setAccount(OBAccountConverter.toAccount2(account1.getAccount()));
-        frAccount2.setCreated(account1.getCreated());
-        frAccount2.setUpdated(account1.getUpdated());
-        return frAccount2;
-    }
-
-    public static FRAccount3 toAccount3(FRAccount2 account2) {
-        FRAccount3 frAccount3 = new FRAccount3();
-        frAccount3.setId(account2.getId());
-        frAccount3.setUserID(account2.getUserID());
-        frAccount3.setAccount(toOBAccount3(account2.getAccount()));
-        frAccount3.setCreated(account2.getCreated());
-        frAccount3.setUpdated(account2.getUpdated());
-        frAccount3.setLatestStatementId(account2.getLatestStatementId());
-        return frAccount3;
-    }
-
-    public static FRAccount4 toAccount4(FRAccount3 account3) {
-        FRAccount4 frAccount4 = new FRAccount4();
-        frAccount4.setId(account3.getId());
-        frAccount4.setUserID(account3.getUserID());
-        frAccount4.setAccount(toOBAccount6(account3.getAccount()));
-        frAccount4.setCreated(account3.getCreated());
-        frAccount4.setUpdated(account3.getUpdated());
-        frAccount4.setLatestStatementId(account3.getLatestStatementId());
-        return frAccount4;
-    }
+    // TODO #296 - add required methods once FRAccount is using FR domain classes
+//    public FRAccount1 toAccount1(FRAccount2 account2) {
+//        FRAccount1 frAccount1 = new FRAccount1();
+//        frAccount1.setId(account2.getId());
+//        frAccount1.setCreated(account2.getCreated());
+//        frAccount1.setUserID(account2.getUserID());
+//        frAccount1.setAccount(OBAccountConverter.toAccount1(account2.getAccount()));
+//        frAccount1.setCreated(account2.getCreated());
+//        frAccount1.setUpdated(account2.getUpdated());
+//        return frAccount1;
+//    }
+//
+//    public FRAccount1 toAccount1(FRAccount3 account3) {
+//        FRAccount1 frAccount1 = new FRAccount1();
+//        frAccount1.setId(account3.getId());
+//        frAccount1.setUserID(account3.getUserID());
+//        frAccount1.setAccount(toOBAccount1(account3.getAccount()));
+//        frAccount1.setCreated(account3.getCreated());
+//        frAccount1.setUpdated(account3.getUpdated());
+//        return frAccount1;
+//    }
+//
+//    public FRAccount1 toAccount1(FRAccount account4) {
+//        FRAccount1 frAccount1 = new FRAccount1();
+//        frAccount1.setId(account4.getId());
+//        frAccount1.setUserID(account4.getUserID());
+//        frAccount1.setAccount(toOBAccount1(account4.getAccount()));
+//        frAccount1.setCreated(account4.getCreated());
+//        frAccount1.setUpdated(account4.getUpdated());
+//        return frAccount1;
+//    }
+//
+//    public FRAccount2 toAccount2(FRAccount1 account1) {
+//        FRAccount2 frAccount2 = new FRAccount2();
+//        frAccount2.setId(account1.getId());
+//        frAccount2.setCreated(account1.getCreated());
+//        frAccount2.setUserID(account1.getUserID());
+//        frAccount2.setAccount(OBAccountConverter.toAccount2(account1.getAccount()));
+//        frAccount2.setCreated(account1.getCreated());
+//        frAccount2.setUpdated(account1.getUpdated());
+//        return frAccount2;
+//    }
+//
+//    public static FRAccount3 toAccount3(FRAccount2 account2) {
+//        FRAccount3 frAccount3 = new FRAccount3();
+//        frAccount3.setId(account2.getId());
+//        frAccount3.setUserID(account2.getUserID());
+//        frAccount3.setAccount(toOBAccount3(account2.getAccount()));
+//        frAccount3.setCreated(account2.getCreated());
+//        frAccount3.setUpdated(account2.getUpdated());
+//        frAccount3.setLatestStatementId(account2.getLatestStatementId());
+//        return frAccount3;
+//    }
+//
+//    public static FRAccount toAccount4(FRAccount3 account3) {
+//        FRAccount frAccount4 = new FRAccount();
+//        frAccount4.setId(account3.getId());
+//        frAccount4.setUserID(account3.getUserID());
+//        frAccount4.setAccount(toOBAccount6(account3.getAccount()));
+//        frAccount4.setCreated(account3.getCreated());
+//        frAccount4.setUpdated(account3.getUpdated());
+//        frAccount4.setLatestStatementId(account3.getLatestStatementId());
+//        return frAccount4;
+//    }
 
     public static OBAccount1 toOBAccount1(OBAccount3 obAccount3) {
         return obAccount3 == null ? null : (new OBAccount1())

@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.service.event;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.FRPendingEventsRepository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.v3_0.FREventNotification;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.FRPendingEventsRepository;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventNotification;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;

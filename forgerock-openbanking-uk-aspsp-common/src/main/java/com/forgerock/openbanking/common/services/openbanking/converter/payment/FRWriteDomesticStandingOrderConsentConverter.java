@@ -25,7 +25,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
 import uk.org.openbanking.datamodel.payment.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toFRDataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toFRDataSCASupportData;
@@ -127,8 +127,8 @@ public class FRWriteDomesticStandingOrderConsentConverter {
                 .firstPaymentAmount(toFRAmount(initiation.getFirstPaymentAmount()))
                 .recurringPaymentAmount(toFRAmount(initiation.getRecurringPaymentAmount()))
                 .finalPaymentAmount(toFRAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
+                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
                 .build();
     }
 
@@ -143,8 +143,8 @@ public class FRWriteDomesticStandingOrderConsentConverter {
                 .firstPaymentAmount(toFRAmount(initiation.getFirstPaymentAmount()))
                 .recurringPaymentAmount(toFRAmount(initiation.getRecurringPaymentAmount()))
                 .finalPaymentAmount(toFRAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
+                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }
@@ -160,8 +160,8 @@ public class FRWriteDomesticStandingOrderConsentConverter {
                 .firstPaymentAmount(toFRAmount(initiation.getFirstPaymentAmount()))
                 .recurringPaymentAmount(toFRAmount(initiation.getRecurringPaymentAmount()))
                 .finalPaymentAmount(toFRAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
+                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }
@@ -177,8 +177,8 @@ public class FRWriteDomesticStandingOrderConsentConverter {
                 .firstPaymentAmount(toFRAmount(initiation.getFirstPaymentAmount()))
                 .recurringPaymentAmount(toFRAmount(initiation.getRecurringPaymentAmount()))
                 .finalPaymentAmount(toFRAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toFRAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
+                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }

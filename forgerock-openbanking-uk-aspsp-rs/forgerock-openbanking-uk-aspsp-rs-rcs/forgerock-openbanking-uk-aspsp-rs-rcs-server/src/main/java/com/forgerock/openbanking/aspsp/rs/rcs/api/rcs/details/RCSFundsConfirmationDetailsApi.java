@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FundsConfirmationConsentDetails;
 import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -61,7 +61,7 @@ public class RCSFundsConfirmationDetailsApi implements RCSDetailsApi {
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRFundsConfirmationConsent1 consent = fundsConfirmationService.getConsent(consentId);
+        FRFundsConfirmationConsent consent = fundsConfirmationService.getConsent(consentId);
 
         // Verify that the 'DebtorAccount' matches one of the accounts of the user and define as the selected account.
         Optional<AccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(consent.getDebtorAccount().getIdentification(), accounts);

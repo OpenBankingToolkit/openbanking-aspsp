@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_6.directdebits;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.directdebits.FRDirectDebit4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.directdebits.FRDirectDebitRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -29,8 +29,8 @@ import org.springframework.stereotype.Controller;
 public class DirectDebitsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_5.directdebits.DirectDebitsApiController implements DirectDebitsApi {
 
     public DirectDebitsApiController(@Value("${rs.page.default.direct-debits.size}") int pageLimitDirectDebits,
-                                     FRDirectDebit4Repository frDirectDebit4Repository,
+                                     FRDirectDebitRepository frDirectDebitRepository,
                                      AccountDataInternalIdFilter accountDataInternalIdFilter) {
-        super(pageLimitDirectDebits, frDirectDebit4Repository, accountDataInternalIdFilter);
+        super(pageLimitDirectDebits, frDirectDebitRepository, accountDataInternalIdFilter);
     }
 }

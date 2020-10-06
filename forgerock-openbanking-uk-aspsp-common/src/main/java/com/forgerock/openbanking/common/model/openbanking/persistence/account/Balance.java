@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 
 public interface Balance {
 
+    // TODO 296 - change OB objects to FR domain model
     OBActiveOrHistoricCurrencyAndAmount getCurrencyAndAmount();
 
     BigDecimal getAmount();

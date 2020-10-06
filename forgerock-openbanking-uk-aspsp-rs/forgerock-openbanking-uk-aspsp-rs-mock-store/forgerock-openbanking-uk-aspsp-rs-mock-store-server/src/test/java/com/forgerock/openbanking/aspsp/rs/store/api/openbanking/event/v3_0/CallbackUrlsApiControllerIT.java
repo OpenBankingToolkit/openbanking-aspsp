@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_0;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import com.forgerock.openbanking.model.Tpp;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -114,7 +114,7 @@ public class CallbackUrlsApiControllerIT {
         assertThat(response.getBody().getData().getUrl()).isEqualTo(url);
         assertThat(response.getBody().getData().getVersion()).isEqualTo("V3.0");
 
-        final Optional<FRCallbackUrl1> byId = callbackUrlsRepository.findById(response.getBody().getData().getCallbackUrlId());
+        final Optional<FRCallbackUrl> byId = callbackUrlsRepository.findById(response.getBody().getData().getCallbackUrlId());
         assertThat(byId.orElseThrow(AssertionError::new).getObCallbackUrl().getData().getUrl()).isEqualTo(url);
     }
 
@@ -142,7 +142,7 @@ public class CallbackUrlsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CONFLICT.value());
 
-        final Collection<FRCallbackUrl1> byClientId = callbackUrlsRepository.findByTppId(tpp.getId());
+        final Collection<FRCallbackUrl> byClientId = callbackUrlsRepository.findByTppId(tpp.getId());
         assertThat(byClientId.size()).isEqualTo(1); // Should still be just 1
     }
 
@@ -194,10 +194,10 @@ public class CallbackUrlsApiControllerIT {
                         .url("http://callback-"+callbackId+"-update")
                         .version("V3.0")
                 );
-        FRCallbackUrl1 frCallbackUrl1 = FRCallbackUrl1.builder()
+        FRCallbackUrl frCallbackUrl = FRCallbackUrl.builder()
                 .id(callbackId)
                 .build();
-        callbackUrlsRepository.save(frCallbackUrl1);
+        callbackUrlsRepository.save(frCallbackUrl);
 
         // When
         HttpResponse<OBCallbackUrlResponse1> response = Unirest.put("https://rs-store:" + port + "/open-banking/v3.0/callback-urls/"+callbackId)
@@ -214,7 +214,7 @@ public class CallbackUrlsApiControllerIT {
         assertThat(response.getBody().getData().getUrl()).isEqualTo("http://callback-"+callbackId+"-update");
         assertThat(response.getBody().getData().getVersion()).isEqualTo("V3.0");
 
-        final Optional<FRCallbackUrl1> byId = callbackUrlsRepository.findById(callbackId);
+        final Optional<FRCallbackUrl> byId = callbackUrlsRepository.findById(callbackId);
         assertThat(byId.orElseThrow(AssertionError::new).getObCallbackUrl().getData().getUrl()).isEqualTo("http://callback-"+callbackId+"-update");
     }
 
@@ -247,10 +247,10 @@ public class CallbackUrlsApiControllerIT {
         // Given
         //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
         String callbackId = UUID.randomUUID().toString();
-        FRCallbackUrl1 frCallbackUrl1 = FRCallbackUrl1.builder()
+        FRCallbackUrl frCallbackUrl = FRCallbackUrl.builder()
                 .id(callbackId)
                 .build();
-        callbackUrlsRepository.save(frCallbackUrl1);
+        callbackUrlsRepository.save(frCallbackUrl);
 
         // When
         HttpResponse response = Unirest.delete("https://rs-store:" + port + "/open-banking/v3.0/callback-urls/"+callbackId)
@@ -263,7 +263,7 @@ public class CallbackUrlsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(204);
 
-        final Optional<FRCallbackUrl1> byId = callbackUrlsRepository.findById(callbackId);
+        final Optional<FRCallbackUrl> byId = callbackUrlsRepository.findById(callbackId);
         assertThat(byId.isPresent()).isFalse();
 
     }
@@ -285,8 +285,8 @@ public class CallbackUrlsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(400);
     }
 
-    private FRCallbackUrl1 newFRCallbackUrl1(String id) {
-        return FRCallbackUrl1.builder()
+    private FRCallbackUrl newFRCallbackUrl1(String id) {
+        return FRCallbackUrl.builder()
                 .id(id)
                 .created(DateTime.now())
                 .tppId(tpp.getId())

@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.balance;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +36,7 @@ public interface BalanceApi {
     @RequestMapping(value = "/search/findByAccountId",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<Optional<FRBalance1>> findByAcountId(
+    ResponseEntity<Optional<FRBalance>> findByAcountId(
             @RequestParam("accountId") String accountId,
             @RequestParam("type") OBBalanceType1Code type
     );
@@ -45,6 +45,6 @@ public interface BalanceApi {
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT)
     ResponseEntity save(
-            @RequestBody FRBalance1 balance1
+            @RequestBody FRBalance balance1
     );
 }

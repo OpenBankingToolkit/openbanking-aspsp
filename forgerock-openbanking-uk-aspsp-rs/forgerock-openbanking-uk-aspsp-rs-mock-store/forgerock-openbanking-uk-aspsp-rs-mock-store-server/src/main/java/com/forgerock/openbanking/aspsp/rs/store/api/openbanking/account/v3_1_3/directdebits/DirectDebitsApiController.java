@@ -20,10 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_3.directdebits;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.directdebits.FRDirectDebit4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.directdebits.FRDirectDebitRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRDirectDebit4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRDirectDebit;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -45,15 +45,15 @@ public class DirectDebitsApiController implements DirectDebitsApi {
 
     private final int pageLimitDirectDebits;
 
-    private final FRDirectDebit4Repository frDirectDebit4Repository;
+    private final FRDirectDebitRepository frDirectDebitRepository;
 
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
     public DirectDebitsApiController(@Value("${rs.page.default.direct-debits.size}") int pageLimitDirectDebits,
-                                     FRDirectDebit4Repository frDirectDebit4Repository,
+                                     FRDirectDebitRepository frDirectDebitRepository,
                                      AccountDataInternalIdFilter accountDataInternalIdFilter) {
         this.pageLimitDirectDebits = pageLimitDirectDebits;
-        this.frDirectDebit4Repository = frDirectDebit4Repository;
+        this.frDirectDebitRepository = frDirectDebitRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
     }
 
@@ -69,7 +69,7 @@ public class DirectDebitsApiController implements DirectDebitsApi {
                                                                      String httpUrl) throws OBErrorResponseException {
         log.info("Read direct debits for account  {} with minimumPermissions {}", accountId, permissions);
 
-        Page<FRDirectDebit4> directDebits = frDirectDebit4Repository.byAccountIdWithPermissions(accountId, permissions, PageRequest.of(page, pageLimitDirectDebits));
+        Page<FRDirectDebit> directDebits = frDirectDebitRepository.byAccountIdWithPermissions(accountId, permissions, PageRequest.of(page, pageLimitDirectDebits));
         return packageResponse(page, httpUrl, directDebits);
     }
 
@@ -85,17 +85,17 @@ public class DirectDebitsApiController implements DirectDebitsApi {
                                                               String httpUrl) throws OBErrorResponseException {
         log.info("DirectDebits fron account ids {} ", accountIds);
 
-        Page<FRDirectDebit4> directDebits = frDirectDebit4Repository.byAccountIdInWithPermissions(accountIds, permissions, PageRequest.of(page, pageLimitDirectDebits));
+        Page<FRDirectDebit> directDebits = frDirectDebitRepository.byAccountIdInWithPermissions(accountIds, permissions, PageRequest.of(page, pageLimitDirectDebits));
         return packageResponse(page, httpUrl, directDebits);
     }
 
-    private ResponseEntity<OBReadDirectDebit2> packageResponse(int page, String httpUrl, Page<FRDirectDebit4> directDebits) {
+    private ResponseEntity<OBReadDirectDebit2> packageResponse(int page, String httpUrl, Page<FRDirectDebit> directDebits) {
         int totalPages = directDebits.getTotalPages();
 
         return ResponseEntity.ok(new OBReadDirectDebit2()
                 .data(new OBReadDirectDebit2Data().directDebit(directDebits.getContent()
                         .stream()
-                        .map(FRDirectDebit4::getDirectDebit)
+                        .map(FRDirectDebit::getDirectDebit)
                         .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

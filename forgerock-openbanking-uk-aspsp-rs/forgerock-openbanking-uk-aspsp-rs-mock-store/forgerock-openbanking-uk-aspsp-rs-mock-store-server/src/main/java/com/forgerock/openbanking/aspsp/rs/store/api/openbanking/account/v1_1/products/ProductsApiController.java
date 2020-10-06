@@ -20,10 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.products;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.products.FRProduct2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.products.FRProductRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRProduct1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRProduct2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRProduct;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRProductConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -33,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +47,7 @@ import uk.org.openbanking.datamodel.account.OBReadProduct1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRProductConverter.toOBProduct1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("ProductsApiV1.1")
@@ -58,7 +57,7 @@ public class ProductsApiController implements ProductsApi {
     @Value("${rs.page.default.products.size}")
     private int PAGE_LIMIT_PRODUCTS;
     @Autowired
-    private FRProduct2Repository frProduct2Repository;
+    private FRProductRepository frProductRepository;
     @Autowired
     private FRProductConverter productConverter;
 
@@ -87,9 +86,9 @@ public class ProductsApiController implements ProductsApi {
     ) {
         LOGGER.info("Read product for account  {} with minimumPermissions {}", accountId, permissions);
 
-        Page<FRProduct2> productsResponse = frProduct2Repository.byAccountIdWithPermissions(accountId, permissions,
-                PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
-        List<OBProduct1> products = productsResponse.stream().map(b -> productConverter.toProduct1(b).getProduct())
+        Page<FRProduct> productsResponse = frProductRepository.byAccountIdWithPermissions(accountId, permissions, PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
+        List<OBProduct1> products = productsResponse.getContent().stream()
+                .map(b -> toOBProduct1(b.getProduct()))
                 .collect(Collectors.toList());
 
         int totalPage = productsResponse.getTotalPages();
@@ -132,16 +131,15 @@ public class ProductsApiController implements ProductsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Reading products from account ids {}", accountIds);
-        Page<FRProduct1> products = new PageImpl(
-                frProduct2Repository.byAccountIdInWithPermissions(accountIds, permissions,
-                        PageRequest.of(page, PAGE_LIMIT_PRODUCTS))
-                        .stream().map(b -> productConverter.toProduct1(b)).collect(Collectors.toList()));
+        Page<FRProduct> frProducts = frProductRepository.byAccountIdInWithPermissions(accountIds, permissions, PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
 
-        int totalPage = products.getTotalPages();
+        int totalPage = frProducts.getTotalPages();
 
         return ResponseEntity.ok(new OBReadProduct1()
-                .data(new OBReadDataProduct1().product(products.getContent().stream()
-                        .map(FRProduct1::getProduct).collect(Collectors.toList())))
+                .data(new OBReadDataProduct1()
+                        .product(frProducts.getContent().stream()
+                                .map(p -> toOBProduct1(p.getProduct()))
+                                .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }

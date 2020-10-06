@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.CallbackFailedException;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.EventNotificationService;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRScheduledPayment1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_5.FRStandingOrder6;
 import com.forgerock.openbanking.common.services.notification.EventSubject;
 import com.forgerock.openbanking.common.services.notification.EventType;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -59,7 +59,7 @@ public class PaymentNotificationFacade {
         createAndSendNotification(paymentConsent.getId(), paymentConsent.getPispId());
     }
 
-    public void paymentStatusChanged(FRScheduledPayment1 scheduledPayment) {
+    public void paymentStatusChanged(FRScheduledPayment scheduledPayment) {
         if (scheduledPayment.getPispId()==null) {
             // Some old scheduled payments may have been created without pisp ids so ignore them for notifications
             log.warn("Cannot send a notification for scheduled payment id: '{}' because the pisp id on the payment is null", scheduledPayment.getId());
@@ -69,7 +69,7 @@ public class PaymentNotificationFacade {
         createAndSendNotification(scheduledPayment.getId(), scheduledPayment.getPispId());
     }
 
-    public void paymentStatusChanged(FRStandingOrder6 frStandingOrder) {
+    public void paymentStatusChanged(FRStandingOrder frStandingOrder) {
         if (frStandingOrder.getPispId()==null) {
             // Some old standing orders may have been created without pisp ids so ignore them for notifications
             log.warn("Cannot send a notification for standing order payment id: '{}' because the pisp id on the payment is null", frStandingOrder.getId());

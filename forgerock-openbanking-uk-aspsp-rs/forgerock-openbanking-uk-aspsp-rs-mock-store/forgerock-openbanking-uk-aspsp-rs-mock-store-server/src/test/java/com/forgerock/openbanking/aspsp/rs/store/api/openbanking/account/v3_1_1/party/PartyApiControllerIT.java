@@ -21,9 +21,9 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.party;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party.FRParty2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRParty2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -53,25 +53,25 @@ public class PartyApiControllerIT {
     private int port;
 
     @Autowired
-    private FRParty2Repository frPartyRepository;
+    private FRPartyRepository frPartyRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
 
 
-    private FRParty2 accountParty;
-    private FRParty2 userParty;
+    private FRParty accountParty;
+    private FRParty userParty;
 
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
-        accountParty = JMockData.mock(FRParty2.class);
+        accountParty = JMockData.mock(FRParty.class);
         accountParty.setAccountId(UUID.randomUUID().toString());
         accountParty.setParty(new OBParty2().partyId("accountParty"));
         frPartyRepository.save(accountParty);
 
-        userParty = JMockData.mock(FRParty2.class);
+        userParty = JMockData.mock(FRParty.class);
         userParty.setUserId(UUID.randomUUID().toString());
         userParty.setParty(new OBParty2().partyId("userParty"));
         frPartyRepository.save(userParty);
@@ -124,7 +124,7 @@ public class PartyApiControllerIT {
         String username = UUID.randomUUID().toString();
         //springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
 
-        FRParty2 userParty = JMockData.mock(FRParty2.class);
+        FRParty userParty = JMockData.mock(FRParty.class);
         userParty.setUserId(username);
         userParty.setParty(new OBParty2().partyId("2"));
         frPartyRepository.save(userParty);

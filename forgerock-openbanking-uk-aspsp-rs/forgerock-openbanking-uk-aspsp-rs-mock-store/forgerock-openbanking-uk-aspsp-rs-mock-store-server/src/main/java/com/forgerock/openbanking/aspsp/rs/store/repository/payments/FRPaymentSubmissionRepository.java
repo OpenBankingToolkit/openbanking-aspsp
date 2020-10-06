@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.payments;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.v1_0.FRPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSubmission;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface FRPaymentSubmissionRepository extends MongoRepository<FRPaymentSubmission, String> {}

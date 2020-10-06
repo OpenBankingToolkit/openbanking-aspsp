@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRParty2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -29,13 +29,13 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 
-public interface FRParty2Repository extends MongoRepository<FRParty2, String>, FRParty2RepositoryCustom {
+public interface FRParty2Repository extends MongoRepository<FRParty, String>, FRParty2RepositoryCustom {
 
-    FRParty2 findByAccountId(@Param("accountId") String accountId);
-    Page<FRParty2> findByAccountIdIn(@Param("accountIds") List<String> accountIds, Pageable pageable);
+    FRParty findByAccountId(@Param("accountId") String accountId);
+    Page<FRParty> findByAccountIdIn(@Param("accountIds") List<String> accountIds, Pageable pageable);
 
     Long deleteFRParty2ByAccountId(@Param("accountId") String accountId);
     Long deleteFRParty2ByUserId(@Param("userId") String userId);
-    FRParty2 findByUserId(@Param("userId") String userId);
+    FRParty findByUserId(@Param("userId") String userId);
 
 }

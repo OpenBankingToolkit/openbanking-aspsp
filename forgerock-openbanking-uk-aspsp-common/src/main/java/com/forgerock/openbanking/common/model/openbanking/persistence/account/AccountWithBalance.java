@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,11 +30,12 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AccountWithBalance extends FRAccount4 {
+public class AccountWithBalance extends FRAccount {
 
+    // TODO 296 - change OB objects to FR domain model
     private List<OBCashBalance1> balances;
 
-    public AccountWithBalance(FRAccount4 account, List<OBCashBalance1> balances) {
+    public AccountWithBalance(FRAccount account, List<OBCashBalance1> balances) {
         this.id = account.id;
         this.userID = account.userID;
         this.account = account.account;

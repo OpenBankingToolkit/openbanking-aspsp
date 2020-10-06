@@ -27,9 +27,9 @@ import com.forgerock.openbanking.aspsp.rs.simulator.event.notification.TppEventN
 import com.forgerock.openbanking.aspsp.rs.simulator.event.store.AggregatedPollingService;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.store.CallbackUrlsService;
 import com.forgerock.openbanking.aspsp.rs.simulator.event.store.EventSubscriptionService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.v3_0.FREventNotification;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import com.forgerock.openbanking.common.services.notification.EventSubject;
 import com.forgerock.openbanking.common.services.notification.EventType;
 import com.forgerock.openbanking.model.Tpp;
@@ -99,7 +99,7 @@ public class EventNotificationServiceTest {
         // Given
         final String tppEventCallback = "http://myTpp/v3.1/event-notifications";
         given(eventSubscriptionService.findByTppId(eq(TPP.getId()))).willReturn(Collections.singleton(
-                FREventSubscription1.builder()
+                FREventSubscription.builder()
                         .obEventSubscription1(new OBEventSubscription1().data(
                                 new OBEventSubscription1Data()
                                         .callbackUrl(tppEventCallback)))
@@ -120,7 +120,7 @@ public class EventNotificationServiceTest {
         // Given
         final String tppEventCallback = "http://myTpp/v3.1/event-notifications";
         given(eventSubscriptionService.findByTppId(eq(TPP.getId()))).willReturn(Collections.singleton(
-                FREventSubscription1.builder()
+                FREventSubscription.builder()
                         .obEventSubscription1(new OBEventSubscription1().data(
                                 new OBEventSubscription1Data()
                                         .callbackUrl(tppEventCallback)
@@ -142,7 +142,7 @@ public class EventNotificationServiceTest {
     public void createAndSendNotification_gotEventSubscription_WithoutCallbackUrl_save() throws Exception{
         // Given
         given(eventSubscriptionService.findByTppId(eq(TPP.getId()))).willReturn(Collections.singleton(
-                FREventSubscription1.builder()
+                FREventSubscription.builder()
                         .obEventSubscription1(new OBEventSubscription1().data(
                                 new OBEventSubscription1Data()
                                         .callbackUrl(null)))
@@ -164,7 +164,7 @@ public class EventNotificationServiceTest {
         final String tppEventCallback = "http://myTpp/v3.1/event-notifications";
         given(eventSubscriptionService.findByTppId(any())).willReturn(Collections.emptyList());
         given(callbackUrlsService.findByTppId(eq(TPP.getId()))).willReturn(Collections.singleton(
-                FRCallbackUrl1.builder()
+                FRCallbackUrl.builder()
                         .obCallbackUrl(new OBCallbackUrl1().data(new OBCallbackUrlData1().url(tppEventCallback)))
                         .build()
         ));

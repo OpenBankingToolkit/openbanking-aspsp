@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_3.accounts;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_3.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -41,10 +41,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AccountsApiController implements AccountsApi {
 
-    private final FRAccount4Repository frAccount4Repository;
+    private final FRAccountRepository frAccountRepository;
 
-    public AccountsApiController(FRAccount4Repository frAccount4Repository) {
-        this.frAccount4Repository = frAccount4Repository;
+    public AccountsApiController(FRAccountRepository frAccountRepository) {
+        this.frAccountRepository = frAccountRepository;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class AccountsApiController implements AccountsApi {
                                                      List<OBExternalPermissions1Code> permissions,
                                                      String httpUrl) throws OBErrorResponseException {
         log.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount4 response = frAccount4Repository.byAccountId(accountId, permissions);
+        FRAccount response = frAccountRepository.byAccountId(accountId, permissions);
 
         List<OBAccount6> obAccounts = Collections.singletonList(response.getAccount());
         return ResponseEntity.ok(new OBReadAccount5()
@@ -78,7 +78,7 @@ public class AccountsApiController implements AccountsApi {
                                                       String httpUrl) throws OBErrorResponseException {
         log.info("Accounts from account ids {}", accountIds);
 
-        List<FRAccount4> frAccounts = frAccount4Repository.byAccountIds(accountIds, permissions);
+        List<FRAccount> frAccounts = frAccountRepository.byAccountIds(accountIds, permissions);
         List<OBAccount6> obAccounts = frAccounts
                 .stream()
                 .map(frAccount -> frAccount.getAccount())

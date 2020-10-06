@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRChargeBearerType;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataInitiationCreditor;
@@ -60,10 +60,10 @@ public class FRWriteInternationalDataInitiation {
     private String destinationCountryCode;
     private FRAmount instructedAmount;
     private FRExchangeRateInformation exchangeRateInformation;
-    private FRAccount debtorAccount;
+    private FRFinancialAccount debtorAccount;
     private FRDataInitiationCreditor creditor;
     private FRDataInitiationCreditorAgent creditorAgent;
-    private FRAccount creditorAccount;
+    private FRFinancialAccount creditorAccount;
     private FRRemittanceInformation remittanceInformation;
     private FRSupplementaryData supplementaryData;
 }

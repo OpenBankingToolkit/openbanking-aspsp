@@ -20,28 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v1_1.FRDirectDebit1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v2_0.FRStatement1;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRAccount3;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRBeneficiary3;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRScheduledPayment2;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRStandingOrder5;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_1_1.FRTransaction5;
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.util.CloseableIterator;
-
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.MigrationHelper.getLegacyDocuments;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.MigrationHelper.migrate;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter.toAccount4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRBeneficiaryConverter.toFRBeneficiary5;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRDirectDebitConverter.toFRDirectDebit4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRScheduledPaymentConverter.toFRScheduledPayment4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter.toFRStandingOrder6;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStatementConverter.toFRStatement4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRTransactionConverter.toFRTransaction6;
 
 @ChangeLog
 @Slf4j
@@ -51,26 +33,27 @@ public class MongoDbAccountsChangeLog {
     public void migrateAccountDocuments(MongoTemplate mongoTemplate) {
         log.info("Migrating accounts API data from v3.1.2 to v3.1.6...");
 
-        CloseableIterator<FRAccount3> frAccounts = getLegacyDocuments(mongoTemplate, FRAccount3.class);
-        frAccounts.forEachRemaining(f -> migrate(mongoTemplate, f, toAccount4(f)));
-
-        CloseableIterator<FRBeneficiary3> frBeneficiaries = getLegacyDocuments(mongoTemplate, FRBeneficiary3.class);
-        frBeneficiaries.forEachRemaining(f -> migrate(mongoTemplate, f, toFRBeneficiary5(f)));
-
-        CloseableIterator<FRStandingOrder5> frStandingOrders = getLegacyDocuments(mongoTemplate, FRStandingOrder5.class);
-        frStandingOrders.forEachRemaining(f -> migrate(mongoTemplate, f, toFRStandingOrder6(f)));
-
-        CloseableIterator<FRTransaction5> frTransactionsIterator = getLegacyDocuments(mongoTemplate, FRTransaction5.class);
-        frTransactionsIterator.forEachRemaining(f -> migrate(mongoTemplate, f, toFRTransaction6(f)));
-
-        CloseableIterator<FRStatement1> frStatements = getLegacyDocuments(mongoTemplate, FRStatement1.class);
-        frStatements.forEachRemaining(f -> migrate(mongoTemplate, f, toFRStatement4(f)));
-
-        CloseableIterator<FRScheduledPayment2> frScheduledPayments = getLegacyDocuments(mongoTemplate, FRScheduledPayment2.class);
-        frScheduledPayments.forEachRemaining(f -> migrate(mongoTemplate, f, toFRScheduledPayment4(f)));
-
-        CloseableIterator<FRDirectDebit1> frDirectDebits = getLegacyDocuments(mongoTemplate, FRDirectDebit1.class);
-        frDirectDebits.forEachRemaining(f -> migrate(mongoTemplate, f, toFRDirectDebit4(f)));
+        // TODO #296 - add legacy account objects to legacy.accounts package (and deprecate them)
+//        CloseableIterator<FRAccount3> frAccounts = getLegacyDocuments(mongoTemplate, FRAccount3.class);
+//        frAccounts.forEachRemaining(f -> migrate(mongoTemplate, f, toAccount4(f)));
+//
+//        CloseableIterator<FRBeneficiary3> frBeneficiaries = getLegacyDocuments(mongoTemplate, FRBeneficiary3.class);
+//        frBeneficiaries.forEachRemaining(f -> migrate(mongoTemplate, f, toFRBeneficiary5(f)));
+//
+//        CloseableIterator<FRStandingOrder5> frStandingOrders = getLegacyDocuments(mongoTemplate, FRStandingOrder5.class);
+//        frStandingOrders.forEachRemaining(f -> migrate(mongoTemplate, f, toFRStandingOrder6(f)));
+//
+//        CloseableIterator<FRTransaction5> frTransactionsIterator = getLegacyDocuments(mongoTemplate, FRTransaction5.class);
+//        frTransactionsIterator.forEachRemaining(f -> migrate(mongoTemplate, f, toFRTransaction6(f)));
+//
+//        CloseableIterator<FRStatement1> frStatements = getLegacyDocuments(mongoTemplate, FRStatement1.class);
+//        frStatements.forEachRemaining(f -> migrate(mongoTemplate, f, toFRStatement4(f)));
+//
+//        CloseableIterator<FRScheduledPayment2> frScheduledPayments = getLegacyDocuments(mongoTemplate, FRScheduledPayment2.class);
+//        frScheduledPayments.forEachRemaining(f -> migrate(mongoTemplate, f, toFRScheduledPayment4(f)));
+//
+//        CloseableIterator<FRDirectDebit1> frDirectDebits = getLegacyDocuments(mongoTemplate, FRDirectDebit1.class);
+//        frDirectDebits.forEachRemaining(f -> migrate(mongoTemplate, f, toFRDirectDebit4(f)));
 
         log.info("Finished migrating accounts API data from v3.1.2 to v3.1.6");
     }

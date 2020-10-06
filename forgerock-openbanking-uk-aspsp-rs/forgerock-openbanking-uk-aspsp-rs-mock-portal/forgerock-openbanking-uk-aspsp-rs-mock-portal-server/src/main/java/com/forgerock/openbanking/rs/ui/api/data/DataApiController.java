@@ -23,7 +23,7 @@ package com.forgerock.openbanking.rs.ui.api.data;
 import com.forgerock.openbanking.analytics.model.entries.PsuCounterEntry;
 import com.forgerock.openbanking.analytics.services.PsuCounterEntryKPIService;
 import com.forgerock.openbanking.common.conf.data.DataConfigurationProperties;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.v3_0.data.FRUserData3;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRUserData;
 import com.forgerock.openbanking.common.services.store.data.UserDataService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -73,7 +73,7 @@ public class DataApiController implements DataApi {
     @Override
     public ResponseEntity updateUserData(
             @ApiParam(value = "User financial data", required = true)
-            @RequestBody FRUserData3 userData,
+            @RequestBody FRUserData userData,
 
             Principal principal
     ) throws OBErrorException {
@@ -107,7 +107,7 @@ public class DataApiController implements DataApi {
     @Override
     public ResponseEntity createUserData(
             @ApiParam(value = "User financial data", required = true)
-            @RequestBody FRUserData3 userData,
+            @RequestBody FRUserData userData,
 
             Principal principal
     ) throws OBErrorException {

@@ -23,12 +23,12 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.funds.v3_0;
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfirmationConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.persistence.funds.v3_0.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.model.Tpp;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -103,7 +103,7 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
         log.debug("Received '{}'.", obFundsConfirmationConsent);
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
-        FRFundsConfirmationConsent1 consent = FRFundsConfirmationConsent1.builder()
+        FRFundsConfirmationConsent consent = FRFundsConfirmationConsent.builder()
                 .id(IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
                 .fundsConfirmationConsent(obFundsConfirmationConsent)
@@ -188,7 +188,7 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
 
             Principal principal
             ) {
-        Optional<FRFundsConfirmationConsent1> existingConsent = fundsConfirmationConsentRepository.findById(consentId);
+        Optional<FRFundsConfirmationConsent> existingConsent = fundsConfirmationConsentRepository.findById(consentId);
         if (existingConsent.isPresent()) {
             log.debug("Deleting fund confirmation consent: {}", consentId);
             fundsConfirmationConsentRepository.deleteById(consentId);
@@ -199,7 +199,7 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
 
     }
 
-    private OBFundsConfirmationConsentResponse1 packageResponse(FRFundsConfirmationConsent1 consent) {
+    private OBFundsConfirmationConsentResponse1 packageResponse(FRFundsConfirmationConsent consent) {
         return new OBFundsConfirmationConsentResponse1()
                 .data(new OBFundsConfirmationConsentDataResponse1()
                         .debtorAccount(consent.getFundsConfirmationConsent().getData().getDebtorAccount())

@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPostalAddress;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
@@ -49,8 +49,8 @@ public class FRWriteDomesticDataInitiation {
     private String endToEndIdentification;
     private String localInstrument;
     private FRAmount instructedAmount;
-    private FRAccount debtorAccount;
-    private FRAccount creditorAccount;
+    private FRFinancialAccount debtorAccount;
+    private FRFinancialAccount creditorAccount;
     private FRPostalAddress creditorPostalAddress;
     private FRRemittanceInformation remittanceInformation;
     private FRSupplementaryData supplementaryData;

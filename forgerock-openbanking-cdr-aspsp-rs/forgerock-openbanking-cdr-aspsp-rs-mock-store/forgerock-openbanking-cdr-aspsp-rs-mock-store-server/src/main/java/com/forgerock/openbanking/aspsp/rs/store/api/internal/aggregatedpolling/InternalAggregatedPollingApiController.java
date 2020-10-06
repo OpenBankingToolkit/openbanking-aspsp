@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.aggregatedpolling;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.FRPendingEventsRepository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.v3_0.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventNotification;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
