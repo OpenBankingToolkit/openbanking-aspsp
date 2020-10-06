@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[090a16795f146c2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/090a16795f146c2) JamieB *2020-10-06 09:34:45*
+Release candidate: prepare for next development iteration
+## 1.0.103
 ### GitHub [#283](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/283) Feature/lbg/issue obdeploy 606
 [81188506085341e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/81188506085341e) Jorge Sanchez Perez *2020-09-30 11:32:23*
 Feature/lbg/issue obdeploy 606 (#283)
@@ -9,6 +12,32 @@ Feature/lbg/issue obdeploy 606 (#283)
 - changed the mediaType to `text/plain` instead of `text/csv`
 
 * badge release changed to github release
+### GitHub [#284](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/284) Release/1.0.102
+[d2c38ec9e36f729](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d2c38ec9e36f729) Jorge Sanchez Perez *2020-09-30 12:09:46*
+Release/1.0.102 (#284)
+
+* Release candidate: prepare release 1.0.102
+
+* Release candidate: prepare for next development iteration
+
+* changelog updated
+[3430f68c3636578](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3430f68c3636578) JamieB *2020-10-06 09:34:36*
+Release candidate: prepare release 1.0.103
+[1a001bf7f085d96](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1a001bf7f085d96) JamieB *2020-10-06 09:24:52*
+Fix missing analytics entries use 1.0.41 of ob clients
+
+Use latests versions of ob libs that use version 1.0.41 of openbanking
+clients which contains a fix
+
+Part fix for https://github.com/OpenBankingToolkit/openbanking-analytics/issues/163
+[62ebb09658028a3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/62ebb09658028a3) dependabot-preview[bot] *2020-10-05 08:59:14*
+Bump forgerock-openbanking-jwkms-embedded from 1.1.73 to 1.1.74
+
+Bumps [forgerock-openbanking-jwkms-embedded](https://github.com/OpenBankingToolkit/openbanking-jwkms) from 1.1.73 to 1.1.74.
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-jwkms/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-jwkms/compare/1.1.73...1.1.74)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
 [43bb526864e027b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/43bb526864e027b) JamieB *2020-09-29 09:37:28*
 Release candidate: prepare for next development iteration
 ## 1.0.101

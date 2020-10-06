@@ -68,13 +68,6 @@
         <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-mock-store/forgerock-openbanking-uk-aspsp-rs-mock-store-sample</module>
         <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-rcs/forgerock-openbanking-uk-aspsp-rs-rcs-server</module>
         <module>forgerock-openbanking-uk-aspsp-rs/forgerock-openbanking-uk-aspsp-rs-rcs/forgerock-openbanking-uk-aspsp-rs-rcs-sample</module>
-        <module>forgerock-openbanking-cdr-aspsp-rs/forgerock-openbanking-cdr-aspsp-rs-model</module>
-        <module>forgerock-openbanking-cdr-aspsp-rs/forgerock-openbanking-cdr-aspsp-rs-gateway/forgerock-openbanking-cdr-aspsp-rs-gateway-sample</module>
-        <module>forgerock-openbanking-cdr-aspsp-rs/forgerock-openbanking-cdr-aspsp-rs-gateway/forgerock-openbanking-cdr-aspsp-rs-gateway-server</module>
-        <module>forgerock-openbanking-cdr-aspsp-rs/forgerock-openbanking-cdr-aspsp-rs-mock-store/forgerock-openbanking-cdr-aspsp-rs-mock-store-sample</module>
-        <module>forgerock-openbanking-cdr-aspsp-rs/forgerock-openbanking-cdr-aspsp-rs-mock-store/forgerock-openbanking-cdr-aspsp-rs-mock-store-server</module>
-        <module>forgerock-openbanking-cdr-aspsp-as/forgerock-openbanking-cdr-aspsp-as-gateway/forgerock-openbanking-cdr-aspsp-as-gateway-server</module>
-        <module>forgerock-openbanking-cdr-aspsp-as/forgerock-openbanking-cdr-aspsp-as-gateway/forgerock-openbanking-cdr-aspsp-as-gateway-sample</module>
     </modules>
 
     <dependencyManagement>
