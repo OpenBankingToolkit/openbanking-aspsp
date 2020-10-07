@@ -1,106 +1,12 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
-[090a16795f146c2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/090a16795f146c2) JamieB *2020-10-06 09:34:45*
+[01e143ac8a5097f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/01e143ac8a5097f) JamieB *2020-10-07 09:43:22*
 Release candidate: prepare for next development iteration
+
+This reverts commit b198ec1ab8b95a1c75ebef72bfdf52c7c43b1ffe, reversing
+changes made to 006af5906e56448d8e15b7c3f6043d35bf5ddf1e.
 ## 1.0.103
-### GitHub [#283](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/283) Feature/lbg/issue obdeploy 606
-[81188506085341e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/81188506085341e) Jorge Sanchez Perez *2020-09-30 11:32:23*
-Feature/lbg/issue obdeploy 606 (#283)
-
-* Payment File Type - MediaType changed (Batch and Bulk)
-- changed the mediaType to `text/plain` instead of `text/csv`
-
-* badge release changed to github release
-### GitHub [#284](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/284) Release/1.0.102
-[d2c38ec9e36f729](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d2c38ec9e36f729) Jorge Sanchez Perez *2020-09-30 12:09:46*
-Release/1.0.102 (#284)
-
-* Release candidate: prepare release 1.0.102
-
-* Release candidate: prepare for next development iteration
-
-* changelog updated
-[3430f68c3636578](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3430f68c3636578) JamieB *2020-10-06 09:34:36*
-Release candidate: prepare release 1.0.103
-[1a001bf7f085d96](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1a001bf7f085d96) JamieB *2020-10-06 09:24:52*
-Fix missing analytics entries use 1.0.41 of ob clients
-
-Use latests versions of ob libs that use version 1.0.41 of openbanking
-clients which contains a fix
-
-Part fix for https://github.com/OpenBankingToolkit/openbanking-analytics/issues/163
-[62ebb09658028a3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/62ebb09658028a3) dependabot-preview[bot] *2020-10-05 08:59:14*
-Bump forgerock-openbanking-jwkms-embedded from 1.1.73 to 1.1.74
-
-Bumps [forgerock-openbanking-jwkms-embedded](https://github.com/OpenBankingToolkit/openbanking-jwkms) from 1.1.73 to 1.1.74.
-- [Release notes](https://github.com/OpenBankingToolkit/openbanking-jwkms/releases)
-- [Commits](https://github.com/OpenBankingToolkit/openbanking-jwkms/compare/1.1.73...1.1.74)
-
-Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
-[43bb526864e027b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/43bb526864e027b) JamieB *2020-09-29 09:37:28*
-Release candidate: prepare for next development iteration
-## 1.0.101
-[aea2d305be072d7](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/aea2d305be072d7) Matt Wills *2020-09-17 08:10:15*
-New Payment consent FR model objects (#296)
-[2fa17af225eb155](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2fa17af225eb155) JamieB *2020-09-23 14:11:38*
-Updated ui project version to updating-ui-version-to-3.1.6-rem-rc1
-[00bf3b045b6951c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/00bf3b045b6951c) JamieB *2020-09-29 09:37:20*
-Release candidate: prepare release 1.0.101
-[d2a5578aae14713](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d2a5578aae14713) JamieB *2020-09-29 09:28:26*
-Use latest openbanking-starter-parent 1.0.83
-[b43e7382a8f9c7d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b43e7382a8f9c7d) JamieB *2020-09-29 08:56:28*
-Improved error when incorrect type is used in b64 jws header
-[f2aec21fa339ddd](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f2aec21fa339ddd) JamieB *2020-09-29 08:39:03*
-Remove duplicate test
-[e99722e3becea3d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e99722e3becea3d) JamieB *2020-09-29 08:27:14*
-Remove unused import
-[01e82666a58b8af](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/01e82666a58b8af) JamieB *2020-09-29 08:10:06*
-More refactoring and addressing of PR comments
-[92126b6c2976f10](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92126b6c2976f10) JamieB *2020-09-28 15:54:13*
-Refactor and Optimise DetachedJwsVerifier
-
-Fix bad format in debug string
-Refactoring of DetachedJwsVerifier
-Optimisation of DetachedJwsVerifier
-Removed needless reconstruction of full jws in methods just
-manipulating/using the header
-Made newly added test work like other tests
-Add missing javadoc
-Makes ClaimsUtils naming more explicit - Now called JwsClaimsUtils
-[2dac7dd056b5484](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2dac7dd056b5484) JamieB *2020-09-28 14:00:01*
-Address PR comments
-
-https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/281/
-[97e8718e4238aaf](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/97e8718e4238aaf) JamieB *2020-09-28 13:07:10*
-Use nimbusds shaded minidev library
-
-Latest nimbusds is packaged with a shaded version of minidev. aspsp used
-to have minidev as a package, the version of which was controlled in the
-openbanking-parent pom. We now need to remove that dependency and
-changes our code to use classes directly from the shaded nimbusds
-libary.
-[68fd47483d0596b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/68fd47483d0596b) dependabot-preview[bot] *2020-09-28 08:45:21*
-Bump ob-clients.version from 1.0.36 to 1.0.40
-
-Bumps `ob-clients.version` from 1.0.36 to 1.0.40.
-
-Updates `forgerock-openbanking-jwkms-client` from 1.0.36 to 1.0.40
-- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
-- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/1.0.36...1.0.40)
-
-Updates `forgerock-openbanking-analytics-client` from 1.0.36 to 1.0.40
-- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
-- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/1.0.36...1.0.40)
-
-Updates `forgerock-openbanking-analytics-webclient` from 1.0.36 to 1.0.40
-- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
-- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/1.0.36...1.0.40)
-
-Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
-[86ee5a444b8ba34](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/86ee5a444b8ba34) Matt Wills *2020-09-10 10:50:20*
-Release candidate: prepare for next development iteration
-## 1.0.100
 ### GitHub [#170](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/170) Bump forgerock-openbanking-starter-parent from 1.0.66 to 1.0.67
 [7cf1703eed6fe35](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7cf1703eed6fe35) Matt Wills *2020-07-22 13:52:02*
 Separated the reporting of the API versions, so that the read/write API and client registration API can be specified separately (#170)
@@ -376,6 +282,25 @@ Ensured detached JWS headers containing a b64 claim are rejected from 3.1.4 onwa
 ### GitHub [#282](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/282) Make release 1.0.101
 [0893846c278ec7b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0893846c278ec7b) Matt Wills *2020-09-10 09:50:16*
 Fix for idempotency verification. Removed redundant repositories (#282)
+### GitHub [#283](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/283) Feature/lbg/issue obdeploy 606
+[81188506085341e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/81188506085341e) Jorge Sanchez Perez *2020-09-30 11:32:23*
+Feature/lbg/issue obdeploy 606 (#283)
+
+* Payment File Type - MediaType changed (Batch and Bulk)
+- changed the mediaType to `text/plain` instead of `text/csv`
+
+* badge release changed to github release
+### GitHub [#284](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/284) Release/1.0.102
+[d2c38ec9e36f729](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d2c38ec9e36f729) Jorge Sanchez Perez *2020-09-30 12:09:46*
+Release/1.0.102 (#284)
+
+* Release candidate: prepare release 1.0.102
+
+* Release candidate: prepare for next development iteration
+
+* changelog updated
+[aea2d305be072d7](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/aea2d305be072d7) Matt Wills *2020-09-17 08:10:15*
+New Payment consent FR model objects (#296)
 [9f6afb8063341ee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f6afb8063341ee) Jorge Sanchez Perez *2020-04-24 17:06:53*
 Release 1.0.79 (#181)
 
@@ -506,10 +431,80 @@ Bumps [forgerock-openbanking-jwkms-embedded](https://github.com/OpenBankingToolk
 - [Commits](https://github.com/OpenBankingToolkit/openbanking-jwkms/compare/forgerock-openbanking-reference-implementation-jwkms-1.1.67...1.1.70)
 
 Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[2fa17af225eb155](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2fa17af225eb155) JamieB *2020-09-23 14:11:38*
+Updated ui project version to updating-ui-version-to-3.1.6-rem-rc1
 [f3b878ca0944044](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f3b878ca0944044) JamieB *2020-05-15 09:52:09*
 Updated ui project version to updating-ui-version-to-3.1.2-queen-rc7
-[58d5f5075306aaa](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/58d5f5075306aaa) Matt Wills *2020-09-10 10:43:41*
-Release candidate: prepare release 1.0.100
+[3430f68c3636578](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3430f68c3636578) JamieB *2020-10-06 09:34:36*
+Release candidate: prepare release 1.0.103
+[1a001bf7f085d96](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1a001bf7f085d96) JamieB *2020-10-06 09:24:52*
+Fix missing analytics entries use 1.0.41 of ob clients
+
+Use latests versions of ob libs that use version 1.0.41 of openbanking
+clients which contains a fix
+
+Part fix for https://github.com/OpenBankingToolkit/openbanking-analytics/issues/163
+[62ebb09658028a3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/62ebb09658028a3) dependabot-preview[bot] *2020-10-05 08:59:14*
+Bump forgerock-openbanking-jwkms-embedded from 1.1.73 to 1.1.74
+
+Bumps [forgerock-openbanking-jwkms-embedded](https://github.com/OpenBankingToolkit/openbanking-jwkms) from 1.1.73 to 1.1.74.
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-jwkms/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-jwkms/compare/1.1.73...1.1.74)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[43bb526864e027b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/43bb526864e027b) JamieB *2020-09-29 09:37:28*
+Release candidate: prepare for next development iteration
+[b43e7382a8f9c7d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b43e7382a8f9c7d) JamieB *2020-09-29 08:56:28*
+Improved error when incorrect type is used in b64 jws header
+[f2aec21fa339ddd](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f2aec21fa339ddd) JamieB *2020-09-29 08:39:03*
+Remove duplicate test
+[e99722e3becea3d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e99722e3becea3d) JamieB *2020-09-29 08:27:14*
+Remove unused import
+[01e82666a58b8af](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/01e82666a58b8af) JamieB *2020-09-29 08:10:06*
+More refactoring and addressing of PR comments
+[92126b6c2976f10](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92126b6c2976f10) JamieB *2020-09-28 15:54:13*
+Refactor and Optimise DetachedJwsVerifier
+
+Fix bad format in debug string
+Refactoring of DetachedJwsVerifier
+Optimisation of DetachedJwsVerifier
+Removed needless reconstruction of full jws in methods just
+manipulating/using the header
+Made newly added test work like other tests
+Add missing javadoc
+Makes ClaimsUtils naming more explicit - Now called JwsClaimsUtils
+[2dac7dd056b5484](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2dac7dd056b5484) JamieB *2020-09-28 14:00:01*
+Address PR comments
+
+https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/281/
+[97e8718e4238aaf](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/97e8718e4238aaf) JamieB *2020-09-28 13:07:10*
+Use nimbusds shaded minidev library
+
+Latest nimbusds is packaged with a shaded version of minidev. aspsp used
+to have minidev as a package, the version of which was controlled in the
+openbanking-parent pom. We now need to remove that dependency and
+changes our code to use classes directly from the shaded nimbusds
+libary.
+[68fd47483d0596b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/68fd47483d0596b) dependabot-preview[bot] *2020-09-28 08:45:21*
+Bump ob-clients.version from 1.0.36 to 1.0.40
+
+Bumps `ob-clients.version` from 1.0.36 to 1.0.40.
+
+Updates `forgerock-openbanking-jwkms-client` from 1.0.36 to 1.0.40
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/1.0.36...1.0.40)
+
+Updates `forgerock-openbanking-analytics-client` from 1.0.36 to 1.0.40
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/1.0.36...1.0.40)
+
+Updates `forgerock-openbanking-analytics-webclient` from 1.0.36 to 1.0.40
+- [Release notes](https://github.com/OpenBankingToolkit/openbanking-clients/releases)
+- [Commits](https://github.com/OpenBankingToolkit/openbanking-clients/compare/1.0.36...1.0.40)
+
+Signed-off-by: dependabot-preview[bot] <support@dependabot.com>
+[86ee5a444b8ba34](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/86ee5a444b8ba34) Matt Wills *2020-09-10 10:50:20*
+Release candidate: prepare for next development iteration
 [450d679943400e6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/450d679943400e6) Matt Wills *2020-09-09 10:04:02*
 Release candidate: prepare for next development iteration
 [4ebbaeac1b213f0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4ebbaeac1b213f0) Matt Wills *2020-09-08 11:01:17*
@@ -558,6 +553,16 @@ Release candidate: prepare for next development iteration
 Release candidate: prepare for next development iteration
 [861981393939c0a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/861981393939c0a) JamieB *2020-06-15 11:27:45*
 Release candidate: prepare for next development iteration
+[91f910625f5fcb1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/91f910625f5fcb1) JamieB *2020-06-15 10:23:12*
+Make OBRisk1.PaymentCodeContext field configurably a required field
+
+Part fix for https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/196
+
+Some implementors have expressed a need to be able to enfore that a
+PaymentCodeContext is provided in the Risk object when requesting a
+consent. This PR enables this feature to be turned on by setting the
+following spring config setting to true;
+`rs.api.payment.validate.risk.require-payment-context-code`
 [50f645798ab6ff6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/50f645798ab6ff6) Matt Wills *2020-06-15 09:11:57*
 Release candidate: prepare for next development iteration
 [475850b80e3e28f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/475850b80e3e28f) jorgesanchezperez *2020-05-13 10:53:11*
@@ -572,6 +577,14 @@ remove unused file
 upgrade common ui. https://github.com/OpenBankingToolkit/openbanking-common/issues/59
 [e567d3cd251e50f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e567d3cd251e50f) JamieB *2020-04-22 15:53:06*
 Updated ui project version to updating-ui-version-to-
+## 1.0.101
+[00bf3b045b6951c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/00bf3b045b6951c) JamieB *2020-09-29 09:37:20*
+Release candidate: prepare release 1.0.101
+[d2a5578aae14713](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d2a5578aae14713) JamieB *2020-09-29 09:28:26*
+Use latest openbanking-starter-parent 1.0.83
+## 1.0.100
+[58d5f5075306aaa](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/58d5f5075306aaa) Matt Wills *2020-09-10 10:43:41*
+Release candidate: prepare release 1.0.100
 ## 1.0.99
 [40c050ffb3d641f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/40c050ffb3d641f) Matt Wills *2020-09-09 10:03:52*
 Release candidate: prepare release 1.0.99
@@ -611,16 +624,6 @@ Release candidate: prepare release 1.0.85
 ## 1.0.83
 [553440e6b90bbf9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/553440e6b90bbf9) JamieB *2020-06-15 11:27:36*
 Release candidate: prepare release 1.0.83
-[91f910625f5fcb1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/91f910625f5fcb1) JamieB *2020-06-15 10:23:12*
-Make OBRisk1.PaymentCodeContext field configurably a required field
-
-Part fix for https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/196
-
-Some implementors have expressed a need to be able to enfore that a
-PaymentCodeContext is provided in the Risk object when requesting a
-consent. This PR enables this feature to be turned on by setting the
-following spring config setting to true;
-`rs.api.payment.validate.risk.require-payment-context-code`
 ## 1.0.82
 [162d7fe6da5c45e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/162d7fe6da5c45e) Matt Wills *2020-06-15 09:11:46*
 Release candidate: prepare release 1.0.82

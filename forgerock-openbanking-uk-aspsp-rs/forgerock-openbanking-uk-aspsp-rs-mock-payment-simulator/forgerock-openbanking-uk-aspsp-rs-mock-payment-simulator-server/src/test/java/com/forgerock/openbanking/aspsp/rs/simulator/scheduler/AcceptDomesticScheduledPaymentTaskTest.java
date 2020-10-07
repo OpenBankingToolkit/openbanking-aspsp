@@ -73,7 +73,7 @@ public class AcceptDomesticScheduledPaymentTaskTest {
 
     @Test
     public void scheduledPaymentDue_shouldDebitAccount() throws CurrencyConverterException {
-        // Givn
+        // Given
         FRScheduledPayment payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
         given(paymentsService.getPendingAndDueScheduledPayments()).willReturn(Collections.singletonList(payment));
         FRAccount account = defaultAccount(DEBIT_ACCOUNT);
@@ -89,20 +89,19 @@ public class AcceptDomesticScheduledPaymentTaskTest {
 
     @Test
     public void scheduledPaymentDue_shouldCreditAccount() throws CurrencyConverterException {
-        // Givn
+        // Given
         FRScheduledPayment payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
         given(paymentsService.getPendingAndDueScheduledPayments()).willReturn(Collections.singletonList(payment));
         given(account2StoreService.getAccount(DEBIT_ACCOUNT)).willReturn(defaultAccount(DEBIT_ACCOUNT));
 
         FRAccount account = defaultAccount(CREDIT_ACCOUNT);
-        given(account2StoreService.findAccountByIdentification(CREDIT_ACCOUNT))
-                .willReturn(Optional.of(account));
+        given(account2StoreService.findAccountByIdentification(CREDIT_ACCOUNT)).willReturn(Optional.of(account));
 
         // When
         acceptDueScheduledPaymentTask.payDueScheduledPayments();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(toFRAmount(payment.getScheduledPayment().getInstructedAmount())), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(toFRAmount(payment.getScheduledPayment().getInstructedAmount())), eq(OBCreditDebitCode.CREDIT), eq(payment), any());
         verify(paymentsService).updateSchedulePayment(argThat(p -> p.getStatus().equals(ScheduledPaymentStatus.COMPLETED)));
     }
 
@@ -120,7 +119,7 @@ public class AcceptDomesticScheduledPaymentTaskTest {
 
     @Test
     public void shouldRejectPaymentWhenCurrencyConversionException() throws CurrencyConverterException {
-        // Givn
+        // Given
         FRScheduledPayment payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
         given(paymentsService.getPendingAndDueScheduledPayments()).willReturn(Collections.singletonList(payment));
         FRAccount account = defaultAccount(DEBIT_ACCOUNT);
@@ -138,7 +137,7 @@ public class AcceptDomesticScheduledPaymentTaskTest {
 
     @Test
     public void shouldRejectPaymentWhenAnyException() throws CurrencyConverterException {
-        // Givn
+        // Given
         FRScheduledPayment payment = defaultPayment(DateTime.now().minusDays(1), ScheduledPaymentStatus.PENDING);
         given(paymentsService.getPendingAndDueScheduledPayments()).willReturn(Collections.singletonList(payment));
         FRAccount account = defaultAccount(DEBIT_ACCOUNT);
@@ -156,7 +155,7 @@ public class AcceptDomesticScheduledPaymentTaskTest {
 
     @Test
     public void scheduledPayment_ignoreIfNotDue() throws CurrencyConverterException {
-        // Givn
+        // Given
         FRScheduledPayment payment = defaultPayment(DateTime.now().plusDays(1), ScheduledPaymentStatus.PENDING);
         given(paymentsService.getPendingAndDueScheduledPayments()).willReturn(Collections.singletonList(payment));
 
