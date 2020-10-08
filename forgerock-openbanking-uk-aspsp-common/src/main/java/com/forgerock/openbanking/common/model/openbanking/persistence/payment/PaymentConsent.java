@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 import com.forgerock.openbanking.model.Tpp;
 import org.joda.time.DateTime;
 
@@ -43,7 +43,7 @@ public interface PaymentConsent {
 
     Object getInitiation();
 
-    FRRisk getRisk();
+    FRPaymentRisk getRisk();
 
     String getAccountId();
 

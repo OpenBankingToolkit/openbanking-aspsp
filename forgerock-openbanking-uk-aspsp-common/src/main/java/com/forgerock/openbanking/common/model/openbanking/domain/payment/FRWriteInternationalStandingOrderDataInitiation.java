@@ -20,11 +20,11 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRChargeBearerType;
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataInitiationCreditor;
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataInitiationCreditorAgent;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialCreditor;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAgent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,9 +58,9 @@ public class FRWriteInternationalStandingOrderDataInitiation {
     private String currencyOfTransfer;
     private String destinationCountryCode;
     private FRAmount instructedAmount;
-    private FRFinancialAccount debtorAccount;
-    private FRDataInitiationCreditor creditor;
-    private FRDataInitiationCreditorAgent creditorAgent;
-    private FRFinancialAccount creditorAccount;
+    private FRAccountIdentifier debtorAccount;
+    private FRFinancialCreditor creditor;
+    private FRFinancialAgent creditorAgent;
+    private FRAccountIdentifier creditorAccount;
     private FRSupplementaryData supplementaryData;
 }

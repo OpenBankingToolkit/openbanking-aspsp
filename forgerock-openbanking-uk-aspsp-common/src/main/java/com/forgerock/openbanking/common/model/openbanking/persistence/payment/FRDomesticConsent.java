@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -81,7 +81,7 @@ public class FRDomesticConsent implements PaymentConsent, Persistable<String> {
     }
 
     @Override
-    public FRRisk getRisk() {
+    public FRPaymentRisk getRisk() {
         return domesticConsent.getRisk();
     }
 

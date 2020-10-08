@@ -18,16 +18,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.domain.payment.common;
+package com.forgerock.openbanking.common.model.openbanking.domain.account;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRAccountRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRLinks;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRMeta;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Represents an equivalent object in the OB data model. It is stored within mongo (instead of the OB object), in order to make it easier to introduce new
- * versions of the Read/Write API.
+ * Represents {@link uk.org.openbanking.datamodel.account.OBReadResponse1} in the OB data model. It is stored within mongo (instead of the OB object),
+ * in order to make it easier to introduce new versions of the Read/Write API.
  *
  * <p>
  * Note that this object is used across multiple versions of the Read/Write API, meaning that some values won't be populated. For this reason it is
@@ -38,10 +41,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FRDataInitiationCreditorAgent {
+public class FRReadResponse {
 
-    private String schemeName;
-    private String identification;
-    private String name;
-    private FRPostalAddress postalAddress;
+    private FRReadDataResponse data;
+    private FRAccountRisk risk;
+    private FRLinks links;
+    private FRMeta meta;
 }

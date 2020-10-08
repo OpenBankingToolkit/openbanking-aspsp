@@ -18,16 +18,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.domain.common;
+package com.forgerock.openbanking.common.model.openbanking.domain.account;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
+
+import java.util.List;
 
 /**
- * Represents an equivalent object in the OB data model. It is stored within mongo (instead of the OB object), in order to make it easier to introduce new
- * versions of the Read/Write API.
+ * Represents {@link uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data} in the OB data model. It is stored within mongo (instead of the OB object),
+ * in order to make it easier to introduce new versions of the Read/Write API.
  *
  * <p>
  * Note that this object is used across multiple versions of the Read/Write API, meaning that some values won't be populated. For this reason it is
@@ -38,10 +43,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FRFinancialAccount {
+public class FRReadConsentResponseData {
 
-    private String schemeName;
-    private String identification;
-    private String name;
-    private String secondaryIdentification;
+    private String consentId;
+    private DateTime creationDateTime;
+    private FRExternalRequestStatusCode status;
+    private DateTime statusUpdateDateTime;
+    private List<FRExternalPermissionsCode> permissions;
+    private DateTime expirationDateTime;
+    private DateTime transactionFromDateTime;
+    private DateTime transactionToDateTime;
 }

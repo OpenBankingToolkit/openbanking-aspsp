@@ -20,14 +20,14 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataInitiationCreditor;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialCreditor;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRPostalAddressTestDataFactory.aValidFRPostalAddress;
 
 public class FRDataInitiationCreditorTestDataFactory {
 
-    public static FRDataInitiationCreditor aValidFRDataInitiationCreditor() {
-        return FRDataInitiationCreditor.builder()
+    public static FRFinancialCreditor aValidFRDataInitiationCreditor() {
+        return FRFinancialCreditor.builder()
                 .name("A data initiation creditor")
                 .postalAddress(aValidFRPostalAddress())
                 .build();

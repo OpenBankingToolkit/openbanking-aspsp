@@ -20,20 +20,20 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 
 public class FRAccountTestDataFactory {
 
-    public static FRFinancialAccount aValidFRAccount() {
-        return FRFinancialAccount.builder()
+    public static FRAccountIdentifier aValidFRAccount() {
+        return FRAccountIdentifier.builder()
                 .schemeName("UK.OBIE.SortCodeAccountNumber")
                 .identification("40400411290112")
                 .name("Mr A Jones")
                 .build();
     }
 
-    public static FRFinancialAccount aValidFRAccount2() {
-        return FRFinancialAccount.builder()
+    public static FRAccountIdentifier aValidFRAccount2() {
+        return FRAccountIdentifier.builder()
                 .schemeName("UK.OBIE.SortCodeAccountNumber")
                 .identification("40400422390112")
                 .name("Mrs B Smith")

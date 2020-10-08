@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataInitiationCreditor;
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataInitiationCreditorAgent;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialCreditor;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAgent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRExchangeRateInformation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 
@@ -34,7 +34,7 @@ public class FRRemittanceInformationTestDataFactory {
                 .build();
     }
 
-    private FRDataInitiationCreditorAgent aValidCreditorAgent() {
+    private FRFinancialAgent aValidCreditorAgent() {
         return null;
     }
 
@@ -42,7 +42,7 @@ public class FRRemittanceInformationTestDataFactory {
         return null;
     }
 
-    private FRDataInitiationCreditor aValidFRDataInitiationCreditor() {
+    private FRFinancialCreditor aValidFRDataInitiationCreditor() {
         return null;
     }
 }

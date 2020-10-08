@@ -22,7 +22,7 @@ package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.model.Tpp;
 import lombok.AllArgsConstructor;
@@ -81,7 +81,7 @@ public class FRInternationalStandingOrderConsent implements PaymentConsent, Pers
     }
 
     @Override
-    public FRRisk getRisk() {
+    public FRPaymentRisk getRisk() {
         return internationalStandingOrderConsent.getRisk();
     }
 

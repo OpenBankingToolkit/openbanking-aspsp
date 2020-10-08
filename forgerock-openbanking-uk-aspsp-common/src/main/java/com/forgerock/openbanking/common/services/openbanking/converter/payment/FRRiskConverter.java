@@ -21,15 +21,15 @@
 package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRExternalPaymentContextCode;
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 import uk.org.openbanking.datamodel.payment.OBExternalPaymentContext1Code;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.payment.OBRisk1DeliveryAddress;
 
 public class FRRiskConverter {
 
-    public static FRRisk toFRRisk(OBRisk1 obRisk1) {
-        return obRisk1 == null ? null : FRRisk.builder()
+    public static FRPaymentRisk toFRRisk(OBRisk1 obRisk1) {
+        return obRisk1 == null ? null : FRPaymentRisk.builder()
                 .deliveryAddress(toFRRiskDeliveryAddress(obRisk1.getDeliveryAddress()))
                 .merchantCategoryCode(obRisk1.getMerchantCategoryCode())
                 .merchantCustomerIdentification(obRisk1.getMerchantCustomerIdentification())
@@ -37,8 +37,8 @@ public class FRRiskConverter {
                 .build();
     }
 
-    public static FRRisk.FRRiskDeliveryAddress toFRRiskDeliveryAddress(OBRisk1DeliveryAddress obRisk1DeliveryAddress) {
-        return obRisk1DeliveryAddress == null ? null : FRRisk.FRRiskDeliveryAddress.builder()
+    public static FRPaymentRisk.FRRiskDeliveryAddress toFRRiskDeliveryAddress(OBRisk1DeliveryAddress obRisk1DeliveryAddress) {
+        return obRisk1DeliveryAddress == null ? null : FRPaymentRisk.FRRiskDeliveryAddress.builder()
                 .addressLine(obRisk1DeliveryAddress.getAddressLine())
                 .streetName(obRisk1DeliveryAddress.getStreetName())
                 .buildingNumber(obRisk1DeliveryAddress.getBuildingNumber())
@@ -53,15 +53,15 @@ public class FRRiskConverter {
         return obExternalPaymentContext1Code == null ? null : FRExternalPaymentContextCode.valueOf(obExternalPaymentContext1Code.name());
     }
 
-    public static OBRisk1 toOBRisk1(FRRisk frRisk) {
-        return frRisk == null ? null : new OBRisk1()
-                .deliveryAddress(toOBRisk1DeliveryAddress(frRisk.getDeliveryAddress()))
-                .merchantCategoryCode(frRisk.getMerchantCategoryCode())
-                .merchantCustomerIdentification(frRisk.getMerchantCustomerIdentification())
-                .paymentContextCode(toOBExternalPaymentContext1Code(frRisk.getPaymentContextCode()));
+    public static OBRisk1 toOBRisk1(FRPaymentRisk frPaymentRisk) {
+        return frPaymentRisk == null ? null : new OBRisk1()
+                .deliveryAddress(toOBRisk1DeliveryAddress(frPaymentRisk.getDeliveryAddress()))
+                .merchantCategoryCode(frPaymentRisk.getMerchantCategoryCode())
+                .merchantCustomerIdentification(frPaymentRisk.getMerchantCustomerIdentification())
+                .paymentContextCode(toOBExternalPaymentContext1Code(frPaymentRisk.getPaymentContextCode()));
     }
 
-    public static OBRisk1DeliveryAddress toOBRisk1DeliveryAddress(FRRisk.FRRiskDeliveryAddress frDeliveryAddress) {
+    public static OBRisk1DeliveryAddress toOBRisk1DeliveryAddress(FRPaymentRisk.FRRiskDeliveryAddress frDeliveryAddress) {
         return frDeliveryAddress == null ? null : new OBRisk1DeliveryAddress()
                 .addressLine(frDeliveryAddress.getAddressLine())
                 .streetName(frDeliveryAddress.getStreetName())

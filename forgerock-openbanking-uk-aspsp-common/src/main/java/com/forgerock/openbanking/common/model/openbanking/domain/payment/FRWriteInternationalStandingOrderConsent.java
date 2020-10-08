@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,5 +42,5 @@ import lombok.NoArgsConstructor;
 public class FRWriteInternationalStandingOrderConsent {
 
     private FRWriteInternationalStandingOrderConsentData data;
-    private FRRisk risk;
+    private FRPaymentRisk risk;
 }

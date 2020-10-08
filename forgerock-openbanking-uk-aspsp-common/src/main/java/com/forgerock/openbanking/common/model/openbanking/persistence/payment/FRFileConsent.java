@@ -23,7 +23,7 @@ package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFileType;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -97,7 +97,7 @@ public class FRFileConsent implements PaymentConsent, FileConsent, Persistable<S
     }
 
     @Override
-    public FRRisk getRisk() { return null; }
+    public FRPaymentRisk getRisk() { return null; }
 
     public PaymentFileType getFileType() {
         return PaymentFileType.fromFileType(writeFileConsent.getData().getInitiation().getFileType());

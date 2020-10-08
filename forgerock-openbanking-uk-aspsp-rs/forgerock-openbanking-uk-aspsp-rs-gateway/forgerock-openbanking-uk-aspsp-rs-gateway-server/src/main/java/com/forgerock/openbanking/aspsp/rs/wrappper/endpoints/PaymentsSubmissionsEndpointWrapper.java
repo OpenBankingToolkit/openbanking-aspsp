@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
@@ -117,13 +117,13 @@ public class PaymentsSubmissionsEndpointWrapper extends RSEndpointWrapper<Paymen
         }
     }
 
-    public void verifyRiskAndInitiation(Object initiation, FRRisk risk) throws OBErrorException {
+    public void verifyRiskAndInitiation(Object initiation, FRPaymentRisk risk) throws OBErrorException {
         //Verify risk and initiation are equals to initial request
         verifyInitiation(initiation);
         verifyRisk(risk);
     }
 
-    public void verifyRisk(FRRisk risk) throws OBErrorException {
+    public void verifyRisk(FRPaymentRisk risk) throws OBErrorException {
         //Verify risk are equals to initial request
         if (!payment.getRisk().equals(risk)) {
             LOGGER.debug("Risk received doesn't match payment setup request. Received:'{}' , expected:'{}'",

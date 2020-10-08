@@ -18,8 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.domain.payment.common;
+package com.forgerock.openbanking.common.model.openbanking.domain.common;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPostalAddress;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,8 +39,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FRDataInitiationCreditor {
+public class FRFinancialAgent {
 
+    private String schemeName;
+    private String identification;
     private String name;
     private FRPostalAddress postalAddress;
 }

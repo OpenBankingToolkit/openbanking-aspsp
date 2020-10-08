@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
@@ -145,7 +145,7 @@ public class AcceptDomesticPaymentTaskTest {
 
     private FRDomesticConsent defaultPayment() {
         FRWriteDomesticDataInitiation initiation = FRWriteDomesticDataInitiation.builder()
-                .creditorAccount(FRFinancialAccount.builder().identification(CREDIT_ACCOUNT).build())
+                .creditorAccount(FRAccountIdentifier.builder().identification(CREDIT_ACCOUNT).build())
                 .instructedAmount(FRAmount.builder().currency("GBP").amount("3").build())
                 .build();
         return FRDomesticConsent.builder()

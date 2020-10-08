@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import lombok.AllArgsConstructor;
@@ -53,7 +53,7 @@ public class FRWriteFileDataInitiation {
     private BigDecimal controlSum;
     private DateTime requestedExecutionDateTime;
     private String localInstrument;
-    private FRFinancialAccount debtorAccount;
+    private FRAccountIdentifier debtorAccount;
     private FRRemittanceInformation remittanceInformation;
     private FRSupplementaryData supplementaryData;
 }

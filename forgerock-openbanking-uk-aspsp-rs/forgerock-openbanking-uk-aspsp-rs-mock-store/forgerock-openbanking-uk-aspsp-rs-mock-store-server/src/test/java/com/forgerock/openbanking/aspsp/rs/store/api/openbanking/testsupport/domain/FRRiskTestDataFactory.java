@@ -20,16 +20,16 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 
 import static java.util.Collections.singletonList;
 
 public class FRRiskTestDataFactory {
 
-    public static FRRisk aValidFRRisk() {
-        return FRRisk.builder()
+    public static FRPaymentRisk aValidFRRisk() {
+        return FRPaymentRisk.builder()
                 .merchantCategoryCode("ABCD")
-                .deliveryAddress(FRRisk.FRRiskDeliveryAddress.builder()
+                .deliveryAddress(FRPaymentRisk.FRRiskDeliveryAddress.builder()
                         .countrySubDivision(singletonList("Wessex"))
                         .addressLine(singletonList("3 Queens Square"))
                         .townName("Bristol")

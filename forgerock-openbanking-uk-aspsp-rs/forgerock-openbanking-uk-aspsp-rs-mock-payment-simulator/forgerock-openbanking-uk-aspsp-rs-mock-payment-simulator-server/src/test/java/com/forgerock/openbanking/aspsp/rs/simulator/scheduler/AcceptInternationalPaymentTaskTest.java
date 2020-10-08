@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalDataInitiation;
@@ -147,7 +147,7 @@ public class AcceptInternationalPaymentTaskTest {
 
     private FRInternationalConsent defaultPayment() {
         FRWriteInternationalDataInitiation initiation = FRWriteInternationalDataInitiation.builder()
-                .creditorAccount(FRFinancialAccount.builder().identification(CREDIT_ACCOUNT).build())
+                .creditorAccount(FRAccountIdentifier.builder().identification(CREDIT_ACCOUNT).build())
                 .instructedAmount(FRAmount.builder().currency("GBP").amount("3").build())
                 .build();
         return FRInternationalConsent.builder()

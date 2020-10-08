@@ -20,14 +20,14 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataInitiationCreditorAgent;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAgent;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRPostalAddressTestDataFactory.aValidFRPostalAddress;
 
 public class FRDataInitiationCreditorAgentTestDataFactory {
 
-    public static FRDataInitiationCreditorAgent aValidFRDataInitiationCreditorAgent() {
-        return FRDataInitiationCreditorAgent.builder()
+    public static FRFinancialAgent aValidFRDataInitiationCreditorAgent() {
+        return FRFinancialAgent.builder()
                 .schemeName("UK.OBIE.SortCodeAccountNumber")
                 .identification("40400411290112")
                 .name("Mr A Jones")

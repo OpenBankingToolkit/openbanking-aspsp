@@ -25,7 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStan
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomestic;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrder;
@@ -278,8 +278,8 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
         initiation.setReference("123");
         initiation.setNumberOfPayments("12");
         initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
-        initiation.setDebtorAccount(FRFinancialAccount.builder().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber").build());
-        initiation.setCreditorAccount(FRFinancialAccount.builder().identification("321").name("test2").schemeName("UK.OBIE.SortCodeAccountNumber").build());
+        initiation.setDebtorAccount(FRAccountIdentifier.builder().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber").build());
+        initiation.setCreditorAccount(FRAccountIdentifier.builder().identification("321").name("test2").schemeName("UK.OBIE.SortCodeAccountNumber").build());
     }
 
 }
