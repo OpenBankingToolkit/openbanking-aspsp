@@ -26,6 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accountrequests.FRAccountRequestRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -53,6 +54,8 @@ import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRReadResponseConverter.toFRReadResponse;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRReadResponseConverter.toOBReadResponse1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("AccountRequestsApiV1.1")
@@ -118,7 +121,7 @@ public class AccountRequestsApiController implements AccountRequestsApi {
         FRAccountRequest accountRequest = new FRAccountRequest();
         accountRequest.setId(accountRequestId);
         accountRequest.setAccountRequestId(accountRequestId);
-        accountRequest.setAccountRequest(response);
+        accountRequest.setAccountRequest(toFRReadResponse(response));
         accountRequest.setAisp(tppRepository.findByClientId(aispId));
         accountRequest.setObVersion(VersionPathExtractor.getVersionFromPath(request));
         accountRequest = frAccountRequestRepository.save(accountRequest);
@@ -155,7 +158,7 @@ public class AccountRequestsApiController implements AccountRequestsApi {
         }
         LOGGER.debug("Account request revoked with id {}", accountRequestId);
         FRAccountRequest frAccountRequest = accountRequest.get();
-        frAccountRequest.getAccountRequest().getData().setStatus(OBExternalRequestStatus1Code.REVOKED);
+        frAccountRequest.getAccountRequest().getData().setStatus(FRExternalRequestStatusCode.REVOKED);
         consentMetricService.sendConsentActivity(
                 new ConsentStatusEntry(frAccountRequest.getAccountRequest().getData().getAccountRequestId(),
                 frAccountRequest.getAccountRequest().getData().getStatus().name()));
@@ -194,7 +197,7 @@ public class AccountRequestsApiController implements AccountRequestsApi {
         LOGGER.debug("Read successful with id {}", accountRequestId);
         MultiValueMap<String, String> headers = new HttpHeaders();
         headers.put(OBHeaders.X_FAPI_INTERACTION_ID, Arrays.asList(xFapiInteractionId));
-        return new ResponseEntity<>(accountRequest.get().getAccountRequest(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(toOBReadResponse1(accountRequest.get().getAccountRequest()), headers, HttpStatus.OK);
     }
 
 }

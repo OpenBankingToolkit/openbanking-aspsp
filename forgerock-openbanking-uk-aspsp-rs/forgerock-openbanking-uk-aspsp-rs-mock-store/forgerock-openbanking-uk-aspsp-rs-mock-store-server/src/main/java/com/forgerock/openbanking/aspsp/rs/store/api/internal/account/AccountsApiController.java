@@ -20,11 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRCashBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.org.openbanking.datamodel.account.OBCashBalance1;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.ArrayList;
@@ -122,7 +122,7 @@ public class AccountsApiController implements AccountsApi {
     }
 
     private AccountWithBalance toFRAccountWithBalance(FRAccount account, Map<String, List<FRBalance>> balanceMap) {
-        final List<OBCashBalance1> balances = Optional.ofNullable(balanceMap.get(account.getId()))
+        final List<FRCashBalance> balances = Optional.ofNullable(balanceMap.get(account.getId()))
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(FRBalance::getBalance)

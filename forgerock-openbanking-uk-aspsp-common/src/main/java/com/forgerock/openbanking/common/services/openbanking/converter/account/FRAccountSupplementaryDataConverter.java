@@ -20,21 +20,23 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.account.OBExternalProductType1Code;
-import uk.org.openbanking.datamodel.account.OBExternalProductType2Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
+import uk.org.openbanking.datamodel.account.OBSupplementaryData1;
 
-@Service
-public class OBExternalProductTypeConverter {
+public class FRAccountSupplementaryDataConverter {
 
-    public OBExternalProductType2Code toOBExternalProductType2Code(OBExternalProductType1Code code1) {
-        switch (code1) {
+    public static FRSupplementaryData toFRSupplementaryData(OBSupplementaryData1 obSupplementaryData) {
+        return obSupplementaryData == null ? null : FRSupplementaryData.builder()
+                .data(obSupplementaryData.getData())
+                .build();
+    }
 
-            case BCA:
-                return OBExternalProductType2Code.BUSINESSCURRENTACCOUNT;
-            case PCA:
-            default:
-                return OBExternalProductType2Code.PERSONALCURRENTACCOUNT;
+    public static OBSupplementaryData1 toOBSupplementaryData1(FRSupplementaryData frSupplementaryData) {
+        if (frSupplementaryData == null) {
+            return null;
         }
+        OBSupplementaryData1 obSupplementaryData1 = new OBSupplementaryData1();
+        obSupplementaryData1.setData(frSupplementaryData.getData());
+        return obSupplementaryData1;
     }
 }

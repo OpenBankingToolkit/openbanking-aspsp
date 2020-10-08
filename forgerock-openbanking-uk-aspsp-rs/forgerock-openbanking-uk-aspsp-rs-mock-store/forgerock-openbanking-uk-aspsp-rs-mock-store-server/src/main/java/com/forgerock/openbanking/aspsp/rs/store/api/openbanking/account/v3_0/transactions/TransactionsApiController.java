@@ -48,7 +48,7 @@ import uk.org.openbanking.datamodel.account.OBTransaction3;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.transaction.OBTransactionConverter.toOBTransaction3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRTransactionConverter.toOBTransaction3;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.AVAILABLE_DATE_FORMAT;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;

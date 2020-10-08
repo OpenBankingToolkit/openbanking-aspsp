@@ -20,6 +20,9 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRCashBalance;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,9 +32,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.account.OBCashBalance1;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -55,8 +55,7 @@ public class FRBalance implements Balance {
     public String id;
     @Indexed
     public String accountId;
-    // TODO 296 - change OB objects to FR domain model
-    public OBCashBalance1 balance;
+    public FRCashBalance balance;
 
     @CreatedDate
     public Date created;
@@ -65,7 +64,7 @@ public class FRBalance implements Balance {
 
 
     @Override
-    public OBActiveOrHistoricCurrencyAndAmount getCurrencyAndAmount() {
+    public FRAmount getCurrencyAndAmount() {
         return getBalance().getAmount();
     }
 
@@ -80,7 +79,7 @@ public class FRBalance implements Balance {
     }
 
     @Override
-    public OBCreditDebitCode getCreditDebitIndicator() {
+    public FRCreditDebitIndicator getCreditDebitIndicator() {
         return getBalance().getCreditDebitIndicator();
     }
 
@@ -90,7 +89,7 @@ public class FRBalance implements Balance {
     }
 
     @Override
-    public void setCreditDebitIndicator(OBCreditDebitCode code) {
+    public void setCreditDebitIndicator(FRCreditDebitIndicator code) {
         getBalance().setCreditDebitIndicator(code);
     }
 

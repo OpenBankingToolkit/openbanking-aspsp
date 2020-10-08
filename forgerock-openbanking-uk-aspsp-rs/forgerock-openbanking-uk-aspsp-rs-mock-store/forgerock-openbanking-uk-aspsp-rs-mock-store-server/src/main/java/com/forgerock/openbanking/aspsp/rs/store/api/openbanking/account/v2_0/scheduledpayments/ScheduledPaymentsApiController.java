@@ -103,8 +103,8 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
                 scheduledPayments.getContent()
                         .stream()
                         .map(FRScheduledPayment::getScheduledPayment)
-                        .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .map(FRScheduledPaymentConverter::toOBScheduledPayment1)
+                        .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
@@ -154,8 +154,8 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
                 scheduledPayments.getContent()
                         .stream()
                         .map(FRScheduledPayment::getScheduledPayment)
-                        .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .map(FRScheduledPaymentConverter::toOBScheduledPayment1)
+                        .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));

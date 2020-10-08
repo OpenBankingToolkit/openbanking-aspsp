@@ -65,7 +65,7 @@ import java.util.UUID;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount2;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderDataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 

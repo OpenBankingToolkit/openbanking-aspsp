@@ -25,9 +25,11 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmati
 import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.funds.FRFundsConfirmationData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -170,8 +172,8 @@ public class FundsConfirmationsApiControllerIT {
         OBFundsConfirmationResponse1 responseBody = response.getBody();
         FRFundsConfirmation submission = fundsConfirmationRepository.findById(response.getBody().getData().getFundsConfirmationId()).get();
         assertThat(submission.getId()).isEqualTo(responseBody.getData().getFundsConfirmationId());
-        assertThat(submission.getFundsConfirmation().getData().getInstructedAmount()).isEqualTo(request.getData().getInstructedAmount());
-        assertThat(submission.getFundsConfirmation().getData().getReference()).isEqualTo(request.getData().getReference());
+        assertThat(submission.getFundsConfirmation().getInstructedAmount()).isEqualTo(request.getData().getInstructedAmount());
+        assertThat(submission.getFundsConfirmation().getReference()).isEqualTo(request.getData().getReference());
         assertThat(submission.isFundsAvailable()).isEqualTo(true);
     }
 
@@ -230,14 +232,14 @@ public class FundsConfirmationsApiControllerIT {
     }
 
     private FRFundsConfirmation saveFundsConfirmation(FRFundsConfirmationConsent consent) {
-        OBFundsConfirmation1 fundsConfirmation = JMockData.mock(OBFundsConfirmation1.class);
-        fundsConfirmation.getData()
-                .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("100.0"))
+        FRFundsConfirmationData fundsConfirmationData = FRFundsConfirmationData.builder()
+                .instructedAmount(FRAmount.builder().amount("100.0").build())
                 .consentId(consent.getId())
-                .reference("test1");
+                .reference("test1")
+                .build();
         FRFundsConfirmation frFundsConfirmation = FRFundsConfirmation.builder()
                 .id(consent.getId())
-                .fundsConfirmation(fundsConfirmation)
+                .fundsConfirmation(fundsConfirmationData)
                 .created(DateTime.now())
                 .build();
         frFundsConfirmation.setFundsAvailable(true);
@@ -250,7 +252,7 @@ public class FundsConfirmationsApiControllerIT {
         consent.setId(IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId());
         consent.setStatusUpdate(DateTime.now());
         consent.setStatus(ConsentStatusCode.AUTHORISED);
-        consent.getFundsConfirmationConsent().getData().expirationDateTime(DateTime.parse("2018-11-21T10:43:12.000Z"));
+        consent.getFundsConfirmationConsent().setExpirationDateTime(DateTime.parse("2018-11-21T10:43:12.000Z"));
         fundsConfirmationConsentRepository.save(consent);
         return consent;
     }

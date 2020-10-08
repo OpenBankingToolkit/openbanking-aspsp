@@ -169,10 +169,10 @@ public class FRTransactionData {
     @AllArgsConstructor
     @Builder
     public static class FRTransactionCardInstrument {
-        private FRCardScheme cardSchemeName = null;
-        private FRCardAuthorisationType authorisationType = null;
-        private String name = null;
-        private String identification = null;
+        private FRCardScheme cardSchemeName;
+        private FRCardAuthorisationType authorisationType;
+        private String name;
+        private String identification;
     }
 
     public enum FRCardScheme {

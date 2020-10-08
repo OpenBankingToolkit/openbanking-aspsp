@@ -37,6 +37,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount6;
+
 @Controller("AccountsApiV3.1.3")
 @Slf4j
 public class AccountsApiController implements AccountsApi {
@@ -59,7 +61,7 @@ public class AccountsApiController implements AccountsApi {
         log.info("Read account {} with permission {}", accountId, permissions);
         FRAccount response = frAccountRepository.byAccountId(accountId, permissions);
 
-        List<OBAccount6> obAccounts = Collections.singletonList(response.getAccount());
+        List<OBAccount6> obAccounts = Collections.singletonList(toOBAccount6(response.getAccount()));
         return ResponseEntity.ok(new OBReadAccount5()
                 .data(new OBReadAccount5Data().account(obAccounts))
                 .links(PaginationUtil.generateLinksOnePager(httpUrl))
@@ -81,7 +83,7 @@ public class AccountsApiController implements AccountsApi {
         List<FRAccount> frAccounts = frAccountRepository.byAccountIds(accountIds, permissions);
         List<OBAccount6> obAccounts = frAccounts
                 .stream()
-                .map(frAccount -> frAccount.getAccount())
+                .map(frAccount -> toOBAccount6(frAccount.getAccount()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new OBReadAccount5()

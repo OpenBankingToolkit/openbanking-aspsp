@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRPartyData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +30,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.account.OBParty2;
 
 import java.util.Date;
 
@@ -48,8 +48,7 @@ public class FRParty {
     public String accountId;
     @Indexed
     public String userId;
-    // TODO 296 - change OB objects to FR domain model
-    public OBParty2 party;
+    public FRPartyData party;
 
     @CreatedDate
     public Date created;

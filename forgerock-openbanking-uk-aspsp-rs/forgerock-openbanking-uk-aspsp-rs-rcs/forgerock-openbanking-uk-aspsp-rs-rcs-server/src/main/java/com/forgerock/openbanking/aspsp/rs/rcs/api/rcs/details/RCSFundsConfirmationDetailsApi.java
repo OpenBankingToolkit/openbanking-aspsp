@@ -88,7 +88,7 @@ public class RCSFundsConfirmationDetailsApi implements RCSDetailsApi {
         fundsConfirmationService.updateConsent(consent);
 
         return ResponseEntity.ok(FundsConfirmationConsentDetails.builder()
-                .expirationDateTime(consent.getFundsConfirmationConsent().getData().getExpirationDateTime())
+                .expirationDateTime(consent.getFundsConfirmationConsent().getExpirationDateTime())
                 .accounts(Collections.singletonList(matchingUserAccount.get()))
                 .username(username)
                 .logo(tpp.getLogo())

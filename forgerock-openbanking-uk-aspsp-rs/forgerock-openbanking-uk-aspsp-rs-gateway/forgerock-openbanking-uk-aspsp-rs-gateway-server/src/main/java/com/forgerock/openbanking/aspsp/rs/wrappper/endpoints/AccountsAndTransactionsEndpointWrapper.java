@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
@@ -29,7 +30,6 @@ import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.Arrays;
 import java.util.List;
@@ -70,6 +70,6 @@ public class AccountsAndTransactionsEndpointWrapper extends AccountsApiEndpointW
     }
 
     public interface RestEndpointContentMultiPermissions {
-        ResponseEntity run(AccountRequest accountRequest, List<OBExternalPermissions1Code> permissions, int pageNumber) throws OBErrorException, JsonProcessingException;
+        ResponseEntity run(AccountRequest accountRequest, List<FRExternalPermissionsCode> permissions, int pageNumber) throws OBErrorException, JsonProcessingException;
     }
 }

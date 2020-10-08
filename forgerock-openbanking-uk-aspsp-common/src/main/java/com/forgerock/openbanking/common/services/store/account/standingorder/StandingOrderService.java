@@ -20,8 +20,9 @@
  */
 package com.forgerock.openbanking.common.services.store.account.standingorder;
 
-import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRStandingOrderData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
+import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +32,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 
 import java.net.URI;
 import java.util.Collection;
@@ -52,7 +52,7 @@ public class StandingOrderService {
         this.rsStoreRoot = rsStoreRoot;
     }
 
-    public FRStandingOrder createStandingOrder(OBStandingOrder6 standingOrder, String pispId) {
+    public FRStandingOrder createStandingOrder(FRStandingOrderData standingOrder, String pispId) {
         log.debug("Create a standing order in the store. {}", standingOrder);
         FRStandingOrder frStandingOrder = FRStandingOrder.builder()
                 .standingOrder(standingOrder)

@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +31,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 
 import java.util.Date;
 
@@ -48,8 +48,7 @@ public class FRScheduledPayment {
     public String id;
     @Indexed
     public String accountId;
-    // TODO 296 - change OB objects to FR domain model
-    public OBScheduledPayment3 scheduledPayment;
+    public FRScheduledPaymentData scheduledPayment;
 
     @Indexed
     public String pispId;

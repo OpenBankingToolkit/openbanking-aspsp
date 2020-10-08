@@ -22,7 +22,10 @@ package com.forgerock.openbanking.common.services.openbanking.converter.common;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.services.openbanking.converter.FRModelMapper;
+import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount0;
 import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount1;
+import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount10;
+import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount11;
 import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount2;
 import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount3;
 import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount4;
@@ -57,6 +60,10 @@ public class FRAmountConverter {
     }
 
     public static FRAmount toFRAmount(OBActiveOrHistoricCurrencyAndAmount4 amount) {
+        return FRModelMapper.map(amount, FRAmount.class);
+    }
+
+    public static FRAmount toFRAmount(OBActiveOrHistoricCurrencyAndAmount11 amount) {
         return FRModelMapper.map(amount, FRAmount.class);
     }
 
@@ -113,8 +120,24 @@ public class FRAmountConverter {
         return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount9.class);
     }
 
+    public static OBActiveOrHistoricCurrencyAndAmount10 toOBActiveOrHistoricCurrencyAndAmount10(FRAmount amount) {
+        return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount10.class);
+    }
+
+    public static OBActiveOrHistoricCurrencyAndAmount11 toOBActiveOrHistoricCurrencyAndAmount11(FRAmount amount) {
+        return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount11.class);
+    }
+
     public static uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount toAccountOBActiveOrHistoricCurrencyAndAmount(FRAmount amount) {
         return FRModelMapper.map(amount, uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount.class);
+    }
+
+    public static OBActiveOrHistoricCurrencyAndAmount0 toOBActiveOrHistoricCurrencyAndAmount0(FRAmount amount) {
+        return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount0.class);
+    }
+
+    public static OBActiveOrHistoricCurrencyAndAmount1 toOBActiveOrHistoricCurrencyAndAmount1(FRAmount amount) {
+        return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount1.class);
     }
 
     public static OBWriteDomestic2DataInitiationInstructedAmount toOBWriteDomestic2DataInitiationInstructedAmount(FRAmount amount) {

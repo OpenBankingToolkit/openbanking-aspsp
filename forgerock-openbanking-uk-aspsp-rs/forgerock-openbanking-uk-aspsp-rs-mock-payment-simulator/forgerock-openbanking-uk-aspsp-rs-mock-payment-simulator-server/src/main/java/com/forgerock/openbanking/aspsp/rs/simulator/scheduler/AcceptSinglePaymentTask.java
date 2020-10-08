@@ -22,6 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRTransactionData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
@@ -39,12 +42,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode1;
-import uk.org.openbanking.datamodel.account.OBEntryStatus1Code;
-import uk.org.openbanking.datamodel.account.OBTransaction6;
-import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +49,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 
 @Slf4j
@@ -115,48 +111,48 @@ public class AcceptSinglePaymentTask {
     private void moveCreditPayment(FRPaymentSetup payment, String identificationFrom, Account accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationFrom, accountFrom);
         log.info("Move the money to this account");
-        moneyService.moveMoney(accountFrom, payment.getInitiation().getInstructedAmount(), OBCreditDebitCode.CREDIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountFrom, payment.getInitiation().getInstructedAmount(), FRCreditDebitIndicator.CREDIT, payment, this::createTransaction);
     }
 
     private String moveDebitPayment(FRPaymentSetup payment, Account accountTo) throws CurrencyConverterException {
         log.info("We are going to pay from this account: {}", accountTo);
-        moneyService.moveMoney(accountTo, payment.getInitiation().getInstructedAmount(), OBCreditDebitCode.DEBIT, payment,  this::createTransaction);
+        moneyService.moveMoney(accountTo, payment.getInitiation().getInstructedAmount(), FRCreditDebitIndicator.DEBIT, payment,  this::createTransaction);
 
         String identificationFrom = payment.getInitiation().getCreditorAccount().getIdentification();
         log.info("Find if the 'to' account '{}' is own by this ASPSP", identificationFrom);
         return identificationFrom;
     }
 
-    private FRTransaction createTransaction(Account account, FRPaymentSetup paymentSetup, OBCreditDebitCode creditDebitCode, Balance balance, FRAmount amount) {
+    private FRTransaction createTransaction(Account account, FRPaymentSetup paymentSetup, FRCreditDebitIndicator creditDebitCode, Balance balance, FRAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
 
         DateTime bookingDate = new DateTime(paymentSetup.getCreated());
-        OBTransaction6 obTransaction = new OBTransaction6()
+        FRTransactionData transactionData = FRTransactionData.builder()
                 .accountId(account.getId())
                 .transactionId(transactionId)
-                .amount(toOBActiveOrHistoricCurrencyAndAmount9(amount))
-                .creditDebitIndicator(creditDebitCode == null ? null : OBCreditDebitCode1.valueOf(creditDebitCode.name()))
-                .status(OBEntryStatus1Code.BOOKED)
+                .amount(amount)
+                .creditDebitIndicator(creditDebitCode)
+                .status(FRTransactionData.FREntryStatus.BOOKED)
                 .bookingDateTime(bookingDate)
                 .valueDateTime(DateTime.now())
-                .balance(new OBTransactionCashBalance()
+                .balance(FRTransactionData.FRTransactionCashBalance.builder()
                         .amount(balance.getCurrencyAndAmount())
                         .creditDebitIndicator(balance.getCreditDebitIndicator())
-                        .type(OBBalanceType1Code.INTERIMBOOKED)
-                );
+                        .type(FRBalanceType.INTERIMBOOKED)
+                        .build())
+                .build();
 
         if (paymentSetup.getInitiation().getRemittanceInformation() != null) {
-            obTransaction
-                    .transactionReference(paymentSetup.getInitiation().getRemittanceInformation().getReference())
-                    .transactionInformation(paymentSetup.getInitiation().getRemittanceInformation().getUnstructured());
+            transactionData.setTransactionReference(paymentSetup.getInitiation().getRemittanceInformation().getReference());
+            transactionData.setTransactionInformation(paymentSetup.getInitiation().getRemittanceInformation().getUnstructured());
         }
 
         FRTransaction transaction = FRTransaction.builder()
                 .id(transactionId)
                 .bookingDateTime(bookingDate)
                 .accountId(account.getId())
-                .transaction(obTransaction)
+                .transaction(transactionData)
                 .statementIds(new ArrayList<>()) // Need a mutable list to be set here so don't use Lombok.singular to init list
                 .build();
         log.info("Transaction created {}", transaction);

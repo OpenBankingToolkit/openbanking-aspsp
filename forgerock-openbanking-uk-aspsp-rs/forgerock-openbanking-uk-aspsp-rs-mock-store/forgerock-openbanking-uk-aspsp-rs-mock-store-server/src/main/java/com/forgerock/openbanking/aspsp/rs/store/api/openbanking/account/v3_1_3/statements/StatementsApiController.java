@@ -47,6 +47,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStatementConverter.toOBStatement2;
+
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-25T23:06:46.214+01:00")
 
 @Controller("StatementsApiV3.1.3")
@@ -171,7 +173,7 @@ public class StatementsApiController implements StatementsApi {
         return ResponseEntity.ok(new OBReadStatement2().data(new OBReadStatement2Data().statement(
                 statements
                         .stream()
-                        .map(FRStatement::getStatement)
+                        .map(st -> toOBStatement2(st.getStatement()))
                         .map(st -> accountDataInternalIdFilter.apply(st))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

@@ -25,15 +25,15 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
 import uk.org.openbanking.datamodel.payment.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toFRDataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toFRDataSCASupportData;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toFRPermission;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRReadRefundAccountConverter.toFRReadRefundAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRSupplementaryDataConverter.toFRSupplementaryData;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toFRSupplementaryData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toOBSupplementaryData1;
 
 public class FRWriteDomesticStandingOrderConsentConverter {
 
@@ -127,8 +127,8 @@ public class FRWriteDomesticStandingOrderConsentConverter {
                 .firstPaymentAmount(toFRAmount(initiation.getFirstPaymentAmount()))
                 .recurringPaymentAmount(toFRAmount(initiation.getRecurringPaymentAmount()))
                 .finalPaymentAmount(toFRAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .build();
     }
 
@@ -143,8 +143,8 @@ public class FRWriteDomesticStandingOrderConsentConverter {
                 .firstPaymentAmount(toFRAmount(initiation.getFirstPaymentAmount()))
                 .recurringPaymentAmount(toFRAmount(initiation.getRecurringPaymentAmount()))
                 .finalPaymentAmount(toFRAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }
@@ -160,8 +160,8 @@ public class FRWriteDomesticStandingOrderConsentConverter {
                 .firstPaymentAmount(toFRAmount(initiation.getFirstPaymentAmount()))
                 .recurringPaymentAmount(toFRAmount(initiation.getRecurringPaymentAmount()))
                 .finalPaymentAmount(toFRAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }
@@ -177,8 +177,8 @@ public class FRWriteDomesticStandingOrderConsentConverter {
                 .firstPaymentAmount(toFRAmount(initiation.getFirstPaymentAmount()))
                 .recurringPaymentAmount(toFRAmount(initiation.getRecurringPaymentAmount()))
                 .finalPaymentAmount(toFRAmount(initiation.getFinalPaymentAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }

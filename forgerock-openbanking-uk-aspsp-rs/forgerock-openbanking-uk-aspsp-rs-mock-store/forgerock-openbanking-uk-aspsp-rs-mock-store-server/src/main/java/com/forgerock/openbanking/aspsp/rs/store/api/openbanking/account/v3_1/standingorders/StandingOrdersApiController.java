@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorde
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.OBStandingOrderConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -104,8 +104,8 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                 .data(new OBReadStandingOrder4Data().standingOrder(standingOrders.getContent()
                         .stream()
                         .map(FRStandingOrder::getStandingOrder)
+                        .map(FRStandingOrderConverter::toOBStandingOrder4)
                         .map(so -> accountDataInternalIdFilter.apply(so))
-                        .map(OBStandingOrderConverter::toOBStandingOrder4)
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
@@ -151,8 +151,8 @@ public class StandingOrdersApiController implements StandingOrdersApi {
         return ResponseEntity.ok(new OBReadStandingOrder4()
                 .data(new OBReadStandingOrder4Data().standingOrder(standingOrders.getContent().stream()
                         .map(FRStandingOrder::getStandingOrder)
+                        .map(FRStandingOrderConverter::toOBStandingOrder4)
                         .map(so -> accountDataInternalIdFilter.apply(so))
-                        .map(OBStandingOrderConverter::toOBStandingOrder4)
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));

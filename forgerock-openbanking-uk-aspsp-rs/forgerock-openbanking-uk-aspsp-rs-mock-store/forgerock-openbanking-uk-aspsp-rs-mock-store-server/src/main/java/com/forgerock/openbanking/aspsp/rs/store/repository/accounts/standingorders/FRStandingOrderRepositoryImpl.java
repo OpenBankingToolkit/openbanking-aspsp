@@ -51,7 +51,7 @@ public class FRStandingOrderRepositoryImpl implements FRStandingOrderRepositoryC
 
                 case READSTANDINGORDERSBASIC:
                     for (FRStandingOrder standingOrder: standingOrders) {
-                        standingOrder.getStandingOrder().creditorAccount(null);
+                        standingOrder.getStandingOrder().setCreditorAccount(null);
                     }
                     break;
             }

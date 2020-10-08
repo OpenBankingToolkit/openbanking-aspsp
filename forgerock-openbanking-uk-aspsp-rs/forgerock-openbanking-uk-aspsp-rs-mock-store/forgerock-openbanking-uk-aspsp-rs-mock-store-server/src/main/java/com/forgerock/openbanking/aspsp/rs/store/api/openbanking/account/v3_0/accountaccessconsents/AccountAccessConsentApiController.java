@@ -26,6 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accountsaccessconsents.FRAccountAccessConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -53,6 +54,8 @@ import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRReadConsentResponseConverter.toFRReadConsentResponse;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRReadConsentResponseConverter.toOBReadConsentResponse1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("AccountAccessConsentsApiV3.0")
@@ -117,7 +120,7 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
         FRAccountAccessConsent accountAccessConsent = new FRAccountAccessConsent();
         accountAccessConsent.setId(consentId);
         accountAccessConsent.setConsentId(consentId);
-        accountAccessConsent.setAccountAccessConsent(response);
+        accountAccessConsent.setAccountAccessConsent(toFRReadConsentResponse(response));
         accountAccessConsent.setAisp(tppRepository.findByClientId(aispId));
         accountAccessConsent.setObVersion(VersionPathExtractor.getVersionFromPath(request));
 
@@ -155,7 +158,7 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
         }
         LOGGER.debug("Account access consent revoked with id {}", consentId);
         FRAccountAccessConsent frAccountAccessConsent = accountAccessConsent.get();
-        frAccountAccessConsent.getAccountAccessConsent().getData().setStatus(OBExternalRequestStatus1Code.REVOKED);
+        frAccountAccessConsent.getAccountAccessConsent().getData().setStatus(FRExternalRequestStatusCode.REVOKED);
         consentMetricService.sendConsentActivity(
                 new ConsentStatusEntry(frAccountAccessConsent.getAccountAccessConsent().getData().getConsentId(),
                         frAccountAccessConsent.getAccountAccessConsent().getData().getStatus().name()));
@@ -194,7 +197,8 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
         LOGGER.debug("Read successful with id {}", consentId);
         MultiValueMap<String, String> headers = new HttpHeaders();
         headers.put(OBHeaders.X_FAPI_INTERACTION_ID, Arrays.asList(xFapiInteractionId));
-        return new ResponseEntity<>(accountAccessConsent.get().getAccountAccessConsent(), headers, HttpStatus.OK);
+        OBReadConsentResponse1 consentResponse1 = toOBReadConsentResponse1(accountAccessConsent.get().getAccountAccessConsent());
+        return new ResponseEntity<>(consentResponse1, headers, HttpStatus.OK);
     }
 
 }

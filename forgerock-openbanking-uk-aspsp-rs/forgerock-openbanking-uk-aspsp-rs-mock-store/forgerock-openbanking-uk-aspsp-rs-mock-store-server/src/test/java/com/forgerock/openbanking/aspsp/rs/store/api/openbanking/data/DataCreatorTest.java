@@ -20,24 +20,34 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.offers.FROfferRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.products.FRProductRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.directdebits.FRDirectDebitRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.beneficiaries.FRBeneficiaryRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.directdebits.FRDirectDebitRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.offers.FROfferRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.products.FRProductRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRAccountBeneficiary;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRCashBalance;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRDirectDebitData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FROfferData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRStandingOrderData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRStatementData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRTransactionData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FROffer;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRDirectDebit;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStatement;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBeneficiary;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRDirectDebit;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FROffer;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStatement;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRAccountData;
 import org.junit.Before;
@@ -49,7 +59,6 @@ import org.mockito.internal.util.collections.Iterables;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
-import uk.org.openbanking.datamodel.account.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -101,8 +110,8 @@ public class DataCreatorTest {
     public void createBalancesShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addBalance(new OBCashBalance1().accountId(accountId).type(OBBalanceType1Code.INTERIMAVAILABLE));
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        FRAccountData accountData = new FRAccountData().addBalance(FRCashBalance.builder().accountId(accountId).type(FRBalanceType.INTERIMAVAILABLE).build());
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(balanceRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
         assertThatThrownBy(
@@ -117,8 +126,8 @@ public class DataCreatorTest {
     public void createBeneficiariesShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addBeneficiary(new OBBeneficiary5().accountId(accountId));
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        FRAccountData accountData = new FRAccountData().addBeneficiary(FRAccountBeneficiary.builder().accountId(accountId).build());
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(beneficiaryRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
         assertThatThrownBy(
@@ -133,8 +142,8 @@ public class DataCreatorTest {
     public void createDirectDebitsShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addDirectDebit(new OBReadDirectDebit2DataDirectDebit().accountId(accountId));
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        FRAccountData accountData = new FRAccountData().addDirectDebit(FRDirectDebitData.builder().accountId(accountId).build());
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(directDebitRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
         assertThatThrownBy(
@@ -149,8 +158,8 @@ public class DataCreatorTest {
     public void createStandingOrdersShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addStandingOrder(new OBStandingOrder6().accountId(accountId));
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        FRAccountData accountData = new FRAccountData().addStandingOrder(FRStandingOrderData.builder().accountId(accountId).build());
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(standingOrderRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
         assertThatThrownBy(
@@ -165,8 +174,8 @@ public class DataCreatorTest {
     public void createTransactionsShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addTransaction(new OBTransaction6().accountId(accountId));
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        FRAccountData accountData = new FRAccountData().addTransaction(FRTransactionData.builder().accountId(accountId).build());
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(transactionRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
         assertThatThrownBy(
@@ -181,8 +190,8 @@ public class DataCreatorTest {
     public void createStatementsShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addStatement(new OBStatement2().accountId(accountId));
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        FRAccountData accountData = new FRAccountData().addStatement(FRStatementData.builder().accountId(accountId).build());
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(statementRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
         assertThatThrownBy(
@@ -197,8 +206,8 @@ public class DataCreatorTest {
     public void createScheduledPaymentsShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addScheduledPayment(new OBScheduledPayment3().accountId(accountId));
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        FRAccountData accountData = new FRAccountData().addScheduledPayment(FRScheduledPaymentData.builder().accountId(accountId).build());
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(scheduledPaymentRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
         assertThatThrownBy(
@@ -213,8 +222,8 @@ public class DataCreatorTest {
     public void createOffersShouldThrowExceptionForExceedingLimit() {
         // Given
         String accountId = "1";
-        FRAccountData accountData = new FRAccountData().addOffer(new OBOffer1().accountId(accountId));
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        FRAccountData accountData = new FRAccountData().addOffer(FROfferData.builder().accountId(accountId).build());
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(offerRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(1000L);
 
         assertThatThrownBy(
@@ -229,9 +238,9 @@ public class DataCreatorTest {
     public void createBalancesShouldAllowCreateWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBCashBalance1 cashBalance = new OBCashBalance1().accountId(accountId).type(OBBalanceType1Code.INTERIMAVAILABLE);
+        FRCashBalance cashBalance = FRCashBalance.builder().accountId(accountId).type(FRBalanceType.INTERIMAVAILABLE).build();
         FRAccountData accountData = new FRAccountData().addBalance(cashBalance);
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(balanceRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(999L);
 
         // When
@@ -247,9 +256,9 @@ public class DataCreatorTest {
     public void createBeneficiariesShouldAllowCreateWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBBeneficiary5 beneficiary = new OBBeneficiary5().beneficiaryId("2").accountId(accountId);
+        FRAccountBeneficiary beneficiary = FRAccountBeneficiary.builder().beneficiaryId("2").accountId(accountId).build();
         FRAccountData accountData = new FRAccountData().addBeneficiary(beneficiary);
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(beneficiaryRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(999L);
 
         // When
@@ -265,9 +274,9 @@ public class DataCreatorTest {
     public void createDirectDebitsShouldAllowCreateWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBReadDirectDebit2DataDirectDebit directDebit = new OBReadDirectDebit2DataDirectDebit().accountId(accountId).directDebitId("2");
+        FRDirectDebitData directDebit = FRDirectDebitData.builder().accountId(accountId).directDebitId("2").build();
         FRAccountData accountData = new FRAccountData().addDirectDebit(directDebit);
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(directDebitRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(999L);
 
         // When
@@ -283,9 +292,9 @@ public class DataCreatorTest {
     public void createStandingOrdersShouldAllowCreateWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBStandingOrder6 standingOrder = new OBStandingOrder6().accountId(accountId).standingOrderId("2");
+        FRStandingOrderData standingOrder = FRStandingOrderData.builder().accountId(accountId).standingOrderId("2").build();
         FRAccountData accountData = new FRAccountData().addStandingOrder(standingOrder);
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(standingOrderRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(999L);
 
         // When
@@ -301,9 +310,9 @@ public class DataCreatorTest {
     public void createTransactionsShouldAllowCreateWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBTransaction6 transaction = new OBTransaction6().transactionId("2").accountId(accountId);
+        FRTransactionData transaction = FRTransactionData.builder().transactionId("2").accountId(accountId).build();
         FRAccountData accountData = new FRAccountData().addTransaction(transaction);
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(transactionRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(999L);
 
         // When
@@ -319,9 +328,9 @@ public class DataCreatorTest {
     public void createStatementsShouldAllowCreateWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBStatement2 statement = new OBStatement2().accountId(accountId).statementId("2");
+        FRStatementData statement = FRStatementData.builder().accountId(accountId).statementId("2").build();
         FRAccountData accountData = new FRAccountData().addStatement(statement);
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(statementRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(999L);
         FRStatement existingStatement = FRStatement.builder().statement(statement).accountId(accountId).build();
 
@@ -338,9 +347,9 @@ public class DataCreatorTest {
     public void createScheduledPaymentsShouldAllowCreateWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBScheduledPayment3 scheduledPayment = new OBScheduledPayment3().accountId(accountId).scheduledPaymentId("2");
+        FRScheduledPaymentData scheduledPayment = FRScheduledPaymentData.builder().accountId(accountId).scheduledPaymentId("2").build();
         FRAccountData accountData = new FRAccountData().addScheduledPayment(scheduledPayment);
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(scheduledPaymentRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(999L);
 
         // When
@@ -356,9 +365,9 @@ public class DataCreatorTest {
     public void createOffersShouldAllowCreateWhenOnLimit() {
         // Given
         String accountId = "1";
-        OBOffer1 offer = new OBOffer1().accountId(accountId).offerId("2");
+        FROfferData offer = FROfferData.builder().accountId(accountId).offerId("2").build();
         FRAccountData accountData = new FRAccountData().addOffer(offer);
-        accountData.setAccount(new OBAccount6().accountId(accountId));
+        accountData.setAccount(FRFinancialAccount.builder().accountId(accountId).build());
         given(offerRepository.countByAccountIdIn(Collections.singleton(accountId))).willReturn(999L);
 
         // When
@@ -374,9 +383,9 @@ public class DataCreatorTest {
     public void createBalance_noExistingBalances_acceptAndCreate() {
         // Given
         given(balanceRepository.findByAccountIdAndBalanceType(any(), any())).willReturn(Optional.empty());
-        OBCashBalance1 interimAvailBalance = new OBCashBalance1()
+        FRCashBalance interimAvailBalance = FRCashBalance.builder()
                 .accountId("1")
-                .type(OBBalanceType1Code.INTERIMAVAILABLE);
+                .type(FRBalanceType.INTERIMAVAILABLE).build();
 
         // When
         dataCreator.createBalances(accountDataWithBalance(interimAvailBalance), Collections.singleton(interimAvailBalance.getAccountId()));
@@ -388,9 +397,9 @@ public class DataCreatorTest {
     @Test
     public void createBalance_existingBalanceOfSameType_reject() {
         // Given
-        OBCashBalance1 interimAvailBalance = new OBCashBalance1()
+        FRCashBalance interimAvailBalance = FRCashBalance.builder()
                 .accountId("1")
-                .type(OBBalanceType1Code.INTERIMAVAILABLE);
+                .type(FRBalanceType.INTERIMAVAILABLE).build();
         FRBalance frBalance = FRBalance.builder()
                 .balance(interimAvailBalance)
                 .accountId(interimAvailBalance.getAccountId())
@@ -407,10 +416,10 @@ public class DataCreatorTest {
     @Test
     public void createBalance_existingBalanceOfDiffType_acceptAndCreate() {
         // Given
-        given(balanceRepository.findByAccountIdAndBalanceType(eq("1"), eq(OBBalanceType1Code.OPENINGBOOKED))).willReturn(Optional.empty());
-        OBCashBalance1 openingBookedBalance = new OBCashBalance1()
+        given(balanceRepository.findByAccountIdAndBalanceType(eq("1"), eq(FRBalanceType.OPENINGBOOKED))).willReturn(Optional.empty());
+        FRCashBalance openingBookedBalance = FRCashBalance.builder()
                 .accountId("1")
-                .type(OBBalanceType1Code.OPENINGBOOKED);
+                .type(FRBalanceType.OPENINGBOOKED).build();
         // When
         dataCreator.createBalances(accountDataWithBalance(openingBookedBalance), Collections.singleton(openingBookedBalance.getAccountId()));
 
@@ -418,9 +427,9 @@ public class DataCreatorTest {
         verify(balanceRepository).saveAll(argThat((b) -> Iterables.firstOf(b).getAccountId().equals("1")));
     }
 
-    private FRAccountData accountDataWithBalance(OBCashBalance1 balance) {
+    private FRAccountData accountDataWithBalance(FRCashBalance balance) {
         FRAccountData accountData = new FRAccountData();
-        accountData.setAccount(new OBAccount6().accountId(balance.getAccountId()));
+        accountData.setAccount(FRFinancialAccount.builder().accountId(balance.getAccountId()).build());
         accountData.setBalances(Collections.singletonList(balance));
         return accountData;
     }

@@ -23,6 +23,10 @@ package com.forgerock.openbanking.aspsp.rs.api.account.v2_0.accounts;
 
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadDataResponse;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadResponse;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
@@ -47,7 +51,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBReadAccount2;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -55,12 +59,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode.READACCOUNTSDETAIL;
+import static com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode.READBALANCES;
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.org.openbanking.datamodel.account.OBExternalPermissions1Code.READACCOUNTSDETAIL;
-import static uk.org.openbanking.datamodel.account.OBExternalPermissions1Code.READBALANCES;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -149,16 +153,18 @@ public class AccountsApiControllerIT {
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
     }
 
-    private void mockAccountPermissions(List<OBExternalPermissions1Code> permissions) {
+    private void mockAccountPermissions(List<FRExternalPermissionsCode> permissions) {
         FRAccountRequest value = new FRAccountRequest();
         Tpp tpp = new Tpp();
         tpp.setClientId("test-tpp");
         value.setAisp(tpp);
         value.setAccountIds(Collections.singletonList("100000123"));
-        value.setAccountRequest(new OBReadResponse1()
-                .data(new OBReadDataResponse1()
+        value.setAccountRequest(FRReadResponse.builder()
+                .data(FRReadDataResponse.builder()
                         .permissions(permissions)
-                        .status(OBExternalRequestStatus1Code.AUTHORISED)));
+                        .status(FRExternalRequestStatusCode.AUTHORISED)
+                        .build())
+                .build());
         given(accountRequestStore.get(any())).willReturn(Optional.of(value));
     }
 }

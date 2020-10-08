@@ -20,24 +20,23 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 
 import java.math.BigDecimal;
 
 public interface Balance {
 
-    // TODO 296 - change OB objects to FR domain model
-    OBActiveOrHistoricCurrencyAndAmount getCurrencyAndAmount();
+    FRAmount getCurrencyAndAmount();
 
     BigDecimal getAmount();
 
     String getCurrency();
 
-    OBCreditDebitCode getCreditDebitIndicator();
+    FRCreditDebitIndicator getCreditDebitIndicator();
 
     void setAmount(BigDecimal amount);
 
-    void setCreditDebitIndicator(OBCreditDebitCode code);
+    void setCreditDebitIndicator(FRCreditDebitIndicator code);
 
 }

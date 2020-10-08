@@ -27,8 +27,8 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmati
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.model.Tpp;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +50,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.fund.FRFundsConfirmationConsentConverter.toFRFundsConfirmationConsentData;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("FundsConfirmationConsentsApiV3.0")
@@ -106,7 +108,7 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
         FRFundsConfirmationConsent consent = FRFundsConfirmationConsent.builder()
                 .id(IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .fundsConfirmationConsent(obFundsConfirmationConsent)
+                .fundsConfirmationConsent(toFRFundsConfirmationConsentData(obFundsConfirmationConsent))
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
@@ -202,11 +204,11 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
     private OBFundsConfirmationConsentResponse1 packageResponse(FRFundsConfirmationConsent consent) {
         return new OBFundsConfirmationConsentResponse1()
                 .data(new OBFundsConfirmationConsentDataResponse1()
-                        .debtorAccount(consent.getFundsConfirmationConsent().getData().getDebtorAccount())
+                        .debtorAccount(toOBCashAccount3(consent.getFundsConfirmationConsent().getDebtorAccount()))
                         .creationDateTime(consent.getCreated())
                         .status(consent.getStatus().toOBExternalRequestStatus1Code())
                         .statusUpdateDateTime(consent.getStatusUpdate())
-                        .expirationDateTime(consent.getFundsConfirmationConsent().getData().getExpirationDateTime())
+                        .expirationDateTime(consent.getFundsConfirmationConsent().getExpirationDateTime())
                         .consentId(consent.getId())
                 )
                 .meta(new Meta())

@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorde
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.OBStandingOrderConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -102,7 +102,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                 .data(new OBReadStandingOrder5Data().standingOrder(standingOrders.getContent()
                         .stream()
                         .map(FRStandingOrder::getStandingOrder)
-                        .map(OBStandingOrderConverter::toOBStandingOrder5)
+                        .map(FRStandingOrderConverter::toOBStandingOrder5)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
@@ -149,7 +149,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
         return ResponseEntity.ok(new OBReadStandingOrder5()
                 .data(new OBReadStandingOrder5Data().standingOrder(standingOrders.getContent().stream()
                         .map(FRStandingOrder::getStandingOrder)
-                        .map(OBStandingOrderConverter::toOBStandingOrder5)
+                        .map(FRStandingOrderConverter::toOBStandingOrder5)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

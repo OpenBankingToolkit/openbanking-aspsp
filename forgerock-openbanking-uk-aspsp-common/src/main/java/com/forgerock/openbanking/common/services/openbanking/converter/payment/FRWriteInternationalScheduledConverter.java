@@ -29,8 +29,8 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3Data;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledDataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2;
 

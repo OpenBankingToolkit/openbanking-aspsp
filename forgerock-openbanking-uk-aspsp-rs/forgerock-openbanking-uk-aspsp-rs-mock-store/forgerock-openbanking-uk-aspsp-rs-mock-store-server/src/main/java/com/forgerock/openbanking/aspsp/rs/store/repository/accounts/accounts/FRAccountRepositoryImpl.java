@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import lombok.Builder;
 import lombok.Data;
@@ -34,7 +35,6 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
-import uk.org.openbanking.datamodel.account.OBAccount3Account;
 import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification3Code;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
@@ -112,7 +112,7 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
                     break;
                 case READACCOUNTSDETAIL:
                     if (!CollectionUtils.isEmpty(account.getAccount().getAccount())) {
-                        for (OBAccount3Account subAccount : account.getAccount().getAccount()) {
+                        for (FRAccountIdentifier subAccount : account.getAccount().getAccount()) {
                             if (!permissions.contains(OBExternalPermissions1Code.READPAN)
                                     && OBExternalAccountIdentification3Code.PAN.toString().equals(subAccount.getSchemeName()))
                             {

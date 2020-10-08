@@ -26,21 +26,21 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import uk.org.openbanking.datamodel.payment.*;
 import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetup1;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBWriteDomestic2DataInitiationInstructedAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRPostalAddressConverter.toFRPostalAddress;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRPostalAddressConverter.toOBPostalAddress6;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentPostalAddressConverter.toFRPostalAddress;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentPostalAddressConverter.toOBPostalAddress6;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toFRDataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toFRDataSCASupportData;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRReadRefundAccountConverter.toFRReadRefundAccount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.toFRRemittanceInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.toOBRemittanceInformation1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.toOBWriteDomestic2DataInitiationRemittanceInformation;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRSupplementaryDataConverter.toFRSupplementaryData;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toFRSupplementaryData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toOBSupplementaryData1;
 
 public class FRWriteDomesticConsentConverter {
 
@@ -110,8 +110,8 @@ public class FRWriteDomesticConsentConverter {
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(initiation.getLocalInstrument())
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .creditorPostalAddress(toFRPostalAddress(initiation.getCreditorPostalAddress()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
@@ -124,8 +124,8 @@ public class FRWriteDomesticConsentConverter {
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(initiation.getLocalInstrument())
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .creditorPostalAddress(toFRPostalAddress(initiation.getCreditorPostalAddress()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
@@ -138,8 +138,8 @@ public class FRWriteDomesticConsentConverter {
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(initiation.getLocalInstrument())
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .creditorPostalAddress(toFRPostalAddress(initiation.getCreditorPostalAddress()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .build();
@@ -164,8 +164,8 @@ public class FRWriteDomesticConsentConverter {
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(null)
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .creditorPostalAddress(null)
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(null)

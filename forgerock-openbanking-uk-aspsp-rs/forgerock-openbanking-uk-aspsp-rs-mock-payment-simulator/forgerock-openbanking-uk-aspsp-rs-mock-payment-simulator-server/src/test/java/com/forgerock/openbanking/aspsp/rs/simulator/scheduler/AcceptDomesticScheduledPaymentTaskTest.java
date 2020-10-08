@@ -22,6 +22,10 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
@@ -34,15 +38,10 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount1;
-import uk.org.openbanking.datamodel.account.OBCashAccount51;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 
 import java.util.Collections;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -83,7 +82,7 @@ public class AcceptDomesticScheduledPaymentTaskTest {
         acceptDueScheduledPaymentTask.payDueScheduledPayments();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(toFRAmount(payment.getScheduledPayment().getInstructedAmount())), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(payment.getScheduledPayment().getInstructedAmount()), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updateSchedulePayment(argThat(p -> p.getStatus().equals(ScheduledPaymentStatus.COMPLETED)));
     }
 
@@ -101,7 +100,7 @@ public class AcceptDomesticScheduledPaymentTaskTest {
         acceptDueScheduledPaymentTask.payDueScheduledPayments();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(toFRAmount(payment.getScheduledPayment().getInstructedAmount())), eq(OBCreditDebitCode.CREDIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(payment.getScheduledPayment().getInstructedAmount()), eq(FRCreditDebitIndicator.CREDIT), eq(payment), any());
         verify(paymentsService).updateSchedulePayment(argThat(p -> p.getStatus().equals(ScheduledPaymentStatus.COMPLETED)));
     }
 
@@ -130,7 +129,7 @@ public class AcceptDomesticScheduledPaymentTaskTest {
         acceptDueScheduledPaymentTask.payDueScheduledPayments();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(toFRAmount(payment.getScheduledPayment().getInstructedAmount())), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(payment.getScheduledPayment().getInstructedAmount()), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updateSchedulePayment(argThat(p -> p.getStatus().equals(ScheduledPaymentStatus.REJECTED)));
         assertThat(payment.getRejectionReason()).isEqualTo("Can't convert amount in the right currency: Simulated failure");
     }
@@ -148,7 +147,7 @@ public class AcceptDomesticScheduledPaymentTaskTest {
         acceptDueScheduledPaymentTask.payDueScheduledPayments();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), eq(toFRAmount(payment.getScheduledPayment().getInstructedAmount())), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(payment.getScheduledPayment().getInstructedAmount()), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updateSchedulePayment(argThat(p -> p.getStatus().equals(ScheduledPaymentStatus.REJECTED)));
         assertThat(payment.getRejectionReason()).isEqualTo("Failed to execute payment: Simulated failure");
     }
@@ -172,12 +171,14 @@ public class AcceptDomesticScheduledPaymentTaskTest {
     }
 
     private FRScheduledPayment defaultPayment(DateTime scheduledExecution, ScheduledPaymentStatus status) {
-        OBScheduledPayment3 scheduledPayment = new OBScheduledPayment3()
+        FRScheduledPaymentData scheduledPayment = FRScheduledPaymentData.builder()
                 .scheduledPaymentDateTime(scheduledExecution)
-                .creditorAccount(new OBCashAccount51().identification(CREDIT_ACCOUNT))
-                .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount1()
+                .creditorAccount(FRAccountIdentifier.builder().identification(CREDIT_ACCOUNT).build())
+                .instructedAmount(FRAmount.builder()
                         .amount("3")
-                        .currency("GBP"));
+                        .currency("GBP")
+                        .build())
+                .build();
         return FRScheduledPayment.builder()
                 .accountId(DEBIT_ACCOUNT)
                 .status(status)

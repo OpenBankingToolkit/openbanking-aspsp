@@ -26,7 +26,7 @@ import uk.org.openbanking.datamodel.payment.OBExternalPaymentContext1Code;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.payment.OBRisk1DeliveryAddress;
 
-public class FRRiskConverter {
+public class FRPaymentRiskConverter {
 
     public static FRPaymentRisk toFRRisk(OBRisk1 obRisk1) {
         return obRisk1 == null ? null : FRPaymentRisk.builder()

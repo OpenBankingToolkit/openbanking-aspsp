@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.events.EventSubscriptionsRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventSubscriptionData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -42,7 +43,11 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.event.*;
+import uk.org.openbanking.datamodel.event.OBEventSubscription1;
+import uk.org.openbanking.datamodel.event.OBEventSubscription1Data;
+import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1;
+import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1Data;
+import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -93,7 +98,7 @@ public class EventSubscriptionApiControllerIT {
     @Test
     public void createEventSubscription() {
         // Given
-        String url = "http://callback"+UUID.randomUUID().toString();
+        String url = "http://callback" + UUID.randomUUID().toString();
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         OBEventSubscription1 obEventSubscription1 = new OBEventSubscription1()
                 .data(new OBEventSubscription1Data()
@@ -116,7 +121,7 @@ public class EventSubscriptionApiControllerIT {
         assertThat(response.getBody().getData().getVersion()).isEqualTo("3.0");
 
         final Collection<FREventSubscription> byTpp = eventSubscriptionsRepository.findByTppId(tpp.getId());
-        assertThat(byTpp.stream().findFirst().orElseThrow(AssertionError::new).getObEventSubscription1().getData().getCallbackUrl()).isEqualTo(url);
+        assertThat(byTpp.stream().findFirst().orElseThrow(AssertionError::new).getEventSubscription().getCallbackUrl()).isEqualTo(url);
     }
 
     @Test
@@ -126,7 +131,7 @@ public class EventSubscriptionApiControllerIT {
         String id = UUID.randomUUID().toString();
         eventSubscriptionsRepository.save(FREventSubscription.builder()
                 .tppId(tpp.getId())
-                .obEventSubscription1(new OBEventSubscription1())
+                .eventSubscription(FREventSubscriptionData.builder().build())
                 .build());
         OBEventSubscription1 obEventSubscription1 = new OBEventSubscription1()
                 .data(new OBEventSubscription1Data()
@@ -156,9 +161,7 @@ public class EventSubscriptionApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         eventSubscriptionsRepository.save(FREventSubscription.builder()
                 .tppId(tpp.getId())
-                .obEventSubscription1(new OBEventSubscription1()
-                .data(new OBEventSubscription1Data()
-                .callbackUrl("http://callback")))
+                .eventSubscription(FREventSubscriptionData.builder().callbackUrl("http://callback").build())
                 .build());
 
         // When
@@ -186,16 +189,12 @@ public class EventSubscriptionApiControllerIT {
                 );
         FREventSubscription frEventSubscription = FREventSubscription.builder()
                 .id(eventSubsId)
-                .obEventSubscription1(new OBEventSubscription1()
-                        .data(new OBEventSubscription1Data()
-                                .callbackUrl("http://callback")
-                                .version("3.1")
-                        ))
+                .eventSubscription(FREventSubscriptionData.builder().callbackUrl("http://callback").version("3.1").build())
                 .build();
         eventSubscriptionsRepository.save(frEventSubscription);
 
         // When
-        HttpResponse<OBEventSubscriptionsResponse1> response = Unirest.put(BASE_URL + port + RESOURCE_URI+"/"+eventSubsId)
+        HttpResponse<OBEventSubscriptionsResponse1> response = Unirest.put(BASE_URL + port + RESOURCE_URI + "/" + eventSubsId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
                 .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
@@ -208,7 +207,7 @@ public class EventSubscriptionApiControllerIT {
         assertThat(response.getBody().getData().getEventSubscription().get(0).getCallbackUrl()).isEqualTo("http://callback/update");
 
         final Optional<FREventSubscription> byId = eventSubscriptionsRepository.findById(eventSubsId);
-        assertThat(byId.orElseThrow(AssertionError::new).getObEventSubscription1().getData().getCallbackUrl()).isEqualTo("http://callback/update");
+        assertThat(byId.orElseThrow(AssertionError::new).getEventSubscription().getCallbackUrl()).isEqualTo("http://callback/update");
     }
 
 
@@ -225,16 +224,15 @@ public class EventSubscriptionApiControllerIT {
                 );
         FREventSubscription frEventSubscription = FREventSubscription.builder()
                 .id(eventSubsId)
-                .obEventSubscription1(new OBEventSubscription1()
-                        .data(new OBEventSubscription1Data()
-                                .callbackUrl("http://callback")
-                                .version("3.1.2") // Upating to older version than one in DB - not permitted
-                        ))
+                .eventSubscription(FREventSubscriptionData.builder()
+                        .callbackUrl("http://callback")
+                        .version("3.1.2") // Upating to older version than one in DB - not permitted
+                        .build())
                 .build();
         eventSubscriptionsRepository.save(frEventSubscription);
 
         // When
-        HttpResponse<OBEventSubscriptionResponse1> response = Unirest.put(BASE_URL + port + RESOURCE_URI+"/"+eventSubsId)
+        HttpResponse<OBEventSubscriptionResponse1> response = Unirest.put(BASE_URL + port + RESOURCE_URI + "/" + eventSubsId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
                 .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
@@ -259,7 +257,7 @@ public class EventSubscriptionApiControllerIT {
                 );
 
         // When
-        HttpResponse<OBEventSubscriptionResponse1> response = Unirest.put(BASE_URL + port + RESOURCE_URI+"/"+eventSubsId)
+        HttpResponse<OBEventSubscriptionResponse1> response = Unirest.put(BASE_URL + port + RESOURCE_URI + "/" + eventSubsId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
                 .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
@@ -278,14 +276,14 @@ public class EventSubscriptionApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         String eventSubsId = UUID.randomUUID().toString();
         FREventSubscription frEventSubscription = FREventSubscription.builder()
-                .obEventSubscription1(new OBEventSubscription1().data(new OBEventSubscription1Data()))
+                .eventSubscription(FREventSubscriptionData.builder().build())
                 .id(eventSubsId)
                 .tppId(tpp.getId())
                 .build();
         eventSubscriptionsRepository.save(frEventSubscription);
 
         // When
-        HttpResponse response = Unirest.delete(BASE_URL + port + RESOURCE_URI+"/"+eventSubsId)
+        HttpResponse response = Unirest.delete(BASE_URL + port + RESOURCE_URI + "/" + eventSubsId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
                 .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
@@ -305,7 +303,7 @@ public class EventSubscriptionApiControllerIT {
         String eventSubsId = UUID.randomUUID().toString();
 
         // When
-        HttpResponse response = Unirest.delete(BASE_URL + port + RESOURCE_URI+"/"+eventSubsId)
+        HttpResponse response = Unirest.delete(BASE_URL + port + RESOURCE_URI + "/" + eventSubsId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
                 .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")

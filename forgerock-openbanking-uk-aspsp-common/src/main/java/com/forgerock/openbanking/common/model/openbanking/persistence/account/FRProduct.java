@@ -39,7 +39,9 @@ public class FRProduct {
     public String id;
     @Indexed
     public String accountId;
-    // TODO 296 - change OB objects to FR domain model
+    // TODO - ideally we'd have our own domain model equivalent here to help shield the application from OB API changes. Unfortunately, there's an
+    //  extensive hierarchy of classes under OBReadProduct2DataProduct, which will take time to model and convert, and isn't essential for an
+    //  object that hasn't changed since v2.0 of the API. This is something we can come back to if time allows in the future.
     public OBReadProduct2DataProduct product;
 
     @CreatedDate

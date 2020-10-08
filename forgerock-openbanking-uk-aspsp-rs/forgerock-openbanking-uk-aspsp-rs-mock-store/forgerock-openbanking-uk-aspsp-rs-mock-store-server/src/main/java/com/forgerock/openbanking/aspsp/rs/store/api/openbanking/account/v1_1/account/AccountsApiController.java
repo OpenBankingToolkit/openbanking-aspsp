@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.ac
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter.toOBAccount1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("AccountsApiV1.1")
@@ -54,7 +54,7 @@ public class AccountsApiController implements AccountsApi {
     @Autowired
     private FRAccountRepository frAccountRepository;
     @Autowired
-    private FRAccountConverter accountConverter;
+    private FRFinancialAccountConverter accountConverter;
 
     @Override
     public ResponseEntity<OBReadAccount1> getAccount(
@@ -64,7 +64,7 @@ public class AccountsApiController implements AccountsApi {
 
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -94,7 +94,7 @@ public class AccountsApiController implements AccountsApi {
 
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,

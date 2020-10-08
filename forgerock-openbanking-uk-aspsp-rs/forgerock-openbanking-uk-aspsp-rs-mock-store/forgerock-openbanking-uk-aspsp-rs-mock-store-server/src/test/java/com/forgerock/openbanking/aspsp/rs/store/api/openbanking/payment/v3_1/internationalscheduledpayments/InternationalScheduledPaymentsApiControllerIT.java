@@ -59,7 +59,7 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsuppo
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorTestDataFactory.aValidFRDataInitiationCreditor;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRFRExchangeRateInformationTestDataFactory.aValidFRExchangeRateInformation;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConverter.toOBWriteInternationalScheduled2;
 import static org.assertj.core.api.Assertions.assertThat;

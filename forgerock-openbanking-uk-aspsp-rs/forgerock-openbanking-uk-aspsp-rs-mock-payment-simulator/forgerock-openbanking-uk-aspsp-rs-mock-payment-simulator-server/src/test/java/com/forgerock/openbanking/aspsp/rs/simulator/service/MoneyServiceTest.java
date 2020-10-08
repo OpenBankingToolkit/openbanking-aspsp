@@ -20,6 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRCashBalance;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
@@ -35,9 +37,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
-import uk.org.openbanking.datamodel.account.OBCashBalance1;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.util.Optional;
 
@@ -65,7 +64,7 @@ public class MoneyServiceTest {
                 .willReturn(Optional.of(defaultBalance(DEBIT_ACCOUNT, "20")));
 
         // When
-        moneyService.moveMoney(defaultAccount(DEBIT_ACCOUNT), defaultAmount(), OBCreditDebitCode.DEBIT,
+        moneyService.moveMoney(defaultAccount(DEBIT_ACCOUNT), defaultAmount(), FRCreditDebitIndicator.DEBIT,
                 new FRPaymentSetup(), mock(CreateTransaction.class));
 
         // Then
@@ -80,7 +79,7 @@ public class MoneyServiceTest {
 
 
         // When
-        moneyService.moveMoney(defaultAccount(CREDIT_ACCOUNT), defaultAmount(), OBCreditDebitCode.CREDIT,
+        moneyService.moveMoney(defaultAccount(CREDIT_ACCOUNT), defaultAmount(), FRCreditDebitIndicator.CREDIT,
                 new FRPaymentSetup(), mock(CreateTransaction.class));
 
         // Then
@@ -98,10 +97,10 @@ public class MoneyServiceTest {
         FRPaymentSetup payment = new FRPaymentSetup();
         FRTransaction transaction = JMockData.mock(FRTransaction.class);
         FRAmount amount = defaultAmount();
-        given(createTransaction.createTransaction(account, payment, OBCreditDebitCode.DEBIT, balance, amount)).willReturn(transaction);
+        given(createTransaction.createTransaction(account, payment, FRCreditDebitIndicator.DEBIT, balance, amount)).willReturn(transaction);
 
         // When
-        moneyService.moveMoney(account, amount, OBCreditDebitCode.DEBIT, payment, createTransaction);
+        moneyService.moveMoney(account, amount, FRCreditDebitIndicator.DEBIT, payment, createTransaction);
 
         // Then
         verify(transactionStoreService).create(transaction);
@@ -121,11 +120,13 @@ public class MoneyServiceTest {
     private FRBalance defaultBalance(String accountId, String amount) {
         return FRBalance.builder()
                 .accountId(accountId)
-                .balance(new OBCashBalance1()
-                        .creditDebitIndicator(OBCreditDebitCode.DEBIT)
-                        .amount(new OBActiveOrHistoricCurrencyAndAmount()
+                .balance(FRCashBalance.builder()
+                        .creditDebitIndicator(FRCreditDebitIndicator.DEBIT)
+                        .amount(FRAmount.builder()
                                 .amount(amount)
-                                .currency("GBP"))).build();
+                                .currency("GBP").build())
+                        .build())
+                .build();
     }
 
 }

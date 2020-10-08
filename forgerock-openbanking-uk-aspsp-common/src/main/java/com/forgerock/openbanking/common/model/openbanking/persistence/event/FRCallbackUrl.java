@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.event;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FRCallbackUrlData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +31,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
-import uk.org.openbanking.datamodel.event.OBCallbackUrl1;
 
 @Data
 @NoArgsConstructor
@@ -42,8 +42,7 @@ public class FRCallbackUrl implements Persistable<String> {
     @Indexed
     public String id;
 
-    // TODO 296 - change OB objects to FR domain model
-    public OBCallbackUrl1 obCallbackUrl;
+    public FRCallbackUrlData callbackUrl;
 
     @Indexed
     public String tppId;
@@ -59,6 +58,6 @@ public class FRCallbackUrl implements Persistable<String> {
     }
 
     public String getCallBackUrlString() {
-        return obCallbackUrl.getData().getUrl();
+        return callbackUrl.getUrl();
     }
 }

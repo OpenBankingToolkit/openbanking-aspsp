@@ -31,7 +31,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4Data;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderDataInitiation;
 
 public class FRWriteInternationalStandingOrderConverter {

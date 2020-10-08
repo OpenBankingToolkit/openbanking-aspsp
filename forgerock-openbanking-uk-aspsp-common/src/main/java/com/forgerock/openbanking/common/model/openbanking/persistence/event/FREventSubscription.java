@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.event;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventSubscriptionData;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +33,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.event.OBEventSubscription1;
 
 @Data
 @NoArgsConstructor
@@ -45,8 +45,7 @@ public class FREventSubscription implements Persistable<String> {
     @Indexed
     public String id;
 
-    // TODO 296 - change OB objects to FR domain model
-    public OBEventSubscription1 obEventSubscription1;
+    public FREventSubscriptionData eventSubscription;
 
     @Indexed
     public String tppId;

@@ -18,13 +18,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.openbanking.converter.common;
+package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPostalAddress;
 import uk.org.openbanking.datamodel.payment.OBAddressTypeCode;
 import uk.org.openbanking.datamodel.payment.OBPostalAddress6;
 
-public class FRPostalAddressConverter {
+public class FRPaymentPostalAddressConverter {
 
     public static FRPostalAddress toFRPostalAddress(OBPostalAddress6 obPostalAddress6) {
         return obPostalAddress6 == null ? null : FRPostalAddress.builder()

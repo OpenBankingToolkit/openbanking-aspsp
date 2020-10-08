@@ -20,12 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
-import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
 
 import java.util.Collection;
 import java.util.List;
@@ -37,8 +37,7 @@ public interface FRBalanceRepository extends MongoRepository<FRBalance, String>,
     Page<FRBalance> findByAccountId(@Param("accountId") String accountId, Pageable pageable);
     Page<FRBalance> findByAccountIdIn(@Param("accountIds") List<String> accountIds, Pageable pageable);
     Collection<FRBalance> findByAccountIdIn(@Param("accountIds") List<String> accountIds);
-    // TODO #296 - use FR domain equivalent of OBBalanceType1Code?
-    Optional<FRBalance> findByAccountIdAndBalanceType(@Param("accountId") String accountId, @Param("type") OBBalanceType1Code type);
+    Optional<FRBalance> findByAccountIdAndBalanceType(@Param("accountId") String accountId, @Param("type") FRBalanceType type);
 
     Long deleteBalanceByAccountId(@Param("accountId") String accountId);
 

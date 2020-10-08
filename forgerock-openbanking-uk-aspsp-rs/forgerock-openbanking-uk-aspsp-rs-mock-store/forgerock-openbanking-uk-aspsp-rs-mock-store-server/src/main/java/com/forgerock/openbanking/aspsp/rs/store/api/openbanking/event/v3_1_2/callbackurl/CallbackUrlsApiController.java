@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.ca
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FRCallbackUrlData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
@@ -47,6 +48,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.event.FRCallbackUrlConverter.toFRCallbackUrlData;
 
 @Controller("CallbackUrlsApiV3.1.2")
 @Slf4j
@@ -100,7 +103,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
         // Check if callback URL already exists for TPP
         final Collection<FRCallbackUrl> byClientId = callbackUrlsRepository.findByTppId(isTpp.get().getId());
         final boolean urlExists = byClientId.stream()
-                .anyMatch(existingCallbackUrl -> obCallbackUrl1Param.getData().getUrl().equals(existingCallbackUrl.getObCallbackUrl().getData().getUrl()));
+                .anyMatch(existingCallbackUrl -> obCallbackUrl1Param.getData().getUrl().equals(existingCallbackUrl.getCallbackUrl().getUrl()));
         if (urlExists) {
             log.debug("This callback URL: '{}' already exists for this TPP client id: '{}'", obCallbackUrl1Param.getData().getUrl(), clientId);
             throw new OBErrorResponseException(
@@ -113,7 +116,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
         FRCallbackUrl frCallbackUrl = FRCallbackUrl.builder()
                 .id(UUID.randomUUID().toString())
                 .tppId(isTpp.get().getId())
-                .obCallbackUrl(obCallbackUrl1Param)
+                .callbackUrl(toFRCallbackUrlData(obCallbackUrl1Param))
                 .build();
         callbackUrlsRepository.save(frCallbackUrl);
 
@@ -178,7 +181,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
         if (byId.isPresent()) {
             FRCallbackUrl frCallbackUrl = byId.get();
-            frCallbackUrl.setObCallbackUrl(obCallbackUrl1Param);
+            frCallbackUrl.setCallbackUrl(toFRCallbackUrlData(obCallbackUrl1Param));
             callbackUrlsRepository.save(frCallbackUrl);
             return ResponseEntity.ok(packageResponse(frCallbackUrl));
         } else {
@@ -250,7 +253,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     }
 
     private OBCallbackUrlsResponseData1 toOBCallbackUrlsResponseData1(FRCallbackUrl frCallbackUrl) {
-        final OBCallbackUrlData1 data = frCallbackUrl.getObCallbackUrl().getData();
+        FRCallbackUrlData data = frCallbackUrl.getCallbackUrl();
         return new OBCallbackUrlsResponseData1()
                 .callbackUrl(Collections.singletonList(
                         new OBCallbackUrlResponseData1()
@@ -261,7 +264,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     }
 
     private OBCallbackUrlResponseData1 toOBCallbackUrlResponseData1(FRCallbackUrl frCallbackUrl) {
-        final OBCallbackUrlData1 data = frCallbackUrl.getObCallbackUrl().getData();
+        FRCallbackUrlData data = frCallbackUrl.getCallbackUrl();
         return new OBCallbackUrlResponseData1()
                 .url(data.getUrl())
                 .callbackUrlId(frCallbackUrl.getId())

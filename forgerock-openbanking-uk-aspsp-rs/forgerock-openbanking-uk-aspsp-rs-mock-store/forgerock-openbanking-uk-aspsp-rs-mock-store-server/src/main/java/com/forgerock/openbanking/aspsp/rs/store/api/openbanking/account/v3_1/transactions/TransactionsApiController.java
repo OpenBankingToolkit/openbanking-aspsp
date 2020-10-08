@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
-import com.forgerock.openbanking.common.services.openbanking.converter.transaction.OBTransactionConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRTransactionConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -129,7 +129,7 @@ public class TransactionsApiController implements TransactionsApi {
         List<OBTransaction4> transactions = response.getContent()
                 .stream()
                 .map(FRTransaction::getTransaction)
-                .map(OBTransactionConverter::toOBTransaction4)
+                .map(FRTransactionConverter::toOBTransaction4)
                 .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
 
@@ -207,7 +207,7 @@ public class TransactionsApiController implements TransactionsApi {
         List<OBTransaction4> transactions = body.getContent()
                 .stream()
                 .map(FRTransaction::getTransaction)
-                .map(OBTransactionConverter::toOBTransaction4)
+                .map(FRTransactionConverter::toOBTransaction4)
                 .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
 
@@ -288,7 +288,7 @@ public class TransactionsApiController implements TransactionsApi {
         List<OBTransaction4> transactions = response.getContent()
                 .stream()
                 .map(FRTransaction::getTransaction)
-                .map(OBTransactionConverter::toOBTransaction4)
+                .map(FRTransactionConverter::toOBTransaction4)
                 .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
 

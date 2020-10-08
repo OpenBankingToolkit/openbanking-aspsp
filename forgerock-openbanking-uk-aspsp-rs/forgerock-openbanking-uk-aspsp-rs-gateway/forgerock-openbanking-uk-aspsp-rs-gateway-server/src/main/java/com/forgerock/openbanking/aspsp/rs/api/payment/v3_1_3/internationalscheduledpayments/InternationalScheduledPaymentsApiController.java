@@ -26,6 +26,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.internationalscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledConsent;
@@ -40,8 +41,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalScheduleType1Code;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse4;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
@@ -51,9 +50,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
-import static com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.domesticscheduledpayments.DomesticScheduledPaymentsApiController.toOBActiveOrHistoricCurrencyAndAmount1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBCashAccount51;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledDataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
@@ -116,15 +113,15 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                             log.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
 
                             FRWriteInternationalScheduledDataInitiation initiation = payment.getInitiation();
-                            OBScheduledPayment3 scheduledPayment = new OBScheduledPayment3()
+                            FRScheduledPaymentData scheduledPayment = FRScheduledPaymentData.builder()
                                     .accountId(payment.getAccountId())
-                                    .creditorAccount(toOBCashAccount51(initiation.getCreditorAccount()))
-                                    .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount1(initiation.getInstructedAmount()))
-                                    .reference(initiation.getRemittanceInformation().getReference())
+                                    .creditorAccount(initiation.getCreditorAccount())
+                                    .instructedAmount(initiation.getInstructedAmount())
                                     // Set to EXECUTION because we are creating the creditor payment
-                                    .scheduledType(OBExternalScheduleType1Code.EXECUTION)
+                                    .scheduledType(FRScheduledPaymentData.FRScheduleType.EXECUTION)
                                     .scheduledPaymentDateTime(initiation.getRequestedExecutionDateTime())
-                                    .scheduledPaymentId(payment.getId());
+                                    .scheduledPaymentId(payment.getId())
+                                    .build();
 
                             String pispId = tppStoreService.findByClientId(tppId)
                                     .map(tpp -> tpp.getId())

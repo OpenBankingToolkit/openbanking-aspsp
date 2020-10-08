@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
 
 import java.util.List;
 
@@ -36,8 +36,7 @@ public interface AccountRequest {
 
     String getAispName();
 
-    // TODO 296 - change references of OBExternalPermissions1Code to FR equivalent?
-    List<OBExternalPermissions1Code> getPermissions();
+    List<FRExternalPermissionsCode> getPermissions();
 
     DateTime getExpirationDateTime();
 
@@ -49,11 +48,11 @@ public interface AccountRequest {
 
     void setAccountIds(List<String> accountIds);
 
-    void setStatus(OBExternalRequestStatus1Code code);
+    void setStatus(FRExternalRequestStatusCode code);
 
     String getId();
 
     List<String> getAccountIds();
 
-    OBExternalRequestStatus1Code getStatus();
+    FRExternalRequestStatusCode getStatus();
 }

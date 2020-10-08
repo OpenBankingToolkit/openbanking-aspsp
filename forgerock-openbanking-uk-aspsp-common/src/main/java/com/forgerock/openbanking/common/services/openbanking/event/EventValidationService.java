@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.event;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventSubscriptionData;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
@@ -75,9 +76,9 @@ public class EventValidationService {
      * @param existingSubscription Existing
      * @param newSubscription New
      */
-    public static void checkEqualOrNewerVersion(final OBEventSubscription1 existingSubscription, final OBEventSubscription1 newSubscription) throws OBErrorResponseException {
-        String existingVersion = existingSubscription.getData().getVersion();
-        String newVersion = newSubscription.getData().getVersion();
+    public static void checkEqualOrNewerVersion(final FREventSubscriptionData existingSubscription, final FREventSubscriptionData newSubscription) throws OBErrorResponseException {
+        String existingVersion = existingSubscription.getVersion();
+        String newVersion = newSubscription.getVersion();
 
         try {
 

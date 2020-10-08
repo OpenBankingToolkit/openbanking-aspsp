@@ -29,7 +29,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderDataInitiation;
 
 public class FRWriteDomesticStandingOrderConverter {

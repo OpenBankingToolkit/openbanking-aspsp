@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.account.v3_1_5.standingorders;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadStandingOrder6;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,14 +65,14 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                 .principal(principal)
                 .page(page)
                 .minimumPermissions(
-                        OBExternalPermissions1Code.READSTANDINGORDERSBASIC,
-                        OBExternalPermissions1Code.READSTANDINGORDERSDETAIL
+                        FRExternalPermissionsCode.READSTANDINGORDERSBASIC,
+                        FRExternalPermissionsCode.READSTANDINGORDERSDETAIL
                 )
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             log.info("Read standing orders for account {} with minimumPermissions {}", accountId, permissions);
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadStandingOrder6.class);
@@ -95,14 +95,14 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                 .principal(principal)
                 .page(page)
                 .minimumPermissions(
-                        OBExternalPermissions1Code.READSTANDINGORDERSBASIC,
-                        OBExternalPermissions1Code.READSTANDINGORDERSDETAIL)
+                        FRExternalPermissionsCode.READSTANDINGORDERSBASIC,
+                        FRExternalPermissionsCode.READSTANDINGORDERSDETAIL)
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             log.info("Reading standing orders with id {}", accountRequest.getAccountIds());
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.addAll("x-ob-account-ids", accountRequest.getAccountIds());
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadStandingOrder6.class);

@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +44,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter.toOBAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount3;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("AccountsApiV3.1.1")
@@ -123,7 +123,7 @@ public class AccountsApiController implements AccountsApi {
         List<OBAccount3> accounts = frAccountRepository.byAccountIds(accountIds, permissions)
                 .stream()
                 .map(FRAccount::getAccount)
-                .map(FRAccountConverter::toOBAccount3)
+                .map(FRFinancialAccountConverter::toOBAccount3)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new OBReadAccount3()

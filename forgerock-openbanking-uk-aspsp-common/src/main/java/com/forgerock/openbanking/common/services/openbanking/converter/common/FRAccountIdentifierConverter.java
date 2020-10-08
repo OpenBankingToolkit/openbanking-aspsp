@@ -22,47 +22,49 @@ package com.forgerock.openbanking.common.services.openbanking.converter.common;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.services.openbanking.converter.FRModelMapper;
-import uk.org.openbanking.datamodel.account.OBCashAccount3;
-import uk.org.openbanking.datamodel.account.OBCashAccount5;
-import uk.org.openbanking.datamodel.account.OBCashAccount51;
+import uk.org.openbanking.datamodel.account.*;
 import uk.org.openbanking.datamodel.payment.*;
 
-public class FRFinancialAccountConverter {
+public class FRAccountIdentifierConverter {
 
     // OB to FR
-    public static FRAccountIdentifier toFRFinancialAccount(OBCashAccount3 account) {
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccount3 account) {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
-    public static FRAccountIdentifier toFRFinancialAccount(OBCashAccountDebtor4 account) {
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccount51 account) {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
-    public static FRAccountIdentifier toFRFinancialAccount(OBCashAccountCreditor3 account) {
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccountDebtor4 account) {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
-    public static FRAccountIdentifier toFRFinancialAccount(OBWriteDomestic2DataInitiationCreditorAccount account) {
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccountCreditor3 account) {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
-    public static FRAccountIdentifier toFRFinancialAccount(OBWriteDomestic2DataInitiationDebtorAccount account) {
+    public static FRAccountIdentifier toFRAccountIdentifier(OBWriteDomestic2DataInitiationCreditorAccount account) {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
-    public static FRAccountIdentifier toFRFinancialAccount(OBWriteDomesticStandingOrder3DataInitiationCreditorAccount account) {
+    public static FRAccountIdentifier toFRAccountIdentifier(OBWriteDomestic2DataInitiationDebtorAccount account) {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
-    public static FRAccountIdentifier toFRFinancialAccount(OBWriteInternationalStandingOrder4DataInitiationCreditorAccount account) {
+    public static FRAccountIdentifier toFRAccountIdentifier(OBWriteDomesticStandingOrder3DataInitiationCreditorAccount account) {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
-    public static FRAccountIdentifier toFRFinancialAccount(OBWriteDomesticStandingOrder3DataInitiationDebtorAccount account) {
+    public static FRAccountIdentifier toFRAccountIdentifier(OBWriteInternationalStandingOrder4DataInitiationCreditorAccount account) {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
-    public static FRAccountIdentifier toFRFinancialAccount(OBCashAccountDebtor1 account) {
+    public static FRAccountIdentifier toFRAccountIdentifier(OBWriteDomesticStandingOrder3DataInitiationDebtorAccount account) {
+        return FRModelMapper.map(account, FRAccountIdentifier.class);
+    }
+
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccountDebtor1 account) {
         return account == null ? null : FRAccountIdentifier.builder()
                 .schemeName(account.getSchemeName() == null ? null : account.getSchemeName().getReference())
                 .identification(account.getIdentification())
@@ -71,7 +73,7 @@ public class FRFinancialAccountConverter {
                 .build();
     }
 
-    public static FRAccountIdentifier toFRFinancialAccount(OBCashAccountCreditor1 account) {
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccountCreditor1 account) {
         return account == null ? null : FRAccountIdentifier.builder()
                 .schemeName(account.getSchemeName() == null ? null : account.getSchemeName().getReference())
                 .identification(account.getIdentification())
@@ -89,6 +91,18 @@ public class FRFinancialAccountConverter {
         return FRModelMapper.map(account, OBCashAccountDebtor4.class);
     }
 
+    public static OBCashAccount1 toOBCashAccount1(FRAccountIdentifier account) {
+        return FRModelMapper.map(account, OBCashAccount1.class);
+    }
+
+    public static OBCashAccount2 toOBCashAccount2(FRAccountIdentifier account) {
+        return account == null ? null : new OBCashAccount2()
+                .schemeName(account.getSchemeName() == null ? null : OBExternalAccountIdentification3Code.fromValue(account.getSchemeName()))
+                .identification(account.getIdentification())
+                .name(account.getName())
+                .secondaryIdentification(account.getSecondaryIdentification());
+    }
+
     public static OBCashAccount3 toOBCashAccount3(FRAccountIdentifier account) {
         return FRModelMapper.map(account, OBCashAccount3.class);
     }
@@ -97,8 +111,28 @@ public class FRFinancialAccountConverter {
         return FRModelMapper.map(account, OBCashAccount5.class);
     }
 
+    public static OBCashAccount6 toOBCashAccount6(FRAccountIdentifier account) {
+        return FRModelMapper.map(account, OBCashAccount6.class);
+    }
+
+    public static OBCashAccount50 toOBCashAccount50(FRAccountIdentifier account) {
+        return FRModelMapper.map(account, OBCashAccount50.class);
+    }
+
     public static OBCashAccount51 toOBCashAccount51(FRAccountIdentifier account) {
         return FRModelMapper.map(account, OBCashAccount51.class);
+    }
+
+    public static OBCashAccount60 toOBCashAccount60(FRAccountIdentifier account) {
+        return FRModelMapper.map(account, OBCashAccount60.class);
+    }
+
+    public static OBCashAccount61 toOBCashAccount61(FRAccountIdentifier account) {
+        return FRModelMapper.map(account, OBCashAccount61.class);
+    }
+
+    public static OBAccount3Account toOBAccount3Account(FRAccountIdentifier account) {
+        return FRModelMapper.map(account, OBAccount3Account.class);
     }
 
     public static OBWriteDomestic2DataInitiationCreditorAccount toOBWriteDomestic2DataInitiationCreditorAccount(FRAccountIdentifier account) {
@@ -135,5 +169,10 @@ public class FRFinancialAccountConverter {
                 .identification(account.getIdentification())
                 .name(account.getName())
                 .secondaryIdentification(account.getSecondaryIdentification());
+    }
+
+    public static OBDebtorIdentification1 toOBDebtorIdentification1(FRAccountIdentifier frAccountIdentifier) {
+        return frAccountIdentifier == null ? null : new OBDebtorIdentification1()
+                .name(frAccountIdentifier.getName());
     }
 }

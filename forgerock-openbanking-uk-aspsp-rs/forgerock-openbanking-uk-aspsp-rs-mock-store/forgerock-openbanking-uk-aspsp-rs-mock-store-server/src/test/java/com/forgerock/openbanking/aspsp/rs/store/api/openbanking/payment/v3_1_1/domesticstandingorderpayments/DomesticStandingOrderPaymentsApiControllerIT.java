@@ -60,7 +60,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentR
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse2;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder3;
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.beneficiarie
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBeneficiary;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.OBBeneficiaryConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRBeneficiaryConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -48,7 +48,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-
 
 @Controller("BeneficiariesApiV2.0")
 public class BeneficiariesApiController implements BeneficiariesApi {
@@ -103,8 +102,8 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                 beneficiaries.getContent()
                         .stream()
                         .map(FRBeneficiary::getBeneficiary)
+                        .map(FRBeneficiaryConverter::toOBBeneficiary2)
                         .map(b -> accountDataInternalIdFilter.apply(b))
-                        .map(OBBeneficiaryConverter::toOBBeneficiary2)
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
@@ -150,8 +149,8 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                 beneficiaries.getContent()
                         .stream()
                         .map(FRBeneficiary::getBeneficiary)
+                        .map(FRBeneficiaryConverter::toOBBeneficiary2)
                         .map(b -> accountDataInternalIdFilter.apply(b))
-                        .map(OBBeneficiaryConverter::toOBBeneficiary2)
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));

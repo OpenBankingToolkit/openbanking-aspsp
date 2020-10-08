@@ -23,7 +23,7 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
-import com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter;
 import uk.org.openbanking.datamodel.payment.OBFile1;
 import uk.org.openbanking.datamodel.payment.OBFile2;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsent1;
@@ -34,16 +34,16 @@ import uk.org.openbanking.datamodel.payment.OBWriteFileConsent2;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3Data;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toFRFinancialAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toFRAccountIdentifier;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toFRDataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toFRDataSCASupportData;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.toFRRemittanceInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.toOBRemittanceInformation1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.toOBWriteDomestic2DataInitiationRemittanceInformation;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRSupplementaryDataConverter.toFRSupplementaryData;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toFRSupplementaryData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toOBSupplementaryData1;
 
 public class FRWriteFileConsentConverter {
 
@@ -97,7 +97,7 @@ public class FRWriteFileConsentConverter {
                 .controlSum(initiation.getControlSum())
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .localInstrument(initiation.getLocalInstrument())
-                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
+                .debtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(initiation.getDebtorAccount()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .build();
     }
@@ -111,7 +111,7 @@ public class FRWriteFileConsentConverter {
                 .controlSum(initiation.getControlSum())
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .localInstrument(initiation.getLocalInstrument())
-                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
+                .debtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(initiation.getDebtorAccount()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
@@ -126,7 +126,7 @@ public class FRWriteFileConsentConverter {
                 .controlSum(initiation.getControlSum())
                 .requestedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                 .localInstrument(initiation.getLocalInstrument())
-                .debtorAccount(FRFinancialAccountConverter.toFRFinancialAccount(initiation.getDebtorAccount()))
+                .debtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(initiation.getDebtorAccount()))
                 .remittanceInformation(toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();

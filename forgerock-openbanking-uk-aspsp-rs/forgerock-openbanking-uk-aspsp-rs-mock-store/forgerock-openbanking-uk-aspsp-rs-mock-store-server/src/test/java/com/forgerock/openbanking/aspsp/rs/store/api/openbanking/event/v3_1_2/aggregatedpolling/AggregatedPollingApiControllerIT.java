@@ -72,8 +72,6 @@ public class AggregatedPollingApiControllerIT {
     @Autowired
     private SpringSecForTest springSecForTest;
 
-
-
     @MockBean
     private TppRepository tppRepository;
 
@@ -321,7 +319,7 @@ public class AggregatedPollingApiControllerIT {
         assertThat(frPendingEventsRepository.findByTppIdAndJti(tpp.getId(), frEventNotification1.getJti()).isEmpty()).isTrue();
         assertThat(frPendingEventsRepository.findByTppIdAndJti(tpp.getId(), frEventNotification2.getJti())
                 .orElseThrow(AssertionError::new)
-                .getErrors().getErr()).isEqualTo("err1");
+                .getErrors().getError()).isEqualTo("err1");
     }
 
     @Test

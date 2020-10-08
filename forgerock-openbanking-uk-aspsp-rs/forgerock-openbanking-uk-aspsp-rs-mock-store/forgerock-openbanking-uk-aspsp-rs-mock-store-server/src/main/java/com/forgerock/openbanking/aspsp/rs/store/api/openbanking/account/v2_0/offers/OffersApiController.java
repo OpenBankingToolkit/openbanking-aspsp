@@ -46,6 +46,7 @@ import uk.org.openbanking.datamodel.account.OBReadOffer1Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FROfferConverter.toOBOffer1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("OffersApiV2.0")
@@ -62,30 +63,30 @@ public class OffersApiController implements OffersApi {
 
     @Override
     public ResponseEntity<OBReadOffer1> getAccountOffers(
-            @ApiParam(value = "A unique identifier used to identify the account resource.",required=true)
+            @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
             @PathVariable("AccountId") String accountId,
 
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
-            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
-                    "Sun, 10 Sep 2017 19:43:31 UTC" )
+                    "Sun, 10 Sep 2017 19:43:31 UTC")
 
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
 
-            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
 
-            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
-            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
@@ -102,8 +103,8 @@ public class OffersApiController implements OffersApi {
         return ResponseEntity.ok(new OBReadOffer1().data(new OBReadOffer1Data().offer(
                 offers.getContent()
                         .stream()
-                        .map(FROffer::getOffer)
-                        .map(dd -> accountDataInternalIdFilter.apply(dd))
+                        .map(o -> toOBOffer1(o.getOffer()))
+                        .map(o -> accountDataInternalIdFilter.apply(o))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
@@ -111,26 +112,26 @@ public class OffersApiController implements OffersApi {
 
     @Override
     public ResponseEntity<OBReadOffer1> getOffers(
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
-            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
 
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
-                    "Sun, 10 Sep 2017 19:43:31 UTC" )
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+                    "Sun, 10 Sep 2017 19:43:31 UTC")
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
-            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
 
-            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
-            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
@@ -153,7 +154,7 @@ public class OffersApiController implements OffersApi {
         return ResponseEntity.ok(new OBReadOffer1().data(new OBReadOffer1Data().offer(
                 offers.getContent()
                         .stream()
-                        .map(FROffer::getOffer)
+                        .map(o -> toOBOffer1(o.getOffer()))
                         .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

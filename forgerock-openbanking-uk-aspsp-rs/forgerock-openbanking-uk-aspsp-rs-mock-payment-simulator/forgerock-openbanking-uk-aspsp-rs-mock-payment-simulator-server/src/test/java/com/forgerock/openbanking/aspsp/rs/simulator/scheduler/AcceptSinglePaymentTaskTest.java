@@ -22,8 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
@@ -38,7 +39,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -80,7 +80,7 @@ public class AcceptSinglePaymentTaskTest {
 
         // Then
         FRAmount instructedAmount = payment.getInitiation().getInstructedAmount();
-        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED)));
     }
 
@@ -100,7 +100,7 @@ public class AcceptSinglePaymentTaskTest {
 
         // Then
         FRAmount instructedAmount = payment.getInitiation().getInstructedAmount();
-        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.CREDIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(FRCreditDebitIndicator.CREDIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED)));
     }
 
@@ -118,7 +118,7 @@ public class AcceptSinglePaymentTaskTest {
 
         // Then
         FRAmount instructedAmount = payment.getInitiation().getInstructedAmount();
-        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.REJECTED)));
     }
 
@@ -136,7 +136,7 @@ public class AcceptSinglePaymentTaskTest {
 
         // Then
         FRAmount instructedAmount = payment.getInitiation().getInstructedAmount();
-        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), eq(instructedAmount), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updatePayment(argThat(p -> p.getStatus().equals(ConsentStatusCode.REJECTED)));
     }
 

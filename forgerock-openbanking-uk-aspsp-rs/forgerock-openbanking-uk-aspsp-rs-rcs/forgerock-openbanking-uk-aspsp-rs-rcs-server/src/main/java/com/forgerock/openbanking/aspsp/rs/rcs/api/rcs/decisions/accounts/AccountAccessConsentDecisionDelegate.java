@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
@@ -31,7 +32,6 @@ import com.forgerock.openbanking.common.services.store.accountrequest.AccountReq
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
 
 import java.io.IOException;
 import java.util.List;
@@ -81,11 +81,11 @@ class AccountAccessConsentDecisionDelegate implements ConsentDecisionDelegate {
                         accountsId, accountConsentDecision.getSharedAccounts());
             }
             accountRequest.setAccountIds(accountConsentDecision.getSharedAccounts());
-            accountRequest.setStatus(OBExternalRequestStatus1Code.AUTHORISED);
+            accountRequest.setStatus(FRExternalRequestStatusCode.AUTHORISED);
             accountRequestStoreService.save(accountRequest);
         } else {
             log.debug("The account request {} has been deny", accountRequest.getId());
-            accountRequest.setStatus(OBExternalRequestStatus1Code.REJECTED);
+            accountRequest.setStatus(FRExternalRequestStatusCode.REJECTED);
             accountRequestStoreService.save(accountRequest);
         }
     }
@@ -94,7 +94,7 @@ class AccountAccessConsentDecisionDelegate implements ConsentDecisionDelegate {
     public void autoaccept(List<FRAccount> accounts, String username) {
         accountRequest.setUserId(username);
         accountRequest.setAccountIds(accounts.stream().map(FRAccount::getId).collect(Collectors.toList()));
-        accountRequest.setStatus(OBExternalRequestStatus1Code.AUTHORISED);
+        accountRequest.setStatus(FRExternalRequestStatusCode.AUTHORISED);
         accountRequestStoreService.save(accountRequest);
     }
 }

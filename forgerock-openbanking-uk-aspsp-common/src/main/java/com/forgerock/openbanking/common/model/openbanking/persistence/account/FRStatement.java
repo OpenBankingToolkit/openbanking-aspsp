@@ -22,6 +22,7 @@ package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRStatementData;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +33,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.account.OBStatement2;
 import uk.org.openbanking.jackson.DateTimeDeserializer;
 import uk.org.openbanking.jackson.DateTimeSerializer;
 
@@ -52,8 +52,8 @@ public class FRStatement {
     public String id;
     @Indexed
     public String accountId;
-    // TODO 296 - change OB objects to FR domain model
-    public OBStatement2 statement;
+    public FRStatementData statement;
+
     @JsonDeserialize(using = DateTimeDeserializer.class)
     @JsonSerialize(using = DateTimeSerializer.class)
     private DateTime startDateTime = null;

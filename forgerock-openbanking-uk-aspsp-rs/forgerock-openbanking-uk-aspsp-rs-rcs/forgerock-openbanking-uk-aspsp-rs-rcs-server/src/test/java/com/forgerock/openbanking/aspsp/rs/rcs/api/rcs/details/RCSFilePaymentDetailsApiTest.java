@@ -22,13 +22,14 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileDataInitiation;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FilePaymentConsentDetails;
@@ -44,8 +45,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBAccount3Account;
-import uk.org.openbanking.datamodel.account.OBAccount6;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -74,9 +73,9 @@ public class RCSFilePaymentDetailsApiTest {
 
     private static final AccountWithBalance DEBTOR_ACCOUNT = new AccountWithBalance(FRAccount.builder()
             .id("111")
-            .account(new OBAccount6().account(singletonList(
-                    new OBAccount3Account().identification("123")
-            )))
+            .account(FRFinancialAccount.builder()
+                    .account(singletonList(FRAccountIdentifier.builder().identification("123").build()))
+                    .build())
             .build(), Collections.EMPTY_LIST);
 
     @InjectMocks

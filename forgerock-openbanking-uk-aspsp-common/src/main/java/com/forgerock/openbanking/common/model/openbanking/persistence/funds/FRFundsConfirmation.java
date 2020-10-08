@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.funds;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.funds.FRFundsConfirmationData;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,8 +43,7 @@ public class FRFundsConfirmation {
     @Indexed
     public String id;
 
-    // TODO 296 - change OB objects to FR domain model
-    public OBFundsConfirmation1 fundsConfirmation;
+    public FRFundsConfirmationData fundsConfirmation;
 
     public boolean fundsAvailable;
 

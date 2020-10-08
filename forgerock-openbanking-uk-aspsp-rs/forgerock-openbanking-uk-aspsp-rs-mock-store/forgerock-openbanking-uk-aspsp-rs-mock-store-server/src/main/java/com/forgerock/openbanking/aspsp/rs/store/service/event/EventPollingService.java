@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.service.event;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.events.FRPendingEventsRepository;
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventPolling;
 import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventNotification;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
@@ -29,7 +30,6 @@ import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.event.OBEventPolling1;
 
 import java.util.Collections;
 import java.util.Map;
@@ -51,25 +51,25 @@ public class EventPollingService {
         this.frPendingEventsRepository = frPendingEventsRepository;
     }
 
-    public void acknowledgeEvents(OBEventPolling1 obEventPolling, String tppId) {
+    public void acknowledgeEvents(FREventPolling frEventPolling, String tppId) {
         Preconditions.checkNotNull(tppId);
-        Preconditions.checkNotNull(obEventPolling);
+        Preconditions.checkNotNull(frEventPolling);
 
-        if (obEventPolling.getAck() !=null && !obEventPolling.getAck().isEmpty()) {
-            log.debug("TPP '{}' is acknowledging (and therefore deleting) the following event notifications: {}", tppId, obEventPolling.getAck());
-            obEventPolling.getAck()
+        if (frEventPolling.getAck() !=null && !frEventPolling.getAck().isEmpty()) {
+            log.debug("TPP '{}' is acknowledging (and therefore deleting) the following event notifications: {}", tppId, frEventPolling.getAck());
+            frEventPolling.getAck()
                     .forEach(
                             jti -> frPendingEventsRepository.deleteByTppIdAndJti(tppId, jti)
                     );
         }
     }
 
-    public void recordTppEventErrors(OBEventPolling1 obEventPolling, String tppId) {
+    public void recordTppEventErrors(FREventPolling frEventPolling, String tppId) {
         Preconditions.checkNotNull(tppId);
-        Preconditions.checkNotNull(obEventPolling);
-        if (obEventPolling.getSetErrs()!=null && !obEventPolling.getSetErrs().isEmpty()) {
-            log.debug("Persisting {} event notification errors for keys: {}", obEventPolling.getSetErrs().size(), obEventPolling.getSetErrs().keySet());
-            obEventPolling.getSetErrs()
+        Preconditions.checkNotNull(frEventPolling);
+        if (frEventPolling.getSetErrs()!=null && !frEventPolling.getSetErrs().isEmpty()) {
+            log.debug("Persisting {} event notification errors for keys: {}", frEventPolling.getSetErrs().size(), frEventPolling.getSetErrs().keySet());
+            frEventPolling.getSetErrs()
                     .forEach((key, value) -> frPendingEventsRepository.findByTppIdAndJti(tppId, key)
                             .ifPresent(event -> {
                                 event.setErrors(value);
@@ -79,17 +79,17 @@ public class EventPollingService {
 
     }
 
-    public Map<String, String> fetchNewEvents(OBEventPolling1 obEventPolling, String tppId) throws OBErrorResponseException {
+    public Map<String, String> fetchNewEvents(FREventPolling frEventPolling, String tppId) throws OBErrorResponseException {
         Preconditions.checkNotNull(tppId);
-        Preconditions.checkNotNull(obEventPolling);
-        if (obEventPolling.getMaxEvents() !=null && obEventPolling.getMaxEvents() <= 0) {
+        Preconditions.checkNotNull(frEventPolling);
+        if (frEventPolling.getMaxEvents() !=null && frEventPolling.getMaxEvents() <= 0) {
             // Zero notifications can be requested by TPP when they just want to send acknowledgements and/or errors to sandbox
             log.debug("Polling request for TPP: '{}' requested no event notifications so none will be returned", tppId);
             return Collections.emptyMap();
         }
 
         // Long polling is currently optional in OB specs and as it requires more work to implement it will be left out for now.
-        if (obEventPolling.isReturnImmediately() !=null && !obEventPolling.isReturnImmediately()) {
+        if (frEventPolling.getReturnImmediately() !=null && !frEventPolling.isReturnImmediately()) {
             log.warn("TPP: {} requested long polling on the event notification API but it is not supported", tppId);
             throw new OBErrorResponseException(
                     HttpStatus.NOT_IMPLEMENTED,

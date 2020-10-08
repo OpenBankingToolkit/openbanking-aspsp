@@ -20,135 +20,184 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.account.OBStatement1;
-import uk.org.openbanking.datamodel.account.OBStatement2;
-import uk.org.openbanking.datamodel.account.OBStatementFee1;
-import uk.org.openbanking.datamodel.account.OBStatementFee2;
-import uk.org.openbanking.datamodel.account.OBStatementInterest1;
-import uk.org.openbanking.datamodel.account.OBStatementInterest2;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRStatementData;
+import uk.org.openbanking.datamodel.account.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.OBActiveOrHistoricCurrencyAndAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toOBCreditDebitCode;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toOBStatementFee2CreditDebitIndicatorEnum;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toOBStatementInterest2CreditDebitIndicatorEnum;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 /**
  * Converter for 'FRStatement' documents.
  */
 public class FRStatementConverter {
 
-    // TODO #296 - add required methods once FRAccount is using FR domain classes
-//    public static FRStatement toFRStatement4(FRStatement1 frStatement1) {
-//        return frStatement1 == null ? null : FRStatement.builder()
-//                .id(frStatement1.getId())
-//                .accountId(frStatement1.getAccountId())
-//                .statement(toOBStatement2(frStatement1.getStatement()))
-//                .created(frStatement1.getCreated())
-//                .updated(frStatement1.getUpdated())
-//                .build();
-//    }
-
-    public static OBStatement1 toOBStatement1(OBStatement2 obStatement2) {
-        return obStatement2 == null ? null : (new OBStatement1())
-                .accountId(obStatement2.getAccountId())
-                .statementId(obStatement2.getStatementId())
-                .statementReference(obStatement2.getStatementReference())
-                .type(obStatement2.getType())
-                .startDateTime(obStatement2.getStartDateTime())
-                .endDateTime(obStatement2.getEndDateTime())
-                .creationDateTime(obStatement2.getCreationDateTime())
-                .statementDescription(obStatement2.getStatementDescription())
-                .statementBenefit(obStatement2.getStatementBenefit())
-                .statementFee(toOBStatementFee1List(obStatement2.getStatementFee()))
-                .statementInterest(toOBStatementInterest1List(obStatement2.getStatementInterest()))
-                .statementDateTime(obStatement2.getStatementDateTime())
-                .statementRate(obStatement2.getStatementRate())
-                .statementValue(obStatement2.getStatementValue())
-                .statementAmount(obStatement2.getStatementAmount());
+    public static OBStatement1 toOBStatement1(FRStatementData frStatementData) {
+        return frStatementData == null ? null : new OBStatement1()
+                .accountId(frStatementData.getAccountId())
+                .statementId(frStatementData.getStatementId())
+                .statementReference(frStatementData.getStatementReference())
+                .type(toOBExternalStatementType1Code(frStatementData.getType()))
+                .startDateTime(frStatementData.getStartDateTime())
+                .endDateTime(frStatementData.getEndDateTime())
+                .creationDateTime(frStatementData.getCreationDateTime())
+                .statementDescription(frStatementData.getStatementDescription())
+                .statementBenefit(toOBStatementBenefit1List(frStatementData.getStatementBenefit()))
+                .statementFee(toOBStatementFee1List(frStatementData.getStatementFee()))
+                .statementInterest(toOBStatementInterest1List(frStatementData.getStatementInterest()))
+                .statementDateTime(toOBStatementDateTime1List(frStatementData.getStatementDateTime()))
+                .statementRate(toOBStatementRate1List(frStatementData.getStatementRate()))
+                .statementValue(toOBStatementValue1List(frStatementData.getStatementValue()))
+                .statementAmount(toOBStatementAmount1List(frStatementData.getStatementAmount()));
     }
 
-    public static OBStatement2 toOBStatement2(OBStatement1 obStatement1) {
-        return obStatement1 == null ? null : (new OBStatement2())
-                .accountId(obStatement1.getAccountId())
-                .statementId(obStatement1.getStatementId())
-                .statementReference(obStatement1.getStatementReference())
-                .type(obStatement1.getType())
-                .startDateTime(obStatement1.getStartDateTime())
-                .endDateTime(obStatement1.getEndDateTime())
-                .creationDateTime(obStatement1.getCreationDateTime())
-                .statementDescription(obStatement1.getStatementDescription())
-                .statementBenefit(obStatement1.getStatementBenefit())
-                .statementFee(toOBStatementFee2List(obStatement1.getStatementFee()))
-                .statementInterest(toOBStatementInterest2List(obStatement1.getStatementInterest()))
-                .statementDateTime(obStatement1.getStatementDateTime())
-                .statementRate(obStatement1.getStatementRate())
-                .statementValue(obStatement1.getStatementValue())
-                .statementAmount(obStatement1.getStatementAmount());
+    public static OBStatement2 toOBStatement2(FRStatementData frStatementData) {
+        return frStatementData == null ? null : new OBStatement2()
+                .accountId(frStatementData.getAccountId())
+                .statementId(frStatementData.getStatementId())
+                .statementReference(frStatementData.getStatementReference())
+                .type(toOBExternalStatementType1Code(frStatementData.getType()))
+                .startDateTime(frStatementData.getStartDateTime())
+                .endDateTime(frStatementData.getEndDateTime())
+                .creationDateTime(frStatementData.getCreationDateTime())
+                .statementDescription(frStatementData.getStatementDescription())
+                .statementBenefit(toOBStatementBenefit1List(frStatementData.getStatementBenefit()))
+                .statementFee(toOBStatementFee2List(frStatementData.getStatementFee()))
+                .statementInterest(toOBStatementInterest2List(frStatementData.getStatementInterest()))
+                .statementDateTime(toOBStatementDateTime1List(frStatementData.getStatementDateTime()))
+                .statementRate(toOBStatementRate1List(frStatementData.getStatementRate()))
+                .statementValue(toOBStatementValue1List(frStatementData.getStatementValue()))
+                .statementAmount(toOBStatementAmount1List(frStatementData.getStatementAmount()));
     }
 
-    public static List<OBStatementFee1> toOBStatementFee1List(List<OBStatementFee2> obStatementFee2s) {
-        if (obStatementFee2s == null) {
-            return null;
-        }
-        return obStatementFee2s.stream()
+    public static OBExternalStatementType1Code toOBExternalStatementType1Code(FRStatementData.FRStatementType type) {
+        return type == null ? null : OBExternalStatementType1Code.valueOf(type.name());
+    }
+
+    public static List<OBStatementBenefit1> toOBStatementBenefit1List(List<FRStatementData.FRStatementBenefit> statementBenefit) {
+        return statementBenefit == null ? null : statementBenefit.stream()
+                .map(FRStatementConverter::toOBStatementBenefit1)
+                .collect(Collectors.toList());
+    }
+
+    public static List<OBStatementFee1> toOBStatementFee1List(List<FRStatementData.FRStatementFee> statementFee) {
+        return statementFee == null ? null : statementFee.stream()
                 .map(FRStatementConverter::toOBStatementFee1)
                 .collect(Collectors.toList());
     }
 
-    public static List<OBStatementFee2> toOBStatementFee2List(List<OBStatementFee1> obStatementFee1s) {
-        if (obStatementFee1s == null) {
-            return null;
-        }
-        return obStatementFee1s.stream()
+    public static List<OBStatementFee2> toOBStatementFee2List(List<FRStatementData.FRStatementFee> statementFee) {
+        return statementFee == null ? null : statementFee.stream()
                 .map(FRStatementConverter::toOBStatementFee2)
                 .collect(Collectors.toList());
     }
 
-    public static List<OBStatementInterest1> toOBStatementInterest1List(List<OBStatementInterest2> obStatementInterest2s) {
-        if (obStatementInterest2s == null) {
-            return null;
-        }
-        return obStatementInterest2s.stream()
+
+    public static List<OBStatementInterest1> toOBStatementInterest1List(List<FRStatementData.FRStatementInterest> statementInterest) {
+        return statementInterest == null ? null : statementInterest.stream()
                 .map(FRStatementConverter::toOBStatementInterest1)
                 .collect(Collectors.toList());
     }
 
-    public static List<OBStatementInterest2> toOBStatementInterest2List(List<OBStatementInterest1> obStatementInterest1s) {
-        if (obStatementInterest1s == null) {
-            return null;
-        }
-        return obStatementInterest1s.stream()
+    public static List<OBStatementInterest2> toOBStatementInterest2List(List<FRStatementData.FRStatementInterest> statementInterest) {
+        return statementInterest == null ? null : statementInterest.stream()
                 .map(FRStatementConverter::toOBStatementInterest2)
                 .collect(Collectors.toList());
     }
 
-    public static OBStatementFee1 toOBStatementFee1(OBStatementFee2 obStatementFee2) {
-        return obStatementFee2 == null ? null : (new OBStatementFee1())
-                .creditDebitIndicator(OBCreditDebitCode.valueOf(obStatementFee2.getCreditDebitIndicator().name()))
-                .type(obStatementFee2.getType())
-                .amount(toOBActiveOrHistoricCurrencyAndAmount(obStatementFee2.getAmount()));
+    public static List<OBStatementDateTime1> toOBStatementDateTime1List(List<FRStatementData.FRStatementDateTime> statementDateTime) {
+        return statementDateTime == null ? null : statementDateTime.stream()
+                .map(FRStatementConverter::toOBStatementDateTime1)
+                .collect(Collectors.toList());
     }
 
-    public static OBStatementFee2 toOBStatementFee2(OBStatementFee1 obStatementFee1) {
-        return obStatementFee1 == null ? null : (new OBStatementFee2())
-                .creditDebitIndicator(OBStatementFee2.CreditDebitIndicatorEnum.valueOf(obStatementFee1.getCreditDebitIndicator().name()))
-                .type(obStatementFee1.getType())
-                .amount(toAccountOBActiveOrHistoricCurrencyAndAmount(obStatementFee1.getAmount()));
+    public static List<OBStatementRate1> toOBStatementRate1List(List<FRStatementData.FRStatementRate> statementRate) {
+        return statementRate == null ? null : statementRate.stream()
+                .map(FRStatementConverter::toOBStatementRate1)
+                .collect(Collectors.toList());
     }
 
-    public static OBStatementInterest1 toOBStatementInterest1(OBStatementInterest2 obStatementInterest2) {
-        return obStatementInterest2 == null ? null : (new OBStatementInterest1())
-                .creditDebitIndicator(OBCreditDebitCode.valueOf(obStatementInterest2.getCreditDebitIndicator().name()))
-                .type(obStatementInterest2.getType())
-                .amount(toOBActiveOrHistoricCurrencyAndAmount(obStatementInterest2.getAmount()));
+    public static List<OBStatementValue1> toOBStatementValue1List(List<FRStatementData.FRStatementValue> statementValue) {
+        return statementValue == null ? null : statementValue.stream()
+                .map(FRStatementConverter::toOBStatementValue1)
+                .collect(Collectors.toList());
     }
 
-    public static OBStatementInterest2 toOBStatementInterest2(OBStatementInterest1 obStatementInterest1) {
-        return obStatementInterest1 == null ? null : (new OBStatementInterest2())
-                .creditDebitIndicator(OBStatementInterest2.CreditDebitIndicatorEnum.valueOf(obStatementInterest1.getCreditDebitIndicator().name()))
-                .type(obStatementInterest1.getType())
-                .amount(toAccountOBActiveOrHistoricCurrencyAndAmount(obStatementInterest1.getAmount()));
+    public static List<OBStatementAmount1> toOBStatementAmount1List(List<FRStatementData.FRStatementAmount> statementAmount) {
+        return statementAmount == null ? null : statementAmount.stream()
+                .map(FRStatementConverter::toOBStatementAmount1)
+                .collect(Collectors.toList());
+    }
+
+    public static OBStatementBenefit1 toOBStatementBenefit1(FRStatementData.FRStatementBenefit statementBenefit) {
+        return statementBenefit == null ? null : new OBStatementBenefit1()
+                .type(statementBenefit.getType())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(statementBenefit.getAmount()));
+    }
+
+    public static OBStatementFee1 toOBStatementFee1(FRStatementData.FRStatementFee statementFee) {
+        return statementFee == null ? null : new OBStatementFee1()
+                .creditDebitIndicator(toOBCreditDebitCode(statementFee.getCreditDebitIndicator()))
+                .type(statementFee.getType())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(statementFee.getAmount()));
+    }
+
+    private static OBStatementFee2 toOBStatementFee2(FRStatementData.FRStatementFee statementFee) {
+        return statementFee == null ? null : new OBStatementFee2()
+                .description(statementFee.getDescription())
+                .creditDebitIndicator(toOBStatementFee2CreditDebitIndicatorEnum(statementFee.getCreditDebitIndicator()))
+                .type(statementFee.getType())
+                .rate(statementFee.getRate())
+                .rateType(statementFee.getRateType())
+                .frequency(statementFee.getFrequency())
+                .amount(toAccountOBActiveOrHistoricCurrencyAndAmount(statementFee.getAmount()));
+    }
+
+    public static OBStatementInterest1 toOBStatementInterest1(FRStatementData.FRStatementInterest statementInterest) {
+        return statementInterest == null ? null : new OBStatementInterest1()
+                .creditDebitIndicator(toOBCreditDebitCode(statementInterest.getCreditDebitIndicator()))
+                .type(statementInterest.getType())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(statementInterest.getAmount()));
+    }
+
+    private static OBStatementInterest2 toOBStatementInterest2(FRStatementData.FRStatementInterest statementInterest) {
+        return statementInterest == null ? null : new OBStatementInterest2()
+                .description(statementInterest.getDescription())
+                .creditDebitIndicator(toOBStatementInterest2CreditDebitIndicatorEnum(statementInterest.getCreditDebitIndicator()))
+                .type(statementInterest.getType())
+                .rate(statementInterest.getRate())
+                .rateType(statementInterest.getRateType())
+                .frequency(statementInterest.getFrequency())
+                .amount(toAccountOBActiveOrHistoricCurrencyAndAmount(statementInterest.getAmount()));
+    }
+
+    public static OBStatementDateTime1 toOBStatementDateTime1(FRStatementData.FRStatementDateTime statementDateTime) {
+        return statementDateTime == null ? null : new OBStatementDateTime1()
+                .dateTime(statementDateTime.getDateTime())
+                .type(statementDateTime.getType());
+    }
+
+    public static OBStatementRate1 toOBStatementRate1(FRStatementData.FRStatementRate statementRate) {
+        return statementRate == null ? null : new OBStatementRate1()
+                .rate(statementRate.getRate())
+                .type(statementRate.getType());
+    }
+
+    public static OBStatementValue1 toOBStatementValue1(FRStatementData.FRStatementValue statementValue) {
+        return statementValue == null ? null : new OBStatementValue1()
+                .value(statementValue.getValue())
+                .type(statementValue.getType());
+    }
+
+    public static OBStatementAmount1 toOBStatementAmount1(FRStatementData.FRStatementAmount statementAmount) {
+        return statementAmount == null ? null : new OBStatementAmount1()
+                .creditDebitIndicator(toOBCreditDebitCode(statementAmount.getCreditDebitIndicator()))
+                .type(statementAmount.getType())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(statementAmount.getAmount()));
     }
 }

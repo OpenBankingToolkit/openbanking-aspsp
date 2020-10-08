@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.InternationalStandingOrderPaymentConsentDetails;
@@ -38,7 +39,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBAccount3Account;
 
 import java.util.List;
 import java.util.Optional;
@@ -83,7 +83,7 @@ public class RCSInternationalStandingOrderPaymentDetailsApiTest {
         // Given
         List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
         FRInternationalStandingOrderConsent consent = JMockData.mock(FRInternationalStandingOrderConsent.class);
-        OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
+        FRAccountIdentifier firstAccount = accounts.get(0).getAccount().getAccount().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";

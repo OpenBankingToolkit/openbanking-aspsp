@@ -97,7 +97,9 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
                 PageRequest.of(page, PAGE_LIMIT_SCHEDULE_PAYMENTS));
         int totalPages = scheduledPayments.getTotalPages();
 
-        return ResponseEntity.ok(new OBReadScheduledPayment2().data(new OBReadScheduledPayment2Data().scheduledPayment(
+        return ResponseEntity.ok(new OBReadScheduledPayment2()
+                .data(new OBReadScheduledPayment2Data()
+                        .scheduledPayment(
                 scheduledPayments.getContent()
                         .stream()
                         .map(FRScheduledPayment::getScheduledPayment)

@@ -29,6 +29,7 @@ import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -62,6 +63,14 @@ public class FRStatementData {
     private List<FRStatementRate> statementRate;
     private List<FRStatementValue> statementValue;
     private List<FRStatementAmount> statementAmount;
+
+    public void addStatementAmount(FRStatementAmount statementAmount) {
+        if (this.statementAmount == null) {
+            this.statementAmount = new ArrayList();
+        }
+
+        this.statementAmount.add(statementAmount);
+    }
 
     public enum FRStatementType {
         ACCOUNTCLOSURE("AccountClosure"),

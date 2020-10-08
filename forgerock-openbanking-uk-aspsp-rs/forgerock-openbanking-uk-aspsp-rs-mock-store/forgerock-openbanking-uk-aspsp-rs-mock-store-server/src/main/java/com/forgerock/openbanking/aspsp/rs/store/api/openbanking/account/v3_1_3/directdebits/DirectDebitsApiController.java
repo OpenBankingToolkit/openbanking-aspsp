@@ -39,6 +39,8 @@ import uk.org.openbanking.datamodel.account.OBReadDirectDebit2Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
+
 @Controller("DirectDebitsApiV3.1.3")
 @Slf4j
 public class DirectDebitsApiController implements DirectDebitsApi {
@@ -95,11 +97,10 @@ public class DirectDebitsApiController implements DirectDebitsApi {
         return ResponseEntity.ok(new OBReadDirectDebit2()
                 .data(new OBReadDirectDebit2Data().directDebit(directDebits.getContent()
                         .stream()
-                        .map(FRDirectDebit::getDirectDebit)
-                        .map(dd -> accountDataInternalIdFilter.apply(dd))
+                        .map(dd -> toOBReadDirectDebit2DataDirectDebit(dd.getDirectDebit()))
+                        .map(accountDataInternalIdFilter::apply)
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
-
 }

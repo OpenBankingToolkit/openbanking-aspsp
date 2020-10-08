@@ -20,12 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.services;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import uk.org.openbanking.datamodel.account.OBAccount3Account;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -41,9 +41,9 @@ public class AccountService {
         }
         for (AccountWithBalance account : accounts) {
             if (!CollectionUtils.isEmpty(account.getAccount().getAccount())) {
-                for (OBAccount3Account obAccount3Account : account.getAccount().getAccount()) {
-                    if (identification.equals(obAccount3Account.getIdentification())) {
-                        log.debug("Found matching user account to provided debtor account. Identification: {}. Account Id: {}", obAccount3Account.getIdentification(),account.getId());
+                for (FRAccountIdentifier accountIdentifier : account.getAccount().getAccount()) {
+                    if (identification.equals(accountIdentifier.getIdentification())) {
+                        log.debug("Found matching user account to provided debtor account. Identification: {}. Account Id: {}", accountIdentifier.getIdentification(),account.getId());
                         return Optional.of(account);
                     }
                 }

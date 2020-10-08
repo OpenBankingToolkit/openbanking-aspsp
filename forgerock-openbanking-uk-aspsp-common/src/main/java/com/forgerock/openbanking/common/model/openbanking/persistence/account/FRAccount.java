@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +30,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.account.OBAccount6;
 
 import java.util.Date;
 
@@ -48,8 +48,7 @@ public class FRAccount implements Account {
     public String id;
     @Indexed
     public String userID;
-    // TODO 296 - change OB objects to FR domain model
-    public OBAccount6 account;
+    public FRFinancialAccount account;
     @Indexed
     public String latestStatementId;
 

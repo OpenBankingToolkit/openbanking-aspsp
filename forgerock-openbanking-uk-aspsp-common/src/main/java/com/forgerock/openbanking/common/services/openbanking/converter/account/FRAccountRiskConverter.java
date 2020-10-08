@@ -18,25 +18,27 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.openbanking.converter.payment;
+package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
-import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRAccountRisk;
+import uk.org.openbanking.datamodel.account.OBRisk2;
 
-public class FRSupplementaryDataConverter {
+public class FRAccountRiskConverter {
 
-    public static FRSupplementaryData toFRSupplementaryData(OBSupplementaryData1 obSupplementaryData) {
-        return obSupplementaryData == null ? null : FRSupplementaryData.builder()
-                .data(obSupplementaryData.getData())
+    // OB to FR
+    public static FRAccountRisk toFRAccountRisk(OBRisk2 obRisk) {
+        return obRisk == null ? null : FRAccountRisk.builder()
+                .data(obRisk.getData())
                 .build();
     }
 
-    public static OBSupplementaryData1 toOBSupplementaryData1(FRSupplementaryData frSupplementaryData) {
-        if (frSupplementaryData == null) {
+    // FR to OB
+    public static OBRisk2 toOBRisk2(FRAccountRisk frRisk) {
+        if (frRisk == null) {
             return null;
         }
-        OBSupplementaryData1 obSupplementaryData1 = new OBSupplementaryData1();
-        obSupplementaryData1.setData(frSupplementaryData.getData());
-        return obSupplementaryData1;
+        OBRisk2 obRisk = new OBRisk2();
+        obRisk.setData(frRisk.getData());
+        return obRisk;
     }
 }

@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRPartyData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
@@ -37,7 +38,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBParty2;
 import uk.org.openbanking.datamodel.account.OBReadParty2;
 import uk.org.openbanking.datamodel.account.OBReadParty3;
 
@@ -68,12 +68,12 @@ public class PartyApiControllerIT {
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
         accountParty = JMockData.mock(FRParty.class);
         accountParty.setAccountId(UUID.randomUUID().toString());
-        accountParty.setParty(new OBParty2().partyId("accountParty"));
+        accountParty.setParty(FRPartyData.builder().partyId("accountParty").build());
         frPartyRepository.save(accountParty);
 
         userParty = JMockData.mock(FRParty.class);
         userParty.setUserId(UUID.randomUUID().toString());
-        userParty.setParty(new OBParty2().partyId("userParty"));
+        userParty.setParty(FRPartyData.builder().partyId("userParty").build());
         frPartyRepository.save(userParty);
     }
 
@@ -126,7 +126,7 @@ public class PartyApiControllerIT {
 
         FRParty userParty = JMockData.mock(FRParty.class);
         userParty.setUserId(username);
-        userParty.setParty(new OBParty2().partyId("2"));
+        userParty.setParty(FRPartyData.builder().partyId("2").build());
         frPartyRepository.save(userParty);
 
         // When

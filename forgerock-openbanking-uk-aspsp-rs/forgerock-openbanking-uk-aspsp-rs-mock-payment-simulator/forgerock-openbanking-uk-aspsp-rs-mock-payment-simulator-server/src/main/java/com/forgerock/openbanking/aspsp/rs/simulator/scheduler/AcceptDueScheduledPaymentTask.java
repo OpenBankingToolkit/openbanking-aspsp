@@ -22,6 +22,10 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRTransactionData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
@@ -39,21 +43,12 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode1;
-import uk.org.openbanking.datamodel.account.OBEntryStatus1Code;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
-import uk.org.openbanking.datamodel.account.OBTransaction6;
-import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
 
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 
 @Slf4j
@@ -80,7 +75,7 @@ public class AcceptDueScheduledPaymentTask {
         log.info("Scheduled payments payment task waking up. The time is now {}.", format.print(DateTime.now()));
 
         for (FRScheduledPayment scheduledPayment : scheduledPaymentService.getPendingAndDueScheduledPayments()) {
-            OBScheduledPayment3 payment = scheduledPayment.getScheduledPayment();
+            FRScheduledPaymentData payment = scheduledPayment.getScheduledPayment();
 
             if (!payment.getScheduledPaymentDateTime().isBefore(DateTime.now())) {
                 log.warn("Scheduled payment: {} with scheduledPaymentDateTime: {} is not due yet and should not have been loaded", scheduledPayment.getId(), payment.getScheduledPaymentDateTime());
@@ -123,7 +118,7 @@ public class AcceptDueScheduledPaymentTask {
     private String moveDebitPayment(FRScheduledPayment payment) throws CurrencyConverterException {
         Account accountFrom = accountStoreService.getAccount(payment.getAccountId());
         log.info("We are going to pay from this account: {}", accountFrom);
-        moneyService.moveMoney(accountFrom, toFRAmount(payment.getScheduledPayment().getInstructedAmount()), OBCreditDebitCode.DEBIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountFrom, payment.getScheduledPayment().getInstructedAmount(), FRCreditDebitIndicator.DEBIT, payment, this::createTransaction);
 
         String identificationFrom = payment.getScheduledPayment().getCreditorAccount().getIdentification();
         log.debug("Find if the 'to' account '{}' is own by this ASPSP", identificationFrom);
@@ -133,38 +128,39 @@ public class AcceptDueScheduledPaymentTask {
     private void moveCreditPayment(FRScheduledPayment payment, String identificationTo, Account accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationTo, accountFrom);
         log.info("Move the money to this account");
-        moneyService.moveMoney(accountFrom, toFRAmount(payment.getScheduledPayment().getInstructedAmount()), OBCreditDebitCode.CREDIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountFrom, payment.getScheduledPayment().getInstructedAmount(), FRCreditDebitIndicator.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction createTransaction(Account account, FRScheduledPayment payment, OBCreditDebitCode creditDebitCode, Balance balance, FRAmount amount) {
+    private FRTransaction createTransaction(Account account, FRScheduledPayment payment, FRCreditDebitIndicator creditDebitCode, Balance balance, FRAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());
 
-        OBTransaction6 obTransaction = new OBTransaction6()
+        FRTransactionData transactionData = FRTransactionData.builder()
                 .transactionId(transactionId)
-                .status(OBEntryStatus1Code.BOOKED)
+                .status(FRTransactionData.FREntryStatus.BOOKED)
                 .valueDateTime(DateTime.now())
                 .accountId(account.getId())
-                .amount(toOBActiveOrHistoricCurrencyAndAmount9(amount))
-                .creditDebitIndicator(creditDebitCode == null ? null : OBCreditDebitCode1.valueOf(creditDebitCode.name()))
+                .amount(amount)
+                .creditDebitIndicator(creditDebitCode)
                 .bookingDateTime(bookingDate)
                 .statementReference(new ArrayList<>())
-                .balance(new OBTransactionCashBalance()
+                .balance(FRTransactionData.FRTransactionCashBalance.builder()
                         .amount(balance.getCurrencyAndAmount())
                         .creditDebitIndicator(balance.getCreditDebitIndicator())
-                        .type(OBBalanceType1Code.INTERIMBOOKED)
-                );
+                        .type(FRBalanceType.INTERIMBOOKED)
+                        .build())
+                .build();
 
         if (payment.getScheduledPayment().getReference() != null) {
-            obTransaction.transactionReference(payment.getScheduledPayment().getReference());
+            transactionData.setTransactionReference(payment.getScheduledPayment().getReference());
         }
 
         FRTransaction transaction = FRTransaction.builder()
                 .id(transactionId)
                 .bookingDateTime(bookingDate)
                 .accountId(account.getId())
-                .transaction(obTransaction)
+                .transaction(transactionData)
                 .build();
         log.info("Transaction created {}", transaction);
         return transaction;

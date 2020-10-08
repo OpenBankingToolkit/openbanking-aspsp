@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.account.v2_0.transactions;
 
 import com.forgerock.openbanking.aspsp.rs.api.account.Transactions;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -35,7 +36,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadTransaction1;
 import uk.org.openbanking.datamodel.account.OBReadTransaction2;
 import uk.org.openbanking.datamodel.account.OBReadTransaction3;
@@ -107,10 +107,10 @@ public class TransactionsApiController implements TransactionsApi {
                 .principal(principal)
                 .page(page)
                 .minimumPermissions(
-                        OBExternalPermissions1Code.READTRANSACTIONSBASIC,
-                        OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
-                        OBExternalPermissions1Code.READTRANSACTIONSCREDITS,
-                        OBExternalPermissions1Code.READTRANSACTIONSDEBITS
+                        FRExternalPermissionsCode.READTRANSACTIONSBASIC,
+                        FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
+                        FRExternalPermissionsCode.READTRANSACTIONSCREDITS,
+                        FRExternalPermissionsCode.READTRANSACTIONSDEBITS
                 )
                 .execute(
                         (accountRequest, permissions, transactionFrom, transactionTo, fromBookingDateTimeUPD, toBookingDateTimeUPD, pageNumber) -> {
@@ -181,8 +181,8 @@ public class TransactionsApiController implements TransactionsApi {
                 .principal(principal)
                 .page(page)
                 .minimumPermissions(
-                        OBExternalPermissions1Code.READSTATEMENTSBASIC,
-                        OBExternalPermissions1Code.READSTATEMENTSDETAIL
+                        FRExternalPermissionsCode.READSTATEMENTSBASIC,
+                        FRExternalPermissionsCode.READSTATEMENTSDETAIL
                 )
                 .execute(
                         (accountRequest, permissions, transactionFrom, transactionTo, fromBookingDateTimeUPD, toBookingDateTimeUPD, pageNumber) -> {
@@ -244,10 +244,10 @@ public class TransactionsApiController implements TransactionsApi {
                 .toBookingDateTime(toBookingDateTime)
                 .page(page)
                 .minimumPermissions(
-                        OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
-                        OBExternalPermissions1Code.READTRANSACTIONSBASIC,
-                        OBExternalPermissions1Code.READTRANSACTIONSCREDITS,
-                        OBExternalPermissions1Code.READTRANSACTIONSDEBITS)
+                        FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
+                        FRExternalPermissionsCode.READTRANSACTIONSBASIC,
+                        FRExternalPermissionsCode.READTRANSACTIONSCREDITS,
+                        FRExternalPermissionsCode.READTRANSACTIONSDEBITS)
                 .execute(
                         (accountRequest, permissions, transactionFrom, transactionTo, fromBookingDateTimeUPD, toBookingDateTimeUPD, pageNumber) -> {
                             LOGGER.info("Read transactions for accounts {} with minimumPermissions {}",

@@ -21,6 +21,9 @@
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadResponse;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.model.Tpp;
 import org.joda.time.DateTime;
@@ -29,9 +32,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.account.OBReadResponse1;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,8 +42,7 @@ public class FRAccountRequest implements AccountRequest {
     @Id
     @Indexed
     public String id;
-    // TODO 296 - change OB objects to FR domain model
-    private OBReadResponse1 accountRequest;
+    private FRReadResponse accountRequest; // TODO #296 - fix confusing terminology
     @Indexed
     private String clientId;
     private String aispId;
@@ -75,11 +74,11 @@ public class FRAccountRequest implements AccountRequest {
         this.accountRequestId = accountRequestId;
     }
 
-    public OBReadResponse1 getAccountRequest() {
+    public FRReadResponse getAccountRequest() {
         return accountRequest;
     }
 
-    public void setAccountRequest(OBReadResponse1 accountRequest) {
+    public void setAccountRequest(FRReadResponse accountRequest) {
         this.accountRequest = accountRequest;
     }
 
@@ -108,7 +107,7 @@ public class FRAccountRequest implements AccountRequest {
 
     @Override
     @JsonIgnore
-    public OBExternalRequestStatus1Code getStatus() {
+    public FRExternalRequestStatusCode getStatus() {
         return accountRequest.getData().getStatus();
     }
 
@@ -118,7 +117,7 @@ public class FRAccountRequest implements AccountRequest {
 
     @Override
     @JsonIgnore
-    public void setStatus(OBExternalRequestStatus1Code code) {
+    public void setStatus(FRExternalRequestStatusCode code) {
         getAccountRequest().getData().setStatus(code);
     }
 
@@ -128,7 +127,7 @@ public class FRAccountRequest implements AccountRequest {
 
     @Override
     @JsonIgnore
-    public List<OBExternalPermissions1Code> getPermissions() {
+    public List<FRExternalPermissionsCode> getPermissions() {
         return getAccountRequest().getData().getPermissions();
     }
 

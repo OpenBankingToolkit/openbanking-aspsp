@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.account.v3_1_3.statements;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +31,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadBeneficiary2;
 import uk.org.openbanking.datamodel.account.OBReadStandingOrder1;
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
@@ -72,14 +72,14 @@ public class StatementsApiController implements StatementsApi {
                 .principal(principal)
                 .page(page)
                 .minimumPermissions(
-                        OBExternalPermissions1Code.READSTATEMENTSBASIC,
-                        OBExternalPermissions1Code.READSTATEMENTSDETAIL
+                        FRExternalPermissionsCode.READSTATEMENTSBASIC,
+                        FRExternalPermissionsCode.READSTATEMENTSDETAIL
                 )
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             log.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadStatement2.class);
@@ -104,8 +104,8 @@ public class StatementsApiController implements StatementsApi {
                 .principal(principal)
                 .page(page)
                 .minimumPermissions(
-                        OBExternalPermissions1Code.READSTATEMENTSBASIC,
-                        OBExternalPermissions1Code.READSTATEMENTSDETAIL)
+                        FRExternalPermissionsCode.READSTATEMENTSBASIC,
+                        FRExternalPermissionsCode.READSTATEMENTSDETAIL)
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             log.info("Reading statements file with id {}", accountRequest.getAccountIds());
@@ -134,14 +134,14 @@ public class StatementsApiController implements StatementsApi {
                 .principal(principal)
                 .page(page)
                 .minimumPermissions(
-                        OBExternalPermissions1Code.READSTATEMENTSBASIC,
-                        OBExternalPermissions1Code.READSTATEMENTSDETAIL
+                        FRExternalPermissionsCode.READSTATEMENTSBASIC,
+                        FRExternalPermissionsCode.READSTATEMENTSDETAIL
                 )
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             log.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadStatement2.class);
@@ -166,14 +166,14 @@ public class StatementsApiController implements StatementsApi {
                 .principal(principal)
                 .page(page)
                 .minimumPermissions(
-                        OBExternalPermissions1Code.READSTATEMENTSBASIC,
-                        OBExternalPermissions1Code.READSTATEMENTSDETAIL)
+                        FRExternalPermissionsCode.READSTATEMENTSBASIC,
+                        FRExternalPermissionsCode.READSTATEMENTSDETAIL)
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             log.info("Reading statements with id {}", accountRequest.getAccountIds());
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.addAll("x-ob-account-ids", accountRequest.getAccountIds());
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadStatement2.class);

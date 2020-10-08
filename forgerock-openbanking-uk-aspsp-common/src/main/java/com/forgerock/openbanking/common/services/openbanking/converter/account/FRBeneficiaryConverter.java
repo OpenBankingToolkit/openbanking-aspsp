@@ -20,72 +20,76 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import org.springframework.stereotype.Service;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRAccountBeneficiary;
 import uk.org.openbanking.datamodel.account.OBBeneficiary1;
+import uk.org.openbanking.datamodel.account.OBBeneficiary2;
 import uk.org.openbanking.datamodel.account.OBBeneficiary3;
+import uk.org.openbanking.datamodel.account.OBBeneficiary4;
 import uk.org.openbanking.datamodel.account.OBBeneficiary5;
+import uk.org.openbanking.datamodel.account.OBBeneficiaryType1Code;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification2;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification60;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.OBCashAccountConverter.toOBCashAccount50;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification6;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification60;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount50;
 
-@Service
 public class FRBeneficiaryConverter {
 
-// TODO #296 - add required methods once FRAccount is using FR domain classes
-
-//    public static FRBeneficiary1 toBeneficiary1(FRBeneficiary4 frBeneficiary4) {
-//        if (frBeneficiary4 == null) return null;
-//        FRBeneficiary1 frBeneficiary1 = new FRBeneficiary1();
-//        frBeneficiary1.setAccountId(frBeneficiary4.getAccountId());
-//        frBeneficiary1.setBeneficiary(OBBeneficiaryConverter.toOBBeneficiary1(frBeneficiary4.getBeneficiary()));
-//        frBeneficiary1.setId(frBeneficiary4.getId());
-//        frBeneficiary1.setCreated(frBeneficiary4.getCreated());
-//        frBeneficiary1.setUpdated(frBeneficiary4.getUpdated());
-//        return frBeneficiary1;
-//    }
-//
-//    public static FRBeneficiary1 toBeneficiary1(FRBeneficiary frBeneficiary) {
-//        if (frBeneficiary == null) return null;
-//        FRBeneficiary1 frBeneficiary1 = new FRBeneficiary1();
-//        frBeneficiary1.setAccountId(frBeneficiary.getAccountId());
-//        frBeneficiary1.setBeneficiary(toOBBeneficiary1(frBeneficiary.getBeneficiary()));
-//        frBeneficiary1.setId(frBeneficiary.getId());
-//        frBeneficiary1.setCreated(frBeneficiary.getCreated());
-//        frBeneficiary1.setUpdated(frBeneficiary.getUpdated());
-//        return frBeneficiary1;
-//    }
-//
-//    public static FRBeneficiary toFRBeneficiary5(FRBeneficiary3 frBeneficiary3) {
-//        if (frBeneficiary3 == null) return null;
-//        FRBeneficiary frBeneficiary = new FRBeneficiary();
-//        frBeneficiary.setAccountId(frBeneficiary3.getAccountId());
-//        frBeneficiary.setBeneficiary(toOBBeneficiary5(frBeneficiary3.getBeneficiary()));
-//        frBeneficiary.setId(frBeneficiary3.getId());
-//        frBeneficiary.setCreated(frBeneficiary3.getCreated());
-//        frBeneficiary.setUpdated(frBeneficiary3.getUpdated());
-//        return frBeneficiary;
-//    }
-
-    public static OBBeneficiary1 toOBBeneficiary1(OBBeneficiary5 obBeneficiary5) {
-        return obBeneficiary5 == null ? null : (new OBBeneficiary1())
-                .accountId(obBeneficiary5.getAccountId())
-                .beneficiaryId(obBeneficiary5.getBeneficiaryId())
-                .reference(obBeneficiary5.getReference())
-                .servicer(toOBBranchAndFinancialInstitutionIdentification2(obBeneficiary5.getCreditorAgent()))
-                .creditorAccount(toOBCashAccount1(obBeneficiary5.getCreditorAccount()));
+    // FR to OB
+    public static OBBeneficiary1 toOBBeneficiary1(FRAccountBeneficiary beneficiary) {
+        return beneficiary == null ? null : new OBBeneficiary1()
+                .accountId(beneficiary.getAccountId())
+                .beneficiaryId(beneficiary.getBeneficiaryId())
+                .reference(beneficiary.getReference())
+                .servicer(toOBBranchAndFinancialInstitutionIdentification2(beneficiary.getCreditorAccount()))
+                .creditorAccount(toOBCashAccount1(beneficiary.getCreditorAccount()));
     }
 
-    public static OBBeneficiary5 toOBBeneficiary5(OBBeneficiary3 obBeneficiary3) {
-        return obBeneficiary3 == null ? null : (new OBBeneficiary5())
-                .accountId(obBeneficiary3.getAccountId())
-                .beneficiaryId(obBeneficiary3.getBeneficiaryId())
-                .beneficiaryType(null) // TODO #279 - should this be defaulted?
-                .reference(obBeneficiary3.getReference())
-                .supplementaryData(null)
-                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification60(obBeneficiary3.getCreditorAgent()))
-                .creditorAccount(toOBCashAccount50(obBeneficiary3.getCreditorAccount()));
+    public static OBBeneficiary2 toOBBeneficiary2(FRAccountBeneficiary beneficiary) {
+        return beneficiary == null ? null : new OBBeneficiary2()
+                .accountId(beneficiary.getAccountId())
+                .beneficiaryId(beneficiary.getBeneficiaryId())
+                .reference(beneficiary.getReference())
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification3(beneficiary.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount3(beneficiary.getCreditorAccount()));
     }
 
+    public static OBBeneficiary3 toOBBeneficiary3(FRAccountBeneficiary beneficiary) {
+        return beneficiary == null ? null : new OBBeneficiary3()
+                .accountId(beneficiary.getAccountId())
+                .beneficiaryId(beneficiary.getBeneficiaryId())
+                .reference(beneficiary.getReference())
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(beneficiary.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount5(beneficiary.getCreditorAccount()));
+    }
+
+    public static OBBeneficiary4 toOBBeneficiary4(FRAccountBeneficiary beneficiary) {
+        return beneficiary == null ? null : new OBBeneficiary4()
+                .accountId(beneficiary.getAccountId())
+                .beneficiaryId(beneficiary.getBeneficiaryId())
+                .reference(beneficiary.getReference())
+                .supplementaryData(toOBSupplementaryData1(beneficiary.getSupplementaryData()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification60(beneficiary.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount50(beneficiary.getCreditorAccount()));
+    }
+
+    public static OBBeneficiary5 toOBBeneficiary5(FRAccountBeneficiary beneficiary) {
+        return beneficiary == null ? null : new OBBeneficiary5()
+                .accountId(beneficiary.getAccountId())
+                .beneficiaryId(beneficiary.getBeneficiaryId())
+                .beneficiaryType(toOBBeneficiaryType1Code(beneficiary.getBeneficiaryType()))
+                .reference(beneficiary.getReference())
+                .supplementaryData(toOBSupplementaryData1(beneficiary.getSupplementaryData()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification60(beneficiary.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount50(beneficiary.getCreditorAccount()));
+    }
+
+    public static OBBeneficiaryType1Code toOBBeneficiaryType1Code(FRAccountBeneficiary.FRBeneficiaryType beneficiaryType) {
+        return beneficiaryType == null ? null : OBBeneficiaryType1Code.valueOf(beneficiaryType.name());
+    }
 }

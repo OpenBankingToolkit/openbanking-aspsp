@@ -54,7 +54,7 @@ public class FRBeneficiaryRepositoryImpl implements FRBeneficiaryRepositoryCusto
 
                 case READBENEFICIARIESBASIC:
                     for (FRBeneficiary beneficiary: beneficiaries) {
-                        beneficiary.getBeneficiary().creditorAccount(null);
+                        beneficiary.getBeneficiary().setCreditorAccount(null);
                     }
                     break;
             }

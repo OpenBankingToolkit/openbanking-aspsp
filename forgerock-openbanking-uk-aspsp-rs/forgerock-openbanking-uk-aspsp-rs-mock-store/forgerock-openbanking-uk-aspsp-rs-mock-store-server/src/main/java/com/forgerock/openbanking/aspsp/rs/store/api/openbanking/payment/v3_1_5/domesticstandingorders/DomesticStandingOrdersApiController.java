@@ -55,7 +55,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticStandingOrderResponse6DataStatus;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
 

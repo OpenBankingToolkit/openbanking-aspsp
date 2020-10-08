@@ -24,6 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorde
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -79,6 +80,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                 .data(new OBReadStandingOrder6Data().standingOrder(standingOrders.getContent()
                         .stream()
                         .map(FRStandingOrder::getStandingOrder)
+                        .map(FRStandingOrderConverter::toOBStandingOrder6)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
@@ -103,6 +105,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
         return ResponseEntity.ok(new OBReadStandingOrder6()
                 .data(new OBReadStandingOrder6Data().standingOrder(standingOrders.getContent().stream()
                         .map(FRStandingOrder::getStandingOrder)
+                        .map(FRStandingOrderConverter::toOBStandingOrder6)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

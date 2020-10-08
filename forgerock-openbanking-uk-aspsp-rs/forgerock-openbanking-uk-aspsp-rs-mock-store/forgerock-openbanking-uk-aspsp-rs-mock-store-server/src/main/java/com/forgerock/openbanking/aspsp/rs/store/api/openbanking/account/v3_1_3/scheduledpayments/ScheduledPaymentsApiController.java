@@ -39,6 +39,8 @@ import uk.org.openbanking.datamodel.account.OBReadScheduledPayment3Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRScheduledPaymentConverter.toOBScheduledPayment3;
+
 @Controller("ScheduledPaymentsApiV3.1.3")
 @Slf4j
 public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
@@ -95,7 +97,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
         return ResponseEntity.ok(new OBReadScheduledPayment3().data(new OBReadScheduledPayment3Data().scheduledPayment(
                 scheduledPayments.getContent()
                         .stream()
-                        .map(FRScheduledPayment::getScheduledPayment)
+                        .map(sp -> toOBScheduledPayment3(sp.getScheduledPayment()))
                         .map(sp -> accountDataInternalIdFilter.apply(sp))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

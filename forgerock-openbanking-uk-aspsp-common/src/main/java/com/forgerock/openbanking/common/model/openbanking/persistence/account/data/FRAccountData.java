@@ -20,11 +20,12 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.account.data;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,56 +36,55 @@ import java.util.List;
 @AllArgsConstructor
 public class FRAccountData {
 
-    // TODO 296 - change OB objects to FR domain model
-    private OBAccount6 account;
-    private List<OBCashBalance1> balances = new ArrayList<>();
+    private FRFinancialAccount account;
+    private List<FRCashBalance> balances = new ArrayList<>();
     private OBReadProduct2DataProduct product;
-    private OBParty2 party;
-    private List<OBBeneficiary5> beneficiaries = new ArrayList<>();
-    private List<OBReadDirectDebit2DataDirectDebit> directDebits = new ArrayList<>();
-    private List<OBStandingOrder6> standingOrders = new ArrayList<>();
-    private List<OBTransaction6> transactions = new ArrayList<>();
-    private List<OBStatement2> statements = new ArrayList<>();
-    private List<OBScheduledPayment3> scheduledPayments = new ArrayList<>();
-    private List<OBOffer1> offers = new ArrayList<>();
+    private FRPartyData party;
+    private List<FRAccountBeneficiary> beneficiaries = new ArrayList<>();
+    private List<FRDirectDebitData> directDebits = new ArrayList<>();
+    private List<FRStandingOrderData> standingOrders = new ArrayList<>();
+    private List<FRTransactionData> transactions = new ArrayList<>();
+    private List<FRStatementData> statements = new ArrayList<>();
+    private List<FRScheduledPaymentData> scheduledPayments = new ArrayList<>();
+    private List<FROfferData> offers = new ArrayList<>();
 
-    public FRAccountData addBalance(OBCashBalance1 balance) {
+    public FRAccountData addBalance(FRCashBalance balance) {
         balances.add(balance);
         return this;
     }
 
-    public FRAccountData addBeneficiary(OBBeneficiary5 beneficiary) {
+    public FRAccountData addBeneficiary(FRAccountBeneficiary beneficiary) {
         beneficiaries.add(beneficiary);
         return this;
     }
 
-    public FRAccountData addDirectDebit(OBReadDirectDebit2DataDirectDebit directDebit1) {
-        directDebits.add(directDebit1);
+    public FRAccountData addDirectDebit(FRDirectDebitData directDebit) {
+        directDebits.add(directDebit);
         return this;
     }
 
-    public FRAccountData addStandingOrder(OBStandingOrder6 standingOrder) {
+    public FRAccountData addStandingOrder(FRStandingOrderData standingOrder) {
         standingOrders.add(standingOrder);
         return this;
     }
 
-    public FRAccountData addTransaction(OBTransaction6 transaction) {
+    public FRAccountData addTransaction(FRTransactionData transaction) {
         transactions.add(transaction);
         return this;
     }
 
-    public FRAccountData addStatement(OBStatement2 statement1) {
-        statements.add(statement1);
+    public FRAccountData addStatement(FRStatementData statement) {
+        statements.add(statement);
         return this;
     }
 
-    public FRAccountData addScheduledPayment(OBScheduledPayment3 scheduledPayment1) {
-        scheduledPayments.add(scheduledPayment1);
+    public FRAccountData addScheduledPayment(FRScheduledPaymentData scheduledPayment) {
+        scheduledPayments.add(scheduledPayment);
         return this;
     }
 
-    public FRAccountData addOffer(OBOffer1 offer1) {
-        offers.add(offer1);
+    public FRAccountData addOffer(FROfferData offer) {
+        offers.add(offer);
         return this;
     }
 }

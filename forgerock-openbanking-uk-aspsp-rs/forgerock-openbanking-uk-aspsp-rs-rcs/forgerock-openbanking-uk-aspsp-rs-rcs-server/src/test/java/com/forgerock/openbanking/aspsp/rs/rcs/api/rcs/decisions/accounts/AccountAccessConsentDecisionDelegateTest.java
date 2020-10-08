@@ -21,6 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadConsentResponse;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadConsentResponseData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
@@ -30,15 +32,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data;
 
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDelegateTest {
@@ -54,7 +57,7 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
         consent.setAispId(PISP_ID);
         consent.setUserId(USER_ID);
         consent.setObVersion(OBVersion.v3_1);
-        consent.setAccountAccessConsent(new OBReadConsentResponse1().data(new OBReadConsentResponse1Data()));
+        consent.setAccountAccessConsent(FRReadConsentResponse.builder().data(FRReadConsentResponseData.builder().build()).build());
 
         decisionDelegate = new AccountAccessConsentDecisionDelegate(
                 getAccountStoreService(),

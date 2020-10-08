@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.ag
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.service.event.EventPollingService;
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventPolling;
 import com.forgerock.openbanking.common.openbanking.OBReference;
 import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -47,6 +48,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.event.FREventPollingConverter.toFREventPolling;
 
 @Controller("AggregatedPollingApi3.1.2")
 @Slf4j
@@ -115,10 +118,11 @@ public class AggregatedPollingApiController implements AggregatedPollingApi {
         }
         final String tppId = isTpp.get().getId();
 
+        FREventPolling frEventPolling = toFREventPolling(obEventPolling);
         log.debug("TPP '{}' sent aggregated polling request: {}", tppId, obEventPolling);
-        eventPollingService.acknowledgeEvents(obEventPolling, tppId);
-        eventPollingService.recordTppEventErrors(obEventPolling, tppId);
-        Map<String, String> allEventNotifications = eventPollingService.fetchNewEvents(obEventPolling, tppId);
+        eventPollingService.acknowledgeEvents(frEventPolling, tppId);
+        eventPollingService.recordTppEventErrors(frEventPolling, tppId);
+        Map<String, String> allEventNotifications = eventPollingService.fetchNewEvents(frEventPolling, tppId);
 
         // Apply limit on returned events
         Map<String, String> truncatedEventNotifications = eventPollingService.truncateEvents(obEventPolling.getMaxEvents(), allEventNotifications, tppId);
@@ -130,5 +134,4 @@ public class AggregatedPollingApiController implements AggregatedPollingApi {
         log.debug("TPP '{}' aggregated polling response: {}", tppId, response.getBody());
         return response;
     }
-    
 }

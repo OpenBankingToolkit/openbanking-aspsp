@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.account.v3_1_3.directdebits;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +30,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadDirectDebit2;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,12 +65,12 @@ public class DirectDebitsApiController implements DirectDebitsApi {
                 .accountId(accountId)
                 .principal(principal)
                 .page(page)
-                .minimumPermissions(OBExternalPermissions1Code.READDIRECTDEBITS)
+                .minimumPermissions(FRExternalPermissionsCode.READDIRECTDEBITS)
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             log.info("Read direct debits for account  {} with minimumPermissions {}", accountId, permissions);
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadDirectDebit2.class);
@@ -92,13 +92,13 @@ public class DirectDebitsApiController implements DirectDebitsApi {
                 .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
                 .principal(principal)
                 .page(page)
-                .minimumPermissions(OBExternalPermissions1Code.READDIRECTDEBITS)
+                .minimumPermissions(FRExternalPermissionsCode.READDIRECTDEBITS)
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             log.info("DirectDebits get with id {} ", accountRequest.getAccountIds());
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.addAll("x-ob-account-ids", accountRequest.getAccountIds());
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadDirectDebit2.class);

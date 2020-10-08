@@ -39,6 +39,8 @@ import uk.org.openbanking.datamodel.account.OBReadBeneficiary5Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRBeneficiaryConverter.toOBBeneficiary5;
+
 @Controller("BeneficiariesApiV3.1.5")
 @Slf4j
 public class BeneficiariesApiController implements BeneficiariesApi {
@@ -95,7 +97,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
         return ResponseEntity.ok(new OBReadBeneficiary5().data(new OBReadBeneficiary5Data().beneficiary(
                 beneficiaries.getContent()
                         .stream()
-                        .map(FRBeneficiary::getBeneficiary)
+                        .map(b -> toOBBeneficiary5(b.getBeneficiary()))
                         .map(b -> accountDataInternalIdFilter.apply(b))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

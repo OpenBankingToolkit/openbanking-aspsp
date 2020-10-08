@@ -22,6 +22,11 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRStandingOrderData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRStandingOrderData.FRStandingOrderStatus;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
@@ -35,13 +40,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount2;
-import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount3;
-import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount4;
-import uk.org.openbanking.datamodel.account.OBCashAccount51;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
-import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -88,7 +86,7 @@ public class AcceptDomesticStandingOrderTaskTest {
         acceptDueStandingOrderTask.payDueStandingOrders();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), any(), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), any(), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updateStandingOrder(argThat(p -> p.getStatus().equals(StandingOrderStatus.ACTIVE)));
     }
 
@@ -107,7 +105,7 @@ public class AcceptDomesticStandingOrderTaskTest {
         acceptDueStandingOrderTask.payDueStandingOrders();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), any(), eq(OBCreditDebitCode.CREDIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), any(), eq(FRCreditDebitIndicator.CREDIT), eq(payment), any());
         verify(paymentsService).updateStandingOrder(argThat(p -> p.getStatus().equals(StandingOrderStatus.ACTIVE)));
     }
 
@@ -124,7 +122,7 @@ public class AcceptDomesticStandingOrderTaskTest {
         acceptDueStandingOrderTask.payDueStandingOrders();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), any(), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), any(), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updateStandingOrder(argThat(p -> p.getStatus().equals(StandingOrderStatus.ACTIVE)));
     }
 
@@ -141,7 +139,7 @@ public class AcceptDomesticStandingOrderTaskTest {
         acceptDueStandingOrderTask.payDueStandingOrders();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), any(), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), any(), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updateStandingOrder(argThat(p -> p.getStatus().equals(StandingOrderStatus.COMPLETED)));
     }
 
@@ -170,7 +168,7 @@ public class AcceptDomesticStandingOrderTaskTest {
         acceptDueStandingOrderTask.payDueStandingOrders();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), any(), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), any(), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updateStandingOrder(argThat(p -> p.getStatus().equals(StandingOrderStatus.REJECTED)));
         assertThat(payment.getRejectionReason()).isEqualTo("Can't convert amount in the right currency: Simulated failure");
     }
@@ -188,7 +186,7 @@ public class AcceptDomesticStandingOrderTaskTest {
         acceptDueStandingOrderTask.payDueStandingOrders();
 
         // Then
-        verify(moneyService).moveMoney(eq(account), any(), eq(OBCreditDebitCode.DEBIT), eq(payment), any());
+        verify(moneyService).moveMoney(eq(account), any(), eq(FRCreditDebitIndicator.DEBIT), eq(payment), any());
         verify(paymentsService).updateStandingOrder(argThat(p -> p.getStatus().equals(StandingOrderStatus.REJECTED)));
         assertThat(payment.getRejectionReason()).isEqualTo("Failed to execute payment: Simulated failure");
     }
@@ -197,7 +195,7 @@ public class AcceptDomesticStandingOrderTaskTest {
     public void scheduledPayment_ignoreIfInactive() {
         // Given
         FRStandingOrder payment = defaultPayment(StandingOrderStatus.PENDING);
-        payment.getStandingOrder().setStandingOrderStatusCode(OBExternalStandingOrderStatus1Code.INACTIVE);
+        payment.getStandingOrder().setStandingOrderStatusCode(FRStandingOrderStatus.INACTIVE);
         given(paymentsService.getActiveStandingOrders()).willReturn(Collections.singletonList(payment));
 
         // When
@@ -213,17 +211,18 @@ public class AcceptDomesticStandingOrderTaskTest {
 
     private FRStandingOrder defaultPayment(StandingOrderStatus status) {
 
-        OBStandingOrder6 standingOrder = new OBStandingOrder6()
-                .creditorAccount(new OBCashAccount51().identification(CREDIT_ACCOUNT))
+        FRStandingOrderData standingOrder = FRStandingOrderData.builder()
+                .creditorAccount(FRAccountIdentifier.builder().identification(CREDIT_ACCOUNT).build())
                 .firstPaymentDateTime(DateTime.now().minusDays(3))
                 .nextPaymentDateTime(DateTime.now().minusDays(2))
                 .finalPaymentDateTime(DateTime.now().minusDays(1))
-                .firstPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount2() .amount("1").currency("GBP"))
-                .nextPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount3() .amount("2").currency("GBP"))
-                .finalPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount4() .amount("3").currency("GBP"))
+                .firstPaymentAmount(FRAmount.builder().amount("1").currency("GBP").build())
+                .nextPaymentAmount(FRAmount.builder().amount("2").currency("GBP").build())
+                .finalPaymentAmount(FRAmount.builder().amount("3").currency("GBP").build())
                 .frequency("EvryDay")
-                .standingOrderStatusCode(OBExternalStandingOrderStatus1Code.ACTIVE)
-                .reference("test");
+                .standingOrderStatusCode(FRStandingOrderStatus.ACTIVE)
+                .reference("test")
+                .build();
         return FRStandingOrder.builder()
                 .accountId(DEBIT_ACCOUNT)
                 .status(status)

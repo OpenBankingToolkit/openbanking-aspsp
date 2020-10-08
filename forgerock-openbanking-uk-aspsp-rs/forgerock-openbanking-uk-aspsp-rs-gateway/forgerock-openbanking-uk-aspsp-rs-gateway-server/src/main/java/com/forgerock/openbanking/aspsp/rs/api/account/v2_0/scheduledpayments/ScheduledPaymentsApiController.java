@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.account.v2_0.scheduledpayments;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -35,7 +36,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadBeneficiary1;
 import uk.org.openbanking.datamodel.account.OBReadBeneficiary2;
 import uk.org.openbanking.datamodel.account.OBReadScheduledPayment1;
@@ -98,14 +98,14 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
                 .principal(principal)
                 .page(page)
                 .minimumPermissions(
-                        OBExternalPermissions1Code.READSCHEDULEDPAYMENTSBASIC,
-                        OBExternalPermissions1Code.READSCHEDULEDPAYMENTSDETAIL
+                        FRExternalPermissionsCode.READSCHEDULEDPAYMENTSBASIC,
+                        FRExternalPermissionsCode.READSCHEDULEDPAYMENTSDETAIL
                 )
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             LOGGER.info("Read scheduled payments for account {} with minimumPermissions {}", accountId, permissions);
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadScheduledPayment1.class);
@@ -147,14 +147,14 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
                 .xFapiFinancialId(xFapiFinancialId)
                 .principal(principal)
                 .page(page)
-                .minimumPermissions(OBExternalPermissions1Code.READSCHEDULEDPAYMENTSBASIC,
-                        OBExternalPermissions1Code.READSCHEDULEDPAYMENTSDETAIL)
+                .minimumPermissions(FRExternalPermissionsCode.READSCHEDULEDPAYMENTSBASIC,
+                        FRExternalPermissionsCode.READSCHEDULEDPAYMENTSDETAIL)
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             LOGGER.info("Scheduled payments get with id {}", accountRequest.getAccountIds());
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.addAll("x-ob-account-ids", accountRequest.getAccountIds());
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadScheduledPayment1.class);

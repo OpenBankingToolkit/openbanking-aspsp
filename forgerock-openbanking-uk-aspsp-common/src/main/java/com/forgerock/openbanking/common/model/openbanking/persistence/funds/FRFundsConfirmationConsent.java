@@ -20,6 +20,8 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.funds;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
+import com.forgerock.openbanking.common.model.openbanking.domain.funds.FRFundsConfirmationConsentData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.model.Tpp;
@@ -33,8 +35,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
-import uk.org.openbanking.datamodel.account.OBCashAccount3;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
 
 import java.util.Date;
 
@@ -48,8 +48,8 @@ public class FRFundsConfirmationConsent implements Persistable<String> {
     public String id;
     @Indexed
     public ConsentStatusCode status;
-    // TODO 296 - change OB objects to FR domain model
-    public OBFundsConfirmationConsent1 fundsConfirmationConsent;
+
+    public FRFundsConfirmationConsentData fundsConfirmationConsent;
 
     @Indexed
     public String accountId;
@@ -72,8 +72,8 @@ public class FRFundsConfirmationConsent implements Persistable<String> {
         this.pispName = tpp.getOfficialName();
     }
 
-    public OBCashAccount3 getDebtorAccount() {
-        return fundsConfirmationConsent.getData().getDebtorAccount();
+    public FRAccountIdentifier getDebtorAccount() {
+        return fundsConfirmationConsent.getDebtorAccount();
     }
 
     @Override

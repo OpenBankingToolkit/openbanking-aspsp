@@ -21,6 +21,9 @@
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadConsentResponse;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.model.Tpp;
 import lombok.AllArgsConstructor;
@@ -34,9 +37,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,7 +52,7 @@ public class FRAccountAccessConsent implements AccountRequest, Persistable<Strin
     @Indexed
     public String id;
     // TODO 296 - change OB objects to FR domain model
-    private OBReadConsentResponse1 accountAccessConsent;
+    private FRReadConsentResponse accountAccessConsent;
     @Indexed
     private String clientId;
     private String aispId;
@@ -81,19 +81,19 @@ public class FRAccountAccessConsent implements AccountRequest, Persistable<Strin
 
     @Override
     @JsonIgnore
-    public OBExternalRequestStatus1Code getStatus() {
+    public FRExternalRequestStatusCode getStatus() {
         return accountAccessConsent.getData().getStatus();
     }
 
     @Override
     @JsonIgnore
-    public void setStatus(OBExternalRequestStatus1Code code) {
+    public void setStatus(FRExternalRequestStatusCode code) {
         getAccountAccessConsent().getData().setStatus(code);
     }
 
     @Override
     @JsonIgnore
-    public List<OBExternalPermissions1Code> getPermissions() {
+    public List<FRExternalPermissionsCode> getPermissions() {
         return getAccountAccessConsent().getData().getPermissions();
     }
 

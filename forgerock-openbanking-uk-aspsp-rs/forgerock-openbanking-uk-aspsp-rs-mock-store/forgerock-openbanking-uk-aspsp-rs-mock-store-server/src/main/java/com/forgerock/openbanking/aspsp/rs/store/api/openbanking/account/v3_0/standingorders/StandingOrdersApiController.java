@@ -47,7 +47,7 @@ import uk.org.openbanking.datamodel.account.OBStandingOrder3;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBStandingOrderConverter.toOBStandingOrder3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter.toOBStandingOrder3;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("StandingOrdersApiV3.0")

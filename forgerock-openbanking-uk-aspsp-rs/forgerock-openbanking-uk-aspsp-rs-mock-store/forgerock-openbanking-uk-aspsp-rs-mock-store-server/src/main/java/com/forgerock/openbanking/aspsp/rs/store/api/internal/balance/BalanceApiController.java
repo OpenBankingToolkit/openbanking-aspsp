@@ -33,6 +33,8 @@ import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
 
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCashBalanceConverter.toFRBalanceType;
+
 @Controller
 public class BalanceApiController implements BalanceApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(BalanceApiController.class);
@@ -46,14 +48,14 @@ public class BalanceApiController implements BalanceApi {
             @RequestParam("type") OBBalanceType1Code type
     ) {
         LOGGER.debug("Read balances for account {} with page {}", accountId);
-        return ResponseEntity.ok(balanceRepository.findByAccountIdAndBalanceType(accountId, type));
+        return ResponseEntity.ok(balanceRepository.findByAccountIdAndBalanceType(accountId, toFRBalanceType(type)));
     }
 
     @Override
     public ResponseEntity save(
-            @RequestBody FRBalance balance1
+            @RequestBody FRBalance balance
     ) {
-        LOGGER.debug("Save balance1 {}", balance1);
-        return ResponseEntity.ok(balanceRepository.save(balance1));
+        LOGGER.debug("Save balance {}", balance);
+        return ResponseEntity.ok(balanceRepository.save(balance));
     }
 }

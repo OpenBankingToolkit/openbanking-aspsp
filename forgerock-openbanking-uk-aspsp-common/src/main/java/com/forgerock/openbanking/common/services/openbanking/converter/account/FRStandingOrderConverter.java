@@ -20,71 +20,136 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRStandingOrderData;
+import uk.org.openbanking.datamodel.account.OBExternalStandingOrderStatus1Code;
+import uk.org.openbanking.datamodel.account.OBStandingOrder1;
+import uk.org.openbanking.datamodel.account.OBStandingOrder2;
+import uk.org.openbanking.datamodel.account.OBStandingOrder3;
+import uk.org.openbanking.datamodel.account.OBStandingOrder4;
+import uk.org.openbanking.datamodel.account.OBStandingOrder5;
+import uk.org.openbanking.datamodel.account.OBStandingOrder6;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toOBBranchAndFinancialInstitutionIdentification2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toOBBranchAndFinancialInstitutionIdentification4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toOBBranchAndFinancialInstitutionIdentification5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toOBBranchAndFinancialInstitutionIdentification51;
+
 public class FRStandingOrderConverter {
 
-    // TODO #296 - add required methods once FRAccount is using FR domain classes
+    public static OBStandingOrder1 toOBStandingOrder1(FRStandingOrderData standingOrder) {
+        return standingOrder == null ? null : new OBStandingOrder1()
+                .accountId(standingOrder.getAccountId())
+                .standingOrderId(standingOrder.getStandingOrderId())
+                .frequency(standingOrder.getFrequency())
+                .reference(standingOrder.getReference())
+                .firstPaymentDateTime(standingOrder.getFirstPaymentDateTime())
+                .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getFirstPaymentAmount()))
+                .nextPaymentDateTime(standingOrder.getNextPaymentDateTime())
+                .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getNextPaymentAmount()))
+                .finalPaymentDateTime(standingOrder.getFinalPaymentDateTime())
+                .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getFinalPaymentAmount()))
+                .servicer(toOBBranchAndFinancialInstitutionIdentification2(standingOrder.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount1(standingOrder.getCreditorAccount()));
+    }
 
-//    public static FRStandingOrder1 toStandingOrder1(FRStandingOrder frStandingOrder) {
-//        FRStandingOrder1 standingOrder1 = new FRStandingOrder1();
-//        standingOrder1.setId(frStandingOrder.getId());
-//        standingOrder1.setAccountId(frStandingOrder.getAccountId());
-//        standingOrder1.setStandingOrder(toOBStandingOrder1(frStandingOrder.getStandingOrder()));
-//        standingOrder1.setCreated(frStandingOrder.getCreated());
-//        standingOrder1.setUpdated(frStandingOrder.getUpdated());
-//        return standingOrder1;
-//    }
-//
-//    public static FRStandingOrder2 toStandingOrder2(FRStandingOrder4 standingOrder4) {
-//        FRStandingOrder2 standingOrder2 = new FRStandingOrder2();
-//        standingOrder2.setAccountId(standingOrder4.getAccountId());
-//        standingOrder2.setId(standingOrder4.getId());
-//        standingOrder2.setCreated(standingOrder4.getCreated());
-//        standingOrder2.setUpdated(standingOrder4.getUpdated());
-//        standingOrder2.setStandingOrder(toOBStandingOrder2(standingOrder4.getStandingOrder()));
-//        return standingOrder2;
-//    }
-//
-//    public static FRStandingOrder2 toStandingOrder2(FRStandingOrder standingOrder6) {
-//        return toStandingOrder2(toStandingOrder4(standingOrder6));
-//    }
-//
-//    public static FRStandingOrder3 toStandingOrder3(FRStandingOrder standingOrder6) {
-//        FRStandingOrder3 standingOrder3 = new FRStandingOrder3();
-//        standingOrder3.setAccountId(standingOrder6.getAccountId());
-//        standingOrder3.setId(standingOrder6.getId());
-//        standingOrder3.setCreated(standingOrder6.getCreated());
-//        standingOrder3.setUpdated(standingOrder6.getUpdated());
-//        standingOrder3.setStandingOrder(toOBStandingOrder3(standingOrder6.getStandingOrder()));
-//        return standingOrder3;
-//    }
-//
-//    public static FRStandingOrder4 toStandingOrder4(FRStandingOrder standingOrder6) {
-//        FRStandingOrder4 standingOrder4 = new FRStandingOrder4();
-//        standingOrder4.setAccountId(standingOrder6.getAccountId());
-//        standingOrder4.setId(standingOrder6.getId());
-//        standingOrder4.setCreated(standingOrder6.getCreated());
-//        standingOrder4.setUpdated(standingOrder6.getUpdated());
-//        standingOrder4.setStandingOrder(toOBStandingOrder4(standingOrder6.getStandingOrder()));
-//        return standingOrder4;
-//    }
-//
-//    public static FRStandingOrder toStandingOrder6(FRStandingOrder4 frStandingOrder4) {
-//        FRStandingOrder standingOrder6 = new FRStandingOrder();
-//        standingOrder6.setAccountId(frStandingOrder4.getAccountId());
-//        standingOrder6.setId(frStandingOrder4.getId());
-//        standingOrder6.setCreated(frStandingOrder4.getCreated());
-//        standingOrder6.setUpdated(frStandingOrder4.getUpdated());
-//        standingOrder6.setStandingOrder(toOBStandingOrder6(frStandingOrder4.getStandingOrder()));
-//        return standingOrder6;
-//    }
-//
-//    public static FRStandingOrder toFRStandingOrder6(FRStandingOrder5 frStandingOrder5) {
-//        FRStandingOrder standingOrder6 = new FRStandingOrder();
-//        standingOrder6.setAccountId(frStandingOrder5.getAccountId());
-//        standingOrder6.setId(frStandingOrder5.getId());
-//        standingOrder6.setCreated(frStandingOrder5.getCreated());
-//        standingOrder6.setUpdated(frStandingOrder5.getUpdated());
-//        standingOrder6.setStandingOrder(toOBStandingOrder6(frStandingOrder5.getStandingOrder()));
-//        return standingOrder6;
-//    }
+    public static OBStandingOrder2 toOBStandingOrder2(FRStandingOrderData standingOrder) {
+        return standingOrder == null ? null : new OBStandingOrder2()
+                .accountId(standingOrder.getAccountId())
+                .standingOrderId(standingOrder.getStandingOrderId())
+                .frequency(standingOrder.getFrequency())
+                .reference(standingOrder.getReference())
+                .firstPaymentDateTime(standingOrder.getFirstPaymentDateTime())
+                .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getFirstPaymentAmount()))
+                .nextPaymentDateTime(standingOrder.getNextPaymentDateTime())
+                .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getNextPaymentAmount()))
+                .finalPaymentDateTime(standingOrder.getFinalPaymentDateTime())
+                .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getFinalPaymentAmount()))
+                .standingOrderStatusCode(toOBExternalStandingOrderStatus1Code(standingOrder.getStandingOrderStatusCode()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification2(standingOrder.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount1(standingOrder.getCreditorAccount()));
+    }
+
+    public static OBStandingOrder3 toOBStandingOrder3(FRStandingOrderData standingOrder) {
+        return standingOrder == null ? null : new OBStandingOrder3()
+                .accountId(standingOrder.getAccountId())
+                .standingOrderId(standingOrder.getStandingOrderId())
+                .frequency(standingOrder.getFrequency())
+                .reference(standingOrder.getReference())
+                .firstPaymentDateTime(standingOrder.getFirstPaymentDateTime())
+                .nextPaymentDateTime(standingOrder.getNextPaymentDateTime())
+                .finalPaymentDateTime(standingOrder.getFinalPaymentDateTime())
+                .standingOrderStatusCode(toOBExternalStandingOrderStatus1Code(standingOrder.getStandingOrderStatusCode()))
+                .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getFirstPaymentAmount()))
+                .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getNextPaymentAmount()))
+                .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getFinalPaymentAmount()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification4(standingOrder.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount3(standingOrder.getCreditorAccount()));
+    }
+
+    public static OBStandingOrder4 toOBStandingOrder4(FRStandingOrderData standingOrder) {
+        return standingOrder == null ? null : new OBStandingOrder4()
+                .accountId(standingOrder.getAccountId())
+                .standingOrderId(standingOrder.getStandingOrderId())
+                .frequency(standingOrder.getFrequency())
+                .reference(standingOrder.getReference())
+                .firstPaymentDateTime(standingOrder.getFirstPaymentDateTime())
+                .nextPaymentDateTime(standingOrder.getNextPaymentDateTime())
+                .finalPaymentDateTime(standingOrder.getFinalPaymentDateTime())
+                .standingOrderStatusCode(toOBExternalStandingOrderStatus1Code(standingOrder.getStandingOrderStatusCode()))
+                .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getFirstPaymentAmount()))
+                .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getNextPaymentAmount()))
+                .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount(standingOrder.getFinalPaymentAmount()))
+                .supplementaryData(toOBSupplementaryData1(standingOrder.getSupplementaryData()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification4(standingOrder.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount3(standingOrder.getCreditorAccount()));
+    }
+
+    public static OBStandingOrder5 toOBStandingOrder5(FRStandingOrderData standingOrder) {
+        return standingOrder == null ? null : new OBStandingOrder5()
+                .accountId(standingOrder.getAccountId())
+                .standingOrderId(standingOrder.getStandingOrderId())
+                .frequency(standingOrder.getFrequency())
+                .reference(standingOrder.getReference())
+                .firstPaymentDateTime(standingOrder.getFirstPaymentDateTime())
+                .nextPaymentDateTime(standingOrder.getNextPaymentDateTime())
+                .finalPaymentDateTime(standingOrder.getFinalPaymentDateTime())
+                .standingOrderStatusCode(toOBExternalStandingOrderStatus1Code(standingOrder.getStandingOrderStatusCode()))
+                .firstPaymentAmount(toAccountOBActiveOrHistoricCurrencyAndAmount(standingOrder.getFirstPaymentAmount()))
+                .nextPaymentAmount(toAccountOBActiveOrHistoricCurrencyAndAmount(standingOrder.getNextPaymentAmount()))
+                .finalPaymentAmount(toAccountOBActiveOrHistoricCurrencyAndAmount(standingOrder.getFinalPaymentAmount()))
+                .supplementaryData(toOBSupplementaryData1(standingOrder.getSupplementaryData()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification5(standingOrder.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount5(standingOrder.getCreditorAccount()));
+    }
+
+    public static OBStandingOrder6 toOBStandingOrder6(FRStandingOrderData standingOrder) {
+        return standingOrder == null ? null : new OBStandingOrder6()
+                .accountId(standingOrder.getAccountId())
+                .standingOrderId(standingOrder.getStandingOrderId())
+                .frequency(standingOrder.getFrequency())
+                .reference(standingOrder.getReference())
+                .firstPaymentDateTime(standingOrder.getFirstPaymentDateTime())
+                .nextPaymentDateTime(standingOrder.getNextPaymentDateTime())
+                .lastPaymentDateTime(standingOrder.getLastPaymentDateTime())
+                .finalPaymentDateTime(standingOrder.getFinalPaymentDateTime())
+                .numberOfPayments(standingOrder.getNumberOfPayments())
+                .standingOrderStatusCode(toOBExternalStandingOrderStatus1Code(standingOrder.getStandingOrderStatusCode()))
+                .firstPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount2(standingOrder.getFirstPaymentAmount()))
+                .nextPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount3(standingOrder.getNextPaymentAmount()))
+                .lastPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount11(standingOrder.getLastPaymentAmount()))
+                .finalPaymentAmount(toOBActiveOrHistoricCurrencyAndAmount4(standingOrder.getFinalPaymentAmount()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification51(standingOrder.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount51(standingOrder.getCreditorAccount()))
+                .supplementaryData(toOBSupplementaryData1(standingOrder.getSupplementaryData()));
+    }
+
+    public static OBExternalStandingOrderStatus1Code toOBExternalStandingOrderStatus1Code(FRStandingOrderData.FRStandingOrderStatus standingOrderStatusCode) {
+        return standingOrderStatusCode == null ? null : OBExternalStandingOrderStatus1Code.valueOf(standingOrderStatusCode.name());
+    }
 }

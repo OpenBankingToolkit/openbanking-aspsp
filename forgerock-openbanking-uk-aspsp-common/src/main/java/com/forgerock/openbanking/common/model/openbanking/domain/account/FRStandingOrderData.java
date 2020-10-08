@@ -65,7 +65,7 @@ public class FRStandingOrderData {
     private FRAccountIdentifier creditorAccount;
     private FRSupplementaryData supplementaryData;
 
-    private enum FRStandingOrderStatus {
+    public enum FRStandingOrderStatus {
         ACTIVE("Active"),
         INACTIVE("Inactive");
 

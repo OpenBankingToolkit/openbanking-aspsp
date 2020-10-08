@@ -24,6 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmati
 import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.funds.FRFundsConfirmationData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
@@ -39,7 +40,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationData1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationDataResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
 
@@ -48,6 +48,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.fund.FRFundsConfirmationConverter.toFRFundsConfirmationData;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("FundsConfirmationsApiV3.0")
@@ -120,7 +122,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
                                 .build()
         );
         frFundsConfirmation.setFundsAvailable(areFundsAvailable);
-        frFundsConfirmation.setFundsConfirmation(obFundsConfirmation);
+        frFundsConfirmation.setFundsConfirmation(toFRFundsConfirmationData(obFundsConfirmation));
         frFundsConfirmation = fundsConfirmationRepository.save(frFundsConfirmation);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(frFundsConfirmation, isConsent.get()));
@@ -160,7 +162,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
         }
         FRFundsConfirmation frPaymentSubmission = isFundsConfirmation.get();
 
-        Optional<FRFundsConfirmationConsent> isSetup = fundsConfirmationConsentRepository.findById(frPaymentSubmission.getFundsConfirmation().getData().getConsentId());
+        Optional<FRFundsConfirmationConsent> isSetup = fundsConfirmationConsentRepository.findById(frPaymentSubmission.getFundsConfirmation().getConsentId());
         return isSetup
                 .<ResponseEntity>map(frFundsConfirmationConsent1 -> ResponseEntity.ok(packageResponse(frPaymentSubmission, frFundsConfirmationConsent1)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + fundsConfirmationId + "' can't be found"));
@@ -168,10 +170,10 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     }
 
     private OBFundsConfirmationResponse1 packageResponse(FRFundsConfirmation fundsConfirmation, FRFundsConfirmationConsent consent) {
-        final OBFundsConfirmationData1 obFundsConfirmationData = fundsConfirmation.getFundsConfirmation().getData();
+        final FRFundsConfirmationData obFundsConfirmationData = fundsConfirmation.getFundsConfirmation();
         return new OBFundsConfirmationResponse1()
                 .data(new OBFundsConfirmationDataResponse1()
-                        .instructedAmount(obFundsConfirmationData.getInstructedAmount())
+                        .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(obFundsConfirmationData.getInstructedAmount()))
                         .creationDateTime(fundsConfirmation.getCreated())
                         .fundsConfirmationId(fundsConfirmation.getId())
                         .fundsAvailable(fundsConfirmation.isFundsAvailable())

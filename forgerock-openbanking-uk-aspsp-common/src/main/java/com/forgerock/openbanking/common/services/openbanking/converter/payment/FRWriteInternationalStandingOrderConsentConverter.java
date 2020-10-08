@@ -26,21 +26,21 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWrite
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.payment.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialAccountConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBDomestic2InstructedAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBWriteDomestic2DataInitiationInstructedAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialIdentificationConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRChargeBearerConverter.toFRChargeBearerType;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRChargeBearerConverter.toOBChargeBearerType1Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toFRDataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toFRDataSCASupportData;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toFRPermission;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRReadRefundAccountConverter.toFRReadRefundAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRiskConverter.toFRRisk;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRSupplementaryDataConverter.toFRSupplementaryData;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toFRSupplementaryData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toOBSupplementaryData1;
 import static uk.org.openbanking.datamodel.service.converter.payment.CountryCodeHelper.determineCountryCode;
 
 public class FRWriteInternationalStandingOrderConsentConverter {
@@ -137,10 +137,10 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .destinationCountryCode(determineCountryCode(creditorAccount.getSchemeName(), creditorAccount.getIdentification())) // default value to prevent validation error
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
-                .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRFinancialAccount(creditorAccount))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditor(toFRFinancialCreditor(initiation.getCreditor()))
+                .creditorAgent(toFRFinancialAgent(initiation.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(creditorAccount))
                 .build();
     }
 
@@ -157,10 +157,10 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .destinationCountryCode(determineCountryCode(creditorAccount.getSchemeName(), creditorAccount.getIdentification())) // default value to prevent validation error
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
-                .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRFinancialAccount(creditorAccount))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditor(toFRFinancialCreditor(initiation.getCreditor()))
+                .creditorAgent(toFRFinancialAgent(initiation.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(creditorAccount))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }
@@ -178,10 +178,10 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .destinationCountryCode(determineCountryCode(creditorAccount.getSchemeName(), creditorAccount.getIdentification())) // default value to prevent validation error
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
-                .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRFinancialAccount(creditorAccount))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditor(toFRFinancialCreditor(initiation.getCreditor()))
+                .creditorAgent(toFRFinancialAgent(initiation.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(creditorAccount))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }
@@ -199,10 +199,10 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .currencyOfTransfer(initiation.getCurrencyOfTransfer())
                 .destinationCountryCode(initiation.getDestinationCountryCode())
                 .instructedAmount(toFRAmount(initiation.getInstructedAmount()))
-                .debtorAccount(toFRFinancialAccount(initiation.getDebtorAccount()))
-                .creditor(toFRDataInitiationCreditor(initiation.getCreditor()))
-                .creditorAgent(toFRDataInitiationCreditorAgent(initiation.getCreditorAgent()))
-                .creditorAccount(toFRFinancialAccount(initiation.getCreditorAccount()))
+                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditor(toFRFinancialCreditor(initiation.getCreditor()))
+                .creditorAgent(toFRFinancialAgent(initiation.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .supplementaryData(toFRSupplementaryData(initiation.getSupplementaryData()))
                 .build();
     }

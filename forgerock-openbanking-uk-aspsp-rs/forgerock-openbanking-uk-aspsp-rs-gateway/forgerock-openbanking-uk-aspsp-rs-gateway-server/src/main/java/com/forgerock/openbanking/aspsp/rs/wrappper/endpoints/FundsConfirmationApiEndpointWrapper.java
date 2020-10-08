@@ -85,7 +85,7 @@ public class FundsConfirmationApiEndpointWrapper extends RSEndpointWrapper<Funds
 
 
     public void verifyConsentExpiration() throws OBErrorException {
-        final DateTime expirationDateTime = consent.getFundsConfirmationConsent().getData().getExpirationDateTime();
+        final DateTime expirationDateTime = consent.getFundsConfirmationConsent().getExpirationDateTime();
         if (expirationDateTime!=null
                 && expirationDateTime.isBefore(DateTime.now())) {
             log.debug("Funds confirmation ({}) has expired.", consent.getId());

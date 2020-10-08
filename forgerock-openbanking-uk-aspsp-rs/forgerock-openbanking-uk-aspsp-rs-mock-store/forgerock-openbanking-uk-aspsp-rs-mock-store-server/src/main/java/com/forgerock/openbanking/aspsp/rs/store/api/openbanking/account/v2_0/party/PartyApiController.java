@@ -23,7 +23,6 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.pa
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -41,6 +40,7 @@ import uk.org.openbanking.datamodel.account.OBReadParty1Data;
 
 import java.util.List;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter.toOBParty1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("PartyApiV2.0")
@@ -90,7 +90,7 @@ public class PartyApiController implements PartyApi {
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadParty1().data(new OBReadParty1Data().party(
-                FRPartyConverter.toOBParty1(party.getParty())))
+                toOBParty1(party.getParty())))
                 .links(PaginationUtil.generateLinks(httpUrl, 0, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
@@ -133,7 +133,7 @@ public class PartyApiController implements PartyApi {
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadParty1().data(new OBReadParty1Data().party(
-                FRPartyConverter.toOBParty1(party.getParty())))
+                toOBParty1(party.getParty())))
                 .links(PaginationUtil.generateLinks(httpUrl, 0, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRCashBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
@@ -31,7 +32,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBCashBalance1;
 
 import java.util.Collections;
 import java.util.List;
@@ -104,7 +104,7 @@ public class AccountsApiControllerTest {
                 FRAccount.builder().id("111").build()
         ));
         given(balanceRepository.findByAccountIdIn(any())).willReturn(Collections.singletonList(
-                FRBalance.builder().accountId("111").balance(new OBCashBalance1().accountId("111")).build()
+                FRBalance.builder().accountId("111").balance(FRCashBalance.builder().accountId("111").build()).build()
         ));
 
         // When
