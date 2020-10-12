@@ -24,6 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
@@ -36,7 +37,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.org.openbanking.datamodel.account.Links;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.event.*;
 
@@ -44,9 +44,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller("CallbackUrlsApiV3.1.2")
 @Slf4j
@@ -71,8 +72,8 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
-            @ApiParam(value = "Header containing a detached JWS signature of the body of the payload." ,required=true)
-            @RequestHeader(value="x-jws-signature", required=false) String xJwsSignature,
+            @ApiParam(value = "Header containing a detached JWS signature of the body of the payload.", required = true)
+            @RequestHeader(value = "x-jws-signature", required = false) String xJwsSignature,
 
             @ApiParam(value = "An RFC4122 UID used as a correlation id.")
             @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
@@ -136,16 +137,16 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
             HttpServletRequest request,
 
             Principal principal
-    )  throws OBErrorResponseException {
+    ) throws OBErrorResponseException {
         return Optional.ofNullable(tppRepository.findByClientId(clientId))
                 .map(Tpp::getId)
                 .map(id -> callbackUrlsRepository.findByTppId(id))
-                .map(url -> ResponseEntity.ok(packageResponse(url)))
+                .map(urls -> ResponseEntity.ok(packageResponse(urls)))
                 .orElseThrow(() -> new OBErrorResponseException(
-                                    HttpStatus.NOT_FOUND,
-                                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                                    OBRIErrorType.TPP_NOT_FOUND.toOBError1(clientId)
-                            )
+                                HttpStatus.NOT_FOUND,
+                                OBRIErrorResponseCategory.REQUEST_INVALID,
+                                OBRIErrorType.TPP_NOT_FOUND.toOBError1(clientId)
+                        )
                 );
     }
 
@@ -227,40 +228,28 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     }
 
 
-    private OBCallbackUrlsResponse1 packageResponse(Collection<FRCallbackUrl1> url) {
-        final Optional<FRCallbackUrl1> hasUrl = url.stream().findFirst();
-        if (hasUrl.isPresent()) {
-            return new OBCallbackUrlsResponse1()
-                    .data(toOBCallbackUrlsResponseData1(hasUrl.get()))
-                    .meta(new Meta())
-                    .links(resourceLinkService.toSelfLink(hasUrl.get(), discovery -> discovery.getV_3_1_2().getGetCallbackUrls()));
-        } else {
-            return new OBCallbackUrlsResponse1()
-                    .data(new OBCallbackUrlsResponseData1().callbackUrl(Collections.emptyList()))
-                    .meta(new Meta())
-                    .links(new Links());
-        }
+    protected OBCallbackUrlsResponse1 packageResponse(final Collection<FRCallbackUrl1> frCallbackUrls) {
+        final List<OBCallbackUrlResponseData1> callbackUrls =
+                frCallbackUrls.stream()
+                        .filter(
+                                frCallbackUrl1 -> frCallbackUrl1.obCallbackUrl.getData().getVersion().equals(OBVersion.v3_1_2.getCanonicalVersion())
+                        )
+                        .map(this::toOBCallbackUrlResponseData1)
+                        .collect(Collectors.toList());
+        return new OBCallbackUrlsResponse1()
+                .data(new OBCallbackUrlsResponseData1()
+                        .callbackUrl(callbackUrls)
+                );
     }
 
-    private OBCallbackUrlResponse1 packageResponse(FRCallbackUrl1 frCallbackUrl) {
+    protected OBCallbackUrlResponse1 packageResponse(FRCallbackUrl1 frCallbackUrl) {
         return new OBCallbackUrlResponse1()
                 .data(toOBCallbackUrlResponseData1(frCallbackUrl))
                 .meta(new Meta())
                 .links(resourceLinkService.toSelfLink(frCallbackUrl, discovery -> discovery.getV_3_1_2().getGetCallbackUrls()));
     }
 
-    private OBCallbackUrlsResponseData1 toOBCallbackUrlsResponseData1(FRCallbackUrl1 frCallbackUrl) {
-        final OBCallbackUrlData1 data = frCallbackUrl.getObCallbackUrl().getData();
-        return new OBCallbackUrlsResponseData1()
-                .callbackUrl(Collections.singletonList(
-                        new OBCallbackUrlResponseData1()
-                                .url(data.getUrl())
-                                .callbackUrlId(frCallbackUrl.getId())
-                                .version(data.getVersion())
-                ));
-    }
-
-    private OBCallbackUrlResponseData1 toOBCallbackUrlResponseData1(FRCallbackUrl1 frCallbackUrl) {
+    protected OBCallbackUrlResponseData1 toOBCallbackUrlResponseData1(FRCallbackUrl1 frCallbackUrl) {
         final OBCallbackUrlData1 data = frCallbackUrl.getObCallbackUrl().getData();
         return new OBCallbackUrlResponseData1()
                 .url(data.getUrl())
