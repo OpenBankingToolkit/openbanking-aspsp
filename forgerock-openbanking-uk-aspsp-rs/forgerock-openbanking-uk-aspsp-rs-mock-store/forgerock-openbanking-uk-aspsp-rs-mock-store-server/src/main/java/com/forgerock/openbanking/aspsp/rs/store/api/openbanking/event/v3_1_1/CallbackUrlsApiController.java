@@ -49,9 +49,8 @@ public class CallbackUrlsApiController extends com.forgerock.openbanking.aspsp.r
                 .data(new OBCallbackUrlsResponseData1()
                         .callbackUrl(
                                 frCallbackUrls.stream()
-                                        .filter(
-                                                EventsHelper.matchingVersion(OBVersion.v3_1_1)
-                                        ).map(this::toOBCallbackUrlResponseData1)
+                                        .filter(EventsHelper.matchingVersion(OBVersion.v3_1_1))
+                                        .map(this::toOBCallbackUrlResponseData1)
                                         .collect(Collectors.toList())
                         )
                 );

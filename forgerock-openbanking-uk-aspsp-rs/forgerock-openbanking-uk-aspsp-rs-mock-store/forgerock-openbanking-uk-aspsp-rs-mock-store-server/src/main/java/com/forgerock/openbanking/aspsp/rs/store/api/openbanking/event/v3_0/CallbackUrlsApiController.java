@@ -224,9 +224,8 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
                 .data(new OBCallbackUrlsResponseData1()
                         .callbackUrl(
                                 frCallbackUrls.stream()
-                                        .filter(
-                                                EventsHelper.matchingVersion(OBVersion.v3_0)
-                                        ).map(this::toOBCallbackUrlResponseData1)
+                                        .filter(EventsHelper.matchingVersion(OBVersion.v3_0))
+                                        .map(this::toOBCallbackUrlResponseData1)
                                         .collect(Collectors.toList())
                         )
                 );
