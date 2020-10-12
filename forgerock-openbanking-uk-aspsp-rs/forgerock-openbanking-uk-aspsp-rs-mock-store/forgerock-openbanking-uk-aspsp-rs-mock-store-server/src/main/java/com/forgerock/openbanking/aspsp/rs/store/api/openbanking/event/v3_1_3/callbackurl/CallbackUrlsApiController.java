@@ -20,15 +20,38 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_3.callbackurl;
 
+import com.forgerock.openbanking.aspsp.rs.store.api.helper.EventsHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlResponseData1;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponseData1;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller("CallbackUrlsApiV3.1.3")
 public class CallbackUrlsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.callbackurl.CallbackUrlsApiController implements CallbackUrlsApi {
 
     public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         super(callbackUrlsRepository, tppRepository, resourceLinkService);
+    }
+
+    @Override
+    protected OBCallbackUrlsResponse1 packageResponse(Collection<FRCallbackUrl1> frCallbackUrls) {
+        return new OBCallbackUrlsResponse1()
+                .data(new OBCallbackUrlsResponseData1()
+                        .callbackUrl(
+                                frCallbackUrls.stream()
+                                        .filter(EventsHelper.matchingVersion(OBVersion.v3_1_3))
+                                        .map(this::toOBCallbackUrlResponseData1)
+                                        .collect(Collectors.toList())
+                        )
+                );
     }
 }

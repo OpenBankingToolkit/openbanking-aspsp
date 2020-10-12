@@ -41,6 +41,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
+
 @Controller("CallbackUrlApiV3.1.2")
 @Slf4j
 public class CallbackUrlApiController implements CallbackUrlApi {
@@ -76,6 +78,7 @@ public class CallbackUrlApiController implements CallbackUrlApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f ->
                         {
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
@@ -139,6 +142,7 @@ public class CallbackUrlApiController implements CallbackUrlApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f ->
                         {
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
@@ -170,6 +174,7 @@ public class CallbackUrlApiController implements CallbackUrlApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();

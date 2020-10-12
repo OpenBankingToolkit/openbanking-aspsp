@@ -60,4 +60,12 @@ public enum OBVersion {
     public boolean isAfterVersion(OBVersion version) {
         return this.ordinal() > version.ordinal();
     }
+
+    /**
+     * Canonical value of version replacing '_' for '.'
+     * @return canonical string version
+     */
+    public String getCanonicalVersion(){
+        return this.name().replace("_",".");
+    }
 }

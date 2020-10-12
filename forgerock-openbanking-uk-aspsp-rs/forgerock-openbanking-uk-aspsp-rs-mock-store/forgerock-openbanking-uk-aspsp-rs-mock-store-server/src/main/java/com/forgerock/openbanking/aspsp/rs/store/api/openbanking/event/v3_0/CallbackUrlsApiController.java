@@ -20,9 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_0;
 
+import com.forgerock.openbanking.aspsp.rs.store.api.helper.EventsHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import io.swagger.annotations.ApiParam;
@@ -39,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -68,8 +69,8 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
-            @ApiParam(value = "Header containing a detached JWS signature of the body of the payload." ,required=true)
-            @RequestHeader(value="x-jws-signature", required=false) String xJwsSignature,
+            @ApiParam(value = "Header containing a detached JWS signature of the body of the payload.", required = true)
+            @RequestHeader(value = "x-jws-signature", required = false) String xJwsSignature,
 
             @ApiParam(value = "An RFC4122 UID used as a correlation id.")
             @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
@@ -130,7 +131,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
             HttpServletRequest request,
 
             Principal principal
-    )  {
+    ) {
         return Optional.ofNullable(tppRepository.findByClientId(clientId))
                 .map(Tpp::getId)
                 .map(id -> callbackUrlsRepository.findByTppId(id))
@@ -218,26 +219,27 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
         }
     }
 
-    private OBCallbackUrlsResponse1 packageResponse(final Collection<FRCallbackUrl1> frCallbackUrls) {
-        final List<OBCallbackUrlResponseData1> callbackUrls =
-                frCallbackUrls.stream()
-                        .map(this::toOBCallbackUrlResponseData1)
-                        .collect(Collectors.toList());
+    protected OBCallbackUrlsResponse1 packageResponse(final Collection<FRCallbackUrl1> frCallbackUrls) {
         return new OBCallbackUrlsResponse1()
                 .data(new OBCallbackUrlsResponseData1()
-                        .callbackUrl(callbackUrls)
+                        .callbackUrl(
+                                frCallbackUrls.stream()
+                                        .filter(EventsHelper.matchingVersion(OBVersion.v3_0))
+                                        .map(this::toOBCallbackUrlResponseData1)
+                                        .collect(Collectors.toList())
+                        )
                 );
     }
 
-    private OBCallbackUrlResponse1 packageResponse(FRCallbackUrl1 frCallbackUrl) {
+
+    protected OBCallbackUrlResponse1 packageResponse(FRCallbackUrl1 frCallbackUrl) {
         return new OBCallbackUrlResponse1()
                 .data(
                         toOBCallbackUrlResponseData1(frCallbackUrl)
                 );
     }
 
-
-    private OBCallbackUrlResponseData1 toOBCallbackUrlResponseData1(FRCallbackUrl1 frCallbackUrl) {
+    protected OBCallbackUrlResponseData1 toOBCallbackUrlResponseData1(FRCallbackUrl1 frCallbackUrl) {
         final OBCallbackUrlData1 data = frCallbackUrl.getObCallbackUrl().getData();
         return new OBCallbackUrlResponseData1()
                 .callbackUrlId(frCallbackUrl.getId())
