@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.callbackurl;
 
+import com.forgerock.openbanking.aspsp.rs.store.api.helper.EventsHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
@@ -229,17 +230,25 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
 
     protected OBCallbackUrlsResponse1 packageResponse(final Collection<FRCallbackUrl1> frCallbackUrls) {
-        final List<OBCallbackUrlResponseData1> callbackUrls =
-                frCallbackUrls.stream()
-                        .filter(
-                                frCallbackUrl1 -> frCallbackUrl1.obCallbackUrl.getData().getVersion().equals(OBVersion.v3_1_2.getCanonicalVersion())
-                        )
-                        .map(this::toOBCallbackUrlResponseData1)
-                        .collect(Collectors.toList());
         return new OBCallbackUrlsResponse1()
                 .data(new OBCallbackUrlsResponseData1()
-                        .callbackUrl(callbackUrls)
+                        .callbackUrl(
+                                frCallbackUrls.stream()
+                                        .filter(
+                                                EventsHelper.matchingVersion(OBVersion.v3_1_2)
+                                        ).map(this::toOBCallbackUrlResponseData1)
+                                        .collect(Collectors.toList())
+                        )
                 );
+    }
+
+    protected List<OBCallbackUrlResponseData1> callbackUrlFilteredByVersion(final Collection<FRCallbackUrl1> frCallbackUrls, final String version){
+        return frCallbackUrls.stream()
+                .filter(
+                        frCallbackUrl1 -> frCallbackUrl1.obCallbackUrl.getData().getVersion().equals(version)
+                )
+                .map(this::toOBCallbackUrlResponseData1)
+                .collect(Collectors.toList());
     }
 
     protected OBCallbackUrlResponse1 packageResponse(FRCallbackUrl1 frCallbackUrl) {

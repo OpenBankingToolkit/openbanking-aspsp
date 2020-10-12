@@ -9,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_0;
 
+import com.forgerock.openbanking.aspsp.rs.store.api.helper.EventsHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
@@ -40,7 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -220,18 +220,18 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     }
 
     protected OBCallbackUrlsResponse1 packageResponse(final Collection<FRCallbackUrl1> frCallbackUrls) {
-        final List<OBCallbackUrlResponseData1> callbackUrls =
-                frCallbackUrls.stream()
-                        .filter(
-                                frCallbackUrl1 -> frCallbackUrl1.obCallbackUrl.getData().getVersion().equals(OBVersion.v3_0.getCanonicalVersion())
-                        )
-                        .map(this::toOBCallbackUrlResponseData1)
-                        .collect(Collectors.toList());
         return new OBCallbackUrlsResponse1()
                 .data(new OBCallbackUrlsResponseData1()
-                        .callbackUrl(callbackUrls)
+                        .callbackUrl(
+                                frCallbackUrls.stream()
+                                        .filter(
+                                                EventsHelper.matchingVersion(OBVersion.v3_0)
+                                        ).map(this::toOBCallbackUrlResponseData1)
+                                        .collect(Collectors.toList())
+                        )
                 );
     }
+
 
     protected OBCallbackUrlResponse1 packageResponse(FRCallbackUrl1 frCallbackUrl) {
         return new OBCallbackUrlResponse1()
@@ -239,7 +239,6 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
                         toOBCallbackUrlResponseData1(frCallbackUrl)
                 );
     }
-
 
     protected OBCallbackUrlResponseData1 toOBCallbackUrlResponseData1(FRCallbackUrl1 frCallbackUrl) {
         final OBCallbackUrlData1 data = frCallbackUrl.getObCallbackUrl().getData();
