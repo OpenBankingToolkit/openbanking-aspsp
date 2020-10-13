@@ -12,15 +12,6 @@ Feature 238 - Events (#288)
 * Feature 238 - Events
 - Common helper class
 - Static method to filter callbackUrls by version
-### GitHub [#289](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/289) Release/1.0.104
-[ed93739073a4830](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ed93739073a4830) Jorge Sanchez Perez *2020-10-13 08:16:56*
-Release/1.0.104 (#289)
-
-* Release candidate: prepare release 1.0.104
-
-* Release candidate: prepare for next development iteration
-
-* changelog updated
 [01e143ac8a5097f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/01e143ac8a5097f) JamieB *2020-10-07 09:43:22*
 Release candidate: prepare for next development iteration
 

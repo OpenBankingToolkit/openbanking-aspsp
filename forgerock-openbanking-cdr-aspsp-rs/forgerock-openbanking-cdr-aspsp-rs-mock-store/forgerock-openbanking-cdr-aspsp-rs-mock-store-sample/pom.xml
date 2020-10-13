@@ -25,7 +25,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.forgerock.openbanking.aspsp</groupId>
-    <artifactId>forgerock-openbanking-uk-aspsp-rs-mock-store-sample</artifactId>
+    <artifactId>forgerock-openbanking-cdr-aspsp-rs-mock-store-sample</artifactId>
     <packaging>jar</packaging>
 
     <name>rs-mock-store-sample</name>
@@ -45,7 +45,7 @@
         </dependency>
         <dependency>
             <groupId>com.forgerock.openbanking.aspsp</groupId>
-            <artifactId>forgerock-openbanking-uk-aspsp-rs-mock-store-server</artifactId>
+            <artifactId>forgerock-openbanking-cdr-aspsp-rs-mock-store-server</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
 
