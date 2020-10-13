@@ -20,10 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accountrequests;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +34,5 @@ public interface FRAccountRequestRepository extends MongoRepository<FRAccountReq
     Optional<FRAccountRequest> findByAccountRequestId(@Param("accountRequestId") String accountRequestId);
     Collection<FRAccountRequest> findByUserId(@Param("userId") String userId);
     Collection<FRAccountRequest> findByUserIdAndClientId(@Param("userId") String userId, @Param("clientId") String clientId);
-    // TODO #296 - use FR domain equivalent of OBExternalRequestStatus1Code?
-    Collection<FRAccountRequest> findByUserIdAndAccountRequestDataStatusIn(@Param("userId") String userId, @Param("statuses") List<OBExternalRequestStatus1Code> status);
+    Collection<FRAccountRequest> findByUserIdAndAccountRequestDataStatusIn(@Param("userId") String userId, @Param("statuses") List<FRExternalRequestStatusCode> status);
 }

@@ -39,6 +39,7 @@ import uk.org.openbanking.datamodel.account.OBReadScheduledPayment3Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRScheduledPaymentConverter.toOBScheduledPayment3;
 
 @Controller("ScheduledPaymentsApiV3.1.3")
@@ -71,7 +72,8 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
                                                                                String httpUrl) throws OBErrorResponseException {
         log.info("Read scheduled payments for account {} with minimumPermissions {}", accountId, permissions);
 
-        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdWithPermissions(accountId, permissions, PageRequest.of(page, pageLimitSchedulePayments));
+        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitSchedulePayments));
         return packageResponse(page, httpUrl, scheduledPayments);
     }
 
@@ -87,7 +89,8 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
                                                                         String httpUrl) throws OBErrorResponseException {
         log.info("Reading schedule payment from account ids {}", accountIds);
 
-        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdInWithPermissions(accountIds, permissions, PageRequest.of(page, pageLimitSchedulePayments));
+        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitSchedulePayments));
         return packageResponse(page, httpUrl, scheduledPayments);
     }
 

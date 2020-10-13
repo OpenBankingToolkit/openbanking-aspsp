@@ -37,6 +37,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount6;
 
 @Controller("AccountsApiV3.1.3")
@@ -59,7 +60,7 @@ public class AccountsApiController implements AccountsApi {
                                                      List<OBExternalPermissions1Code> permissions,
                                                      String httpUrl) throws OBErrorResponseException {
         log.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount response = frAccountRepository.byAccountId(accountId, permissions);
+        FRAccount response = frAccountRepository.byAccountId(accountId, toFRExternalPermissionsCodeList(permissions));
 
         List<OBAccount6> obAccounts = Collections.singletonList(toOBAccount6(response.getAccount()));
         return ResponseEntity.ok(new OBReadAccount5()
@@ -80,7 +81,7 @@ public class AccountsApiController implements AccountsApi {
                                                       String httpUrl) throws OBErrorResponseException {
         log.info("Accounts from account ids {}", accountIds);
 
-        List<FRAccount> frAccounts = frAccountRepository.byAccountIds(accountIds, permissions);
+        List<FRAccount> frAccounts = frAccountRepository.byAccountIds(accountIds, toFRExternalPermissionsCodeList(permissions));
         List<OBAccount6> obAccounts = frAccounts
                 .stream()
                 .map(frAccount -> toOBAccount6(frAccount.getAccount()))

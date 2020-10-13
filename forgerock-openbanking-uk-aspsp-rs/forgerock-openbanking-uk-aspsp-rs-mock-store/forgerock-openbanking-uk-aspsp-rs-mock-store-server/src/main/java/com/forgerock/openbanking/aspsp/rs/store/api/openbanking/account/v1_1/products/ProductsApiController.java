@@ -23,7 +23,6 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.pr
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.products.FRProductRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRProduct;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRProductConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -47,6 +46,7 @@ import uk.org.openbanking.datamodel.account.OBReadProduct1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRProductConverter.toOBProduct1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -58,8 +58,6 @@ public class ProductsApiController implements ProductsApi {
     private int PAGE_LIMIT_PRODUCTS;
     @Autowired
     private FRProductRepository frProductRepository;
-    @Autowired
-    private FRProductConverter productConverter;
 
     @Override
     public ResponseEntity<OBReadProduct1> getAccountProduct(
@@ -86,7 +84,7 @@ public class ProductsApiController implements ProductsApi {
     ) {
         LOGGER.info("Read product for account  {} with minimumPermissions {}", accountId, permissions);
 
-        Page<FRProduct> productsResponse = frProductRepository.byAccountIdWithPermissions(accountId, permissions, PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
+        Page<FRProduct> productsResponse = frProductRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions), PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
         List<OBProduct1> products = productsResponse.getContent().stream()
                 .map(b -> toOBProduct1(b.getProduct()))
                 .collect(Collectors.toList());
@@ -131,7 +129,7 @@ public class ProductsApiController implements ProductsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Reading products from account ids {}", accountIds);
-        Page<FRProduct> frProducts = frProductRepository.byAccountIdInWithPermissions(accountIds, permissions, PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
+        Page<FRProduct> frProducts = frProductRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions), PageRequest.of(page, PAGE_LIMIT_PRODUCTS));
 
         int totalPage = frProducts.getTotalPages();
 

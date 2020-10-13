@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_2.accounts;
 
 
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 
@@ -28,4 +29,7 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class AccountsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.accounts.AccountsApiController implements AccountsApi {
 
+    public AccountsApiController(FRAccountRepository frAccountRepository) {
+        super(frAccountRepository);
+    }
 }

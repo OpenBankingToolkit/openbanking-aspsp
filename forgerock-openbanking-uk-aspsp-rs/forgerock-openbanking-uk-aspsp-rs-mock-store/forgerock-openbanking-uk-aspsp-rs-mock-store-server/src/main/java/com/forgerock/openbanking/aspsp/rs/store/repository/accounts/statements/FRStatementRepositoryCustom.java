@@ -24,7 +24,7 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.account.FR
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
@@ -34,18 +34,18 @@ public interface FRStatementRepositoryCustom {
             String accountId,
             DateTime fromStatementDateTime,
             DateTime toStatementDateTime,
-            List<OBExternalPermissions1Code> permissions,
+            List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 
     List<FRStatement> byAccountIdAndStatementIdWithPermissions(
             String accountId,
             String statementId,
-            List<OBExternalPermissions1Code> permissions
+            List<FRExternalPermissionsCode> permissions
     );
 
     Page<FRStatement> byAccountIdInWithPermissions(
             List<String> accountIds,
-            List<OBExternalPermissions1Code> permissions,
+            List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 
 }

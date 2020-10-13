@@ -43,6 +43,8 @@ import uk.org.openbanking.datamodel.account.OBAccount3;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadAccount3;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBExternalAccountSubType1Code;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -87,8 +89,8 @@ public class Accounts3ApiControllerIT {
         assertThat(returnedAccount).isNotNull();
         assertThat(returnedAccount.getAccountId()).isEqualTo(account.getAccount().getAccountId());
         assertThat(returnedAccount.getCurrency()).isEqualTo(account.getAccount().getCurrency());
-        assertThat(returnedAccount.getAccountType()).isEqualTo(account.getAccount().getAccountType());
-        assertThat(returnedAccount.getAccountSubType()).isEqualTo(account.getAccount().getAccountSubType());
+        assertThat(returnedAccount.getAccountType()).isEqualTo(toOBExternalAccountType1Code(account.getAccount().getAccountType()));
+        assertThat(returnedAccount.getAccountSubType()).isEqualTo(toOBExternalAccountSubType1Code(account.getAccount().getAccountSubType()));
         assertThat(returnedAccount.getDescription()).isEqualTo(account.getAccount().getDescription());
         assertThat(returnedAccount.getNickname()).isEqualTo(account.getAccount().getNickname());
         assertThat(returnedAccount.getServicer().getSchemeName()).isEqualTo(account.getAccount().getServicer().getSchemeName());

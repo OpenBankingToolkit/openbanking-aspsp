@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
@@ -37,19 +37,19 @@ public class FRBeneficiaryRepositoryImpl implements FRBeneficiaryRepositoryCusto
     private FRBeneficiaryRepository beneficiaryRepository;
 
     @Override
-    public Page<FRBeneficiary> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions,
+    public Page<FRBeneficiary> byAccountIdWithPermissions(String accountId, List<FRExternalPermissionsCode> permissions,
                                                           Pageable pageable) {
         return filter(beneficiaryRepository.findByAccountId(accountId, pageable), permissions);
     }
 
     @Override
-    public Page<FRBeneficiary> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions,
+    public Page<FRBeneficiary> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode> permissions,
                                                             Pageable pageable) {
         return filter(beneficiaryRepository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FRBeneficiary> filter(Page<FRBeneficiary> beneficiaries, List<OBExternalPermissions1Code> permissions) {
-        for (OBExternalPermissions1Code permission : permissions) {
+    private Page<FRBeneficiary> filter(Page<FRBeneficiary> beneficiaries, List<FRExternalPermissionsCode> permissions) {
+        for (FRExternalPermissionsCode permission : permissions) {
             switch (permission) {
 
                 case READBENEFICIARIESBASIC:

@@ -47,6 +47,7 @@ import uk.org.openbanking.datamodel.account.OBReadBeneficiary2Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("BeneficiariesApiV2.0")
@@ -94,7 +95,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
             throws OBErrorResponseException {
 
         LOGGER.info("Read beneficiaries for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdWithPermissions(accountId, permissions,
+        Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_BENEFICIARIES));
         int totalPages = beneficiaries.getTotalPages();
 
@@ -141,7 +142,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Beneficaries from account ids {}", accountIds);
-        Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRBeneficiary> beneficiaries = frBeneficiaryRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_BENEFICIARIES));
         int totalPages = beneficiaries.getTotalPages();
 

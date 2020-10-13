@@ -20,30 +20,29 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import org.joda.time.DateTime;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.Collection;
 import java.util.List;
 
 public interface FRAccountRepositoryCustom {
-    // TODO #296 - use FR domain equivalent of OBExternalPermissions1Code?
 
     Collection<FRAccount> byUserIDWithPermissions(
             @Param("userID") String userID,
-            @Param("permissions") List<OBExternalPermissions1Code> permissions,
+            @Param("permissions") List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 
     FRAccount byAccountId(
             @Param("accountId") String accountId,
-            @Param("permissions") List<OBExternalPermissions1Code> permissions);
+            @Param("permissions") List<FRExternalPermissionsCode> permissions);
 
     List<FRAccount> byAccountIds(
             @Param("accountId") List<String> accountIds,
-            @Param("permissions") List<OBExternalPermissions1Code> permissions);
+            @Param("permissions") List<FRExternalPermissionsCode> permissions);
 
     List<String> getUserIds(DateTime from, DateTime to);
 }

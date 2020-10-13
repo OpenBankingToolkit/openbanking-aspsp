@@ -24,22 +24,20 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.account.FR
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
 public interface FRScheduledPaymentRepositoryCustom {
 
-    // TODO #296 - use FR domain equivalent of OBExternalPermissions1Code?
-
     Page<FRScheduledPayment> byAccountIdWithPermissions(
             @Param("accountId") String accountId,
-            @Param("permissions") List<OBExternalPermissions1Code> permissions,
+            @Param("permissions") List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 
     Page<FRScheduledPayment> byAccountIdInWithPermissions(
             @Param("accountIds") List<String> accountIds,
-            @Param("permissions") List<OBExternalPermissions1Code> permissions,
+            @Param("permissions") List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 
 }

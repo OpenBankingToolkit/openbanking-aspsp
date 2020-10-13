@@ -65,7 +65,7 @@ public class FRPartyConverter {
     }
 
     public static OBPartyRelationships1 toOBPartyRelationships1(FRPartyData.FRRelationship relationship) {
-        return new OBPartyRelationships1()
+        return relationship == null ? null : new OBPartyRelationships1()
                 .account(new OBRelationship1()
                         .related(relationship.getRelated())
                         .id(relationship.getId()));

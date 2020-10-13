@@ -42,6 +42,8 @@ import uk.org.openbanking.datamodel.account.OBTransaction6;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+
 @Controller("TransactionsApiV3.1.5")
 @Slf4j
 public class TransactionsApiController implements TransactionsApi {
@@ -87,7 +89,8 @@ public class TransactionsApiController implements TransactionsApi {
         }
 
         Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndBookingDateTimeBetweenWithPermissions(accountId,
-                fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
+                fromBookingDateTime, toBookingDateTime, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = response.getContent()
                 .stream()
@@ -132,7 +135,8 @@ public class TransactionsApiController implements TransactionsApi {
         }
 
         Page<FRTransaction> response = FRTransactionRepository.byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(accountId, statementId,
-                fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
+                fromBookingDateTime, toBookingDateTime, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = response.getContent()
                 .stream()
@@ -174,7 +178,8 @@ public class TransactionsApiController implements TransactionsApi {
         }
 
         Page<FRTransaction> body = FRTransactionRepository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(accountIds,
-                fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
+                fromBookingDateTime, toBookingDateTime, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitTransactions, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction6> transactions = body.getContent()
                 .stream()

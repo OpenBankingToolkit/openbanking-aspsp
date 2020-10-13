@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStatementConverter.toOBStatement2;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-25T23:06:46.214+01:00")
@@ -86,7 +87,7 @@ public class StatementsApiController implements StatementsApi {
                                                                 String httpUrl) throws OBErrorResponseException {
         log.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
 
-        List<FRStatement> statements = frStatementRepository.byAccountIdAndStatementIdWithPermissions(accountId, statementId, permissions);
+        List<FRStatement> statements = frStatementRepository.byAccountIdAndStatementIdWithPermissions(accountId, statementId, toFRExternalPermissionsCodeList(permissions));
         int totalPages = 1;
         return packageResponse(page, httpUrl, statements, totalPages);
     }
@@ -132,7 +133,7 @@ public class StatementsApiController implements StatementsApi {
         log.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
 
         Page<FRStatement> statements = frStatementRepository.byAccountIdWithPermissions(accountId,
-                fromStatementDateTime, toStatementDateTime, permissions,
+                fromStatementDateTime, toStatementDateTime, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, pageLimitStatements, Sort.Direction.ASC, "startDateTime"));
 
         int totalPages = statements.getTotalPages();

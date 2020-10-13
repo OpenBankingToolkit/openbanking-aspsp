@@ -51,7 +51,6 @@ public class FRAccountAccessConsent implements AccountRequest, Persistable<Strin
     @Id
     @Indexed
     public String id;
-    // TODO 296 - change OB objects to FR domain model
     private FRReadConsentResponse accountAccessConsent;
     @Indexed
     private String clientId;

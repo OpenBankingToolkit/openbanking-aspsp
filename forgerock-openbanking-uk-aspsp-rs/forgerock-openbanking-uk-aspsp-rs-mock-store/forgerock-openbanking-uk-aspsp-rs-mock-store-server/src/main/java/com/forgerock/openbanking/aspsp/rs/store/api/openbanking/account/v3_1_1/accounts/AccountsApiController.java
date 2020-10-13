@@ -28,7 +28,6 @@ import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -44,6 +43,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount3;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -51,8 +51,11 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE
 @Slf4j
 public class AccountsApiController implements AccountsApi {
 
-    @Autowired
-    private FRAccountRepository frAccountRepository;
+    private final FRAccountRepository frAccountRepository;
+
+    public AccountsApiController(FRAccountRepository frAccountRepository) {
+        this.frAccountRepository = frAccountRepository;
+    }
 
     public ResponseEntity<OBReadAccount3> getAccount(
             @ApiParam(value = "A unique identifier used to identify the account resource.",required=true )
@@ -81,7 +84,7 @@ public class AccountsApiController implements AccountsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount response = frAccountRepository.byAccountId(accountId, permissions);
+        FRAccount response = frAccountRepository.byAccountId(accountId, toFRExternalPermissionsCodeList(permissions));
         final List<OBAccount3> obAccounts = Collections.singletonList(toOBAccount3(response.getAccount()));
 
         return ResponseEntity.ok(new OBReadAccount3()
@@ -120,7 +123,7 @@ public class AccountsApiController implements AccountsApi {
     ) throws OBErrorResponseException {
         log.info("Accounts from account ids {}", accountIds);
 
-        List<OBAccount3> accounts = frAccountRepository.byAccountIds(accountIds, permissions)
+        List<OBAccount3> accounts = frAccountRepository.byAccountIds(accountIds, toFRExternalPermissionsCodeList(permissions))
                 .stream()
                 .map(FRAccount::getAccount)
                 .map(FRFinancialAccountConverter::toOBAccount3)

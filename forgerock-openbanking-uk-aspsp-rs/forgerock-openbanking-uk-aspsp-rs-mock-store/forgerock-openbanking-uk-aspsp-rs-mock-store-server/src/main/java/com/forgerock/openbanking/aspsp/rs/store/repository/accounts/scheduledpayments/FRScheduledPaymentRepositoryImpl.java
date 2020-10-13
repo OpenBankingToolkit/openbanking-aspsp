@@ -25,31 +25,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
-public class FRScheduledPayment4RepositoryImpl implements FRScheduledPaymentRepositoryCustom {
+public class FRScheduledPaymentRepositoryImpl implements FRScheduledPaymentRepositoryCustom {
 
     @Autowired
     @Lazy
     private FRScheduledPaymentRepository scheduledPayment1Repository;
 
     @Override
-    public Page<FRScheduledPayment> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRScheduledPayment> byAccountIdWithPermissions(String accountId, List<FRExternalPermissionsCode> permissions, Pageable pageable) {
         return filter(scheduledPayment1Repository.findByAccountId(accountId, pageable), permissions);
     }
 
     @Override
-    public Page<FRScheduledPayment> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRScheduledPayment> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode> permissions, Pageable pageable) {
         return filter(scheduledPayment1Repository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
 
-    private Page<FRScheduledPayment> filter(Page<FRScheduledPayment> scheduledPayments, List<OBExternalPermissions1Code> permissions) {
+    private Page<FRScheduledPayment> filter(Page<FRScheduledPayment> scheduledPayments, List<FRExternalPermissionsCode> permissions) {
 
         for (FRScheduledPayment scheduledPayment: scheduledPayments) {
-            for (OBExternalPermissions1Code permission : permissions) {
+            for (FRExternalPermissionsCode permission : permissions) {
                 switch (permission) {
                     case READSCHEDULEDPAYMENTSBASIC:
                         scheduledPayment.getScheduledPayment().setCreditorAccount(null);

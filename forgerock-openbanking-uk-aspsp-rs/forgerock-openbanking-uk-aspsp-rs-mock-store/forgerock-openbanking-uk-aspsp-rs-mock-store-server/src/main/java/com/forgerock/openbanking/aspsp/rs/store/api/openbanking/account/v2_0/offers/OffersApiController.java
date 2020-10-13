@@ -46,6 +46,7 @@ import uk.org.openbanking.datamodel.account.OBReadOffer1Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FROfferConverter.toOBOffer1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -96,7 +97,7 @@ public class OffersApiController implements OffersApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Read offers for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FROffer> offers = frOfferRepository.byAccountIdWithPermissions(accountId, permissions,
+        Page<FROffer> offers = frOfferRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_OFFERS));
         int totalPages = offers.getTotalPages();
 
@@ -147,7 +148,7 @@ public class OffersApiController implements OffersApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Reading offers from account ids {}", accountIds);
-        Page<FROffer> offers = frOfferRepository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FROffer> offers = frOfferRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_OFFERS));
         int totalPages = offers.getTotalPages();
 

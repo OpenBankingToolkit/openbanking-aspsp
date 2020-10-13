@@ -26,7 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
@@ -36,14 +36,12 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.Parameter
 
 public interface FRTransactionRepositoryCustom {
 
-    // TODO #296 - use FR domain equivalent of OBExternalPermissions1Code?
-
     Page<FRTransaction> byAccountIdAndBookingDateTimeBetweenWithPermissions(
             @Param("accountId") String accountId,
             @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
             @Param(TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime
                     toBookingDateTime,
-            @Param("permissions") List<OBExternalPermissions1Code> permissions,
+            @Param("permissions") List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 
     Page<FRTransaction> byAccountIdAndStatementIdAndBookingDateTimeBetweenWithPermissions(
@@ -52,14 +50,14 @@ public interface FRTransactionRepositoryCustom {
             @Param(FROM_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime fromBookingDateTime,
             @Param(TO_BOOKING_DATE_TIME) @DateTimeFormat(pattern = BOOKED_TIME_DATE_FORMAT) DateTime
                     toBookingDateTime,
-            @Param("permissions") List<OBExternalPermissions1Code> permissions,
+            @Param("permissions") List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 
 
-    Page<FRTransaction> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code>
+    Page<FRTransaction> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode>
             permissions, Pageable pageable);
 
     Page<FRTransaction> byAccountIdInAndBookingDateTimeBetweenWithPermissions(List<String> accountIds,
-                                                                              DateTime fromBookingDateTime, DateTime toBookingDateTime, List<OBExternalPermissions1Code> permissions,
+                                                                              DateTime fromBookingDateTime, DateTime toBookingDateTime, List<FRExternalPermissionsCode> permissions,
                                                                               Pageable pageable);
 }

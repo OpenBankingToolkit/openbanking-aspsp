@@ -21,7 +21,6 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.AccountsConsentDetails;
@@ -34,12 +33,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toOBExternalPermissions1CodeList;
 import static org.springframework.http.ResponseEntity.ok;
 
 @Service
@@ -101,16 +99,5 @@ public class RCSAccountDetailsApi implements RCSDetailsApi {
                 .aispName(accountRequest.getAispName())
                 .expiredDate(accountRequest.getExpirationDateTime())
                 .build());
-    }
-
-    // TODO #296 - move to common?
-    public static List<OBExternalPermissions1Code> toOBExternalPermissions1CodeList(List<FRExternalPermissionsCode> permissions) {
-        return permissions == null ? null : permissions.stream()
-                .map(p -> toOBExternalPermissions1Code(p))
-                .collect(Collectors.toList());
-    }
-
-    public static OBExternalPermissions1Code toOBExternalPermissions1Code(FRExternalPermissionsCode externalPermissionsCode) {
-        return externalPermissionsCode == null ? null : OBExternalPermissions1Code.valueOf(externalPermissionsCode.getValue());
     }
 }

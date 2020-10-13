@@ -47,6 +47,7 @@ import uk.org.openbanking.datamodel.account.OBReadStandingOrder4Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("StandingOrdersApiV3.1")
@@ -95,7 +96,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
         LOGGER.info("Read standing orders for account {} with minimumPermissions {}",
                 accountId, permissions);
         Page<FRStandingOrder> standingOrders =
-                frStandingOrderRepository.byAccountIdWithPermissions(accountId, permissions,
+                frStandingOrderRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
                         PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
 
         int totalPages = standingOrders.getTotalPages();
@@ -144,7 +145,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Reading standing orders from account ids {}", accountIds);
-        Page<FRStandingOrder> standingOrders = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRStandingOrder> standingOrders = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
         int totalPages = standingOrders.getTotalPages();
 

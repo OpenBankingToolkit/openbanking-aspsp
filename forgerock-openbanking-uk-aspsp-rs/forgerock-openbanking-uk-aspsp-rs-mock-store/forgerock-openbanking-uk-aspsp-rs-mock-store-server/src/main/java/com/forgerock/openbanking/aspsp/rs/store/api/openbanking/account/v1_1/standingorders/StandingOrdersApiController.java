@@ -47,6 +47,7 @@ import uk.org.openbanking.datamodel.account.OBStandingOrder1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter.toOBStandingOrder1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -86,7 +87,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     ) {
         LOGGER.info("Read standing orders for account  {} with minimumPermissions {}",
                 accountId, permissions);
-        Page<FRStandingOrder> standingOrdersResponse = frStandingOrderRepository.byAccountIdWithPermissions(accountId, permissions,
+        Page<FRStandingOrder> standingOrdersResponse = frStandingOrderRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
         List<OBStandingOrder1> standingOrders = standingOrdersResponse.stream()
                 .map(so -> toOBStandingOrder1(so.getStandingOrder()))
@@ -134,7 +135,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     ) throws OBErrorResponseException {
         LOGGER.info("Reading standing orders from account ids {}", accountIds);
 
-        Page<FRStandingOrder> standingOrdersResponse = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRStandingOrder> standingOrdersResponse = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
         List<OBStandingOrder1> standingOrders = standingOrdersResponse.stream()
                 .map(so -> toOBStandingOrder1(so.getStandingOrder()))

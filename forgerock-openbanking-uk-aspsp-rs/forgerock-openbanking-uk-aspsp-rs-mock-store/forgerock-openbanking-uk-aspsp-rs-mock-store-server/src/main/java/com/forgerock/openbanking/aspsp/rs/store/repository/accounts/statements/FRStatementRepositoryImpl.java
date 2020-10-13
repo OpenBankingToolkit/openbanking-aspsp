@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class FRStatementRepositoryImpl implements FRStatementRepositoryCustom {
             String accountId,
             DateTime fromStatementDateTime,
             DateTime toStatementDateTime,
-            List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+            List<FRExternalPermissionsCode> permissions, Pageable pageable) {
 
         if (fromStatementDateTime == null && toStatementDateTime == null) {
             return filter(statement1Repository.findByAccountId(accountId, pageable), permissions);
@@ -54,18 +54,18 @@ public class FRStatementRepositoryImpl implements FRStatementRepositoryCustom {
     public List<FRStatement> byAccountIdAndStatementIdWithPermissions(
             String accountId,
             String statementId,
-            List<OBExternalPermissions1Code> permissions) {
+            List<FRExternalPermissionsCode> permissions) {
 
         return filter(statement1Repository.findByAccountIdAndId(accountId, statementId), permissions);
     }
 
     @Override
-    public Page<FRStatement> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRStatement> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode> permissions, Pageable pageable) {
         return filter(statement1Repository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FRStatement> filter(Page<FRStatement> statements, List<OBExternalPermissions1Code> permissions) {
-        for (OBExternalPermissions1Code permission : permissions) {
+    private Page<FRStatement> filter(Page<FRStatement> statements, List<FRExternalPermissionsCode> permissions) {
+        for (FRExternalPermissionsCode permission : permissions) {
             for (FRStatement statement : statements) {
                 switch (permission) {
                     case READSTATEMENTSBASIC:
@@ -77,8 +77,8 @@ public class FRStatementRepositoryImpl implements FRStatementRepositoryCustom {
         return statements;
     }
 
-    private List<FRStatement> filter(List<FRStatement> statements, List<OBExternalPermissions1Code> permissions) {
-        for (OBExternalPermissions1Code permission : permissions) {
+    private List<FRStatement> filter(List<FRStatement> statements, List<FRExternalPermissionsCode> permissions) {
+        for (FRExternalPermissionsCode permission : permissions) {
             for (FRStatement statement : statements) {
                 switch (permission) {
                     case READSTATEMENTSBASIC:

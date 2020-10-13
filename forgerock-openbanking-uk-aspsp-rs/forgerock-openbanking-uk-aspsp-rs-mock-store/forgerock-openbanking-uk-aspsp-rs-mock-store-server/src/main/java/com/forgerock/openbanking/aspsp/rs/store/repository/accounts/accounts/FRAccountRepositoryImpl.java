@@ -36,7 +36,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification3Code;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -61,7 +61,7 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
     }
 
     @Override
-    public Collection<FRAccount> byUserIDWithPermissions(String userID, List<OBExternalPermissions1Code> permissions, Pageable
+    public Collection<FRAccount> byUserIDWithPermissions(String userID, List<FRExternalPermissionsCode> permissions, Pageable
             pageable) {
         Collection<FRAccount> accounts = accountsRepository.findByUserID(userID);
         try {
@@ -75,7 +75,7 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
     }
 
     @Override
-    public FRAccount byAccountId(String accountId, List<OBExternalPermissions1Code> permissions) {
+    public FRAccount byAccountId(String accountId, List<FRExternalPermissionsCode> permissions) {
         Optional<FRAccount> isAccount = accountsRepository.findById(accountId);
         if (!isAccount.isPresent()) {
             return null;
@@ -90,7 +90,7 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
     }
 
     @Override
-    public List<FRAccount> byAccountIds(List<String> accountIds, List<OBExternalPermissions1Code> permissions) {
+    public List<FRAccount> byAccountIds(List<String> accountIds, List<FRExternalPermissionsCode> permissions) {
         Iterable<FRAccount> accounts = accountsRepository.findAllById(accountIds);
         try {
             for (FRAccount account : accounts) {
@@ -102,8 +102,8 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
         }
     }
 
-    private void filterAccount(FRAccount account, List<OBExternalPermissions1Code> permissions) {
-        for (OBExternalPermissions1Code permission: permissions) {
+    private void filterAccount(FRAccount account, List<FRExternalPermissionsCode> permissions) {
+        for (FRExternalPermissionsCode permission: permissions) {
             switch (permission) {
 
                 case READACCOUNTSBASIC:
@@ -113,7 +113,7 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
                 case READACCOUNTSDETAIL:
                     if (!CollectionUtils.isEmpty(account.getAccount().getAccount())) {
                         for (FRAccountIdentifier subAccount : account.getAccount().getAccount()) {
-                            if (!permissions.contains(OBExternalPermissions1Code.READPAN)
+                            if (!permissions.contains(FRExternalPermissionsCode.READPAN)
                                     && OBExternalAccountIdentification3Code.PAN.toString().equals(subAccount.getSchemeName()))
                             {
                                 subAccount.setIdentification("xxx");

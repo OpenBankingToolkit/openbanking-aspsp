@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
@@ -36,17 +36,17 @@ public class FRStandingOrderRepositoryImpl implements FRStandingOrderRepositoryC
     private FRStandingOrderRepository standingOrderRepository;
 
     @Override
-    public Page<FRStandingOrder> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRStandingOrder> byAccountIdWithPermissions(String accountId, List<FRExternalPermissionsCode> permissions, Pageable pageable) {
         return filter(standingOrderRepository.findByAccountId(accountId, pageable), permissions);
     }
 
     @Override
-    public Page<FRStandingOrder> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRStandingOrder> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode> permissions, Pageable pageable) {
         return filter(standingOrderRepository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FRStandingOrder> filter(Page<FRStandingOrder> standingOrders, List<OBExternalPermissions1Code> permissions) {
-        for (OBExternalPermissions1Code permission : permissions) {
+    private Page<FRStandingOrder> filter(Page<FRStandingOrder> standingOrders, List<FRExternalPermissionsCode> permissions) {
+        for (FRExternalPermissionsCode permission : permissions) {
             switch (permission) {
 
                 case READSTANDINGORDERSBASIC:

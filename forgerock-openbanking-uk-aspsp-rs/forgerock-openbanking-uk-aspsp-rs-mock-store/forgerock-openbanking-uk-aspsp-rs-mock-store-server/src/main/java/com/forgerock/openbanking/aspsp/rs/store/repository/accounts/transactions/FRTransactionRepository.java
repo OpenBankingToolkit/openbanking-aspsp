@@ -38,8 +38,6 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.Parameter
 
 public interface FRTransactionRepository extends MongoRepository<FRTransaction, String>, FRTransactionRepositoryCustom {
 
-    // TODO #296 - use FR domain equivalent of OBCreditDebitCode?
-
     Page<FRTransaction> findByAccountIdAndTransactionCreditDebitIndicator(
             @Param("accountId") String accountId,
             @Param("creditDebitIndicator") OBCreditDebitCode creditDebitIndicator,

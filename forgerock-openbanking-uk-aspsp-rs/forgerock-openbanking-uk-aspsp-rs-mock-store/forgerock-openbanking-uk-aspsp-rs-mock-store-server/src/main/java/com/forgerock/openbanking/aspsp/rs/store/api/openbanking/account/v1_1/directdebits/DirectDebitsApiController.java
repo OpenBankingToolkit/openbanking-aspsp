@@ -47,6 +47,7 @@ import uk.org.openbanking.datamodel.account.OBReadDirectDebit1Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("DirectDebitsApiV1.1")
@@ -86,7 +87,7 @@ public class DirectDebitsApiController implements DirectDebitsApi {
     ) {
         LOGGER.info("Read direct debits for account  {} with minimumPermissions {}", accountId, permissions);
         Page<FRDirectDebit> directDebits = frDirectDebitRepository.byAccountIdWithPermissions(accountId,
-                permissions, PageRequest.of(page, PAGE_LIMIT_DIRECT_DEBITS));
+                toFRExternalPermissionsCodeList(permissions), PageRequest.of(page, PAGE_LIMIT_DIRECT_DEBITS));
         int totalPages = directDebits.getTotalPages();
 
         return ResponseEntity.ok(new OBReadDirectDebit1()
@@ -133,7 +134,7 @@ public class DirectDebitsApiController implements DirectDebitsApi {
     ) throws OBErrorResponseException {
         LOGGER.info("DirectDebits fron account ids {} ", accountIds);
         Page<FRDirectDebit> directDebits = frDirectDebitRepository.byAccountIdInWithPermissions(accountIds,
-                permissions, PageRequest.of(page, PAGE_LIMIT_DIRECT_DEBITS));
+                toFRExternalPermissionsCodeList(permissions), PageRequest.of(page, PAGE_LIMIT_DIRECT_DEBITS));
 
         int totalPages = directDebits.getTotalPages();
 

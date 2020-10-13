@@ -44,6 +44,7 @@ import uk.org.openbanking.datamodel.account.OBReadAccount2Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static java.util.Collections.singletonList;
@@ -84,7 +85,7 @@ public class AccountsApiController implements AccountsApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount response = frAccountRepository.byAccountId(accountId, permissions);
+        FRAccount response = frAccountRepository.byAccountId(accountId, toFRExternalPermissionsCodeList(permissions));
         List<OBAccount2> obAccount2s = singletonList(toOBAccount2(response.getAccount()));
 
         return ResponseEntity.ok(new OBReadAccount2()
@@ -124,7 +125,7 @@ public class AccountsApiController implements AccountsApi {
 
         LOGGER.info("Accounts from account ids {}", accountIds);
 
-        List<OBAccount2> accounts = frAccountRepository.byAccountIds(accountIds, permissions)
+        List<OBAccount2> accounts = frAccountRepository.byAccountIds(accountIds, toFRExternalPermissionsCodeList(permissions))
                 .stream()
                 .map(FRAccount::getAccount)
                 .map(FRFinancialAccountConverter::toOBAccount2)

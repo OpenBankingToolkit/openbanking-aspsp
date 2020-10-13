@@ -47,6 +47,7 @@ import uk.org.openbanking.datamodel.account.OBStandingOrder2;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter.toOBStandingOrder2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -95,7 +96,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
         LOGGER.info("Read standing orders for account {} with minimumPermissions {}",
                 accountId, permissions);
         Page<FRStandingOrder> standingOrdersResponse =
-                frStandingOrderRepository.byAccountIdWithPermissions(accountId, permissions, PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
+                frStandingOrderRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions), PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
         List<OBStandingOrder2> standingOrders = standingOrdersResponse.stream()
                 .map(so -> toOBStandingOrder2(so.getStandingOrder()))
                 .map(so -> accountDataInternalIdFilter.apply(so))
@@ -141,7 +142,7 @@ public class StandingOrdersApiController implements StandingOrdersApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Reading standing orders from account ids {}", accountIds);
-        Page<FRStandingOrder> standingOrdersResponse = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRStandingOrder> standingOrdersResponse = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
         List<OBStandingOrder2> standingOrders = standingOrdersResponse.stream()
                 .map(so -> toOBStandingOrder2(so.getStandingOrder()))

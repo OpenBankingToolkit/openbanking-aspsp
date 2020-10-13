@@ -42,6 +42,7 @@ import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadAccount2;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -84,7 +85,7 @@ public class Accounts2ApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getAccount().get(0).getAccountId()).isEqualTo(account.getAccount().getAccountId());
         assertThat(response.getBody().getData().getAccount().get(0).getCurrency()).isEqualTo(account.getAccount().getCurrency());
-        assertThat(response.getBody().getData().getAccount().get(0).getAccountType()).isEqualTo(account.getAccount().getAccountType());
+        assertThat(response.getBody().getData().getAccount().get(0).getAccountType()).isEqualTo(toOBExternalAccountType1Code(account.getAccount().getAccountType()));
         assertThat(response.getBody().getData().getAccount().get(0).getAccount().get(0).getIdentification()).isEqualTo(account.getAccount().getAccount().get(0).getIdentification());
     }
 

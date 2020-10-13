@@ -23,7 +23,6 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.domesticscheduledpay
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData.FRScheduleType;
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
@@ -45,7 +44,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse1;
 
@@ -208,13 +206,6 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticScheduledResponse1.class);
                         }
                 );
-    }
-
-    // TODO #296 - convert to FRAmount when ScheduledPaymentService is using FR equivalent of OBScheduledPayment3
-    public static OBActiveOrHistoricCurrencyAndAmount1 toOBActiveOrHistoricCurrencyAndAmount1(FRAmount amount) {
-        return amount == null ? null : new OBActiveOrHistoricCurrencyAndAmount1()
-                .currency(amount.getCurrency())
-                .amount(amount.getAmount());
     }
 
 }

@@ -40,6 +40,8 @@ import uk.org.openbanking.datamodel.account.OBReadBeneficiary4Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+
 @Controller("BeneficiariesApiV3.1.3")
 @Slf4j
 public class BeneficiariesApiController implements BeneficiariesApi {
@@ -70,7 +72,8 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                                                                       String httpUrl) throws OBErrorResponseException {
         log.info("Read beneficiaries for account {} with minimumPermissions {}", accountId, permissions);
 
-        Page<FRBeneficiary> beneficiaries = FRBeneficiaryRepository.byAccountIdWithPermissions(accountId, permissions, PageRequest.of(page, pageLimitBeneficiaries));
+        Page<FRBeneficiary> beneficiaries = FRBeneficiaryRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitBeneficiaries));
         return packageResponse(page, httpUrl, beneficiaries);
     }
 
@@ -86,7 +89,8 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                                                                String httpUrl) throws OBErrorResponseException {
         log.info("Beneficaries from account ids {}", accountIds);
 
-        Page<FRBeneficiary> beneficiaries = FRBeneficiaryRepository.byAccountIdInWithPermissions(accountIds, permissions, PageRequest.of(page, pageLimitBeneficiaries));
+        Page<FRBeneficiary> beneficiaries = FRBeneficiaryRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitBeneficiaries));
         return packageResponse(page, httpUrl, beneficiaries);
     }
 

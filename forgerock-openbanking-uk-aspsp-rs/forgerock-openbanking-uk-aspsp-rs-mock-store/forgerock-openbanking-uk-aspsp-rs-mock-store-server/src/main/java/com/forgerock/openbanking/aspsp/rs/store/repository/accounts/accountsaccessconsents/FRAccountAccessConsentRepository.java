@@ -20,10 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accountsaccessconsents;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
 
 import java.util.Collection;
 import java.util.List;
@@ -34,6 +34,5 @@ public interface FRAccountAccessConsentRepository extends MongoRepository<FRAcco
     Optional<FRAccountAccessConsent> findByConsentId(@Param("consentId") String consentId);
     Collection<FRAccountAccessConsent> findByUserId(@Param("userId") String userId);
     Collection<FRAccountAccessConsent> findByUserIdAndClientId(@Param("userId") String userId, @Param("clientId") String clientId);
-    // TODO #296 - use FR domain equivalent of OBExternalRequestStatus1Code?
-    Collection<FRAccountAccessConsent> findByUserIdAndAccountAccessConsentDataStatusIn(@Param("userId") String userId, @Param("statuses") List<OBExternalRequestStatus1Code> status);
+    Collection<FRAccountAccessConsent> findByUserIdAndAccountAccessConsentDataStatusIn(@Param("userId") String userId, @Param("statuses") List<FRExternalRequestStatusCode> status);
 }

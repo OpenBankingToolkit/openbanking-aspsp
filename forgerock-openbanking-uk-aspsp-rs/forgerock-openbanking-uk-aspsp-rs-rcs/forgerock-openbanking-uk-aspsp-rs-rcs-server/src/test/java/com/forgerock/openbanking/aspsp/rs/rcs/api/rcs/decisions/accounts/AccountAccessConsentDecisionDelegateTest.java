@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadConsentResponse;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadConsentResponseData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
@@ -31,7 +32,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
 
 import java.util.Objects;
 
@@ -83,7 +83,7 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
 
         // Then
         assertThat(consent.getAccountIds().get(0)).isEqualTo(ACCOUNT_ID);
-        assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AUTHORISED);
+        assertThat(consent.getStatus()).isEqualTo(FRExternalRequestStatusCode.AUTHORISED);
         verify(accountRequestStoreService, times(1)).save(any());
     }
     @Test
@@ -93,7 +93,7 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
 
         // Then
         assertThat(consent.getAccountIds()).isEmpty();
-        assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.REJECTED);
+        assertThat(consent.getStatus()).isEqualTo(FRExternalRequestStatusCode.REJECTED);
         verify(accountRequestStoreService, times(1)).save(any());
     }
 
@@ -140,7 +140,7 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
 
         // Then
         assertThat(consent.getAccountIds().get(0)).isEqualTo(ACCOUNT_ID);
-        assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AUTHORISED);
+        assertThat(consent.getStatus()).isEqualTo(FRExternalRequestStatusCode.AUTHORISED);
         verify(accountRequestStoreService, times(1)).save(any());
     }
 

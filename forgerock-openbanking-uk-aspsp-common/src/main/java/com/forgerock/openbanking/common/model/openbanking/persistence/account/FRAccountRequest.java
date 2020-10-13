@@ -42,7 +42,7 @@ public class FRAccountRequest implements AccountRequest {
     @Id
     @Indexed
     public String id;
-    private FRReadResponse accountRequest; // TODO #296 - fix confusing terminology
+    private FRReadResponse accountRequest; // TODO - fix confusing terminology
     @Indexed
     private String clientId;
     private String aispId;

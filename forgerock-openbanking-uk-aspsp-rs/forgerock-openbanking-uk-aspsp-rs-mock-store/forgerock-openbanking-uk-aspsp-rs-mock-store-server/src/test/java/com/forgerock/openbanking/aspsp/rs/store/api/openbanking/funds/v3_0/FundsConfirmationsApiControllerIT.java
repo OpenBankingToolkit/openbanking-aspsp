@@ -55,6 +55,7 @@ import uk.org.openbanking.datamodel.fund.OBFundsConfirmationData1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -172,7 +173,7 @@ public class FundsConfirmationsApiControllerIT {
         OBFundsConfirmationResponse1 responseBody = response.getBody();
         FRFundsConfirmation submission = fundsConfirmationRepository.findById(response.getBody().getData().getFundsConfirmationId()).get();
         assertThat(submission.getId()).isEqualTo(responseBody.getData().getFundsConfirmationId());
-        assertThat(submission.getFundsConfirmation().getInstructedAmount()).isEqualTo(request.getData().getInstructedAmount());
+        assertThat(toOBActiveOrHistoricCurrencyAndAmount(submission.getFundsConfirmation().getInstructedAmount())).isEqualTo(request.getData().getInstructedAmount());
         assertThat(submission.getFundsConfirmation().getReference()).isEqualTo(request.getData().getReference());
         assertThat(submission.isFundsAvailable()).isEqualTo(true);
     }

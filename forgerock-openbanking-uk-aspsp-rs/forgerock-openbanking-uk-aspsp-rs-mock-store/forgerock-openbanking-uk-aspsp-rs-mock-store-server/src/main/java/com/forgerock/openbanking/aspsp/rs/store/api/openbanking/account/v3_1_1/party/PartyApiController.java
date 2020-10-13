@@ -27,7 +27,6 @@ import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -43,14 +42,19 @@ import uk.org.openbanking.datamodel.account.OBReadParty3Data;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter.toOBParty2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("PartyApiV3.1.1")
 @Slf4j
 public class PartyApiController implements PartyApi {
-    @Autowired
-    private FRPartyRepository frPartyRepository;
+
+    private final FRPartyRepository frPartyRepository;
+
+    public PartyApiController(FRPartyRepository frPartyRepository) {
+        this.frPartyRepository = frPartyRepository;
+    }
 
     @Override
     public ResponseEntity<OBReadParty2> getAccountParty(
@@ -86,7 +90,7 @@ public class PartyApiController implements PartyApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Read party for account {} with minimumPermissions {}", accountId, permissions);
-        FRParty party = frPartyRepository.byAccountIdWithPermissions(accountId, permissions);
+        FRParty party = frPartyRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions));
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadParty2()
@@ -133,14 +137,14 @@ public class PartyApiController implements PartyApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Read party for account {} with minimumPermissions {}", accountId, permissions);
-        FRParty accountParty = frPartyRepository.byAccountIdWithPermissions(accountId, permissions);
+        FRParty accountParty = frPartyRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions));
         List<OBParty2> parties = new ArrayList<>();
         if (accountParty != null) {
             log.debug("Found account party '{}' for id: {}", accountId, accountId);
             parties.add(toOBParty2(accountParty.getParty()));
         }
 
-        FRParty userParty = frPartyRepository.byUserIdWithPermissions(userId, permissions);
+        FRParty userParty = frPartyRepository.byUserIdWithPermissions(userId, toFRExternalPermissionsCodeList(permissions));
         if (userParty != null) {
             log.debug("Found user party '{}' for id: {}", userParty, userId);
             parties.add(toOBParty2(userParty.getParty()));
@@ -186,7 +190,7 @@ public class PartyApiController implements PartyApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Reading party from user id {}", userId);
-        FRParty party = frPartyRepository.byUserIdWithPermissions(userId, permissions);
+        FRParty party = frPartyRepository.byUserIdWithPermissions(userId, toFRExternalPermissionsCodeList(permissions));
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadParty2()

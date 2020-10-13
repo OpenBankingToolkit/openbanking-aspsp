@@ -24,7 +24,7 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.account.FR
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.query.Param;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
@@ -32,9 +32,9 @@ public interface FRStandingOrderRepositoryCustom {
 
     Page<FRStandingOrder> byAccountIdWithPermissions(
             @Param("accountId") String accountId,
-            @Param("permission") List<OBExternalPermissions1Code> permissions,
+            @Param("permission") List<FRExternalPermissionsCode> permissions,
             Pageable pageable);
 
-    Page<FRStandingOrder> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable);
+    Page<FRStandingOrder> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode> permissions, Pageable pageable);
 
 }

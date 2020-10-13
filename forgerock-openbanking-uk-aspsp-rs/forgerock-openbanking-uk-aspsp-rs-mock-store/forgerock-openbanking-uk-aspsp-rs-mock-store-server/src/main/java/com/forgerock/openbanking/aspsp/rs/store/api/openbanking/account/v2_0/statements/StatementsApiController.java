@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.FROM_STATEMENT_DATE_TIME;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.TO_STATEMENT_DATE_TIME;
@@ -83,32 +84,32 @@ public class StatementsApiController implements StatementsApi {
 
     @Override
     public ResponseEntity<OBReadStatement1> getAccountStatement(
-            @ApiParam(value = "A unique identifier used to identify the account resource.",required=true)
+            @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
             @PathVariable("AccountId") String accountId,
 
-            @ApiParam(value = "A unique identifier used to identify the statement resource.",required=true)
+            @ApiParam(value = "A unique identifier used to identify the statement resource.", required = true)
             @PathVariable("StatementId") String statementId,
 
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
-            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
-                    "Sun, 10 Sep 2017 19:43:31 UTC" )
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+                    "Sun, 10 Sep 2017 19:43:31 UTC")
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
-            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
 
-            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
-            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
@@ -118,7 +119,7 @@ public class StatementsApiController implements StatementsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         LOGGER.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
-        List<FRStatement> statements = frStatementRepository.byAccountIdAndStatementIdWithPermissions(accountId, statementId, permissions);
+        List<FRStatement> statements = frStatementRepository.byAccountIdAndStatementIdWithPermissions(accountId, statementId, toFRExternalPermissionsCodeList(permissions));
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadStatement1().data(new OBReadStatement1Data().statement(
@@ -134,36 +135,35 @@ public class StatementsApiController implements StatementsApi {
 
     @Override
     public ResponseEntity<Resource> getAccountStatementFile(
-            @ApiParam(value = "A unique identifier used to identify the account resource.",required=true)
+            @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
             @PathVariable("AccountId") String accountId,
 
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
 
-            @ApiParam(value = "A unique identifier used to identify the statement resource.",required=true)
+            @ApiParam(value = "A unique identifier used to identify the statement resource.", required = true)
             @PathVariable("StatementId") String statementId,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
-            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP. " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below: " +
-                    " Sun, 10 Sep 2017 19:43:31 UTC" )
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+                    " Sun, 10 Sep 2017 19:43:31 UTC")
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
-            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
 
-            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
-            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
-            @ApiParam(value = "HTTP accept header. Statements only implemented for certain media types.", required=true)
-            @RequestHeader(value="Accept", required=true) String accept)
-    {
+            @ApiParam(value = "HTTP accept header. Statements only implemented for certain media types.", required = true)
+            @RequestHeader(value = "Accept", required = true) String accept) {
 
         log.info("Received a statement file download request for account: {} (Accept: {}). Interaction Id: {}", accountId, accept, xFapiInteractionId);
         if (!accept.contains(MediaType.APPLICATION_PDF_VALUE)) {
@@ -195,8 +195,8 @@ public class StatementsApiController implements StatementsApi {
 
     @Override
     public ResponseEntity<OBReadStatement1> getStatements(
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
-            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -209,20 +209,20 @@ public class StatementsApiController implements StatementsApi {
                     "- set to 00:00:00 for just Date.   The parameter must NOT have a timezone set")
             @RequestParam(value = TO_STATEMENT_DATE_TIME, required = false) DateTime toStatementDateTime,
 
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP. " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
-                    "Sun, 10 Sep 2017 19:43:31 UTC" )
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+                    "Sun, 10 Sep 2017 19:43:31 UTC")
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
-            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
 
-            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
-            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
@@ -254,17 +254,17 @@ public class StatementsApiController implements StatementsApi {
 
     @Override
     public ResponseEntity<OBReadStatement1> getAccountStatements(
-            @ApiParam(value = "A unique identifier used to identify the account resource.",required=true)
+            @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
             @PathVariable("AccountId") String accountId,
 
             @ApiParam(value = "Page number.", required = false, defaultValue = "0")
             @RequestParam(value = "page", defaultValue = "0") int page,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.",required=true)
-            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The UTC ISO 8601 Date Time to filter statements FROM  NB Time component is optional " +
                     "- set to 00:00:00 for just Date.   The parameter must NOT have a timezone set")
@@ -278,15 +278,15 @@ public class StatementsApiController implements StatementsApi {
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP. " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
-                    "Sun, 10 Sep 2017 19:43:31 UTC" )
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+                    "Sun, 10 Sep 2017 19:43:31 UTC")
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
-            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
 
-            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
-            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
@@ -298,9 +298,9 @@ public class StatementsApiController implements StatementsApi {
 
         LOGGER.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
         Page<FRStatement> statements = frStatementRepository.byAccountIdWithPermissions(accountId,
-                        fromStatementDateTime, toStatementDateTime,
-                        permissions,
-                        PageRequest.of(page, PAGE_LIMIT_STATEMENTS, Sort.Direction.ASC, "startDateTime"));
+                fromStatementDateTime, toStatementDateTime,
+                toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, PAGE_LIMIT_STATEMENTS, Sort.Direction.ASC, "startDateTime"));
 
         int totalPages = statements.getTotalPages();
 

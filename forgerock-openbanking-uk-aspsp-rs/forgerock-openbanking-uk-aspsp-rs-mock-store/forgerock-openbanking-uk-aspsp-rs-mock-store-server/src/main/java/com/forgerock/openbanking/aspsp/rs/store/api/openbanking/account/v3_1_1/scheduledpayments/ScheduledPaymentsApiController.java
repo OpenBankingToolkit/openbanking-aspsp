@@ -46,6 +46,7 @@ import uk.org.openbanking.datamodel.account.OBReadScheduledPayment2Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("ScheduledPaymentsApiV3.1.1")
@@ -93,7 +94,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
     ) throws OBErrorResponseException {
 
         log.info("Read scheduled payments for account {} with minimumPermissions {}", accountId, permissions);
-        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdWithPermissions(accountId, permissions,
+        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_SCHEDULE_PAYMENTS));
         int totalPages = scheduledPayments.getTotalPages();
 
@@ -146,7 +147,7 @@ public class ScheduledPaymentsApiController implements ScheduledPaymentsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Reading schedule payment from account ids {}", accountIds);
-        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRScheduledPayment> scheduledPayments = frScheduledPaymentRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_SCHEDULE_PAYMENTS));
         int totalPages = scheduledPayments.getTotalPages();
 

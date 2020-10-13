@@ -23,11 +23,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.ac
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -41,20 +39,22 @@ import uk.org.openbanking.datamodel.account.OBReadDataAccount1;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static java.util.stream.Collectors.toList;
 
 @Controller("AccountsApiV1.1")
 public class AccountsApiController implements AccountsApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountsApiController.class);
 
-    @Autowired
-    private FRAccountRepository frAccountRepository;
-    @Autowired
-    private FRFinancialAccountConverter accountConverter;
+    private final FRAccountRepository frAccountRepository;
+
+    public AccountsApiController(FRAccountRepository frAccountRepository) {
+        this.frAccountRepository = frAccountRepository;
+    }
 
     @Override
     public ResponseEntity<OBReadAccount1> getAccount(
@@ -78,7 +78,7 @@ public class AccountsApiController implements AccountsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
 
     ) {
-        FRAccount account = frAccountRepository.byAccountId(accountId, permissions);
+        FRAccount account = frAccountRepository.byAccountId(accountId, toFRExternalPermissionsCodeList(permissions));
 
         return ResponseEntity.ok(new OBReadAccount1()
                 .data(new OBReadDataAccount1().account(Collections.singletonList(toOBAccount1(account.getAccount()))))
@@ -113,10 +113,10 @@ public class AccountsApiController implements AccountsApi {
         LOGGER.info("Read all accounts {} with minimumPermissions {}", accountIds,
                 permissions);
 
-        List<FRAccount> frAccounts = frAccountRepository.byAccountIds(accountIds, permissions);
+        List<FRAccount> frAccounts = frAccountRepository.byAccountIds(accountIds, toFRExternalPermissionsCodeList(permissions));
         List<OBAccount1> accounts = frAccounts.stream()
                 .map(a -> toOBAccount1(a.getAccount()))
-                .collect(Collectors.toList());
+                .collect(toList());
 
         return ResponseEntity.ok(new OBReadAccount1()
                 .data(new OBReadDataAccount1().account(accounts))

@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
@@ -36,17 +36,17 @@ public class FRDirectDebitRepositoryImpl implements FRDirectDebitRepositoryCusto
     private FRDirectDebitRepository directDebitRepository;
 
     @Override
-    public Page<FRDirectDebit> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions,
+    public Page<FRDirectDebit> byAccountIdWithPermissions(String accountId, List<FRExternalPermissionsCode> permissions,
                                                           Pageable pageable) {
         return filter(directDebitRepository.findByAccountId(accountId, pageable), permissions);
     }
 
     @Override
-    public Page<FRDirectDebit> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRDirectDebit> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode> permissions, Pageable pageable) {
         return filter(directDebitRepository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FRDirectDebit> filter(Page<FRDirectDebit> directDebits, List<OBExternalPermissions1Code> permissions) {
+    private Page<FRDirectDebit> filter(Page<FRDirectDebit> directDebits, List<FRExternalPermissionsCode> permissions) {
         return directDebits;
     }
 }

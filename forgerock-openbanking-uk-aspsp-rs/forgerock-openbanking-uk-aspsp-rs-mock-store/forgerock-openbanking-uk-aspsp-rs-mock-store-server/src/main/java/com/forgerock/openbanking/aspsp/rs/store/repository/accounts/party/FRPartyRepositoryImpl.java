@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
@@ -35,25 +35,25 @@ public class FRPartyRepositoryImpl implements FRPartyRepositoryCustom {
     private FRPartyRepository party1Repository;
 
     @Override
-    public FRParty byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions) {
+    public FRParty byAccountIdWithPermissions(String accountId, List<FRExternalPermissionsCode> permissions) {
         return filter(party1Repository.findByAccountId(accountId), permissions);
     }
 
     @Override
-    public FRParty byUserIdWithPermissions(String userId, List<OBExternalPermissions1Code> permissions) {
+    public FRParty byUserIdWithPermissions(String userId, List<FRExternalPermissionsCode> permissions) {
         return filter(party1Repository.findByUserId(userId), permissions);
     }
 
     @Override
-    public Page<FRParty> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FRParty> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode> permissions, Pageable pageable) {
         return filter(party1Repository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FRParty> filter(Page<FRParty> parties, List<OBExternalPermissions1Code> permissions) {
+    private Page<FRParty> filter(Page<FRParty> parties, List<FRExternalPermissionsCode> permissions) {
         return parties;
     }
 
-    private FRParty filter(FRParty party, List<OBExternalPermissions1Code> permissions) {
+    private FRParty filter(FRParty party, List<FRExternalPermissionsCode> permissions) {
         return party;
     }
 }

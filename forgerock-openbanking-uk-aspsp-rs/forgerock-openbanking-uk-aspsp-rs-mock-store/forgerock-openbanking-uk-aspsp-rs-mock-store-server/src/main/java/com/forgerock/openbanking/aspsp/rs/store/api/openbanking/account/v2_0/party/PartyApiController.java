@@ -40,6 +40,7 @@ import uk.org.openbanking.datamodel.account.OBReadParty1Data;
 
 import java.util.List;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter.toOBParty1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
@@ -86,7 +87,7 @@ public class PartyApiController implements PartyApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Read party for account {} with minimumPermissions {}", accountId, permissions);
-        FRParty party = frPartyRepository.byAccountIdWithPermissions(accountId, permissions);
+        FRParty party = frPartyRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions));
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadParty1().data(new OBReadParty1Data().party(
@@ -129,7 +130,7 @@ public class PartyApiController implements PartyApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Reading party from user id {}", userId);
-        FRParty party = frPartyRepository.byUserIdWithPermissions(userId, permissions);
+        FRParty party = frPartyRepository.byUserIdWithPermissions(userId, toFRExternalPermissionsCodeList(permissions));
         int totalPages = 1;
 
         return ResponseEntity.ok(new OBReadParty1().data(new OBReadParty1Data().party(

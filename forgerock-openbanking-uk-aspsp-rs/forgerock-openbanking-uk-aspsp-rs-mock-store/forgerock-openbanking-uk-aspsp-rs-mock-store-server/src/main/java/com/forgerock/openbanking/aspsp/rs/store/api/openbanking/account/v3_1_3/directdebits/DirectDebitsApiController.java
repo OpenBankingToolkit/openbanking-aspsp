@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
 @Controller("DirectDebitsApiV3.1.3")
 @Slf4j
@@ -71,7 +72,8 @@ public class DirectDebitsApiController implements DirectDebitsApi {
                                                                      String httpUrl) throws OBErrorResponseException {
         log.info("Read direct debits for account  {} with minimumPermissions {}", accountId, permissions);
 
-        Page<FRDirectDebit> directDebits = frDirectDebitRepository.byAccountIdWithPermissions(accountId, permissions, PageRequest.of(page, pageLimitDirectDebits));
+        Page<FRDirectDebit> directDebits = frDirectDebitRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitDirectDebits));
         return packageResponse(page, httpUrl, directDebits);
     }
 
@@ -87,7 +89,8 @@ public class DirectDebitsApiController implements DirectDebitsApi {
                                                               String httpUrl) throws OBErrorResponseException {
         log.info("DirectDebits fron account ids {} ", accountIds);
 
-        Page<FRDirectDebit> directDebits = frDirectDebitRepository.byAccountIdInWithPermissions(accountIds, permissions, PageRequest.of(page, pageLimitDirectDebits));
+        Page<FRDirectDebit> directDebits = frDirectDebitRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, pageLimitDirectDebits));
         return packageResponse(page, httpUrl, directDebits);
     }
 

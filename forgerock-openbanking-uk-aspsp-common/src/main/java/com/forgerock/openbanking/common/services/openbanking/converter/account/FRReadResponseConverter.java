@@ -22,19 +22,16 @@ package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadDataResponse;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadResponse;
-import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
-import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
 import uk.org.openbanking.datamodel.account.OBReadDataResponse1;
 import uk.org.openbanking.datamodel.account.OBReadResponse1;
 import uk.org.openbanking.datamodel.account.OBRisk2;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountRiskConverter.toFRAccountRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountRiskConverter.toOBRisk2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toOBExternalPermissions1CodeList;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalRequestStatusCodeConverter.toFRExternalRequestStatusCode;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalRequestStatusCodeConverter.toOBExternalRequestStatus1Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRLinksConverter.toFRLinks;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRLinksConverter.toLinks;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRMetaConverter.toFRMeta;
@@ -64,23 +61,6 @@ public class FRReadResponseConverter {
                 .build();
     }
 
-    // TODO #296 - move to it's own converter
-    public static List<FRExternalPermissionsCode> toFRExternalPermissionsCodeList(List<OBExternalPermissions1Code> permissions) {
-        return permissions == null ? null : permissions.stream()
-                .map(p -> toFRExternalPermissionsCode(p))
-                .collect(Collectors.toList());
-    }
-
-    // TODO #296 - move to it's own converter
-    public static FRExternalPermissionsCode toFRExternalPermissionsCode(OBExternalPermissions1Code permission) {
-        return permission == null ? null : FRExternalPermissionsCode.valueOf(permission.name());
-    }
-
-    // TODO #296 - move to it's own converter?
-    public static FRExternalRequestStatusCode toFRExternalRequestStatusCode(OBExternalRequestStatus1Code status) {
-        return status == null ? null : FRExternalRequestStatusCode.valueOf(status.name());
-    }
-
     // FR to OB
     public static OBReadResponse1 toOBReadResponse1(FRReadResponse response) {
         return response == null ? null : new OBReadResponse1()
@@ -99,22 +79,5 @@ public class FRReadResponseConverter {
                 .expirationDateTime(data.getExpirationDateTime())
                 .transactionFromDateTime(data.getTransactionFromDateTime())
                 .transactionToDateTime(data.getTransactionToDateTime());
-    }
-
-    // TODO #296 - move to it's own converter
-    public static List<OBExternalPermissions1Code> toOBExternalPermissions1CodeList(List<FRExternalPermissionsCode> permissions) {
-        return permissions == null ? null : permissions.stream()
-                .map(p -> toOBExternalPermissions1Code(p))
-                .collect(Collectors.toList());
-    }
-
-    // TODO #296 - move to it's own converter
-    public static OBExternalPermissions1Code toOBExternalPermissions1Code(FRExternalPermissionsCode permission) {
-        return permission == null ? null : OBExternalPermissions1Code.valueOf(permission.name());
-    }
-
-    // TODO #296 - move to it's own converter
-    public static OBExternalRequestStatus1Code toOBExternalRequestStatus1Code(FRExternalRequestStatusCode status) {
-        return status == null ? null : OBExternalRequestStatus1Code.valueOf(status.name());
     }
 }

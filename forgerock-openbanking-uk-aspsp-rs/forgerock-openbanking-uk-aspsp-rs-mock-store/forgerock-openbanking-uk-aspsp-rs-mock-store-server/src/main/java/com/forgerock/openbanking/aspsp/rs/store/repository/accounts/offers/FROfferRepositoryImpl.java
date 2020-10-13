@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 
 import java.util.List;
 
@@ -39,16 +39,16 @@ public class FROfferRepositoryImpl implements FROfferRepositoryCustom {
     private FROfferRepository offer1Repository;
 
     @Override
-    public Page<FROffer> byAccountIdWithPermissions(String accountId, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FROffer> byAccountIdWithPermissions(String accountId, List<FRExternalPermissionsCode> permissions, Pageable pageable) {
         return filter(offer1Repository.findByAccountId(accountId, pageable), permissions);
     }
 
     @Override
-    public Page<FROffer> byAccountIdInWithPermissions(List<String> accountIds, List<OBExternalPermissions1Code> permissions, Pageable pageable) {
+    public Page<FROffer> byAccountIdInWithPermissions(List<String> accountIds, List<FRExternalPermissionsCode> permissions, Pageable pageable) {
         return filter(offer1Repository.findByAccountIdIn(accountIds, pageable), permissions);
     }
 
-    private Page<FROffer> filter(Page<FROffer> offers, List<OBExternalPermissions1Code> permissions) {
+    private Page<FROffer> filter(Page<FROffer> offers, List<FRExternalPermissionsCode> permissions) {
         return offers;
     }
 }

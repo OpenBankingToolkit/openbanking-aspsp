@@ -48,6 +48,7 @@ import uk.org.openbanking.datamodel.account.OBTransaction1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRTransactionConverter.toOBTransaction1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.AVAILABLE_DATE_FORMAT;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
@@ -117,7 +118,7 @@ public class TransactionsApiController implements TransactionsApi {
                 accountId,
                 fromBookingDateTime,
                 toBookingDateTime,
-                permissions,
+                toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime" ));
 
         List<OBTransaction1> transactions = transactionsResponse.getContent()
@@ -197,7 +198,7 @@ public class TransactionsApiController implements TransactionsApi {
                 accountIds,
                 fromBookingDateTime,
                 toBookingDateTime,
-                permissions,
+                toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction1> transactions = transactionsResponse.getContent()

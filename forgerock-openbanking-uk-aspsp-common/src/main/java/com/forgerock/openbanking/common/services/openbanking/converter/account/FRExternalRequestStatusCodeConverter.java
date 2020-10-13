@@ -18,17 +18,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_2.party;
+package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
+import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
 
-@Controller("PartyApiV3.1.2")
-@Slf4j
-public class PartyApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.party.PartyApiController implements PartyApi {
+public class FRExternalRequestStatusCodeConverter {
 
-    public PartyApiController(FRPartyRepository frPartyRepository) {
-        super(frPartyRepository);
+    public static FRExternalRequestStatusCode toFRExternalRequestStatusCode(OBExternalRequestStatus1Code status) {
+        return status == null ? null : FRExternalRequestStatusCode.valueOf(status.name());
+    }
+
+    public static OBExternalRequestStatus1Code toOBExternalRequestStatus1Code(FRExternalRequestStatusCode status) {
+        return status == null ? null : OBExternalRequestStatus1Code.valueOf(status.name());
     }
 }

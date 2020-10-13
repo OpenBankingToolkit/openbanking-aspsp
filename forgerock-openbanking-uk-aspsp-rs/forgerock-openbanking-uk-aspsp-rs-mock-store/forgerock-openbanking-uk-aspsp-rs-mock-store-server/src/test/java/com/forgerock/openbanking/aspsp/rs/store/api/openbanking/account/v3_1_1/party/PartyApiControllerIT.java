@@ -43,6 +43,7 @@ import uk.org.openbanking.datamodel.account.OBReadParty3;
 
 import java.util.UUID;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter.toOBParty2;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -95,8 +96,8 @@ public class PartyApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getParty().size()).isEqualTo(2);
-        assertThat(response.getBody().getData().getParty().get(0)).isEqualTo(accountParty.getParty());
-        assertThat(response.getBody().getData().getParty().get(1)).isEqualTo(userParty.getParty());
+        assertThat(response.getBody().getData().getParty().get(0)).isEqualTo(toOBParty2(accountParty.getParty()));
+        assertThat(response.getBody().getData().getParty().get(1)).isEqualTo(toOBParty2(userParty.getParty()));
     }
 
     @Test
@@ -114,7 +115,7 @@ public class PartyApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getBody().getData().getParty()).isEqualTo(accountParty.getParty());
+        assertThat(response.getBody().getData().getParty()).isEqualTo(toOBParty2(accountParty.getParty()));
     }
 
     @Test
@@ -140,6 +141,6 @@ public class PartyApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getBody().getData().getParty()).isEqualTo(userParty.getParty());
+        assertThat(response.getBody().getData().getParty()).isEqualTo(toOBParty2(userParty.getParty()));
     }
 }

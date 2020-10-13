@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRCashBalance;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
@@ -33,7 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -100,7 +100,7 @@ public class AccountsApiController implements AccountsApi {
         log.debug("Read account {} with permissions: {}", accountId, permissions);
         return new ResponseEntity<>(accountsRepository.byAccountId(accountId,
                 permissions.stream()
-                        .map(OBExternalPermissions1Code::fromValue)
+                        .map(FRExternalPermissionsCode::fromValue)
                         .collect(Collectors.toList())),
                 HttpStatus.OK);
     }
