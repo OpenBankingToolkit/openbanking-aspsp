@@ -18,15 +18,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.api.helper;
+package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 
 import java.util.function.Predicate;
 
+/**
+ * Helper class for the OB Events API.
+ */
 public class EventsHelper {
 
+    /**
+     * Provides a {@link Predicate} which filters {@link FRCallbackUrl} that match the desired {@link OBVersion}.
+     *
+     * @param version the desired {@link OBVersion} to match against.
+     * @return the resulting {@link Predicate}.
+     */
     public static Predicate<FRCallbackUrl> matchingVersion(OBVersion version){
         return frCallbackUrl -> frCallbackUrl.callbackUrl.getVersion().equals(version.getCanonicalVersion());
     }
