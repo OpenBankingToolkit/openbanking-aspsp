@@ -41,7 +41,7 @@ public class FRFinancialAccountConverter {
                 .accountId(account.getAccountId())
                 .currency(account.getCurrency())
                 .nickname(account.getNickname())
-                .account(toOBCashAccount1(account.getAccount().get(0)))
+                .account(toOBCashAccount1(account.getAccounts().get(0)))
                 .servicer(toOBBranchAndFinancialInstitutionIdentification2(account.getServicer()));
     }
 
@@ -53,7 +53,7 @@ public class FRFinancialAccountConverter {
                 .accountSubType(toOBExternalAccountSubType1Code(account.getAccountSubType()))
                 .description(account.getDescription())
                 .nickname(account.getNickname())
-                .account(toOBCashAccount3List(account.getAccount()))
+                .account(toOBCashAccount3List(account.getAccounts()))
                 .servicer(toOBBranchAndFinancialInstitutionIdentification4(account.getServicer()));
 
     }
@@ -66,7 +66,7 @@ public class FRFinancialAccountConverter {
                 .accountSubType(toOBExternalAccountSubType1Code(account.getAccountSubType()))
                 .description(account.getDescription())
                 .nickname(account.getNickname())
-                .account(toOBCashAccount5List(account.getAccount()))
+                .account(toOBCashAccount5List(account.getAccounts()))
                 .servicer(toOBBranchAndFinancialInstitutionIdentification5(account.getServicer()));
     }
 
@@ -82,7 +82,7 @@ public class FRFinancialAccountConverter {
                 .nickname(account.getNickname())
                 .openingDate(account.getOpeningDate())
                 .maturityDate(account.getMaturityDate())
-                .account(toOBAccount3AccountList(account.getAccount()))
+                .account(toOBAccount3AccountList(account.getAccounts()))
                 .servicer(toOBBranchAndFinancialInstitutionIdentification50(account.getServicer()));
     }
 

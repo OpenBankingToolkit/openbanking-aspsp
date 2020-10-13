@@ -62,6 +62,7 @@ import static com.forgerock.openbanking.common.model.openbanking.persistence.pay
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalConsent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
@@ -189,7 +190,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                         .status(toOBWriteInternationalConsentResponse6DataStatus(internationalConsent.getStatus()))
                         .creationDateTime(internationalConsent.getCreated())
                         .statusUpdateDateTime(internationalConsent.getStatusUpdate())
-                        .exchangeRateInformation(internationalConsent.getCalculatedExchangeRate())
+                        .exchangeRateInformation(toOBWriteInternationalConsentResponse6DataExchangeRateInformation(internationalConsent.getCalculatedExchangeRate()))
                         .consentId(internationalConsent.getId())
                         .authorisation(toOBWriteDomesticConsent4DataAuthorisation(internationalConsent.getInternationalConsent().getData().getAuthorisation()))
                         .debtor(toOBDebtorIdentification1(internationalConsent.getInitiation().getDebtorAccount()))

@@ -55,21 +55,22 @@ public class FRStatementData {
     private DateTime startDateTime;
     private DateTime endDateTime;
     private DateTime creationDateTime;
-    private List<String> statementDescription;
-    private List<FRStatementBenefit> statementBenefit;
-    private List<FRStatementFee> statementFee;
-    private List<FRStatementInterest> statementInterest;
-    private List<FRStatementDateTime> statementDateTime;
-    private List<FRStatementRate> statementRate;
-    private List<FRStatementValue> statementValue;
-    private List<FRStatementAmount> statementAmount;
+    private List<String> statementDescriptions;
+    private List<FRStatementBenefit> statementBenefits;
+    private List<FRStatementFee> statementFees;
+    private List<FRStatementInterest> statementInterests;
+    private List<FRStatementDateTime> statementDateTimes;
+    private List<FRStatementRate> statementRates;
+    private List<FRStatementValue> statementValues;
+    private List<FRStatementAmount> statementAmounts;
 
     public void addStatementAmount(FRStatementAmount statementAmount) {
-        if (this.statementAmount == null) {
-            this.statementAmount = new ArrayList();
+        if (statementAmounts == null) {
+            statementAmounts = new ArrayList();
+        } else {
+            statementAmounts = new ArrayList<>(statementAmounts); // ensure list is mutable
         }
-
-        this.statementAmount.add(statementAmount);
+        statementAmounts.add(statementAmount);
     }
 
     public enum FRStatementType {

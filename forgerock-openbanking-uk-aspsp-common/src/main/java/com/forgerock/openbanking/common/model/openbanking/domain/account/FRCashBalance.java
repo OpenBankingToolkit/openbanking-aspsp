@@ -51,5 +51,5 @@ public class FRCashBalance {
     private FRBalanceType type;
     private DateTime dateTime;
     private FRAmount amount;
-    private List<FRCreditLine> creditLine;
+    private List<FRCreditLine> creditLines;
 }

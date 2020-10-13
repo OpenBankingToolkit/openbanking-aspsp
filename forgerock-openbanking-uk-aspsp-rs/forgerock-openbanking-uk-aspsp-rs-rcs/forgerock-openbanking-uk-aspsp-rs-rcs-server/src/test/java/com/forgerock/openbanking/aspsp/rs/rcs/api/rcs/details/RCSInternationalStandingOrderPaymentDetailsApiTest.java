@@ -83,7 +83,7 @@ public class RCSInternationalStandingOrderPaymentDetailsApiTest {
         // Given
         List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
         FRInternationalStandingOrderConsent consent = JMockData.mock(FRInternationalStandingOrderConsent.class);
-        FRAccountIdentifier firstAccount = accounts.get(0).getAccount().getAccount().get(0);
+        FRAccountIdentifier firstAccount = accounts.get(0).getAccount().getAccounts().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";

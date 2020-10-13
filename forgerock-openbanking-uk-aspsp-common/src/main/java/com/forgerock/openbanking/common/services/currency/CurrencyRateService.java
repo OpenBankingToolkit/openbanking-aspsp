@@ -24,7 +24,6 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4DataExchangeRateInformation;
 
 import java.math.BigDecimal;
 
@@ -47,25 +46,25 @@ public final class CurrencyRateService {
      * <p>
      * Provided <code>submittedExchangeRate</code> should already be validated using com.forgerock.openbanking.aspsp.rs.api.payment.verifier.ExchangeRateVerifier
      *
-     * @param submittedExchangeRate The {@link OBWriteInternationalConsentResponse4DataExchangeRateInformation} exchange rate submitted by the user
+     * @param submittedExchangeRate The {@link FRExchangeRateInformation} exchange rate submitted by the user
      * @param createdDateTime       Date request was submitted - used to calculate how long an agreed rate will be valid for.
      * @return Exchange rate with populated fields
      */
-    public static OBWriteInternationalConsentResponse4DataExchangeRateInformation getCalculatedExchangeRate(
-            FRExchangeRateInformation submittedExchangeRate,
-            DateTime createdDateTime) {
+    public static FRExchangeRateInformation getCalculatedExchangeRate(FRExchangeRateInformation submittedExchangeRate,
+                                                                      DateTime createdDateTime) {
         if (submittedExchangeRate == null) {
             return null; // Exchange rate is optional in international payment requests
         }
         if (submittedExchangeRate.getRateType() == null) {
             throw new IllegalArgumentException("Missing the exchange rate type");
         }
-        return (new OBWriteInternationalConsentResponse4DataExchangeRateInformation())
+        return FRExchangeRateInformation.builder()
                 .expirationDateTime(getExpirationDate(submittedExchangeRate, createdDateTime))
-                .rateType(OBWriteInternationalConsentResponse4DataExchangeRateInformation.RateTypeEnum.valueOf(submittedExchangeRate.getRateType().name()))
+                .rateType(submittedExchangeRate.getRateType())
                 .contractIdentification(submittedExchangeRate.getContractIdentification())
                 .exchangeRate(getExchangeRate(submittedExchangeRate))
-                .unitCurrency(submittedExchangeRate.getUnitCurrency());
+                .unitCurrency(submittedExchangeRate.getUnitCurrency())
+                .build();
     }
 
     private static DateTime getExpirationDate(FRExchangeRateInformation submittedRate, DateTime createdDateTime) {

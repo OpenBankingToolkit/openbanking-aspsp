@@ -69,7 +69,7 @@ public class FRStatementRepositoryImpl implements FRStatementRepositoryCustom {
             for (FRStatement statement : statements) {
                 switch (permission) {
                     case READSTATEMENTSBASIC:
-                        statement.getStatement().setStatementAmount(null);
+                        statement.getStatement().setStatementAmounts(null);
                         break;
                 }
             }
@@ -82,7 +82,7 @@ public class FRStatementRepositoryImpl implements FRStatementRepositoryCustom {
             for (FRStatement statement : statements) {
                 switch (permission) {
                     case READSTATEMENTSBASIC:
-                        statement.getStatement().setStatementAmount(null);
+                        statement.getStatement().setStatementAmounts(null);
                         break;
                 }
             }

@@ -136,7 +136,7 @@ public class AcceptDomesticPaymentTask {
                 .amount(amount)
                 .creditDebitIndicator(creditDebitIndicator)
                 .bookingDateTime(bookingDate)
-                .statementReference(new ArrayList<>())
+                .statementReferences(new ArrayList<>())
                 .balance(FRTransactionData.FRTransactionCashBalance.builder()
                         .amount(balance.getCurrencyAndAmount())
                         .creditDebitIndicator(balance.getCreditDebitIndicator())

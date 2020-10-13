@@ -95,7 +95,7 @@ public class Accounts3ApiControllerIT {
         assertThat(returnedAccount.getNickname()).isEqualTo(account.getAccount().getNickname());
         assertThat(returnedAccount.getServicer().getSchemeName()).isEqualTo(account.getAccount().getServicer().getSchemeName());
         assertThat(returnedAccount.getServicer().getIdentification()).isEqualTo(account.getAccount().getServicer().getIdentification());
-        assertThat(returnedAccount.getAccount().get(0).getIdentification()).isEqualTo(account.getAccount().getAccount().get(0).getIdentification());
+        assertThat(returnedAccount.getAccount().get(0).getIdentification()).isEqualTo(account.getAccount().getAccounts().get(0).getIdentification());
     }
 
 }

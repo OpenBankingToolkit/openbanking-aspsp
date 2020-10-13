@@ -40,8 +40,8 @@ public class AccountService {
             return Optional.empty();
         }
         for (AccountWithBalance account : accounts) {
-            if (!CollectionUtils.isEmpty(account.getAccount().getAccount())) {
-                for (FRAccountIdentifier accountIdentifier : account.getAccount().getAccount()) {
+            if (!CollectionUtils.isEmpty(account.getAccount().getAccounts())) {
+                for (FRAccountIdentifier accountIdentifier : account.getAccount().getAccounts()) {
                     if (identification.equals(accountIdentifier.getIdentification())) {
                         log.debug("Found matching user account to provided debtor account. Identification: {}. Account Id: {}", accountIdentifier.getIdentification(),account.getId());
                         return Optional.of(account);

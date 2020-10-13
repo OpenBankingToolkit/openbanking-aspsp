@@ -53,7 +53,7 @@ public class FRTransactionData {
     private String accountId;
     private String transactionId;
     private String transactionReference;
-    private List<String> statementReference;
+    private List<String> statementReferences;
     private FRCreditDebitIndicator creditDebitIndicator;
     private FREntryStatus status;
     private FRTransactionMutability transactionMutability;

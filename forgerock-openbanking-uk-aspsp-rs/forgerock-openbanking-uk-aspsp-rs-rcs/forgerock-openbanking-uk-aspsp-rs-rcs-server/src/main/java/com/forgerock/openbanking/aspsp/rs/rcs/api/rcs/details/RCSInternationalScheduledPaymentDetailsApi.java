@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRExchangeRateInformation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledConsent;
@@ -37,8 +38,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.payment.OBExchangeRate2;
-import uk.org.openbanking.datamodel.payment.OBExchangeRateType2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6DataExchangeRateInformation;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +45,7 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBExchangeRateType2Code;
 
 @Service
 @Slf4j
@@ -108,7 +108,7 @@ public class RCSInternationalScheduledPaymentDetailsApi implements RCSDetailsApi
                 .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
                 .reference(initiation.getRemittanceInformation().getReference());
 
-        final OBWriteInternationalConsentResponse6DataExchangeRateInformation exchangeRateInformation = payment.getCalculatedExchangeRate();
+        FRExchangeRateInformation exchangeRateInformation = payment.getCalculatedExchangeRate();
 
         return ResponseEntity.ok(InternationalSchedulePaymentConsentDetails.builder()
                 .scheduledPayment(obScheduledPayment)
@@ -128,9 +128,5 @@ public class RCSInternationalScheduledPaymentDetailsApi implements RCSDetailsApi
                         .map(FRRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
-    }
-
-    private OBExchangeRateType2Code toOBExchangeRateType2Code(OBWriteInternationalConsentResponse6DataExchangeRateInformation.RateTypeEnum rateType) {
-        return rateType == null ? null : OBExchangeRateType2Code.valueOf(rateType.name());
     }
 }

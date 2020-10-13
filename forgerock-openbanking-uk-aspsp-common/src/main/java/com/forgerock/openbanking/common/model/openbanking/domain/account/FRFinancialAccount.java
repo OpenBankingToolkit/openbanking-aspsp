@@ -56,7 +56,7 @@ public class FRFinancialAccount {
     private String nickname;
     private DateTime openingDate;
     private DateTime maturityDate;
-    private List<FRAccountIdentifier> account;
+    private List<FRAccountIdentifier> accounts;
     private FRAccountServicer servicer;
 
     public enum FRAccountStatusCode {

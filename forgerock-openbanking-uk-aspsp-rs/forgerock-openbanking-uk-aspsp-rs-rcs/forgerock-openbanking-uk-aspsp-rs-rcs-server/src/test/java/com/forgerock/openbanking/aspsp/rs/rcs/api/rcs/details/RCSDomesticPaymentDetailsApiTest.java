@@ -84,7 +84,7 @@ public class RCSDomesticPaymentDetailsApiTest {
         // Given
         List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
         FRDomesticConsent consent = JMockData.mock(FRDomesticConsent.class);
-        FRAccountIdentifier firstAccount = accounts.get(0).getAccount().getAccount().get(0);
+        FRAccountIdentifier firstAccount = accounts.get(0).getAccount().getAccounts().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment(any())).willReturn(consent);
         given(tppStoreService.findById(consent.getPispId())).willReturn(Optional.of(Tpp.builder().clientId(CLIENT_ID).build()));

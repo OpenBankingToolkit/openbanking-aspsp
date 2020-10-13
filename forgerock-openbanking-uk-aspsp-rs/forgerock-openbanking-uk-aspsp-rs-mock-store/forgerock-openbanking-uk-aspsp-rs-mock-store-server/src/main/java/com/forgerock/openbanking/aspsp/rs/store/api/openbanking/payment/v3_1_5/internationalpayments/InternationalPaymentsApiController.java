@@ -56,6 +56,7 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
 
@@ -160,7 +161,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                         .status(toOBWriteInternationalResponse5DataStatus(frInternationalConsent.getStatus()))
                         .consentId(frInternationalConsent.getId())
                         .debtor(toOBDebtorIdentification1(frInternationalConsent.getInitiation().getDebtorAccount()))
-                        .exchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate()))
+                        .exchangeRateInformation(toOBWriteInternationalConsentResponse6DataExchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate())))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalPayment()))
                 .meta(new Meta());
     }

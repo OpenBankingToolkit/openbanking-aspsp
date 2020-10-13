@@ -74,7 +74,7 @@ public class RCSFilePaymentDetailsApiTest {
     private static final AccountWithBalance DEBTOR_ACCOUNT = new AccountWithBalance(FRAccount.builder()
             .id("111")
             .account(FRFinancialAccount.builder()
-                    .account(singletonList(FRAccountIdentifier.builder().identification("123").build()))
+                    .accounts(singletonList(FRAccountIdentifier.builder().identification("123").build()))
                     .build())
             .build(), Collections.EMPTY_LIST);
 

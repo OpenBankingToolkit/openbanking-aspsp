@@ -136,7 +136,7 @@ public class AcceptInternationalPaymentTask {
                 .amount(amount)
                 .creditDebitIndicator(creditDebitCode)
                 .bookingDateTime(bookingDate)
-                .statementReference(new ArrayList<>())
+                .statementReferences(new ArrayList<>())
                 .balance(FRTransactionData.FRTransactionCashBalance.builder()
                         .amount(balance.getCurrencyAndAmount())
                         .creditDebitIndicator(balance.getCreditDebitIndicator())

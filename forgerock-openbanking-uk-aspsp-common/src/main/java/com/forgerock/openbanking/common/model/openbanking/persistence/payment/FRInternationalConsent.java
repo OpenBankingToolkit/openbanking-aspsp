@@ -22,6 +22,7 @@ package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsent;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRExchangeRateInformation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.currency.CurrencyRateService;
@@ -37,12 +38,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse4DataExchangeRateInformation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6DataExchangeRateInformation;
 
 import java.util.Date;
-
-import static com.forgerock.openbanking.common.services.openbanking.converter.OBWriteInternationalExchangeRateInformationConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 
 @Data
 @NoArgsConstructor
@@ -79,11 +76,10 @@ public class FRInternationalConsent implements PaymentConsent, Persistable<Strin
      * user submitted. We could persist the calculated exchange rate separately but currently it is easier just to generate dynamically as the rate it always the same value
      * for testing purposes.
      *
-     * @return {@link OBWriteInternationalConsentResponse6DataExchangeRateInformation} with rate nd expiry date fields populated where appropriate.
+     * @return {@link FRExchangeRateInformation} with rate and expiry date fields populated where appropriate.
      */
-    public OBWriteInternationalConsentResponse6DataExchangeRateInformation getCalculatedExchangeRate() {
-        OBWriteInternationalConsentResponse4DataExchangeRateInformation exchangeRate = CurrencyRateService.getCalculatedExchangeRate(internationalConsent.getData().getInitiation().getExchangeRateInformation(), created);
-        return toOBWriteInternationalConsentResponse6DataExchangeRateInformation(exchangeRate);
+    public FRExchangeRateInformation getCalculatedExchangeRate() {
+        return CurrencyRateService.getCalculatedExchangeRate(internationalConsent.getData().getInitiation().getExchangeRateInformation(), created);
     }
 
     @Override

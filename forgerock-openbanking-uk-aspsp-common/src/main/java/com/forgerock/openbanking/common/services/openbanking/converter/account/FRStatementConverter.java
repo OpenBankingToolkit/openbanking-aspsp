@@ -46,14 +46,14 @@ public class FRStatementConverter {
                 .startDateTime(frStatementData.getStartDateTime())
                 .endDateTime(frStatementData.getEndDateTime())
                 .creationDateTime(frStatementData.getCreationDateTime())
-                .statementDescription(frStatementData.getStatementDescription())
-                .statementBenefit(toOBStatementBenefit1List(frStatementData.getStatementBenefit()))
-                .statementFee(toOBStatementFee1List(frStatementData.getStatementFee()))
-                .statementInterest(toOBStatementInterest1List(frStatementData.getStatementInterest()))
-                .statementDateTime(toOBStatementDateTime1List(frStatementData.getStatementDateTime()))
-                .statementRate(toOBStatementRate1List(frStatementData.getStatementRate()))
-                .statementValue(toOBStatementValue1List(frStatementData.getStatementValue()))
-                .statementAmount(toOBStatementAmount1List(frStatementData.getStatementAmount()));
+                .statementDescription(frStatementData.getStatementDescriptions())
+                .statementBenefit(toOBStatementBenefit1List(frStatementData.getStatementBenefits()))
+                .statementFee(toOBStatementFee1List(frStatementData.getStatementFees()))
+                .statementInterest(toOBStatementInterest1List(frStatementData.getStatementInterests()))
+                .statementDateTime(toOBStatementDateTime1List(frStatementData.getStatementDateTimes()))
+                .statementRate(toOBStatementRate1List(frStatementData.getStatementRates()))
+                .statementValue(toOBStatementValue1List(frStatementData.getStatementValues()))
+                .statementAmount(toOBStatementAmount1List(frStatementData.getStatementAmounts()));
     }
 
     public static OBStatement2 toOBStatement2(FRStatementData frStatementData) {
@@ -65,14 +65,14 @@ public class FRStatementConverter {
                 .startDateTime(frStatementData.getStartDateTime())
                 .endDateTime(frStatementData.getEndDateTime())
                 .creationDateTime(frStatementData.getCreationDateTime())
-                .statementDescription(frStatementData.getStatementDescription())
-                .statementBenefit(toOBStatementBenefit1List(frStatementData.getStatementBenefit()))
-                .statementFee(toOBStatementFee2List(frStatementData.getStatementFee()))
-                .statementInterest(toOBStatementInterest2List(frStatementData.getStatementInterest()))
-                .statementDateTime(toOBStatementDateTime1List(frStatementData.getStatementDateTime()))
-                .statementRate(toOBStatementRate1List(frStatementData.getStatementRate()))
-                .statementValue(toOBStatementValue1List(frStatementData.getStatementValue()))
-                .statementAmount(toOBStatementAmount1List(frStatementData.getStatementAmount()));
+                .statementDescription(frStatementData.getStatementDescriptions())
+                .statementBenefit(toOBStatementBenefit1List(frStatementData.getStatementBenefits()))
+                .statementFee(toOBStatementFee2List(frStatementData.getStatementFees()))
+                .statementInterest(toOBStatementInterest2List(frStatementData.getStatementInterests()))
+                .statementDateTime(toOBStatementDateTime1List(frStatementData.getStatementDateTimes()))
+                .statementRate(toOBStatementRate1List(frStatementData.getStatementRates()))
+                .statementValue(toOBStatementValue1List(frStatementData.getStatementValues()))
+                .statementAmount(toOBStatementAmount1List(frStatementData.getStatementAmounts()));
     }
 
     public static OBExternalStatementType1Code toOBExternalStatementType1Code(FRStatementData.FRStatementType type) {

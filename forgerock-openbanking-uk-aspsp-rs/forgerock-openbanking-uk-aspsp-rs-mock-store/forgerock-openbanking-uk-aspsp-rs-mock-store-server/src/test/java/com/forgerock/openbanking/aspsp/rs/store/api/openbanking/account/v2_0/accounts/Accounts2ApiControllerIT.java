@@ -86,7 +86,7 @@ public class Accounts2ApiControllerIT {
         assertThat(response.getBody().getData().getAccount().get(0).getAccountId()).isEqualTo(account.getAccount().getAccountId());
         assertThat(response.getBody().getData().getAccount().get(0).getCurrency()).isEqualTo(account.getAccount().getCurrency());
         assertThat(response.getBody().getData().getAccount().get(0).getAccountType()).isEqualTo(toOBExternalAccountType1Code(account.getAccount().getAccountType()));
-        assertThat(response.getBody().getData().getAccount().get(0).getAccount().get(0).getIdentification()).isEqualTo(account.getAccount().getAccount().get(0).getIdentification());
+        assertThat(response.getBody().getData().getAccount().get(0).getAccount().get(0).getIdentification()).isEqualTo(account.getAccount().getAccounts().get(0).getIdentification());
     }
 
 }

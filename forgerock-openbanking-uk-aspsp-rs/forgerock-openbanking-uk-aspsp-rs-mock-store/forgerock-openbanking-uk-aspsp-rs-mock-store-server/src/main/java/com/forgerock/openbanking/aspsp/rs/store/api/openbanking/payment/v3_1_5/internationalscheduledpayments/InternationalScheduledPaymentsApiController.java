@@ -57,6 +57,7 @@ import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalScheduledResponse6DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
 
@@ -160,7 +161,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                         .statusUpdateDateTime(frInternationalScheduledConsent.getStatusUpdate())
                         .consentId(frInternationalScheduledConsent.getId())
                         .status(toOBWriteInternationalScheduledResponse6DataStatus(frInternationalScheduledConsent.getStatus()))
-                        .exchangeRateInformation(frInternationalScheduledConsent.getCalculatedExchangeRate())
+                        .exchangeRateInformation(toOBWriteInternationalConsentResponse6DataExchangeRateInformation(frInternationalScheduledConsent.getCalculatedExchangeRate()))
                         .debtor(toOBDebtorIdentification1(initiation.getDebtorAccount()))
                         .expectedExecutionDateTime(initiation.getRequestedExecutionDateTime()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalScheduledPayment()))

@@ -107,12 +107,12 @@ public class FRAccountRepositoryImpl implements FRAccountRepositoryCustom {
             switch (permission) {
 
                 case READACCOUNTSBASIC:
-                    account.getAccount().setAccount(null);
+                    account.getAccount().setAccounts(null);
                     account.getAccount().setServicer(null);
                     break;
                 case READACCOUNTSDETAIL:
-                    if (!CollectionUtils.isEmpty(account.getAccount().getAccount())) {
-                        for (FRAccountIdentifier subAccount : account.getAccount().getAccount()) {
+                    if (!CollectionUtils.isEmpty(account.getAccount().getAccounts())) {
+                        for (FRAccountIdentifier subAccount : account.getAccount().getAccounts()) {
                             if (!permissions.contains(FRExternalPermissionsCode.READPAN)
                                     && OBExternalAccountIdentification3Code.PAN.toString().equals(subAccount.getSchemeName()))
                             {

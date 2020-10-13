@@ -136,8 +136,8 @@ public class DataUpdater {
         if (accountDiff.getNickname() != null) {
             account.getAccount().setNickname(accountDiff.getNickname());
         }
-        if (accountDiff.getAccount() != null) {
-            account.getAccount().setAccount(accountDiff.getAccount());
+        if (accountDiff.getAccounts() != null) {
+            account.getAccount().setAccounts(accountDiff.getAccounts());
         }
         if (accountDiff.getServicer() != null) {
             account.getAccount().setServicer(accountDiff.getServicer());
@@ -182,8 +182,8 @@ public class DataUpdater {
                 if (balanceDiff.getCreditDebitIndicator() != null) {
                     balance.setCreditDebitIndicator(balanceDiff.getCreditDebitIndicator());
                 }
-                if (balanceDiff.getCreditLine() != null) {
-                    balance.setCreditLine(balanceDiff.getCreditLine());
+                if (balanceDiff.getCreditLines() != null) {
+                    balance.setCreditLines(balanceDiff.getCreditLines());
                 }
                 if (balanceDiff.getDateTime() != null) {
                     balance.setDateTime(balanceDiff.getDateTime());
@@ -560,32 +560,32 @@ public class DataUpdater {
                 if (statementDiff.getCreationDateTime() != null) {
                     statement.setCreationDateTime(statementDiff.getCreationDateTime());
                 }
-                if (statementDiff.getStatementAmount() != null) {
-                    statement.setStatementAmount(statementDiff.getStatementAmount());
+                if (statementDiff.getStatementAmounts() != null) {
+                    statement.setStatementAmounts(statementDiff.getStatementAmounts());
                 }
-                if (statementDiff.getStatementBenefit() != null) {
-                    statement.setStatementBenefit(statementDiff.getStatementBenefit());
+                if (statementDiff.getStatementBenefits() != null) {
+                    statement.setStatementBenefits(statementDiff.getStatementBenefits());
                 }
-                if (statementDiff.getStatementDateTime() != null) {
-                    statement.setStatementDateTime(statementDiff.getStatementDateTime());
+                if (statementDiff.getStatementDateTimes() != null) {
+                    statement.setStatementDateTimes(statementDiff.getStatementDateTimes());
                 }
-                if (statementDiff.getStatementDescription() != null) {
-                    statement.setStatementDescription(statementDiff.getStatementDescription());
+                if (statementDiff.getStatementDescriptions() != null) {
+                    statement.setStatementDescriptions(statementDiff.getStatementDescriptions());
                 }
-                if (statementDiff.getStatementFee() != null) {
-                    statement.setStatementFee(statementDiff.getStatementFee());
+                if (statementDiff.getStatementFees() != null) {
+                    statement.setStatementFees(statementDiff.getStatementFees());
                 }
-                if (statementDiff.getStatementInterest() != null) {
-                    statement.setStatementInterest(statementDiff.getStatementInterest());
+                if (statementDiff.getStatementInterests() != null) {
+                    statement.setStatementInterests(statementDiff.getStatementInterests());
                 }
-                if (statementDiff.getStatementRate() != null) {
-                    statement.setStatementRate(statementDiff.getStatementRate());
+                if (statementDiff.getStatementRates() != null) {
+                    statement.setStatementRates(statementDiff.getStatementRates());
                 }
                 if (statementDiff.getStatementReference() != null) {
                     statement.setStatementReference(statementDiff.getStatementReference());
                 }
-                if (statementDiff.getStatementValue() != null) {
-                    statement.setStatementValue(statementDiff.getStatementValue());
+                if (statementDiff.getStatementValues() != null) {
+                    statement.setStatementValues(statementDiff.getStatementValues());
                 }
                 statementsToSave.add(isStatement.get());
             }
