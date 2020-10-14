@@ -26,6 +26,7 @@ import uk.org.openbanking.datamodel.account.OBDirectDebit1;
 import uk.org.openbanking.datamodel.account.OBExternalDirectDebitStatus1Code;
 import uk.org.openbanking.datamodel.account.OBReadDirectDebit2DataDirectDebit;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount0;
 
@@ -61,5 +62,23 @@ public class FRDirectDebitConverter {
 
     public static OBExternalDirectDebitStatus1Code toOBExternalDirectDebitStatus1Code(FRDirectDebitStatus status) {
         return status == null ? null : OBExternalDirectDebitStatus1Code.valueOf(status.name());
+    }
+
+    // OB to FR
+    public static FRDirectDebitData toFRDirectDebitData(OBReadDirectDebit2DataDirectDebit obDirectDebit) {
+        return obDirectDebit == null ? null : FRDirectDebitData.builder()
+                .accountId(obDirectDebit.getAccountId())
+                .directDebitId(obDirectDebit.getDirectDebitId())
+                .mandateIdentification(obDirectDebit.getMandateIdentification())
+                .directDebitStatusCode(toFRDirectDebitStatus(obDirectDebit.getDirectDebitStatusCode()))
+                .name(obDirectDebit.getName())
+                .previousPaymentDateTime(obDirectDebit.getPreviousPaymentDateTime())
+                .frequency(obDirectDebit.getFrequency())
+                .previousPaymentAmount(toFRAmount(obDirectDebit.getPreviousPaymentAmount()))
+                .build();
+    }
+
+    public static FRDirectDebitStatus toFRDirectDebitStatus(OBExternalDirectDebitStatus1Code status) {
+        return status == null ? null : FRDirectDebitStatus.valueOf(status.name());
     }
 }

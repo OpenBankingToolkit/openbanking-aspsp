@@ -41,7 +41,26 @@ public class FRPaymentPostalAddressConverter {
                 .build();
     }
 
+    public static FRPostalAddress toFRPostalAddress(uk.org.openbanking.datamodel.account.OBPostalAddress6 obPostalAddress6) {
+        return obPostalAddress6 == null ? null : FRPostalAddress.builder()
+                .addressType(toFRAddressTypeCode(obPostalAddress6.getAddressType()))
+                .department(obPostalAddress6.getDepartment())
+                .subDepartment(obPostalAddress6.getSubDepartment())
+                .streetName(obPostalAddress6.getStreetName())
+                .buildingNumber(obPostalAddress6.getBuildingNumber())
+                .postCode(obPostalAddress6.getPostCode())
+                .townName(obPostalAddress6.getTownName())
+                .countrySubDivision(obPostalAddress6.getCountrySubDivision())
+                .country(obPostalAddress6.getCountry())
+                .addressLine(obPostalAddress6.getAddressLine())
+                .build();
+    }
+
     public static FRPostalAddress.AddressTypeCode toFRAddressTypeCode(OBAddressTypeCode obAddressTypeCode) {
+        return obAddressTypeCode == null ? null : FRPostalAddress.AddressTypeCode.valueOf(obAddressTypeCode.name());
+    }
+
+    public static FRPostalAddress.AddressTypeCode toFRAddressTypeCode(uk.org.openbanking.datamodel.account.OBAddressTypeCode obAddressTypeCode) {
         return obAddressTypeCode == null ? null : FRPostalAddress.AddressTypeCode.valueOf(obAddressTypeCode.name());
     }
 

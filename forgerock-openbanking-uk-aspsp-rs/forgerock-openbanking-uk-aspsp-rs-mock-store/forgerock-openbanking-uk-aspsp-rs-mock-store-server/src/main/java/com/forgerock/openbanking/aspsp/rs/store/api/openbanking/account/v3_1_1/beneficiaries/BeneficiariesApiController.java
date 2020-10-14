@@ -24,7 +24,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.beneficiarie
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBeneficiary;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRBeneficiaryConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountBeneficiaryConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -100,7 +100,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                 beneficiaries.getContent()
                         .stream()
                         .map(FRBeneficiary::getBeneficiary)
-                        .map(FRBeneficiaryConverter::toOBBeneficiary3)
+                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary3)
                         .map(b -> accountDataInternalIdFilter.apply(b))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
@@ -147,7 +147,7 @@ public class BeneficiariesApiController implements BeneficiariesApi {
                 beneficiaries.getContent()
                         .stream()
                         .map(FRBeneficiary::getBeneficiary)
-                        .map(FRBeneficiaryConverter::toOBBeneficiary3)
+                        .map(FRAccountBeneficiaryConverter::toOBBeneficiary3)
                         .map(b -> accountDataInternalIdFilter.apply(b))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

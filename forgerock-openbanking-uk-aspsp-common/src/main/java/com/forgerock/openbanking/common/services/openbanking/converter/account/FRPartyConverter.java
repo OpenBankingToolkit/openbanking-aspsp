@@ -27,10 +27,12 @@ import uk.org.openbanking.datamodel.account.OBParty2;
 import uk.org.openbanking.datamodel.account.OBPartyRelationships1;
 import uk.org.openbanking.datamodel.account.OBRelationship1;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountPostalAddressConverter.toFRPostalAddressList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountPostalAddressConverter.toOBPostalAddress8List;
 
 public class FRPartyConverter {
 
+    // FR to OB
     public static OBParty1 toOBParty1(FRPartyData party) {
         return party == null ? null : new OBParty1()
                 .partyId(party.getPartyId())
@@ -69,5 +71,35 @@ public class FRPartyConverter {
                 .account(new OBRelationship1()
                         .related(relationship.getRelated())
                         .id(relationship.getId()));
+    }
+
+    // OB to FR
+    public static FRPartyData toFRPartyData(OBParty2 party) {
+        return party == null ? null : FRPartyData.builder()
+                .partyId(party.getPartyId())
+                .partyNumber(party.getPartyNumber())
+                .partyType(toFRPartyType(party.getPartyType()))
+                .name(party.getName())
+                .fullLegalName(party.getFullLegalName())
+                .legalStructure(party.getLegalStructure())
+                .beneficialOwnership(party.isBeneficialOwnership())
+                .accountRole(party.getAccountRole())
+                .emailAddress(party.getEmailAddress())
+                .phone(party.getPhone())
+                .mobile(party.getMobile())
+                .relationship(toFRRelationship(party.getRelationships()))
+                .addresses(toFRPostalAddressList(party.getAddress()))
+                .build();
+    }
+
+    public static FRPartyData.FRPartyType toFRPartyType(OBExternalPartyType1Code partyType) {
+        return partyType == null ? null : FRPartyData.FRPartyType.valueOf(partyType.name());
+    }
+
+    public static FRPartyData.FRRelationship toFRRelationship(OBPartyRelationships1 relationship) {
+        return relationship == null || relationship.getAccount() == null ? null : FRPartyData.FRRelationship.builder()
+                .related(relationship.getAccount().getRelated())
+                .id(relationship.getAccount().getId())
+                .build();
     }
 }

@@ -28,6 +28,7 @@ import uk.org.openbanking.datamodel.account.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toFRAccountServicer;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification2;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification5;
@@ -36,6 +37,7 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.co
 
 public class FRFinancialAccountConverter {
 
+    // FR to OB
     public static OBAccount1 toOBAccount1(FRFinancialAccount account) {
         return account == null ? null : new OBAccount1()
                 .accountId(account.getAccountId())
@@ -115,4 +117,42 @@ public class FRFinancialAccountConverter {
                 .map(FRAccountIdentifierConverter::toOBAccount3Account)
                 .collect(Collectors.toList());
     }
+
+    // OB to FR
+    public static FRFinancialAccount toFRFinancialAccount(OBAccount6 account) {
+        return account == null ? null : FRFinancialAccount.builder()
+                .accountId(account.getAccountId())
+                .status(toFRAccountStatusCode(account.getStatus()))
+                .statusUpdateDateTime(account.getStatusUpdateDateTime())
+                .currency(account.getCurrency())
+                .accountType(toFRAccountTypeCode(account.getAccountType()))
+                .accountSubType(toFRAccountSubTypeCode(account.getAccountSubType()))
+                .description(account.getDescription())
+                .nickname(account.getNickname())
+                .openingDate(account.getOpeningDate())
+                .maturityDate(account.getMaturityDate())
+                .accounts(toFRAccountIdentifierList(account.getAccount()))
+                .servicer(toFRAccountServicer(account.getServicer()))
+                .build();
+    }
+
+    public static FRFinancialAccount.FRAccountStatusCode toFRAccountStatusCode(OBAccountStatus1Code status) {
+        return status == null ? null : FRFinancialAccount.FRAccountStatusCode.valueOf(status.name());
+    }
+
+    public static FRFinancialAccount.FRAccountTypeCode toFRAccountTypeCode(OBExternalAccountType1Code accountType) {
+        return accountType == null ? null : FRFinancialAccount.FRAccountTypeCode.valueOf(accountType.name());
+    }
+
+    public static FRFinancialAccount.FRAccountSubTypeCode toFRAccountSubTypeCode(OBExternalAccountSubType1Code accountSubType) {
+        return accountSubType == null ? null : FRFinancialAccount.FRAccountSubTypeCode.valueOf(accountSubType.name());
+    }
+
+    public static List<FRAccountIdentifier> toFRAccountIdentifierList(List<OBAccount3Account> accounts) {
+        return accounts == null ? null : accounts.stream()
+                .map(FRAccountIdentifierConverter::toFRAccountIdentifier)
+                .collect(Collectors.toList());
+    }
+
+
 }

@@ -24,6 +24,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.account.FROffer
 import uk.org.openbanking.datamodel.account.OBExternalOfferType1Code;
 import uk.org.openbanking.datamodel.account.OBOffer1;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 public class FROfferConverter {
@@ -47,5 +48,27 @@ public class FROfferConverter {
 
     public static OBExternalOfferType1Code toOBExternalOfferType1Code(FROfferData.FROfferType offerType) {
         return offerType == null ? null : OBExternalOfferType1Code.valueOf(offerType.name());
+    }
+
+    // OB to FR
+    public static FROfferData toFROfferData(OBOffer1 obOffer) {
+        return obOffer == null ? null : FROfferData.builder()
+                .accountId(obOffer.getAccountId())
+                .offerId(obOffer.getOfferId())
+                .offerType(toFROfferType(obOffer.getOfferType()))
+                .description(obOffer.getDescription())
+                .startDateTime(obOffer.getStartDateTime())
+                .endDateTime(obOffer.getEndDateTime())
+                .rate(obOffer.getRate())
+                .value(obOffer.getValue())
+                .term(obOffer.getTerm())
+                .URL(obOffer.getURL())
+                .amount(toFRAmount(obOffer.getAmount()))
+                .fee(toFRAmount(obOffer.getFee()))
+                .build();
+    }
+
+    public static FROfferData.FROfferType toFROfferType(OBExternalOfferType1Code offerType) {
+        return offerType == null ? null : FROfferData.FROfferType.valueOf(offerType.name());
     }
 }

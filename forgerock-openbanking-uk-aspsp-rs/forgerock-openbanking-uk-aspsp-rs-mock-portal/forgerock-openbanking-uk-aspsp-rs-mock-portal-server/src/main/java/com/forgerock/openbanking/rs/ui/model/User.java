@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.rs.ui.model;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRUserData;
+import com.forgerock.openbanking.common.model.data.FRUserData;
 import lombok.Builder;
 import lombok.Data;
 

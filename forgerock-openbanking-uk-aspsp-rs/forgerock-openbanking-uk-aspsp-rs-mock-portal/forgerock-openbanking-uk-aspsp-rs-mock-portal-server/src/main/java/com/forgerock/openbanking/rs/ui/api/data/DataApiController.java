@@ -23,7 +23,7 @@ package com.forgerock.openbanking.rs.ui.api.data;
 import com.forgerock.openbanking.analytics.model.entries.PsuCounterEntry;
 import com.forgerock.openbanking.analytics.services.PsuCounterEntryKPIService;
 import com.forgerock.openbanking.common.conf.data.DataConfigurationProperties;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRUserData;
+import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.common.services.store.data.UserDataService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;

@@ -29,6 +29,7 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.ac
 
 public class FRAccountServicerConverter {
 
+    // FR to OB
     public static OBBranchAndFinancialInstitutionIdentification2 toOBBranchAndFinancialInstitutionIdentification2(FRAccountServicer creditorAgent) {
         return creditorAgent == null ? null : new OBBranchAndFinancialInstitutionIdentification2()
                 .schemeName(toOBExternalFinancialInstitutionIdentification2Code(creditorAgent.getSchemeName()))
@@ -101,5 +102,13 @@ public class FRAccountServicerConverter {
 
     public static OBExternalFinancialInstitutionIdentification2Code toOBExternalFinancialInstitutionIdentification2Code(String schemeName) {
         return schemeName == null ? null : OBExternalFinancialInstitutionIdentification2Code.valueOf(schemeName);
+    }
+
+    // OB to FR
+    public static FRAccountServicer toFRAccountServicer(OBBranchAndFinancialInstitutionIdentification50 servicer) {
+        return servicer == null ? null : FRAccountServicer.builder()
+                .schemeName(servicer.getSchemeName())
+                .identification(servicer.getIdentification())
+                .build();
     }
 }

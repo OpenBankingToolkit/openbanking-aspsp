@@ -23,10 +23,12 @@ package com.forgerock.openbanking.common.services.openbanking.converter.account;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRCurrencyExchange;
 import uk.org.openbanking.datamodel.account.OBCurrencyExchange5;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 public class FRCurrencyExchangeConverter {
 
+    // FR to OB
     public static OBCurrencyExchange5 toOBCurrencyExchange5(FRCurrencyExchange currencyExchange) {
         return currencyExchange == null ? null : new OBCurrencyExchange5()
         .sourceCurrency(currencyExchange.getSourceCurrency())
@@ -36,5 +38,18 @@ public class FRCurrencyExchangeConverter {
         .contractIdentification(currencyExchange.getContractIdentification())
         .quotationDate(currencyExchange.getQuotationDate())
         .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(currencyExchange.getInstructedAmount()));
+    }
+
+    // OB to FR
+    public static FRCurrencyExchange toFRCurrencyExchange(OBCurrencyExchange5 currencyExchange) {
+        return currencyExchange == null ? null : FRCurrencyExchange.builder()
+                .sourceCurrency(currencyExchange.getSourceCurrency())
+                .targetCurrency(currencyExchange.getTargetCurrency())
+                .unitCurrency(currencyExchange.getUnitCurrency())
+                .exchangeRate(currencyExchange.getExchangeRate())
+                .contractIdentification(currencyExchange.getContractIdentification())
+                .quotationDate(currencyExchange.getQuotationDate())
+                .instructedAmount(toFRAmount(currencyExchange.getInstructedAmount()))
+                .build();
     }
 }

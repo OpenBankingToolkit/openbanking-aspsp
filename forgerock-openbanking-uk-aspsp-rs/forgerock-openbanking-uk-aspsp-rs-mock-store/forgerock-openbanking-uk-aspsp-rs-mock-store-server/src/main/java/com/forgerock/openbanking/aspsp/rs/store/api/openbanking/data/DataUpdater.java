@@ -31,11 +31,11 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpay
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
+import com.forgerock.openbanking.common.model.data.FRAccountData;
+import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.*;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.*;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRAccountData;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRUserData;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
 import com.google.common.collect.ImmutableList;
@@ -45,7 +45,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import uk.org.openbanking.datamodel.account.OBBeneficiary5;
+import uk.org.openbanking.datamodel.account.OBCashBalance1;
+import uk.org.openbanking.datamodel.account.OBOffer1;
+import uk.org.openbanking.datamodel.account.OBReadDirectDebit2DataDirectDebit;
 import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
+import uk.org.openbanking.datamodel.account.OBScheduledPayment3;
+import uk.org.openbanking.datamodel.account.OBStandingOrder6;
+import uk.org.openbanking.datamodel.account.OBStatement2;
+import uk.org.openbanking.datamodel.account.OBTransaction6;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -53,6 +61,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCashBalanceConverter.toFRCashBalance;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRDirectDebitConverter.toFRDirectDebitData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toFRFinancialAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FROfferConverter.toFROfferData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter.toFRPartyData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRScheduledPaymentConverter.toFRScheduledPaymentData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter.toFRStandingOrderData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStatementConverter.toFRStatementData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRTransactionConverter.toFRTransactionData;
 
 @Service
 @NoArgsConstructor
@@ -96,51 +115,52 @@ public class DataUpdater {
         if (userData.getParty() == null) {
             return;
         }
-        FRParty party = partyRepository.findByUserId(userData.getUserName());
-        if (!party.getId().equals(userData.getParty().getPartyId())) {
+        FRPartyData frPartyDiff = toFRPartyData(userData.getParty());
+        FRParty frParty = partyRepository.findByUserId(userData.getUserName());
+        if (!frParty.getId().equals(frPartyDiff.getPartyId())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                     String.format("the party ID '%s' doesn't match '%s' for user '%s'",
-                            userData.getParty().getPartyId(),
-                            party.getId(),
+                            frPartyDiff.getPartyId(),
+                            frParty.getId(),
                             userData.getUserName()));
         }
-        if (userData.getParty().getName() != null) {
-            party.getParty().setName(userData.getParty().getName());
+        if (frPartyDiff.getName() != null) {
+            frParty.getParty().setName(frPartyDiff.getName());
         }
-        if (userData.getParty().getPhone() != null) {
-            party.getParty().setPhone(userData.getParty().getPhone());
+        if (frPartyDiff.getPhone() != null) {
+            frParty.getParty().setPhone(frPartyDiff.getPhone());
         }
-        if (userData.getParty().getAddresses() != null) {
-            party.getParty().setAddresses(userData.getParty().getAddresses());
+        if (frPartyDiff.getAddresses() != null) {
+            frParty.getParty().setAddresses(frPartyDiff.getAddresses());
         }
-        if (userData.getParty().getEmailAddress() != null) {
-            party.getParty().setEmailAddress(userData.getParty().getEmailAddress());
+        if (frPartyDiff.getEmailAddress() != null) {
+            frParty.getParty().setEmailAddress(frPartyDiff.getEmailAddress());
         }
-        if (userData.getParty().getMobile() != null) {
-            party.getParty().setMobile(userData.getParty().getMobile());
+        if (frPartyDiff.getMobile() != null) {
+            frParty.getParty().setMobile(frPartyDiff.getMobile());
         }
-        if (userData.getParty().getPartyNumber() != null) {
-            party.getParty().setPartyNumber(userData.getParty().getPartyNumber());
+        if (frPartyDiff.getPartyNumber() != null) {
+            frParty.getParty().setPartyNumber(frPartyDiff.getPartyNumber());
         }
-        if (userData.getParty().getPartyType() != null) {
-            party.getParty().setPartyType(userData.getParty().getPartyType());
+        if (frPartyDiff.getPartyType() != null) {
+            frParty.getParty().setPartyType(frPartyDiff.getPartyType());
         }
-        partyRepository.save(party);
+        partyRepository.save(frParty);
     }
 
     void updateAccount(FRAccountData accountDataDiff, FRAccount account, Set<String> accountIds) {
-        FRFinancialAccount accountDiff = accountDataDiff.getAccount();
-        if (accountDiff.getCurrency() != null) {
-            account.getAccount().setCurrency(accountDiff.getCurrency());
+        FRFinancialAccount frAccountDiff = toFRFinancialAccount(accountDataDiff.getAccount());
+        if (frAccountDiff.getCurrency() != null) {
+            account.getAccount().setCurrency(frAccountDiff.getCurrency());
         }
-        if (accountDiff.getNickname() != null) {
-            account.getAccount().setNickname(accountDiff.getNickname());
+        if (frAccountDiff.getNickname() != null) {
+            account.getAccount().setNickname(frAccountDiff.getNickname());
         }
-        if (accountDiff.getAccounts() != null) {
-            account.getAccount().setAccounts(accountDiff.getAccounts());
+        if (frAccountDiff.getAccounts() != null) {
+            account.getAccount().setAccounts(frAccountDiff.getAccounts());
         }
-        if (accountDiff.getServicer() != null) {
-            account.getAccount().setServicer(accountDiff.getServicer());
+        if (frAccountDiff.getServicer() != null) {
+            account.getAccount().setServicer(frAccountDiff.getServicer());
         }
         accountsRepository.save(account);
     }
@@ -149,49 +169,52 @@ public class DataUpdater {
         //Balance
         List<FRBalance> balancesToSave = new ArrayList<>();
         List<FRBalance> newBalancesToSave = new ArrayList<>();
-        Set<FRBalanceType> types = new HashSet<>();
-        for (FRCashBalance balanceDiff : accountDataDiff.getBalances()) {
+        Set<FRBalanceType> balanceTypes = new HashSet<>();
+        for (OBCashBalance1 obBalanceDiff : accountDataDiff.getBalances()) {
             String accountId = accountDataDiff.getAccount().getAccountId();
-            if (balanceDiff.getAccountId() != null && !balanceDiff.getAccountId().equals(accountId)) {
+            if (obBalanceDiff.getAccountId() != null && !obBalanceDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                         String.format("The account id '%s' refers in a balance doesn't match the main account id '%s'",
-                                balanceDiff.getAccountId(),
+                                obBalanceDiff.getAccountId(),
                                 accountId));
             }
-            if (types.contains(balanceDiff.getType())) {
+
+            FRCashBalance frCashBalanceDiff = toFRCashBalance(obBalanceDiff);
+            FRBalanceType balanceType = frCashBalanceDiff.getType();
+            if (balanceTypes.contains(balanceType)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         String.format("You can't add two balances of the same type '%s' for the same account ID '%s'",
-                                balanceDiff.getType(),
+                                balanceType,
                                 accountId));
 
             }
-            types.add(balanceDiff.getType());
+            balanceTypes.add(balanceType);
             Optional<FRBalance> isBalance = balanceRepository.findByAccountIdAndBalanceType(
                     accountId,
-                    balanceDiff.getType());
+                    balanceType);
 
             if (isBalance.isPresent()) {
                 FRCashBalance balance = isBalance.get().getBalance();
 
-                if (balanceDiff.getAmount() != null) {
-                    balance.setAmount(balanceDiff.getAmount());
+                if (frCashBalanceDiff.getAmount() != null) {
+                    balance.setAmount(frCashBalanceDiff.getAmount());
                 }
-                if (balanceDiff.getType() != null) {
-                    balance.setType(balanceDiff.getType());
+                if (balanceType != null) {
+                    balance.setType(balanceType);
                 }
-                if (balanceDiff.getCreditDebitIndicator() != null) {
-                    balance.setCreditDebitIndicator(balanceDiff.getCreditDebitIndicator());
+                if (frCashBalanceDiff.getCreditDebitIndicator() != null) {
+                    balance.setCreditDebitIndicator(frCashBalanceDiff.getCreditDebitIndicator());
                 }
-                if (balanceDiff.getCreditLines() != null) {
-                    balance.setCreditLines(balanceDiff.getCreditLines());
+                if (frCashBalanceDiff.getCreditLines() != null) {
+                    balance.setCreditLines(frCashBalanceDiff.getCreditLines());
                 }
-                if (balanceDiff.getDateTime() != null) {
-                    balance.setDateTime(balanceDiff.getDateTime());
+                if (frCashBalanceDiff.getDateTime() != null) {
+                    balance.setDateTime(frCashBalanceDiff.getDateTime());
                 }
                 balancesToSave.add(isBalance.get());
             } else {
                 FRBalance balance1 = new FRBalance();
-                balance1.setBalance(balanceDiff);
+                balance1.setBalance(frCashBalanceDiff);
                 balance1.setAccountId(accountId);
                 newBalancesToSave.add(balance1);
             }
@@ -248,32 +271,31 @@ public class DataUpdater {
                     String.format("The party id '%s' doesn't exist",
                             accountDataDiff.getParty().getPartyId()));
         }
-        FRParty party1 = isParty.get();
 
-        FRPartyData partyDiff = accountDataDiff.getParty();
-
-        if (partyDiff.getName() != null) {
-            party1.getParty().setName(partyDiff.getName());
+        FRPartyData frPartyDiff = toFRPartyData(accountDataDiff.getParty());
+        FRParty frParty = isParty.get();
+        if (frPartyDiff.getName() != null) {
+            frParty.getParty().setName(frPartyDiff.getName());
         }
-        if (partyDiff.getPhone() != null) {
-            party1.getParty().setPhone(partyDiff.getPhone());
+        if (frPartyDiff.getPhone() != null) {
+            frParty.getParty().setPhone(frPartyDiff.getPhone());
         }
-        if (partyDiff.getAddresses() != null) {
-            party1.getParty().setAddresses(partyDiff.getAddresses());
+        if (frPartyDiff.getAddresses() != null) {
+            frParty.getParty().setAddresses(frPartyDiff.getAddresses());
         }
-        if (partyDiff.getEmailAddress() != null) {
-            party1.getParty().setEmailAddress(partyDiff.getEmailAddress());
+        if (frPartyDiff.getEmailAddress() != null) {
+            frParty.getParty().setEmailAddress(frPartyDiff.getEmailAddress());
         }
-        if (partyDiff.getMobile() != null) {
-            party1.getParty().setMobile(partyDiff.getMobile());
+        if (frPartyDiff.getMobile() != null) {
+            frParty.getParty().setMobile(frPartyDiff.getMobile());
         }
-        if (partyDiff.getPartyNumber() != null) {
-            party1.getParty().setPartyNumber(partyDiff.getPartyNumber());
+        if (frPartyDiff.getPartyNumber() != null) {
+            frParty.getParty().setPartyNumber(frPartyDiff.getPartyNumber());
         }
-        if (partyDiff.getPartyType() != null) {
-            party1.getParty().setPartyType(partyDiff.getPartyType());
+        if (frPartyDiff.getPartyType() != null) {
+            frParty.getParty().setPartyType(frPartyDiff.getPartyType());
         }
-        partyRepository.save(party1);
+        partyRepository.save(frParty);
     }
 
     void updateBeneficiaries(FRAccountData accountDataDiff, Set<String> accountIds) {
@@ -281,32 +303,34 @@ public class DataUpdater {
         //Beneficiaries
         List<FRBeneficiary> beneficiariesToSave = new ArrayList<>();
         List<FRBeneficiary> newBeneficiariesToSave = new ArrayList<>();
-        for (FRAccountBeneficiary beneficiaryDiff : accountDataDiff.getBeneficiaries()) {
+        for (OBBeneficiary5 obBeneficiaryDiff : accountDataDiff.getBeneficiaries()) {
 
-            if (beneficiaryDiff.getAccountId() != null && !beneficiaryDiff.getAccountId().equals(accountId)) {
+            if (obBeneficiaryDiff.getAccountId() != null && !obBeneficiaryDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
-                        + beneficiaryDiff.getAccountId() + "' refers in a beneficiary doesn't match the main account id '" + accountId + "'");
+                        + obBeneficiaryDiff.getAccountId() + "' refers in a beneficiary doesn't match the main account id '" + accountId + "'");
             }
-            if (beneficiaryDiff.getBeneficiaryId() == null) {
-                beneficiaryDiff.setAccountId(accountId);
-                beneficiaryDiff.setBeneficiaryId(UUID.randomUUID().toString());
+
+            FRAccountBeneficiary frBeneficiaryDiff = toFRAccountBeneficiary(obBeneficiaryDiff);
+            if (frBeneficiaryDiff.getBeneficiaryId() == null) {
+                frBeneficiaryDiff.setAccountId(accountId);
+                frBeneficiaryDiff.setBeneficiaryId(UUID.randomUUID().toString());
                 FRBeneficiary beneficiary = new FRBeneficiary();
                 beneficiary.setAccountId(accountId);
-                beneficiary.setBeneficiary(beneficiaryDiff);
-                beneficiary.setId(beneficiaryDiff.getBeneficiaryId());
+                beneficiary.setBeneficiary(frBeneficiaryDiff);
+                beneficiary.setId(frBeneficiaryDiff.getBeneficiaryId());
                 newBeneficiariesToSave.add(beneficiary);
             } else {
-                Optional<FRBeneficiary> isBeneficiary = beneficiaryRepository.findById(beneficiaryDiff.getBeneficiaryId());
-                if (isBeneficiary.isEmpty() || !isBeneficiary.get().getAccountId().equals(beneficiaryDiff.getAccountId())) {
+                Optional<FRBeneficiary> isBeneficiary = beneficiaryRepository.findById(frBeneficiaryDiff.getBeneficiaryId());
+                if (isBeneficiary.isEmpty() || !isBeneficiary.get().getAccountId().equals(frBeneficiaryDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The beneficiary id '"
-                            + beneficiaryDiff.getBeneficiaryId() + "' doesn't exist or doesn't belongs to this account ID.");
+                            + frBeneficiaryDiff.getBeneficiaryId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
                 FRAccountBeneficiary beneficiary = isBeneficiary.get().getBeneficiary();
-                if (beneficiaryDiff.getReference() != null) {
-                    beneficiary.setReference(beneficiaryDiff.getReference());
+                if (frBeneficiaryDiff.getReference() != null) {
+                    beneficiary.setReference(frBeneficiaryDiff.getReference());
                 }
-                if (beneficiaryDiff.getCreditorAccount() != null) {
-                    beneficiary.setCreditorAccount(beneficiaryDiff.getCreditorAccount());
+                if (frBeneficiaryDiff.getCreditorAccount() != null) {
+                    beneficiary.setCreditorAccount(frBeneficiaryDiff.getCreditorAccount());
                 }
                 beneficiariesToSave.add(isBeneficiary.get());
 
@@ -328,41 +352,43 @@ public class DataUpdater {
         //Direct Debits
         List<FRDirectDebit> directDebitsToSave = new ArrayList<>();
         List<FRDirectDebit> newDirectDebitsToSave = new ArrayList<>();
-        for (FRDirectDebitData directDebitDiff : accountDataDiff.getDirectDebits()) {
+        for (OBReadDirectDebit2DataDirectDebit obDirectDebitDiff : accountDataDiff.getDirectDebits()) {
 
-            if (directDebitDiff.getAccountId() != null && !directDebitDiff.getAccountId().equals(accountId)) {
+            if (obDirectDebitDiff.getAccountId() != null && !obDirectDebitDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
-                        + directDebitDiff.getAccountId() + "' refers in a direct debit doesn't match the main account id '" + accountId + "'");
+                        + obDirectDebitDiff.getAccountId() + "' refers in a direct debit doesn't match the main account id '" + accountId + "'");
             }
-            if (directDebitDiff.getDirectDebitId() == null) {
-                directDebitDiff.setAccountId(accountId);
-                directDebitDiff.setDirectDebitId(UUID.randomUUID().toString());
+
+            FRDirectDebitData frDirectDebitDiff = toFRDirectDebitData(obDirectDebitDiff);
+            if (frDirectDebitDiff.getDirectDebitId() == null) {
+                frDirectDebitDiff.setAccountId(accountId);
+                frDirectDebitDiff.setDirectDebitId(UUID.randomUUID().toString());
                 FRDirectDebit directDebit = new FRDirectDebit();
                 directDebit.setAccountId(accountId);
-                directDebit.setDirectDebit(directDebitDiff);
-                directDebit.setId(directDebitDiff.getDirectDebitId());
+                directDebit.setDirectDebit(frDirectDebitDiff);
+                directDebit.setId(frDirectDebitDiff.getDirectDebitId());
                 newDirectDebitsToSave.add(directDebit);
             } else {
-                Optional<FRDirectDebit> isDirectDebit = directDebitRepository.findById(directDebitDiff.getDirectDebitId());
-                if (isDirectDebit.isEmpty() || !isDirectDebit.get().getAccountId().equals(directDebitDiff.getAccountId())) {
+                Optional<FRDirectDebit> isDirectDebit = directDebitRepository.findById(frDirectDebitDiff.getDirectDebitId());
+                if (isDirectDebit.isEmpty() || !isDirectDebit.get().getAccountId().equals(frDirectDebitDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The direct debit id '"
-                            + directDebitDiff.getDirectDebitId() + "' doesn't exist or doesn't belongs to this account ID.");
+                            + frDirectDebitDiff.getDirectDebitId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
                 FRDirectDebitData directDebit = isDirectDebit.get().getDirectDebit();
-                if (directDebitDiff.getName() != null) {
-                    directDebit.setName(directDebitDiff.getName());
+                if (frDirectDebitDiff.getName() != null) {
+                    directDebit.setName(frDirectDebitDiff.getName());
                 }
-                if (directDebitDiff.getDirectDebitStatusCode() != null) {
-                    directDebit.setDirectDebitStatusCode(directDebitDiff.getDirectDebitStatusCode());
+                if (frDirectDebitDiff.getDirectDebitStatusCode() != null) {
+                    directDebit.setDirectDebitStatusCode(frDirectDebitDiff.getDirectDebitStatusCode());
                 }
-                if (directDebitDiff.getMandateIdentification() != null) {
-                    directDebit.setMandateIdentification(directDebitDiff.getMandateIdentification());
+                if (frDirectDebitDiff.getMandateIdentification() != null) {
+                    directDebit.setMandateIdentification(frDirectDebitDiff.getMandateIdentification());
                 }
-                if (directDebitDiff.getPreviousPaymentAmount() != null) {
-                    directDebit.setPreviousPaymentAmount(directDebitDiff.getPreviousPaymentAmount());
+                if (frDirectDebitDiff.getPreviousPaymentAmount() != null) {
+                    directDebit.setPreviousPaymentAmount(frDirectDebitDiff.getPreviousPaymentAmount());
                 }
-                if (directDebitDiff.getPreviousPaymentDateTime() != null) {
-                    directDebit.setPreviousPaymentDateTime(directDebitDiff.getPreviousPaymentDateTime());
+                if (frDirectDebitDiff.getPreviousPaymentDateTime() != null) {
+                    directDebit.setPreviousPaymentDateTime(frDirectDebitDiff.getPreviousPaymentDateTime());
                 }
                 directDebitsToSave.add(isDirectDebit.get());
             }
@@ -383,55 +409,57 @@ public class DataUpdater {
         //Standing orders
         List<FRStandingOrder> standingOrdersToSave = new ArrayList<>();
         List<FRStandingOrder> newStandingOrdersToSave = new ArrayList<>();
-        for (FRStandingOrderData standingOrderDiff : accountDataDiff.getStandingOrders()) {
+        for (OBStandingOrder6 obStandingOrderDiff : accountDataDiff.getStandingOrders()) {
 
-            if (standingOrderDiff.getAccountId() != null && !standingOrderDiff.getAccountId().equals(accountId)) {
+            if (obStandingOrderDiff.getAccountId() != null && !obStandingOrderDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
-                        + standingOrderDiff.getAccountId() + "' refers in a standing order doesn't match the main account id '" + accountId + "'");
+                        + obStandingOrderDiff.getAccountId() + "' refers in a standing order doesn't match the main account id '" + accountId + "'");
             }
-            if (standingOrderDiff.getStandingOrderId() == null) {
-                standingOrderDiff.setAccountId(accountId);
-                standingOrderDiff.setStandingOrderId(UUID.randomUUID().toString());
+
+            FRStandingOrderData frStandingOrderDiff = toFRStandingOrderData(obStandingOrderDiff);
+            if (frStandingOrderDiff.getStandingOrderId() == null) {
+                frStandingOrderDiff.setAccountId(accountId);
+                frStandingOrderDiff.setStandingOrderId(UUID.randomUUID().toString());
                 FRStandingOrder standingOrder = new FRStandingOrder();
                 standingOrder.setAccountId(accountId);
-                standingOrder.setStandingOrder(standingOrderDiff);
-                standingOrder.setId(standingOrderDiff.getStandingOrderId());
+                standingOrder.setStandingOrder(frStandingOrderDiff);
+                standingOrder.setId(frStandingOrderDiff.getStandingOrderId());
                 standingOrder.setStatus(StandingOrderStatus.PENDING);
                 newStandingOrdersToSave.add(standingOrder);
             } else {
-                Optional<FRStandingOrder> isStandingOrder = standingOrderRepository.findById(standingOrderDiff.getStandingOrderId());
-                if (isStandingOrder.isEmpty() || !isStandingOrder.get().getAccountId().equals(standingOrderDiff.getAccountId())) {
+                Optional<FRStandingOrder> isStandingOrder = standingOrderRepository.findById(frStandingOrderDiff.getStandingOrderId());
+                if (isStandingOrder.isEmpty() || !isStandingOrder.get().getAccountId().equals(frStandingOrderDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The standing order id '"
-                            + standingOrderDiff.getStandingOrderId() + "' doesn't exist or doesn't belongs to this account ID.");
+                            + frStandingOrderDiff.getStandingOrderId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
 
                 FRStandingOrderData standingOrder = isStandingOrder.get().getStandingOrder();
-                if (standingOrderDiff.getFrequency() != null) {
-                    standingOrder.setFrequency(standingOrderDiff.getFrequency());
+                if (frStandingOrderDiff.getFrequency() != null) {
+                    standingOrder.setFrequency(frStandingOrderDiff.getFrequency());
                 }
-                if (standingOrderDiff.getReference() != null) {
-                    standingOrder.setReference(standingOrderDiff.getReference());
+                if (frStandingOrderDiff.getReference() != null) {
+                    standingOrder.setReference(frStandingOrderDiff.getReference());
                 }
-                if (standingOrderDiff.getFirstPaymentAmount() != null) {
-                    standingOrder.setFirstPaymentAmount(standingOrderDiff.getFirstPaymentAmount());
+                if (frStandingOrderDiff.getFirstPaymentAmount() != null) {
+                    standingOrder.setFirstPaymentAmount(frStandingOrderDiff.getFirstPaymentAmount());
                 }
-                if (standingOrderDiff.getFirstPaymentDateTime() != null) {
-                    standingOrder.setFirstPaymentDateTime(standingOrderDiff.getFirstPaymentDateTime());
+                if (frStandingOrderDiff.getFirstPaymentDateTime() != null) {
+                    standingOrder.setFirstPaymentDateTime(frStandingOrderDiff.getFirstPaymentDateTime());
                 }
-                if (standingOrderDiff.getNextPaymentAmount() != null) {
-                    standingOrder.setNextPaymentAmount(standingOrderDiff.getNextPaymentAmount());
+                if (frStandingOrderDiff.getNextPaymentAmount() != null) {
+                    standingOrder.setNextPaymentAmount(frStandingOrderDiff.getNextPaymentAmount());
                 }
-                if (standingOrderDiff.getNextPaymentDateTime() != null) {
-                    standingOrder.setNextPaymentDateTime(standingOrderDiff.getNextPaymentDateTime());
+                if (frStandingOrderDiff.getNextPaymentDateTime() != null) {
+                    standingOrder.setNextPaymentDateTime(frStandingOrderDiff.getNextPaymentDateTime());
                 }
-                if (standingOrderDiff.getFinalPaymentAmount() != null) {
-                    standingOrder.setFinalPaymentAmount(standingOrderDiff.getFinalPaymentAmount());
+                if (frStandingOrderDiff.getFinalPaymentAmount() != null) {
+                    standingOrder.setFinalPaymentAmount(frStandingOrderDiff.getFinalPaymentAmount());
                 }
-                if (standingOrderDiff.getFinalPaymentDateTime() != null) {
-                    standingOrder.setFinalPaymentDateTime(standingOrderDiff.getFinalPaymentDateTime());
+                if (frStandingOrderDiff.getFinalPaymentDateTime() != null) {
+                    standingOrder.setFinalPaymentDateTime(frStandingOrderDiff.getFinalPaymentDateTime());
                 }
-                if (standingOrderDiff.getCreditorAccount() != null) {
-                    standingOrder.setCreditorAccount(standingOrderDiff.getCreditorAccount());
+                if (frStandingOrderDiff.getCreditorAccount() != null) {
+                    standingOrder.setCreditorAccount(frStandingOrderDiff.getCreditorAccount());
                 }
                 standingOrdersToSave.add(isStandingOrder.get());
             }
@@ -452,58 +480,60 @@ public class DataUpdater {
         //Transactions
         List<FRTransaction> transactionsToSave = new ArrayList<>();
         List<FRTransaction> newTransactionsToSave = new ArrayList<>();
-        for (FRTransactionData transactionDiff : accountDataDiff.getTransactions()) {
+        for (OBTransaction6 obTransactionDiff : accountDataDiff.getTransactions()) {
 
-            if (transactionDiff.getAccountId() != null && !transactionDiff.getAccountId().equals(accountId)) {
+            if (obTransactionDiff.getAccountId() != null && !obTransactionDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
-                        + transactionDiff.getAccountId() + "' refers in a transaction doesn't match the main account id '" + accountId + "'");
+                        + obTransactionDiff.getAccountId() + "' refers in a transaction doesn't match the main account id '" + accountId + "'");
             }
-            if (transactionDiff.getTransactionId() == null) {
-                transactionDiff.setAccountId(accountId);
-                transactionDiff.setTransactionId(UUID.randomUUID().toString());
+
+            FRTransactionData frTransactionDiff = toFRTransactionData(obTransactionDiff);
+            if (frTransactionDiff.getTransactionId() == null) {
+                frTransactionDiff.setAccountId(accountId);
+                frTransactionDiff.setTransactionId(UUID.randomUUID().toString());
                 FRTransaction transaction = new FRTransaction();
                 transaction.setAccountId(accountId);
-                transaction.setBookingDateTime((transactionDiff.getBookingDateTime()));
-                transaction.setTransaction(transactionDiff);
-                transaction.setId(transactionDiff.getTransactionId());
+                transaction.setBookingDateTime((frTransactionDiff.getBookingDateTime()));
+                transaction.setTransaction(frTransactionDiff);
+                transaction.setId(frTransactionDiff.getTransactionId());
                 newTransactionsToSave.add(transaction);
             } else {
-                Optional<FRTransaction> isTransaction = transactionRepository.findById(transactionDiff.getTransactionId());
-                if (isTransaction.isEmpty() || !isTransaction.get().getAccountId().equals(transactionDiff.getAccountId())) {
+                Optional<FRTransaction> isTransaction = transactionRepository.findById(frTransactionDiff.getTransactionId());
+                if (isTransaction.isEmpty() || !isTransaction.get().getAccountId().equals(frTransactionDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The transaction id '"
-                            + transactionDiff.getTransactionId() + "' doesn't exist or doesn't belongs to this account ID.");
+                            + frTransactionDiff.getTransactionId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
                 FRTransactionData transaction = isTransaction.get().getTransaction();
-                if (transactionDiff.getTransactionReference() != null) {
-                    transaction.setTransactionReference(transactionDiff.getTransactionReference());
+                if (frTransactionDiff.getTransactionReference() != null) {
+                    transaction.setTransactionReference(frTransactionDiff.getTransactionReference());
                 }
-                if (transactionDiff.getAmount() != null) {
-                    transaction.setAmount(transactionDiff.getAmount());
+                if (frTransactionDiff.getAmount() != null) {
+                    transaction.setAmount(frTransactionDiff.getAmount());
                 }
-                if (transactionDiff.getCreditDebitIndicator() != null) {
-                    transaction.setCreditDebitIndicator(transactionDiff.getCreditDebitIndicator());
+                if (frTransactionDiff.getCreditDebitIndicator() != null) {
+                    transaction.setCreditDebitIndicator(frTransactionDiff.getCreditDebitIndicator());
                 }
-                if (transactionDiff.getStatus() != null) {
-                    transaction.setStatus(transactionDiff.getStatus());
+                if (frTransactionDiff.getStatus() != null) {
+                    transaction.setStatus(frTransactionDiff.getStatus());
                 }
-                if (transactionDiff.getBookingDateTime() != null) {
-                    transaction.setBookingDateTime(transactionDiff.getBookingDateTime());
-                    isTransaction.get().setBookingDateTime(transactionDiff.getBookingDateTime());
+                if (frTransactionDiff.getBookingDateTime() != null) {
+                    transaction.setBookingDateTime(frTransactionDiff.getBookingDateTime());
+                    isTransaction.get().setBookingDateTime(frTransactionDiff.getBookingDateTime());
                 }
-                if (transactionDiff.getValueDateTime() != null) {
-                    transaction.setValueDateTime(transactionDiff.getValueDateTime());
+                if (frTransactionDiff.getValueDateTime() != null) {
+                    transaction.setValueDateTime(frTransactionDiff.getValueDateTime());
                 }
-                if (transactionDiff.getTransactionInformation() != null) {
-                    transaction.setTransactionInformation(transactionDiff.getTransactionInformation());
+                if (frTransactionDiff.getTransactionInformation() != null) {
+                    transaction.setTransactionInformation(frTransactionDiff.getTransactionInformation());
                 }
-                if (transactionDiff.getBankTransactionCode() != null) {
-                    transaction.setBankTransactionCode(transactionDiff.getBankTransactionCode());
+                if (frTransactionDiff.getBankTransactionCode() != null) {
+                    transaction.setBankTransactionCode(frTransactionDiff.getBankTransactionCode());
                 }
-                if (transactionDiff.getProprietaryBankTransactionCode() != null) {
-                    transaction.setProprietaryBankTransactionCode(transactionDiff.getProprietaryBankTransactionCode());
+                if (frTransactionDiff.getProprietaryBankTransactionCode() != null) {
+                    transaction.setProprietaryBankTransactionCode(frTransactionDiff.getProprietaryBankTransactionCode());
                 }
-                if (transactionDiff.getBalance() != null) {
-                    transaction.setBalance(transactionDiff.getBalance());
+                if (frTransactionDiff.getBalance() != null) {
+                    transaction.setBalance(frTransactionDiff.getBalance());
                 }
                 transactionsToSave.add(isTransaction.get());
             }
@@ -524,68 +554,70 @@ public class DataUpdater {
         //Statements
         List<FRStatement> statementsToSave = new ArrayList<>();
         List<FRStatement> newStatementsToSave = new ArrayList<>();
-        for (FRStatementData statementDiff : accountDataDiff.getStatements()) {
+        for (OBStatement2 obStatementDiff : accountDataDiff.getStatements()) {
 
-            if (statementDiff.getAccountId() != null && !statementDiff.getAccountId().equals(accountId)) {
+            if (obStatementDiff.getAccountId() != null && !obStatementDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
-                        + statementDiff.getAccountId() + "' refers in a statement doesn't match the main account id '" + accountId + "'");
+                        + obStatementDiff.getAccountId() + "' refers in a statement doesn't match the main account id '" + accountId + "'");
             }
-            if (statementDiff.getStatementId() == null) {
-                statementDiff.setAccountId(accountId);
-                statementDiff.setStatementId(UUID.randomUUID().toString());
+
+            FRStatementData frStatementDiff = toFRStatementData(obStatementDiff);
+            if (frStatementDiff.getStatementId() == null) {
+                frStatementDiff.setAccountId(accountId);
+                frStatementDiff.setStatementId(UUID.randomUUID().toString());
                 FRStatement statement1 = new FRStatement();
                 statement1.setAccountId(accountId);
-                statement1.setStatement(statementDiff);
-                statement1.setId(statementDiff.getStatementId());
+                statement1.setStatement(frStatementDiff);
+                statement1.setId(frStatementDiff.getStatementId());
                 newStatementsToSave.add(statement1);
             } else {
-                Optional<FRStatement> isStatement = statementRepository.findById(statementDiff.getStatementId());
-                if (isStatement.isEmpty() || !isStatement.get().getAccountId().equals(statementDiff.getAccountId())) {
+                Optional<FRStatement> isStatement = statementRepository.findById(frStatementDiff.getStatementId());
+                if (isStatement.isEmpty() || !isStatement.get().getAccountId().equals(frStatementDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The statement id '"
-                            + statementDiff.getStatementId() + "' doesn't exist or doesn't belongs to this account ID.");
+                            + frStatementDiff.getStatementId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
 
                 FRStatementData statement = isStatement.get().getStatement();
-                if (statementDiff.getEndDateTime() != null) {
-                    statement.setEndDateTime(statementDiff.getEndDateTime());
-                    isStatement.get().setEndDateTime(statementDiff.getEndDateTime());
+                if (frStatementDiff.getEndDateTime() != null) {
+                    statement.setEndDateTime(frStatementDiff.getEndDateTime());
+                    isStatement.get().setEndDateTime(frStatementDiff.getEndDateTime());
                 }
-                if (statementDiff.getStartDateTime() != null) {
-                    statement.setStartDateTime(statementDiff.getStartDateTime());
-                    isStatement.get().setStartDateTime(statementDiff.getStartDateTime());
+                if (frStatementDiff.getStartDateTime() != null) {
+                    statement.setStartDateTime(frStatementDiff.getStartDateTime());
+                    isStatement.get().setStartDateTime(frStatementDiff.getStartDateTime());
                 }
-                if (statementDiff.getType() != null) {
-                    statement.setType(statementDiff.getType());
+                if (frStatementDiff.getType() != null) {
+                    statement.setType(frStatementDiff.getType());
                 }
-                if (statementDiff.getCreationDateTime() != null) {
-                    statement.setCreationDateTime(statementDiff.getCreationDateTime());
+                if (frStatementDiff.getCreationDateTime() != null) {
+                    statement.setCreationDateTime(frStatementDiff.getCreationDateTime());
                 }
-                if (statementDiff.getStatementAmounts() != null) {
-                    statement.setStatementAmounts(statementDiff.getStatementAmounts());
+                if (frStatementDiff.getStatementAmounts() != null) {
+                    statement.setStatementAmounts(frStatementDiff.getStatementAmounts());
                 }
-                if (statementDiff.getStatementBenefits() != null) {
-                    statement.setStatementBenefits(statementDiff.getStatementBenefits());
+                if (frStatementDiff.getStatementBenefits() != null) {
+                    statement.setStatementBenefits(frStatementDiff.getStatementBenefits());
                 }
-                if (statementDiff.getStatementDateTimes() != null) {
-                    statement.setStatementDateTimes(statementDiff.getStatementDateTimes());
+                if (frStatementDiff.getStatementDateTimes() != null) {
+                    statement.setStatementDateTimes(frStatementDiff.getStatementDateTimes());
                 }
-                if (statementDiff.getStatementDescriptions() != null) {
-                    statement.setStatementDescriptions(statementDiff.getStatementDescriptions());
+                if (frStatementDiff.getStatementDescriptions() != null) {
+                    statement.setStatementDescriptions(frStatementDiff.getStatementDescriptions());
                 }
-                if (statementDiff.getStatementFees() != null) {
-                    statement.setStatementFees(statementDiff.getStatementFees());
+                if (frStatementDiff.getStatementFees() != null) {
+                    statement.setStatementFees(frStatementDiff.getStatementFees());
                 }
-                if (statementDiff.getStatementInterests() != null) {
-                    statement.setStatementInterests(statementDiff.getStatementInterests());
+                if (frStatementDiff.getStatementInterests() != null) {
+                    statement.setStatementInterests(frStatementDiff.getStatementInterests());
                 }
-                if (statementDiff.getStatementRates() != null) {
-                    statement.setStatementRates(statementDiff.getStatementRates());
+                if (frStatementDiff.getStatementRates() != null) {
+                    statement.setStatementRates(frStatementDiff.getStatementRates());
                 }
-                if (statementDiff.getStatementReference() != null) {
-                    statement.setStatementReference(statementDiff.getStatementReference());
+                if (frStatementDiff.getStatementReference() != null) {
+                    statement.setStatementReference(frStatementDiff.getStatementReference());
                 }
-                if (statementDiff.getStatementValues() != null) {
-                    statement.setStatementValues(statementDiff.getStatementValues());
+                if (frStatementDiff.getStatementValues() != null) {
+                    statement.setStatementValues(frStatementDiff.getStatementValues());
                 }
                 statementsToSave.add(isStatement.get());
             }
@@ -606,46 +638,48 @@ public class DataUpdater {
         //Scheduled Payment
         List<FRScheduledPayment> scheduledPaymentToSave = new ArrayList<>();
         List<FRScheduledPayment> newScheduledPaymentToSave = new ArrayList<>();
-        for (FRScheduledPaymentData scheduledPaymentDiff : accountDataDiff.getScheduledPayments()) {
+        for (OBScheduledPayment3 obScheduledDiff : accountDataDiff.getScheduledPayments()) {
 
-            if (scheduledPaymentDiff.getAccountId() != null && !scheduledPaymentDiff.getAccountId().equals(accountId)) {
+            if (obScheduledDiff.getAccountId() != null && !obScheduledDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
-                        + scheduledPaymentDiff.getAccountId() + "' refers in a scheduled payment doesn't match the main account id '" + accountId + "'");
+                        + obScheduledDiff.getAccountId() + "' refers in a scheduled payment doesn't match the main account id '" + accountId + "'");
             }
-            if (scheduledPaymentDiff.getScheduledPaymentId() == null) {
-                scheduledPaymentDiff.setAccountId(accountId);
-                scheduledPaymentDiff.setScheduledPaymentId(UUID.randomUUID().toString());
+
+            FRScheduledPaymentData frScheduledDiff = toFRScheduledPaymentData(obScheduledDiff);
+            if (frScheduledDiff.getScheduledPaymentId() == null) {
+                frScheduledDiff.setAccountId(accountId);
+                frScheduledDiff.setScheduledPaymentId(UUID.randomUUID().toString());
                 FRScheduledPayment scheduledPayment1 = new FRScheduledPayment();
                 scheduledPayment1.setAccountId(accountId);
-                scheduledPayment1.setScheduledPayment(scheduledPaymentDiff);
-                scheduledPayment1.setId(scheduledPaymentDiff.getScheduledPaymentId());
+                scheduledPayment1.setScheduledPayment(frScheduledDiff);
+                scheduledPayment1.setId(frScheduledDiff.getScheduledPaymentId());
                 scheduledPayment1.setStatus(ScheduledPaymentStatus.PENDING);
                 newScheduledPaymentToSave.add(scheduledPayment1);
             } else {
-                Optional<FRScheduledPayment> isScheduledPayment = scheduledPaymentRepository.findById(scheduledPaymentDiff.getScheduledPaymentId());
-                if (isScheduledPayment.isEmpty() || !isScheduledPayment.get().getAccountId().equals(scheduledPaymentDiff.getAccountId())) {
+                Optional<FRScheduledPayment> isScheduledPayment = scheduledPaymentRepository.findById(frScheduledDiff.getScheduledPaymentId());
+                if (isScheduledPayment.isEmpty() || !isScheduledPayment.get().getAccountId().equals(frScheduledDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The scheduled payment id '"
-                            + scheduledPaymentDiff.getScheduledPaymentId() + "' doesn't exist or doesn't belongs to this account ID.");
+                            + frScheduledDiff.getScheduledPaymentId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
 
                 FRScheduledPaymentData scheduledPayment = isScheduledPayment.get().getScheduledPayment();
-                if (scheduledPaymentDiff.getCreditorAccount() != null) {
-                    scheduledPayment.setCreditorAccount(scheduledPaymentDiff.getCreditorAccount());
+                if (frScheduledDiff.getCreditorAccount() != null) {
+                    scheduledPayment.setCreditorAccount(frScheduledDiff.getCreditorAccount());
                 }
-                if (scheduledPaymentDiff.getInstructedAmount() != null) {
-                    scheduledPayment.setInstructedAmount(scheduledPaymentDiff.getInstructedAmount());
+                if (frScheduledDiff.getInstructedAmount() != null) {
+                    scheduledPayment.setInstructedAmount(frScheduledDiff.getInstructedAmount());
                 }
-                if (scheduledPaymentDiff.getReference() != null) {
-                    scheduledPayment.setReference(scheduledPaymentDiff.getReference());
+                if (frScheduledDiff.getReference() != null) {
+                    scheduledPayment.setReference(frScheduledDiff.getReference());
                 }
-                if (scheduledPaymentDiff.getCreditorAgent() != null) {
-                    scheduledPayment.setCreditorAgent(scheduledPaymentDiff.getCreditorAgent());
+                if (frScheduledDiff.getCreditorAgent() != null) {
+                    scheduledPayment.setCreditorAgent(frScheduledDiff.getCreditorAgent());
                 }
-                if (scheduledPaymentDiff.getScheduledPaymentDateTime() != null) {
-                    scheduledPayment.setScheduledPaymentDateTime(scheduledPaymentDiff.getScheduledPaymentDateTime());
+                if (frScheduledDiff.getScheduledPaymentDateTime() != null) {
+                    scheduledPayment.setScheduledPaymentDateTime(frScheduledDiff.getScheduledPaymentDateTime());
                 }
-                if (scheduledPaymentDiff.getScheduledType() != null) {
-                    scheduledPayment.setScheduledType(scheduledPaymentDiff.getScheduledType());
+                if (frScheduledDiff.getScheduledType() != null) {
+                    scheduledPayment.setScheduledType(frScheduledDiff.getScheduledType());
                 }
                 scheduledPaymentToSave.add(isScheduledPayment.get());
             }
@@ -666,57 +700,59 @@ public class DataUpdater {
         //Offers
         List<FROffer> offersToSave = new ArrayList<>();
         List<FROffer> newOffersToSave = new ArrayList<>();
-        for (FROfferData offersDiff : accountDataDiff.getOffers()) {
+        for (OBOffer1 obOfferDiff : accountDataDiff.getOffers()) {
 
-            if (offersDiff.getAccountId() != null && !offersDiff.getAccountId().equals(accountId)) {
+            if (obOfferDiff.getAccountId() != null && !obOfferDiff.getAccountId().equals(accountId)) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The account id '"
-                        + offersDiff.getAccountId() + "' refers in a offer doesn't match the main account id '" + accountId + "'");
+                        + obOfferDiff.getAccountId() + "' refers in a offer doesn't match the main account id '" + accountId + "'");
             }
-            if (offersDiff.getOfferId() == null) {
-                offersDiff.setAccountId(accountId);
-                offersDiff.setOfferId(UUID.randomUUID().toString());
+
+            FROfferData frOfferDiff = toFROfferData(obOfferDiff);
+            if (frOfferDiff.getOfferId() == null) {
+                frOfferDiff.setAccountId(accountId);
+                frOfferDiff.setOfferId(UUID.randomUUID().toString());
                 FROffer offer1 = new FROffer();
                 offer1.setAccountId(accountId);
-                offer1.setOffer(offersDiff);
-                offer1.setId(offersDiff.getOfferId());
+                offer1.setOffer(frOfferDiff);
+                offer1.setId(frOfferDiff.getOfferId());
                 newOffersToSave.add(offer1);
             } else {
-                Optional<FROffer> isOffers = offerRepository.findById(offersDiff.getOfferId());
-                if (isOffers.isEmpty() || !isOffers.get().getAccountId().equals(offersDiff.getAccountId())) {
+                Optional<FROffer> isOffers = offerRepository.findById(frOfferDiff.getOfferId());
+                if (isOffers.isEmpty() || !isOffers.get().getAccountId().equals(frOfferDiff.getAccountId())) {
                     throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The offer id '"
-                            + offersDiff.getOfferId() + "' doesn't exist or doesn't belongs to this account ID.");
+                            + frOfferDiff.getOfferId() + "' doesn't exist or doesn't belongs to this account ID.");
                 }
 
                 FROfferData offer = isOffers.get().getOffer();
-                if (offersDiff.getAmount() != null) {
-                    offer.setAmount(offersDiff.getAmount());
+                if (frOfferDiff.getAmount() != null) {
+                    offer.setAmount(frOfferDiff.getAmount());
                 }
-                if (offersDiff.getDescription() != null) {
-                    offer.setDescription(offersDiff.getDescription());
+                if (frOfferDiff.getDescription() != null) {
+                    offer.setDescription(frOfferDiff.getDescription());
                 }
-                if (offersDiff.getEndDateTime() != null) {
-                    offer.setEndDateTime(offersDiff.getEndDateTime());
+                if (frOfferDiff.getEndDateTime() != null) {
+                    offer.setEndDateTime(frOfferDiff.getEndDateTime());
                 }
-                if (offersDiff.getStartDateTime() != null) {
-                    offer.setStartDateTime(offersDiff.getStartDateTime());
+                if (frOfferDiff.getStartDateTime() != null) {
+                    offer.setStartDateTime(frOfferDiff.getStartDateTime());
                 }
-                if (offersDiff.getURL() != null) {
-                    offer.setURL(offersDiff.getURL());
+                if (frOfferDiff.getURL() != null) {
+                    offer.setURL(frOfferDiff.getURL());
                 }
-                if (offersDiff.getValue() != null) {
-                    offer.setValue(offersDiff.getValue());
+                if (frOfferDiff.getValue() != null) {
+                    offer.setValue(frOfferDiff.getValue());
                 }
-                if (offersDiff.getFee() != null) {
-                    offer.setFee(offersDiff.getFee());
+                if (frOfferDiff.getFee() != null) {
+                    offer.setFee(frOfferDiff.getFee());
                 }
-                if (offersDiff.getOfferType() != null) {
-                    offer.setOfferType(offersDiff.getOfferType());
+                if (frOfferDiff.getOfferType() != null) {
+                    offer.setOfferType(frOfferDiff.getOfferType());
                 }
-                if (offersDiff.getRate() != null) {
-                    offer.setRate(offersDiff.getRate());
+                if (frOfferDiff.getRate() != null) {
+                    offer.setRate(frOfferDiff.getRate());
                 }
-                if (offersDiff.getTerm() != null) {
-                    offer.setTerm(offersDiff.getTerm());
+                if (frOfferDiff.getTerm() != null) {
+                    offer.setTerm(frOfferDiff.getTerm());
                 }
                 offersToSave.add(isOffers.get());
             }

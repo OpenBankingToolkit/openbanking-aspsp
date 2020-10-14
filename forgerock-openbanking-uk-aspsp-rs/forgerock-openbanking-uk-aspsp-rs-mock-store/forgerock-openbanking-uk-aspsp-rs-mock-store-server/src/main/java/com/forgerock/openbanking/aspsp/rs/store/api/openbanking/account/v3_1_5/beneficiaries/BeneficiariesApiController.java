@@ -39,7 +39,7 @@ import uk.org.openbanking.datamodel.account.OBReadBeneficiary5Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRBeneficiaryConverter.toOBBeneficiary5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 
 @Controller("BeneficiariesApiV3.1.5")

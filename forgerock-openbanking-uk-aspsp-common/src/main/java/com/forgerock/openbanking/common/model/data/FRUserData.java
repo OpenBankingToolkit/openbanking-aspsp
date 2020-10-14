@@ -18,12 +18,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.persistence.account.data;
+package com.forgerock.openbanking.common.model.data;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.account.FRPartyData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.org.openbanking.datamodel.account.OBParty2;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
 public class FRUserData {
 
     private String userName;
-    private FRPartyData party;
+    private OBParty2 party;
     private List<FRAccountData> accountDatas = new ArrayList<>();
 
     public FRUserData(String userName) {

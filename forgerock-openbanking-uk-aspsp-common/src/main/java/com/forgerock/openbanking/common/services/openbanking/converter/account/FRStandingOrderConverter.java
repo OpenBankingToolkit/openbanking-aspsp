@@ -29,12 +29,15 @@ import uk.org.openbanking.datamodel.account.OBStandingOrder4;
 import uk.org.openbanking.datamodel.account.OBStandingOrder5;
 import uk.org.openbanking.datamodel.account.OBStandingOrder6;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountSupplementaryDataConverter.toFRSupplementaryData;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toFRAccountIdentifier;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount51;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toFRFinancialAgent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toOBBranchAndFinancialInstitutionIdentification2;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toOBBranchAndFinancialInstitutionIdentification4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toOBBranchAndFinancialInstitutionIdentification5;
@@ -42,6 +45,7 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.co
 
 public class FRStandingOrderConverter {
 
+    // FR to OB
     public static OBStandingOrder1 toOBStandingOrder1(FRStandingOrderData standingOrder) {
         return standingOrder == null ? null : new OBStandingOrder1()
                 .accountId(standingOrder.getAccountId())
@@ -151,5 +155,32 @@ public class FRStandingOrderConverter {
 
     public static OBExternalStandingOrderStatus1Code toOBExternalStandingOrderStatus1Code(FRStandingOrderData.FRStandingOrderStatus standingOrderStatusCode) {
         return standingOrderStatusCode == null ? null : OBExternalStandingOrderStatus1Code.valueOf(standingOrderStatusCode.name());
+    }
+
+    // OB to FR
+    public static FRStandingOrderData toFRStandingOrderData(OBStandingOrder6 obStandingOrder) {
+        return obStandingOrder == null ? null : FRStandingOrderData.builder()
+                .accountId(obStandingOrder.getAccountId())
+                .standingOrderId(obStandingOrder.getStandingOrderId())
+                .frequency(obStandingOrder.getFrequency())
+                .reference(obStandingOrder.getReference())
+                .firstPaymentDateTime(obStandingOrder.getFirstPaymentDateTime())
+                .nextPaymentDateTime(obStandingOrder.getNextPaymentDateTime())
+                .lastPaymentDateTime(obStandingOrder.getLastPaymentDateTime())
+                .finalPaymentDateTime(obStandingOrder.getFinalPaymentDateTime())
+                .numberOfPayments(obStandingOrder.getNumberOfPayments())
+                .standingOrderStatusCode(toFRStandingOrderStatus(obStandingOrder.getStandingOrderStatusCode()))
+                .firstPaymentAmount(toFRAmount(obStandingOrder.getFirstPaymentAmount()))
+                .nextPaymentAmount(toFRAmount(obStandingOrder.getNextPaymentAmount()))
+                .lastPaymentAmount(toFRAmount(obStandingOrder.getLastPaymentAmount()))
+                .finalPaymentAmount(toFRAmount(obStandingOrder.getFinalPaymentAmount()))
+                .creditorAgent(toFRFinancialAgent(obStandingOrder.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(obStandingOrder.getCreditorAccount()))
+                .supplementaryData(toFRSupplementaryData(obStandingOrder.getSupplementaryData()))
+                .build();
+    }
+
+    public static FRStandingOrderData.FRStandingOrderStatus toFRStandingOrderStatus(OBExternalStandingOrderStatus1Code standingOrderStatusCode) {
+        return standingOrderStatusCode == null ? null : FRStandingOrderData.FRStandingOrderStatus.valueOf(standingOrderStatusCode.name());
     }
 }

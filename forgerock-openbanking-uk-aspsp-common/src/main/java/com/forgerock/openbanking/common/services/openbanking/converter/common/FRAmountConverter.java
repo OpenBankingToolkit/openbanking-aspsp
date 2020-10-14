@@ -43,6 +43,10 @@ import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataIni
 public class FRAmountConverter {
 
     // OB to FR
+    public static FRAmount toFRAmount(OBActiveOrHistoricCurrencyAndAmount0 amount) {
+        return FRModelMapper.map(amount, FRAmount.class);
+    }
+
     public static FRAmount toFRAmount(OBActiveOrHistoricCurrencyAndAmount amount) {
         return FRModelMapper.map(amount, FRAmount.class);
     }
@@ -60,6 +64,14 @@ public class FRAmountConverter {
     }
 
     public static FRAmount toFRAmount(OBActiveOrHistoricCurrencyAndAmount4 amount) {
+        return FRModelMapper.map(amount, FRAmount.class);
+    }
+
+    public static FRAmount toFRAmount(OBActiveOrHistoricCurrencyAndAmount9 amount) {
+        return FRModelMapper.map(amount, FRAmount.class);
+    }
+
+    public static FRAmount toFRAmount(OBActiveOrHistoricCurrencyAndAmount10 amount) {
         return FRModelMapper.map(amount, FRAmount.class);
     }
 
@@ -96,6 +108,10 @@ public class FRAmountConverter {
     }
 
     public static FRAmount toFRAmount(OBWriteDomesticStandingOrder3DataInitiationFirstPaymentAmount amount) {
+        return FRModelMapper.map(amount, FRAmount.class);
+    }
+
+    public static FRAmount toFRAmount(uk.org.openbanking.datamodel.account.OBActiveOrHistoricCurrencyAndAmount amount) {
         return FRModelMapper.map(amount, FRAmount.class);
     }
 

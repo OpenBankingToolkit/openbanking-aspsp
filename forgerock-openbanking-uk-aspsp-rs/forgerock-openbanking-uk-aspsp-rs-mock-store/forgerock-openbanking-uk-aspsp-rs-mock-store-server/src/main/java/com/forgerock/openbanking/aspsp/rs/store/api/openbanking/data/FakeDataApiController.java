@@ -33,6 +33,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorde
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
 import com.forgerock.openbanking.common.conf.data.DataConfigurationProperties;
+import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.*;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRDirectDebitData.FRDirectDebitStatus;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount.FRAccountStatusCode;
@@ -45,7 +46,6 @@ import com.forgerock.openbanking.common.model.openbanking.domain.account.common.
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.*;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRUserData;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -117,22 +117,19 @@ public class FakeDataApiController implements FakeDataApi {
     @Autowired
     private FRTransactionRepository transactionRepository;
     @Autowired
-    private FRStatementRepository statement1Repository;
+    private FRStatementRepository statementRepository;
     @Autowired
     private FRScheduledPaymentRepository scheduledPaymentRepository;
     @Autowired
     private FRPartyRepository partyRepository;
     @Autowired
-    private FROfferRepository offer1Repository;
+    private FROfferRepository offerRepository;
     @Autowired
-    private DataApiController data2Controller;
+    private DataApiController dataController;
     @Autowired
     private ObjectMapper mapper;
     @Autowired
-    private DataApiController dataApiController;
-    @Autowired
     private DataConfigurationProperties dataConfig;
-
 
     private List<String> companies;
     private List<String> names;
@@ -161,11 +158,11 @@ public class FakeDataApiController implements FakeDataApi {
             DataConfigurationProperties.DataTemplateProfile dataTemplateProfile = any.get();
             FRUserData template = getTemplate(dataTemplateProfile.getTemplate(), username);
             template.setUserName(username);
-            return dataApiController.importUserData(template);
+            return dataController.importUserData(template);
         }
     }
 
-    public FRUserData getTemplate(Resource template, String username) {
+    private FRUserData getTemplate(Resource template, String username) {
         try {
             String content = StreamUtils.copyToString(template.getInputStream(), Charset.defaultCharset());
             content = content.replaceAll("$username", username);
@@ -176,7 +173,7 @@ public class FakeDataApiController implements FakeDataApi {
         }
     }
 
-    public FRUserData generateRandomData(String userId, String username)
+    private FRUserData generateRandomData(String userId, String username)
      {
         LOGGER.debug("Generate data for user '{}'", userId);
 
@@ -288,7 +285,7 @@ public class FakeDataApiController implements FakeDataApi {
 
         generateGlobalParty(userId, username);
 
-        return data2Controller.exportUserData(userId).getBody();
+        return dataController.exportUserData(userId).getBody();
      }
 
     private void generateAccountData(FRAccount account) {
@@ -343,7 +340,7 @@ public class FakeDataApiController implements FakeDataApi {
         directDebitRepository.saveAll(directDebit1s);
         scheduledPaymentRepository.saveAll(scheduledPayments);
         standingOrderRepository.saveAll(standingOrder3s);
-        statement1Repository.saveAll(statements);
+        statementRepository.saveAll(statements);
         transactionRepository.saveAll(transactions);
         productRepository.save(product2);
         balanceRepository.save(balance);
@@ -473,7 +470,7 @@ public class FakeDataApiController implements FakeDataApi {
         return standingOrder;
     }
 
-    public FRStatement generateStatements(FRAccount account, FRBalance balance, DateTime startDate) {
+    private FRStatement generateStatements(FRAccount account, FRBalance balance, DateTime startDate) {
         String statementId = UUID.randomUUID().toString();
         FRStatement statement = new FRStatement();
         statement.setAccountId(account.getId());
@@ -597,7 +594,7 @@ public class FakeDataApiController implements FakeDataApi {
         return transaction;
     }
 
-    public FRScheduledPayment generateScheduledPayment(FRAccount account) {
+    private FRScheduledPayment generateScheduledPayment(FRAccount account) {
         String scheduledPaymentId = UUID.randomUUID().toString();
 
         Double amount = generateAmount(10.0d, 500.0d);
@@ -630,7 +627,7 @@ public class FakeDataApiController implements FakeDataApi {
         return scheduledPayment;
     }
 
-    public FRParty generateParty(FRAccount account2, String username) {
+    private FRParty generateParty(FRAccount account2, String username) {
         FRParty party = partyRepository.findByAccountId(account2.getId());
         String partyId = (party == null) ? UUID.randomUUID().toString() : party.getId();
         party = new FRParty();
@@ -645,7 +642,7 @@ public class FakeDataApiController implements FakeDataApi {
         return party;
     }
 
-    public FRParty generateGlobalParty(String userId, String username) {
+    private FRParty generateGlobalParty(String userId, String username) {
         FRParty existing = partyRepository.findByUserId(username);
 
         String partyId = (existing ==null) ? UUID.randomUUID().toString() : existing.getId();
@@ -661,7 +658,7 @@ public class FakeDataApiController implements FakeDataApi {
         return party;
     }
 
-    public FROffer generateOfferLimitIncrease(FRAccount account2) {
+    private FROffer generateOfferLimitIncrease(FRAccount account2) {
 
         Double amount = generateAmount(1000.0d, 15000.0d);
         amount = amount - (amount % 100);
@@ -681,11 +678,11 @@ public class FakeDataApiController implements FakeDataApi {
                 .build()
         );
 
-        offer1Repository.save(offer1);
+        offerRepository.save(offer1);
         return offer1;
     }
 
-    public FROffer generateOfferBalanceTransfer(FRAccount account2) {
+    private FROffer generateOfferBalanceTransfer(FRAccount account2) {
 
         Double amount = generateAmount(1000.0d, 5000.0d);
         amount = round(amount - (amount % 100), 2);
@@ -705,7 +702,7 @@ public class FakeDataApiController implements FakeDataApi {
                 .build()
         );
 
-        offer1Repository.save(offer1);
+        offerRepository.save(offer1);
         return offer1;
     }
 
@@ -714,7 +711,7 @@ public class FakeDataApiController implements FakeDataApi {
         return round(amount, 2);
     }
 
-    public static double round(double value, int places) {
+    private static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         BigDecimal bd = new BigDecimal(value);

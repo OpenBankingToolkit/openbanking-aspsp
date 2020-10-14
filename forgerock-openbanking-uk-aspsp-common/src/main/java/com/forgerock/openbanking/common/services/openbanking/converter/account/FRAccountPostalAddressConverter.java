@@ -28,9 +28,30 @@ import uk.org.openbanking.datamodel.account.OBPostalAddress8;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.postalAddress;
+
 public class FRAccountPostalAddressConverter {
 
     // OB to FR
+    public static List<FRPostalAddress> toFRPostalAddressList(List<OBPostalAddress8> addresses) {
+        return addresses == null ? null : addresses.stream()
+                .map(a -> toFRPostalAddress(a))
+                .collect(Collectors.toList());
+    }
+
+    public static FRPostalAddress toFRPostalAddress(OBPostalAddress8 address) {
+        return postalAddress == null ? null : FRPostalAddress.builder()
+                .addressType(toAddressTypeCode(address.getAddressType()))
+                .streetName(address.getStreetName())
+                .buildingNumber(address.getBuildingNumber())
+                .postCode(address.getPostCode())
+                .townName(address.getTownName())
+                .countrySubDivision(address.getCountrySubDivision())
+                .country(address.getCountry())
+                .addressLine(address.getAddressLine())
+                .build();
+    }
+
     public static FRPostalAddress toFRPostalAddress(OBPostalAddress6 postalAddress) {
         return postalAddress == null ? null : FRPostalAddress.builder()
                 .addressType(toAddressTypeCode(postalAddress.getAddressType()))

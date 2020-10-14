@@ -32,13 +32,16 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.ac
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification6;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification60;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountSupplementaryDataConverter.toFRSupplementaryData;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toFRAccountIdentifier;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount50;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toFRFinancialAgent;
 
-public class FRBeneficiaryConverter {
+public class FRAccountBeneficiaryConverter {
 
     // FR to OB
     public static OBBeneficiary1 toOBBeneficiary1(FRAccountBeneficiary beneficiary) {
@@ -92,4 +95,22 @@ public class FRBeneficiaryConverter {
     public static OBBeneficiaryType1Code toOBBeneficiaryType1Code(FRAccountBeneficiary.FRBeneficiaryType beneficiaryType) {
         return beneficiaryType == null ? null : OBBeneficiaryType1Code.valueOf(beneficiaryType.name());
     }
+
+    // OB to FR
+    public static FRAccountBeneficiary toFRAccountBeneficiary(OBBeneficiary5 beneficiary) {
+        return beneficiary == null ? null : FRAccountBeneficiary.builder()
+                .accountId(beneficiary.getAccountId())
+                .beneficiaryId(beneficiary.getBeneficiaryId())
+                .beneficiaryType(toFRBeneficiaryType(beneficiary.getBeneficiaryType()))
+                .reference(beneficiary.getReference())
+                .supplementaryData(toFRSupplementaryData(beneficiary.getSupplementaryData()))
+                .creditorAgent(toFRFinancialAgent(beneficiary.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(beneficiary.getCreditorAccount()))
+                .build();
+    }
+
+    public static FRAccountBeneficiary.FRBeneficiaryType toFRBeneficiaryType(OBBeneficiaryType1Code beneficiaryType) {
+        return beneficiaryType == null ? null : FRAccountBeneficiary.FRBeneficiaryType.valueOf(beneficiaryType.name());
+    }
+
 }

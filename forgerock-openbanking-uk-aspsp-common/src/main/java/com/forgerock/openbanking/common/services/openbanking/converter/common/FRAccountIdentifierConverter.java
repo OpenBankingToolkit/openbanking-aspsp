@@ -36,6 +36,14 @@ public class FRAccountIdentifierConverter {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccount60 account) {
+        return FRModelMapper.map(account, FRAccountIdentifier.class);
+    }
+
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccount61 account) {
+        return FRModelMapper.map(account, FRAccountIdentifier.class);
+    }
+
     public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccountDebtor4 account) {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
@@ -171,8 +179,27 @@ public class FRAccountIdentifierConverter {
                 .secondaryIdentification(account.getSecondaryIdentification());
     }
 
-    public static OBDebtorIdentification1 toOBDebtorIdentification1(FRAccountIdentifier frAccountIdentifier) {
-        return frAccountIdentifier == null ? null : new OBDebtorIdentification1()
-                .name(frAccountIdentifier.getName());
+    public static OBDebtorIdentification1 toOBDebtorIdentification1(FRAccountIdentifier account) {
+        return account == null ? null : new OBDebtorIdentification1()
+                .name(account.getName());
+    }
+
+    // OB to FR
+    public static FRAccountIdentifier toFRAccountIdentifier(OBAccount3Account account) {
+        return account == null ? null : FRAccountIdentifier.builder()
+                .schemeName(account.getSchemeName())
+                .identification(account.getIdentification())
+                .name(account.getName())
+                .secondaryIdentification(account.getSecondaryIdentification())
+                .build();
+    }
+
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccount50 account) {
+        return account == null ? null : FRAccountIdentifier.builder()
+                .schemeName(account.getSchemeName())
+                .identification(account.getIdentification())
+                .name(account.getName())
+                .secondaryIdentification(account.getSecondaryIdentification())
+                .build();
     }
 }

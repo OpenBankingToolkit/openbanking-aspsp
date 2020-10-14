@@ -20,30 +20,22 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.offers.FROfferRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.products.FRProductRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.directdebits.FRDirectDebitRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.beneficiaries.FRBeneficiaryRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.directdebits.FRDirectDebitRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.offers.FROfferRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.products.FRProductRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FROffer;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRProduct;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRDirectDebit;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStatement;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBeneficiary;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRAccountData;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.data.FRUserData;
+import com.forgerock.openbanking.common.model.data.FRAccountData;
+import com.forgerock.openbanking.common.model.data.FRUserData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRPartyData;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -62,6 +54,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCashBalanceConverter.toOBCashBalance1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRDirectDebitConverter.toOBReadDirectDebit2DataDirectDebit;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount6;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FROfferConverter.toOBOffer1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter.toFRPartyData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter.toOBParty2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRScheduledPaymentConverter.toOBScheduledPayment3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter.toOBStandingOrder6;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStatementConverter.toOBStatement2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRTransactionConverter.toOBTransaction6;
 
 @Controller("DataApi")
 @Slf4j
@@ -133,7 +137,7 @@ public class DataApiController implements DataApi {
 
         FRParty byUserId = partyRepository.findByUserId(userId);
         if (byUserId != null) {
-            userData.setParty(byUserId.getParty());
+            userData.setParty(toOBParty2(byUserId.getParty()));
         }
         return ResponseEntity.ok(userData);
     }
@@ -185,19 +189,19 @@ public class DataApiController implements DataApi {
     ) {
         FRUserData userDataResponse = new FRUserData(userData.getUserName());
         if (userData.getParty() != null) {
-            FRParty party1 = partyRepository.findByUserId(userData.getUserName());
+            FRParty existingParty = partyRepository.findByUserId(userData.getUserName());
 
             //Party
-            if (party1 != null) {
-                userData.getParty().setPartyId(party1.getId());
+            if (existingParty != null) {
+                userData.getParty().setPartyId(existingParty.getId());
             }
 
-            FRParty party = new FRParty();
-            party.setUserId(userData.getUserName());
-            party.setParty(userData.getParty());
-            party.setId(userData.getParty().getPartyId());
-            userDataResponse.setParty(partyRepository.save(party).getParty());
-
+            FRParty newParty = new FRParty();
+            newParty.setUserId(userData.getUserName());
+            newParty.setParty(toFRPartyData(userData.getParty()));
+            newParty.setId(userData.getParty().getPartyId());
+            FRPartyData newPartyData = partyRepository.save(newParty).getParty();
+            userDataResponse.setParty(toOBParty2(newPartyData));
         }
 
         Set<String> existingAccountIds = accountsRepository.findByUserID(userData.getUserName())
@@ -210,29 +214,30 @@ public class DataApiController implements DataApi {
 
             //Account
             if (accountData.getAccount() != null) {
-                accountDataResponse.setAccount(dataCreator.createAccount(accountData, userData.getUserName()).getAccount());
+                FRFinancialAccount frAccount = dataCreator.createAccount(accountData, userData.getUserName()).getAccount();
+                accountDataResponse.setAccount(toOBAccount6(frAccount));
                 existingAccountIds.add(accountDataResponse.getAccount().getAccountId());
             }
             //Product
             dataCreator.createProducts(accountData, existingAccountIds).ifPresent(accountDataResponse::setProduct);
             //Party
-            dataCreator.createParty(accountData).ifPresent(accountDataResponse::setParty);
+            dataCreator.createParty(accountData).ifPresent(p -> accountDataResponse.setParty(toOBParty2(p)));
             //Balance
-            dataCreator.createBalances(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBalance(b.getBalance()));
+            dataCreator.createBalances(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBalance(toOBCashBalance1(b.getBalance())));
             //Beneficiaries
-            dataCreator.createBeneficiaries(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBeneficiary(b.getBeneficiary()));
+            dataCreator.createBeneficiaries(accountData, existingAccountIds).forEach(b -> accountDataResponse.addBeneficiary(toOBBeneficiary5(b.getBeneficiary())));
             //Direct debits
-            dataCreator.createDirectDebits(accountData, existingAccountIds).forEach(d -> accountDataResponse.addDirectDebit(d.getDirectDebit()));
+            dataCreator.createDirectDebits(accountData, existingAccountIds).forEach(d -> accountDataResponse.addDirectDebit(toOBReadDirectDebit2DataDirectDebit(d.getDirectDebit())));
             //Standing orders
-            dataCreator.createStandingOrders(accountData, existingAccountIds).forEach(d -> accountDataResponse.addStandingOrder(d.getStandingOrder()));
+            dataCreator.createStandingOrders(accountData, existingAccountIds).forEach(d -> accountDataResponse.addStandingOrder(toOBStandingOrder6(d.getStandingOrder())));
             //Transactions
-            dataCreator.createTransactions(accountData, existingAccountIds).forEach(d -> accountDataResponse.addTransaction(d.getTransaction()));
+            dataCreator.createTransactions(accountData, existingAccountIds).forEach(d -> accountDataResponse.addTransaction(toOBTransaction6(d.getTransaction())));
             //Statements
-            dataCreator.createStatements(accountData, existingAccountIds).forEach(d -> accountDataResponse.addStatement(d.getStatement()));
+            dataCreator.createStatements(accountData, existingAccountIds).forEach(d -> accountDataResponse.addStatement(toOBStatement2(d.getStatement())));
             //Scheduled payments
-            dataCreator.createScheduledPayments(accountData, existingAccountIds).forEach(d -> accountDataResponse.addScheduledPayment(d.getScheduledPayment()));
+            dataCreator.createScheduledPayments(accountData, existingAccountIds).forEach(d -> accountDataResponse.addScheduledPayment(toOBScheduledPayment3(d.getScheduledPayment())));
             //offers
-            dataCreator.createOffers(accountData, existingAccountIds).forEach(d -> accountDataResponse.addOffer(d.getOffer()));
+            dataCreator.createOffers(accountData, existingAccountIds).forEach(d -> accountDataResponse.addOffer(toOBOffer1(d.getOffer())));
 
             userDataResponse.addAccountData(accountDataResponse);
         }
@@ -268,7 +273,7 @@ public class DataApiController implements DataApi {
 
     private FRAccountData getAccount(FRAccount account) {
         FRAccountData accountData = new FRAccountData();
-        accountData.setAccount(account.getAccount());
+        accountData.setAccount(toOBAccount6(account.getAccount()));
 
         Page<FRProduct> products = productRepository.findByAccountId(account.getId(), (PageRequest.of(0, 1)));
         if (!products.getContent().isEmpty()) {
@@ -280,13 +285,13 @@ public class DataApiController implements DataApi {
             Page<FRBalance> page = balanceRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
                 for (FRBalance balance : page.getContent()) {
-                    accountData.addBalance(balance.getBalance());
+                    accountData.addBalance(toOBCashBalance1(balance.getBalance()));
                 }
                 page = balanceRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FRBalance balance : page.getContent()) {
-                accountData.addBalance(balance.getBalance());
+                accountData.addBalance(toOBCashBalance1(balance.getBalance()));
             }
         }
         {
@@ -295,13 +300,13 @@ public class DataApiController implements DataApi {
             Page<FRBeneficiary> page = beneficiaryRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
                 for (FRBeneficiary beneficiary : page.getContent()) {
-                    accountData.addBeneficiary(beneficiary.getBeneficiary());
+                    accountData.addBeneficiary(toOBBeneficiary5(beneficiary.getBeneficiary()));
                 }
                 page = beneficiaryRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FRBeneficiary beneficiary : page.getContent()) {
-                accountData.addBeneficiary(beneficiary.getBeneficiary());
+                accountData.addBeneficiary(toOBBeneficiary5(beneficiary.getBeneficiary()));
             }
         }
         {
@@ -310,13 +315,13 @@ public class DataApiController implements DataApi {
             Page<FRDirectDebit> page = directDebitRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
                 for (FRDirectDebit directDebit : page.getContent()) {
-                    accountData.addDirectDebit(directDebit.getDirectDebit());
+                    accountData.addDirectDebit(toOBReadDirectDebit2DataDirectDebit(directDebit.getDirectDebit()));
                 }
                 page = directDebitRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FRDirectDebit directDebit : page.getContent()) {
-                accountData.addDirectDebit(directDebit.getDirectDebit());
+                accountData.addDirectDebit(toOBReadDirectDebit2DataDirectDebit(directDebit.getDirectDebit()));
             }
         }
         {
@@ -325,13 +330,13 @@ public class DataApiController implements DataApi {
             Page<FRStandingOrder> page = standingOrderRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
                 for (FRStandingOrder standingOrder : page.getContent()) {
-                    accountData.addStandingOrder(standingOrder.getStandingOrder());
+                    accountData.addStandingOrder(toOBStandingOrder6(standingOrder.getStandingOrder()));
                 }
                 page = standingOrderRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FRStandingOrder standingOrder : page.getContent()) {
-                accountData.addStandingOrder(standingOrder.getStandingOrder());
+                accountData.addStandingOrder(toOBStandingOrder6(standingOrder.getStandingOrder()));
             }
         }
         {
@@ -340,13 +345,13 @@ public class DataApiController implements DataApi {
             Page<FRTransaction> page = transactionRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
                 for (FRTransaction transaction : page.getContent()) {
-                    accountData.addTransaction(transaction.getTransaction());
+                    accountData.addTransaction(toOBTransaction6(transaction.getTransaction()));
                 }
                 page = transactionRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FRTransaction transaction : page.getContent()) {
-                accountData.addTransaction(transaction.getTransaction());
+                accountData.addTransaction(toOBTransaction6(transaction.getTransaction()));
             }
         }
         {
@@ -355,13 +360,13 @@ public class DataApiController implements DataApi {
             Page<FRStatement> page = statementRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
                 for (FRStatement statement1 : page.getContent()) {
-                    accountData.addStatement(statement1.getStatement());
+                    accountData.addStatement(toOBStatement2(statement1.getStatement()));
                 }
                 page = statementRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FRStatement statement1 : page.getContent()) {
-                accountData.addStatement(statement1.getStatement());
+                accountData.addStatement(toOBStatement2(statement1.getStatement()));
             }
         }
         {
@@ -370,19 +375,19 @@ public class DataApiController implements DataApi {
             Page<FRScheduledPayment> page = scheduledPayment1Repository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
                 for (FRScheduledPayment scheduledPayment1 : page.getContent()) {
-                    accountData.addScheduledPayment(scheduledPayment1.getScheduledPayment());
+                    accountData.addScheduledPayment(toOBScheduledPayment3(scheduledPayment1.getScheduledPayment()));
                 }
                 page = scheduledPayment1Repository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FRScheduledPayment scheduledPayment1 : page.getContent()) {
-                accountData.addScheduledPayment(scheduledPayment1.getScheduledPayment());
+                accountData.addScheduledPayment(toOBScheduledPayment3(scheduledPayment1.getScheduledPayment()));
             }
         }
         {
             FRParty party = partyRepository.findByAccountId(account.getId());
             if (party != null) {
-                accountData.setParty(party.getParty());
+                accountData.setParty(toOBParty2(party.getParty()));
             }
         }
         {
@@ -391,13 +396,13 @@ public class DataApiController implements DataApi {
             Page<FROffer> page = offerRepository.findByAccountId(account.getId(), PageRequest.of(pageNumber, pageLimit));
             while (page.hasNext()) {
                 for (FROffer offer1 : page.getContent()) {
-                    accountData.addOffer(offer1.getOffer());
+                    accountData.addOffer(toOBOffer1(offer1.getOffer()));
                 }
                 page = offerRepository.findAll(PageRequest.of(pageNumber++, pageLimit));
             }
             // process last page
             for (FROffer offer1 : page.getContent()) {
-                accountData.addOffer(offer1.getOffer());
+                accountData.addOffer(toOBOffer1(offer1.getOffer()));
             }
         }
         return accountData;

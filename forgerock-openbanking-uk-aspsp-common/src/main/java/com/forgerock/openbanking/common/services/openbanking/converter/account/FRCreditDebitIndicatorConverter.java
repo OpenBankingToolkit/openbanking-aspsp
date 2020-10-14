@@ -29,6 +29,7 @@ import uk.org.openbanking.datamodel.account.OBTransaction5;
 
 public class FRCreditDebitIndicatorConverter {
 
+    // FR to OB
     public static OBCreditDebitCode toOBCreditDebitCode(FRCreditDebitIndicator indicator) {
         return indicator == null ? null : OBCreditDebitCode.valueOf(indicator.name());
     }
@@ -47,5 +48,22 @@ public class FRCreditDebitIndicatorConverter {
 
     public static OBStatementInterest2.CreditDebitIndicatorEnum toOBStatementInterest2CreditDebitIndicatorEnum(FRCreditDebitIndicator indicator) {
         return indicator == null ? null : OBStatementInterest2.CreditDebitIndicatorEnum.valueOf(indicator.name());
+    }
+
+    // OB to FR
+    public static FRCreditDebitIndicator toFRCreditDebitIndicator(OBCreditDebitCode indicator) {
+        return indicator == null ? null : FRCreditDebitIndicator.valueOf(indicator.name());
+    }
+
+    public static FRCreditDebitIndicator toFRCreditDebitIndicator(OBCreditDebitCode1 indicator) {
+        return indicator == null ? null : FRCreditDebitIndicator.valueOf(indicator.name());
+    }
+
+    public static FRCreditDebitIndicator toFRCreditDebitIndicator(OBStatementFee2.CreditDebitIndicatorEnum indicator) {
+        return indicator == null ? null : FRCreditDebitIndicator.valueOf(indicator.name());
+    }
+
+    public static FRCreditDebitIndicator toFRCreditDebitIndicator(OBStatementInterest2.CreditDebitIndicatorEnum indicator) {
+        return indicator == null ? null : FRCreditDebitIndicator.valueOf(indicator.name());
     }
 }
