@@ -148,7 +148,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
                 );
     }
 
-    public ResponseEntity updateEventSubscription(
+    public ResponseEntity<OBEventSubscriptionResponse1> updateEventSubscription(
             @ApiParam(value = "EventSubscriptionId", required = true)
             @PathVariable("EventSubscriptionId") String eventSubscriptionId,
 
@@ -186,7 +186,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
 
             existingEventSubscription.setObEventSubscription1(updatedSubscription);
             eventSubscriptionsRepository.save(existingEventSubscription);
-            return ResponseEntity.ok(packageResponse(Collections.singletonList(existingEventSubscription)));
+            return ResponseEntity.ok(packageResponse(existingEventSubscription));
         } else {
             // PUT is only used for amending existing subscriptions
             throw new OBErrorResponseException(
