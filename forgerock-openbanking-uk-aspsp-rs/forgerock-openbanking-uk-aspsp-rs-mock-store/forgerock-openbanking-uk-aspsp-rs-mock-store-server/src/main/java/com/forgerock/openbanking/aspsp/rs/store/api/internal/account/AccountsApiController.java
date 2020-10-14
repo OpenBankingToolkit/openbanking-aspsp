@@ -106,14 +106,6 @@ public class AccountsApiController implements AccountsApi {
     }
 
     @Override
-    public ResponseEntity<Optional<FRAccount>> findByIdentification(
-            @RequestParam("identification") String identification
-    ) {
-        log.debug("Find accounts by identification {}", identification);
-        return new ResponseEntity<>(accountsRepository.findByAccountAccountIdentification(identification), HttpStatus.OK);
-    }
-
-    @Override
     public ResponseEntity<FRAccount> getAccount(
             @PathVariable("accountId") String accountId
     ) {

@@ -25,10 +25,8 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
-import java.util.Optional;
 
 public interface FRAccountRepository extends MongoRepository<FRAccount, String>, FRAccountRepositoryCustom {
 
     Collection<FRAccount> findByUserID(@Param("userID") String userID);
-    Optional<FRAccount> findByAccountAccountIdentification(@Param("identification") String identification);
 }

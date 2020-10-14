@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequestMapping(value = "/api/accounts")
 public interface AccountsApi {
@@ -53,13 +52,6 @@ public interface AccountsApi {
     ResponseEntity<FRAccount> findByAccountId(
             @PathVariable("accountId") String accountId,
             @RequestParam("permissions") List<String> permissions
-    );
-
-    @RequestMapping(value = "/search/findByIdentification",
-            produces = { "application/json; charset=utf-8" },
-            method = RequestMethod.GET)
-    ResponseEntity<Optional<FRAccount>> findByIdentification(
-            @RequestParam("identification") String identification
     );
 
     @RequestMapping(value = "/{accountId}",
