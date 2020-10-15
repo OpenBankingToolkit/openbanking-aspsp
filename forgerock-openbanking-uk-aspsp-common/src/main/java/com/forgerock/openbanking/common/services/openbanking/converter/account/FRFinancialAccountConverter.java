@@ -26,6 +26,7 @@ import com.forgerock.openbanking.common.services.openbanking.converter.common.FR
 import uk.org.openbanking.datamodel.account.*;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toFRAccountServicer;
@@ -119,6 +120,19 @@ public class FRFinancialAccountConverter {
     }
 
     // OB to FR
+    public static FRFinancialAccount toFRFinancialAccount(OBAccount3 account) {
+        return account == null ? null : FRFinancialAccount.builder()
+                .accountId(account.getAccountId())
+                .currency(account.getCurrency())
+                .accountType(toFRAccountTypeCode(account.getAccountType()))
+                .accountSubType(toFRAccountSubTypeCode(account.getAccountSubType()))
+                .description(account.getDescription())
+                .nickname(account.getNickname())
+                .accounts(toFRAccountIdentifierList(account.getAccount(), FRAccountIdentifierConverter::toFRAccountIdentifier))
+                .servicer(toFRAccountServicer(account.getServicer()))
+                .build();
+    }
+
     public static FRFinancialAccount toFRFinancialAccount(OBAccount6 account) {
         return account == null ? null : FRFinancialAccount.builder()
                 .accountId(account.getAccountId())
@@ -131,7 +145,7 @@ public class FRFinancialAccountConverter {
                 .nickname(account.getNickname())
                 .openingDate(account.getOpeningDate())
                 .maturityDate(account.getMaturityDate())
-                .accounts(toFRAccountIdentifierList(account.getAccount()))
+                .accounts(toFRAccountIdentifierList(account.getAccount(), FRAccountIdentifierConverter::toFRAccountIdentifier))
                 .servicer(toFRAccountServicer(account.getServicer()))
                 .build();
     }
@@ -148,11 +162,9 @@ public class FRFinancialAccountConverter {
         return accountSubType == null ? null : FRFinancialAccount.FRAccountSubTypeCode.valueOf(accountSubType.name());
     }
 
-    public static List<FRAccountIdentifier> toFRAccountIdentifierList(List<OBAccount3Account> accounts) {
+    public static <T> List<FRAccountIdentifier> toFRAccountIdentifierList(List<T> accounts, Function<T, FRAccountIdentifier> converter) {
         return accounts == null ? null : accounts.stream()
-                .map(FRAccountIdentifierConverter::toFRAccountIdentifier)
+                .map(converter)
                 .collect(Collectors.toList());
     }
-
-
 }

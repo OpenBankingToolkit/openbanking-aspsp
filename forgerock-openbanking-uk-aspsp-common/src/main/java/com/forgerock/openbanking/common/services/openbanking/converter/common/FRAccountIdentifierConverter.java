@@ -32,6 +32,10 @@ public class FRAccountIdentifierConverter {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccount6 account) {
+        return FRModelMapper.map(account, FRAccountIdentifier.class);
+    }
+
     public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccount51 account) {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
@@ -186,6 +190,15 @@ public class FRAccountIdentifierConverter {
 
     // OB to FR
     public static FRAccountIdentifier toFRAccountIdentifier(OBAccount3Account account) {
+        return account == null ? null : FRAccountIdentifier.builder()
+                .schemeName(account.getSchemeName())
+                .identification(account.getIdentification())
+                .name(account.getName())
+                .secondaryIdentification(account.getSecondaryIdentification())
+                .build();
+    }
+
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccount5 account) {
         return account == null ? null : FRAccountIdentifier.builder()
                 .schemeName(account.getSchemeName())
                 .identification(account.getIdentification())

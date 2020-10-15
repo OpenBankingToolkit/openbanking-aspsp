@@ -105,6 +105,13 @@ public class FRAccountServicerConverter {
     }
 
     // OB to FR
+    public static FRAccountServicer toFRAccountServicer(OBBranchAndFinancialInstitutionIdentification5 servicer) {
+        return servicer == null ? null : FRAccountServicer.builder()
+                .schemeName(servicer.getSchemeName())
+                .identification(servicer.getIdentification())
+                .build();
+    }
+
     public static FRAccountServicer toFRAccountServicer(OBBranchAndFinancialInstitutionIdentification50 servicer) {
         return servicer == null ? null : FRAccountServicer.builder()
                 .schemeName(servicer.getSchemeName())

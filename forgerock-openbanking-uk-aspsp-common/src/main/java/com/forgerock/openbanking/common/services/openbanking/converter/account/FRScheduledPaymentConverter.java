@@ -43,6 +43,19 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.co
 public class FRScheduledPaymentConverter {
 
     // OB to FR
+    public static FRScheduledPaymentData toFRScheduledPaymentData(OBScheduledPayment2 scheduledPayment) {
+        return scheduledPayment == null ? null : FRScheduledPaymentData.builder()
+                .accountId(scheduledPayment.getAccountId())
+                .scheduledPaymentId(scheduledPayment.getScheduledPaymentId())
+                .scheduledPaymentDateTime(scheduledPayment.getScheduledPaymentDateTime())
+                .scheduledType(toFRScheduleType(scheduledPayment.getScheduledType()))
+                .reference(scheduledPayment.getReference())
+                .instructedAmount(toFRAmount(scheduledPayment.getInstructedAmount()))
+                .creditorAgent(toFRFinancialAgent(scheduledPayment.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(scheduledPayment.getCreditorAccount()))
+                .build();
+    }
+
     public static FRScheduledPaymentData toFRScheduledPaymentData(OBScheduledPayment3 scheduledPayment) {
         return scheduledPayment == null ? null : FRScheduledPaymentData.builder()
                 .accountId(scheduledPayment.getAccountId())

@@ -265,6 +265,34 @@ public class FRTransactionConverter {
     }
 
     // OB to FR
+    public static FRTransactionData toFRTransactionData(OBTransaction5 transaction) {
+        return transaction == null ? null : FRTransactionData.builder()
+                .accountId(transaction.getAccountId())
+                .transactionId(transaction.getTransactionId())
+                .transactionReference(transaction.getTransactionReference())
+                .statementReferences(transaction.getStatementReference())
+                .creditDebitIndicator(toFRCreditDebitIndicator(transaction.getCreditDebitIndicator()))
+                .status(toFREntryStatus(transaction.getStatus()))
+                .bookingDateTime(transaction.getBookingDateTime())
+                .valueDateTime(transaction.getValueDateTime())
+                .addressLine(transaction.getAddressLine())
+                .amount(toFRAmount(transaction.getAmount()))
+                .chargeAmount(toFRAmount(transaction.getChargeAmount()))
+                .currencyExchange(toFRCurrencyExchange(transaction.getCurrencyExchange()))
+                .bankTransactionCode(toFRBankTransactionCodeStructure(transaction.getBankTransactionCode()))
+                .proprietaryBankTransactionCode(toFRProprietaryBankTransactionCodeStructure(transaction.getProprietaryBankTransactionCode()))
+                .cardInstrument(toFRTransactionCardInstrument(transaction.getCardInstrument()))
+                .supplementaryData(toFRSupplementaryData(transaction.getSupplementaryData()))
+                .transactionInformation(transaction.getTransactionInformation())
+                .balance(toFRTransactionCashBalance(transaction.getBalance()))
+                .merchantDetails(toFRMerchantDetails(transaction.getMerchantDetails()))
+                .creditorAgent(toFRFinancialAgent(transaction.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(transaction.getCreditorAccount()))
+                .debtorAgent(toFRFinancialAgent(transaction.getDebtorAgent()))
+                .debtorAccount(toFRAccountIdentifier(transaction.getDebtorAccount()))
+                .build();
+    }
+
     public static FRTransactionData toFRTransactionData(OBTransaction6 transaction) {
         return transaction == null ? null : FRTransactionData.builder()
                 .accountId(transaction.getAccountId())
@@ -295,17 +323,24 @@ public class FRTransactionConverter {
     }
 
     public static FRTransactionData.FREntryStatus toFREntryStatus(OBEntryStatus1Code status) {
-       return status == null ? null : FRTransactionData.FREntryStatus.valueOf(status.name());
+        return status == null ? null : FRTransactionData.FREntryStatus.valueOf(status.name());
     }
 
     public static FRTransactionData.FRTransactionMutability toFRTransactionMutability(OBTransactionMutability1Code transactionMutability) {
-       return transactionMutability == null ? null : FRTransactionData.FRTransactionMutability.valueOf(transactionMutability.name());
+        return transactionMutability == null ? null : FRTransactionData.FRTransactionMutability.valueOf(transactionMutability.name());
     }
 
     public static FRBankTransactionCodeStructure toFRBankTransactionCodeStructure(OBBankTransactionCodeStructure1 transactionCode) {
         return transactionCode == null ? null : FRBankTransactionCodeStructure.builder()
                 .code(transactionCode.getCode())
                 .subCode(transactionCode.getSubCode())
+                .build();
+    }
+
+    private static FRProprietaryBankTransactionCodeStructure toFRProprietaryBankTransactionCodeStructure(OBTransaction5ProprietaryBankTransactionCode proprietaryTransactionCode) {
+        return proprietaryTransactionCode == null ? null : FRProprietaryBankTransactionCodeStructure.builder()
+                .code(proprietaryTransactionCode.getCode())
+                .issuer(proprietaryTransactionCode.getIssuer())
                 .build();
     }
 
@@ -330,17 +365,6 @@ public class FRTransactionConverter {
                 .merchantCategoryCode(merchantDetails.getMerchantCategoryCode())
                 .build();
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
     public static FRTransactionData.FRTransactionCardInstrument toFRTransactionCardInstrument(OBTransactionCardInstrument1 cardInstrument) {

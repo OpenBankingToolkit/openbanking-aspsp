@@ -158,6 +158,25 @@ public class FRStandingOrderConverter {
     }
 
     // OB to FR
+    public static FRStandingOrderData toFRStandingOrderData(OBStandingOrder5 obStandingOrder) {
+        return obStandingOrder == null ? null : FRStandingOrderData.builder()
+                .accountId(obStandingOrder.getAccountId())
+                .standingOrderId(obStandingOrder.getStandingOrderId())
+                .frequency(obStandingOrder.getFrequency())
+                .reference(obStandingOrder.getReference())
+                .firstPaymentDateTime(obStandingOrder.getFirstPaymentDateTime())
+                .nextPaymentDateTime(obStandingOrder.getNextPaymentDateTime())
+                .finalPaymentDateTime(obStandingOrder.getFinalPaymentDateTime())
+                .standingOrderStatusCode(toFRStandingOrderStatus(obStandingOrder.getStandingOrderStatusCode()))
+                .firstPaymentAmount(toFRAmount(obStandingOrder.getFirstPaymentAmount()))
+                .nextPaymentAmount(toFRAmount(obStandingOrder.getNextPaymentAmount()))
+                .finalPaymentAmount(toFRAmount(obStandingOrder.getFinalPaymentAmount()))
+                .creditorAgent(toFRFinancialAgent(obStandingOrder.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(obStandingOrder.getCreditorAccount()))
+                .supplementaryData(toFRSupplementaryData(obStandingOrder.getSupplementaryData()))
+                .build();
+    }
+
     public static FRStandingOrderData toFRStandingOrderData(OBStandingOrder6 obStandingOrder) {
         return obStandingOrder == null ? null : FRStandingOrderData.builder()
                 .accountId(obStandingOrder.getAccountId())

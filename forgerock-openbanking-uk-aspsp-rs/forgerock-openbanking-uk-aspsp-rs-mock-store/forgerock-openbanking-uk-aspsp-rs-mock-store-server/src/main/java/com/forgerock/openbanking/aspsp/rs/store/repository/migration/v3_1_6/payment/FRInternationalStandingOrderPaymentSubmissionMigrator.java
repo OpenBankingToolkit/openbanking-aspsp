@@ -18,14 +18,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
+package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.payments.InternationalStandingOrderPaymentSubmission3;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderPaymentSubmission;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 
-public class FRInternationalStandingOrderPaymentSubmissionConverter {
+public class FRInternationalStandingOrderPaymentSubmissionMigrator {
 
     public static FRInternationalStandingOrderPaymentSubmission toFRInternationalStandingOrderPaymentSubmission(InternationalStandingOrderPaymentSubmission3 frInternationalStandingOrderPaymentSubmission3) {
         return frInternationalStandingOrderPaymentSubmission3 == null ? null : FRInternationalStandingOrderPaymentSubmission.builder()

@@ -29,16 +29,16 @@ import org.springframework.data.util.CloseableIterator;
 
 import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.MigrationHelper.getLegacyDocuments;
 import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.MigrationHelper.migrate;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRDomesticConsentConverter.toFRDomesticConsent;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRDomesticScheduledConsentConverter.toFRDomesticScheduledConsent;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRDomesticStandingOrderConsentConverter.toFRDomesticStandingOrderConsent;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRFileConsentConverter.toFRFileConsent;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalConsentConverter.toFRInternationalConsent;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalScheduledConsentConverter.toFRInternationalScheduledConsent;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalStandingOrderConsentConverter.toFRInternationalStandingOrderConsent;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalPaymentSubmissionConverter.toFRInternationalPaymentSubmission;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalScheduledPaymentSubmissionConverter.toFRInternationalScheduledPaymentSubmission;
-import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.FRInternationalStandingOrderPaymentSubmissionConverter.toFRInternationalStandingOrderPaymentSubmission;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment.FRDomesticConsentMigrator.toFRDomesticConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment.FRDomesticScheduledConsentMigrator.toFRDomesticScheduledConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment.FRDomesticStandingOrderConsentMigrator.toFRDomesticStandingOrderConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment.FRFileConsentMigrator.toFRFileConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment.FRInternationalConsentMigrator.toFRInternationalConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment.FRInternationalScheduledConsentMigrator.toFRInternationalScheduledConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment.FRInternationalStandingOrderConsentMigrator.toFRInternationalStandingOrderConsent;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment.FRInternationalPaymentSubmissionMigrator.toFRInternationalPaymentSubmission;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment.FRInternationalScheduledPaymentSubmissionMigrator.toFRInternationalScheduledPaymentSubmission;
+import static com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment.FRInternationalStandingOrderPaymentSubmissionMigrator.toFRInternationalStandingOrderPaymentSubmission;
 
 @ChangeLog
 @Slf4j

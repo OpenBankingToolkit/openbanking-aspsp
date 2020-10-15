@@ -18,14 +18,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6;
+package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payment;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.payments.FRDomesticConsent2;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
 
-public class FRDomesticConsentConverter {
+public class FRDomesticConsentMigrator {
 
     public static FRDomesticConsent toFRDomesticConsent(FRDomesticConsent2 frDomesticConsent2) {
         FRDomesticConsent frDomesticConsent = new FRDomesticConsent();
