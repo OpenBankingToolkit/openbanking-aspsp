@@ -50,8 +50,8 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 
 @Controller("InternationalStandingOrdersApiV3.1.1")
 @Slf4j
@@ -119,7 +119,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
                     f.verifyRiskAndInitiation(
-                            toOBWriteInternationalStandingOrder4DataInitiation(OBWriteInternationalStandingOrder3Param.getData().getInitiation()),
+                            toFRWriteInternationalStandingOrderDataInitiation(OBWriteInternationalStandingOrder3Param.getData().getInitiation()),
                             toFRRisk(OBWriteInternationalStandingOrder3Param.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
 
