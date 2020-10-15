@@ -65,6 +65,18 @@ public class FRDirectDebitConverter {
     }
 
     // OB to FR
+    public static FRDirectDebitData toFRDirectDebitData(OBDirectDebit1 obDirectDebit) {
+        return obDirectDebit == null ? null : FRDirectDebitData.builder()
+                .accountId(obDirectDebit.getAccountId())
+                .directDebitId(obDirectDebit.getDirectDebitId())
+                .mandateIdentification(obDirectDebit.getMandateIdentification())
+                .directDebitStatusCode(toFRDirectDebitStatus(obDirectDebit.getDirectDebitStatusCode()))
+                .name(obDirectDebit.getName())
+                .previousPaymentDateTime(obDirectDebit.getPreviousPaymentDateTime())
+                .previousPaymentAmount(toFRAmount(obDirectDebit.getPreviousPaymentAmount()))
+                .build();
+    }
+
     public static FRDirectDebitData toFRDirectDebitData(OBReadDirectDebit2DataDirectDebit obDirectDebit) {
         return obDirectDebit == null ? null : FRDirectDebitData.builder()
                 .accountId(obDirectDebit.getAccountId())

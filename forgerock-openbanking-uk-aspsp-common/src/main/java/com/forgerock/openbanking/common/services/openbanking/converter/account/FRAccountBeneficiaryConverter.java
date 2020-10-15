@@ -97,6 +97,16 @@ public class FRAccountBeneficiaryConverter {
     }
 
     // OB to FR
+    public static FRAccountBeneficiary toFRAccountBeneficiary(OBBeneficiary3 beneficiary) {
+        return beneficiary == null ? null : FRAccountBeneficiary.builder()
+                .accountId(beneficiary.getAccountId())
+                .beneficiaryId(beneficiary.getBeneficiaryId())
+                .reference(beneficiary.getReference())
+                .creditorAgent(toFRFinancialAgent(beneficiary.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(beneficiary.getCreditorAccount()))
+                .build();
+    }
+
     public static FRAccountBeneficiary toFRAccountBeneficiary(OBBeneficiary5 beneficiary) {
         return beneficiary == null ? null : FRAccountBeneficiary.builder()
                 .accountId(beneficiary.getAccountId())

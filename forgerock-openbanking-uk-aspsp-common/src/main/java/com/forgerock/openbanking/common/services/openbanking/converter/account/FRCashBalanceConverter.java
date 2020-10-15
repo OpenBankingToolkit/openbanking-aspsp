@@ -92,7 +92,7 @@ public class FRCashBalanceConverter {
                 .collect(toList());
     }
 
-    private static FRCreditLine toFRCreditLine(OBCreditLine1 creditLine) {
+    public static FRCreditLine toFRCreditLine(OBCreditLine1 creditLine) {
         return creditLine == null ? null : FRCreditLine.builder()
                 .included(creditLine.isIncluded())
                 .type(toFRLimitType(creditLine.getType()))
@@ -100,7 +100,7 @@ public class FRCashBalanceConverter {
                 .build();
     }
 
-    private static FRCreditLine.FRLimitType toFRLimitType(OBExternalLimitType1Code type) {
+    public static FRCreditLine.FRLimitType toFRLimitType(OBExternalLimitType1Code type) {
         return type == null ? null : FRCreditLine.FRLimitType.valueOf(type.name());
     }
 }

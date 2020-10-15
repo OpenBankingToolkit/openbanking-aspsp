@@ -66,7 +66,23 @@ public class FRFinancialInstrumentConverter {
                 .build();
     }
 
+    public static FRFinancialAgent toFRFinancialAgent(OBBranchAndFinancialInstitutionIdentification5 agent) {
+        return agent == null ? null : FRFinancialAgent.builder()
+                .schemeName(agent.getSchemeName())
+                .identification(agent.getIdentification())
+                .build();
+    }
+
     public static FRFinancialAgent toFRFinancialAgent(OBBranchAndFinancialInstitutionIdentification6 agent) {
+        return agent == null ? null : FRFinancialAgent.builder()
+                .schemeName(agent.getSchemeName())
+                .identification(agent.getIdentification())
+                .name(agent.getName())
+                .postalAddress(toFRPostalAddress(agent.getPostalAddress()))
+                .build();
+    }
+
+    public static FRFinancialAgent toFRFinancialAgent(uk.org.openbanking.datamodel.account.OBBranchAndFinancialInstitutionIdentification6 agent) {
         return agent == null ? null : FRFinancialAgent.builder()
                 .schemeName(agent.getSchemeName())
                 .identification(agent.getIdentification())

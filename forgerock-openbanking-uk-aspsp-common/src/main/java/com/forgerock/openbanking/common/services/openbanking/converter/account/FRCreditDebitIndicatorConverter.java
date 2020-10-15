@@ -66,4 +66,8 @@ public class FRCreditDebitIndicatorConverter {
     public static FRCreditDebitIndicator toFRCreditDebitIndicator(OBStatementInterest2.CreditDebitIndicatorEnum indicator) {
         return indicator == null ? null : FRCreditDebitIndicator.valueOf(indicator.name());
     }
+
+    public static FRCreditDebitIndicator toFRCreditDebitIndicator(OBTransaction5.CreditDebitIndicatorEnum indicator) {
+        return indicator == null ? null : FRCreditDebitIndicator.valueOf(indicator.name());
+    }
 }
