@@ -42,6 +42,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
+
 @Controller("EventSubscriptionApiV3.1.2")
 @Slf4j
 public class EventSubscriptionApiController implements EventSubscriptionApi {
@@ -76,6 +78,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f ->
                         {
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
@@ -106,6 +109,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
@@ -140,6 +144,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f ->
                         {
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
@@ -149,7 +154,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add(OpenBankingHttpHeaders.X_OB_CLIENT_ID, tppId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBEventSubscriptionsResponse1.class, obEventSubscriptionsParam);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBEventSubscriptionResponse1.class, obEventSubscriptionsParam);
                         }
                 );
     }
@@ -172,6 +177,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();

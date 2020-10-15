@@ -40,13 +40,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.event.*;
+import uk.org.openbanking.datamodel.event.OBCallbackUrl1;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlResponse1;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlResponseData1;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponseData1;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -242,13 +245,6 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
                                         .collect(Collectors.toList())
                         )
                 );
-    }
-
-    protected List<OBCallbackUrlResponseData1> callbackUrlFilteredByVersion(final Collection<FRCallbackUrl> frCallbackUrls, final String version){
-        return frCallbackUrls.stream()
-                .filter(frCallbackUrl -> frCallbackUrl.callbackUrl.getVersion().equals(version))
-                .map(this::toOBCallbackUrlResponseData1)
-                .collect(Collectors.toList());
     }
 
     protected OBCallbackUrlResponse1 packageResponse(FRCallbackUrl frCallbackUrl) {

@@ -57,6 +57,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+/**
+ * Spring Boot integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.eventsubscription.EventSubscriptionApiController}
+ */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Slf4j
@@ -185,7 +188,7 @@ public class EventSubscriptionApiControllerIT {
                 .data(new OBEventSubscriptionResponse1Data()
                         .eventSubscriptionId(eventSubsId)
                         .callbackUrl("http://callback/update")
-                        .version("3.1")
+                        .version("3.1.2")
                 );
         FREventSubscription frEventSubscription = FREventSubscription.builder()
                 .id(eventSubsId)
@@ -194,17 +197,18 @@ public class EventSubscriptionApiControllerIT {
         eventSubscriptionsRepository.save(frEventSubscription);
 
         // When
-        HttpResponse<OBEventSubscriptionsResponse1> response = Unirest.put(BASE_URL + port + RESOURCE_URI + "/" + eventSubsId)
+        HttpResponse<OBEventSubscriptionResponse1> response = Unirest.put(BASE_URL + port + RESOURCE_URI + "/" + eventSubsId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
                 .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
                 .body(obEventSubscription1)
-                .asObject(OBEventSubscriptionsResponse1.class);
+                .asObject(OBEventSubscriptionResponse1.class);
         log.debug("Response: {} {} , {}", response.getStatus(), response.getStatusText(), response.getBody());
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getBody().getData().getEventSubscription().get(0).getCallbackUrl()).isEqualTo("http://callback/update");
+        OBEventSubscriptionResponse1Data responseData = response.getBody().getData();
+        assertThat(responseData.getCallbackUrl()).isEqualTo("http://callback/update");
 
         final Optional<FREventSubscription> byId = eventSubscriptionsRepository.findById(eventSubsId);
         assertThat(byId.orElseThrow(AssertionError::new).getEventSubscription().getCallbackUrl()).isEqualTo("http://callback/update");
