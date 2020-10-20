@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.accounts;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +29,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.account.OBAccount3;
+import uk.org.openbanking.datamodel.account.OBOffer1;
 
 import java.util.Date;
 
@@ -47,21 +46,18 @@ import java.util.Date;
  * </p>
  */
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Document
 @Deprecated
-public class FRAccount3 implements Account {
+public class FROffer1 {
 
     @Id
-    @Indexed
     public String id;
     @Indexed
-    public String userID;
-    public OBAccount3 account; // needs migrating to OBAccount6
-    @Indexed
-    public String latestStatementId;
+    public String accountId;
+    public OBOffer1 offer;
 
     @CreatedDate
     public Date created;

@@ -42,7 +42,7 @@ import java.util.List;
 
 /**
  * This class exists purely for migration purposes and should be removed once all clusters have been upgraded to a release of openbanking-reference-implementation
- * containing v3.1.5 (currently REM).
+ * containing v3.1.6.
  *
  * <p>
  * Note that Prior to extensive refactoring, there were a series of these "FR" mongo document classes that were named in sequence (e.g. FRAccount2,

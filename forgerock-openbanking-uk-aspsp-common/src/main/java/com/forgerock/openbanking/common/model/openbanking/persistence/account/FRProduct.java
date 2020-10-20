@@ -20,6 +20,10 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -32,6 +36,10 @@ import java.util.Date;
 /**
  * Representation of an account. This model is only useful for the demo
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Document
 public class FRProduct {
 
@@ -48,44 +56,4 @@ public class FRProduct {
     public Date created;
     @LastModifiedDate
     public Date updated;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public OBReadProduct2DataProduct getProduct() {
-        return product;
-    }
-
-    public void setProduct(OBReadProduct2DataProduct product) {
-        this.product = product;
-    }
-
-    public String getAccountId() {
-        return accountId;
-    }
-
-    public void setAccountId(String accountId) {
-        this.accountId = accountId;
-    }
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public Date getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(Date updated) {
-        this.updated = updated;
-    }
 }

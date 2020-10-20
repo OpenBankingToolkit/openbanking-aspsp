@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.accounts;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,9 +29,15 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.account.OBAccount3;
+import uk.org.openbanking.datamodel.account.OBCashBalance1;
+import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
+import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * This class exists purely for migration purposes and should be removed once all clusters have been upgraded to a release of openbanking-reference-implementation
@@ -52,20 +57,58 @@ import java.util.Date;
 @AllArgsConstructor
 @Document
 @Deprecated
-public class FRAccount3 implements Account {
+public class FRBalance1 {
+    private final static NumberFormat FORMAT_AMOUNT = new DecimalFormat("#0.00");
 
     @Id
     @Indexed
     public String id;
     @Indexed
-    public String userID;
-    public OBAccount3 account; // needs migrating to OBAccount6
-    @Indexed
-    public String latestStatementId;
+    public String accountId;
+    public OBCashBalance1 balance;
 
     @CreatedDate
     public Date created;
     @LastModifiedDate
     public Date updated;
 
+
+    public OBActiveOrHistoricCurrencyAndAmount getCurrencyAndAmount() {
+        return getBalance().getAmount();
+    }
+
+    public BigDecimal getAmount() {
+        return new BigDecimal(getBalance().getAmount().getAmount());
+    }
+
+    public String getCurrency() {
+        return getBalance().getAmount().getCurrency();
+    }
+
+    public OBCreditDebitCode getCreditDebitIndicator() {
+        return getBalance().getCreditDebitIndicator();
+    }
+
+    public void setAmount(BigDecimal amount) {
+        getBalance().getAmount().setAmount(FORMAT_AMOUNT.format(amount));
+    }
+
+    public void setCreditDebitIndicator(OBCreditDebitCode code) {
+        getBalance().setCreditDebitIndicator(code);
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FRBalance1 that = (FRBalance1) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(accountId, that.accountId) &&
+                Objects.equals(balance, that.balance) &&
+                Objects.equals(created, that.created) &&
+                Objects.equals(updated, that.updated);
+    }
+
+    public int hashCode() {
+        return Objects.hash(id, accountId, balance, created, updated);
+    }
 }
