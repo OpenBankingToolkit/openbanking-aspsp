@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.persistence.event;
+package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.funds;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.event.FRCallbackUrlData;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,37 +29,43 @@ import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
 
+/**
+ * This class exists purely for migration purposes and should be removed once all clusters have been upgraded to a release of openbanking-reference-implementation
+ * containing v3.1.6.
+ *
+ * <p>
+ * Note that Prior to extensive refactoring, there were a series of these "FR" mongo document classes that were named in sequence (e.g. FRDomesticConsent2,
+ * FRDomesticConsent3 etc.). The sequence number was incremented each time there was a new version of the OB model objects they contained. Instead of this, there
+ * is now one FR document class (e.g. FRDomesticConsent) for each corresponding area of the payments API. Each one contains our own "domain" model object, rather
+ * than the OB model ones. This means that if a new OB release adds new fields to an OB object, the fields only need to be added to the our domain objects
+ * (and mapped accordingly). There should be no need to create a new version of the "FR" mongo documents and corresponding repositories.
+ * </p>
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Document
-public class FRCallbackUrl implements Persistable<String> {
+@Deprecated
+public class FRFundsConfirmation1 {
 
     @Id
     @Indexed
     public String id;
 
-    public FRCallbackUrlData callbackUrl;
+    public OBFundsConfirmation1 fundsConfirmation;
 
-    @Indexed
-    public String tppId;
+    public boolean fundsAvailable;
 
     @CreatedDate
     public DateTime created;
     @LastModifiedDate
     public DateTime updated;
 
-    @Override
-    public boolean isNew() {
-        return created == null;
-    }
+    public OBVersion obVersion;
 
-    public String getCallBackUrlString() {
-        return callbackUrl.getUrl();
-    }
 }

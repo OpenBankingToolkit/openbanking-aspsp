@@ -47,41 +47,41 @@ public class MongoDbAccountsChangeLog {
 
     @ChangeSet(order = "002", id = "accounts-v3.1.2-to-v3.1.6", author = "Matt Wills")
     public void migrateAccountDocuments(MongoTemplate mongoTemplate) {
-        log.info("Migrating accounts API data from v3.1.2 to v3.1.6...");
+        log.info("Migrating Accounts API data from v3.1.2 to v3.1.6...");
 
         CloseableIterator<FRAccount3> frAccounts = getLegacyDocuments(mongoTemplate, FRAccount3.class);
-        frAccounts.forEachRemaining(f -> migrate(mongoTemplate, f, toFRAccount(f)));
+        frAccounts.forEachRemaining(d -> migrate(mongoTemplate, d, toFRAccount(d)));
 
         CloseableIterator<FRBalance1> frBalances = getLegacyDocuments(mongoTemplate, FRBalance1.class);
-        frBalances.forEachRemaining(f -> migrate(mongoTemplate, f, toFRBalance(f)));
+        frBalances.forEachRemaining(d -> migrate(mongoTemplate, d, toFRBalance(d)));
 
         CloseableIterator<FRBeneficiary3> frBeneficiaries = getLegacyDocuments(mongoTemplate, FRBeneficiary3.class);
-        frBeneficiaries.forEachRemaining(f -> migrate(mongoTemplate, f, toFRBeneficiary(f)));
+        frBeneficiaries.forEachRemaining(d -> migrate(mongoTemplate, d, toFRBeneficiary(d)));
 
         CloseableIterator<FRDirectDebit1> frDirectDebits = getLegacyDocuments(mongoTemplate, FRDirectDebit1.class);
-        frDirectDebits.forEachRemaining(f -> migrate(mongoTemplate, f, toFRDirectDebit(f)));
+        frDirectDebits.forEachRemaining(d -> migrate(mongoTemplate, d, toFRDirectDebit(d)));
 
         CloseableIterator<FROffer1> frOffers = getLegacyDocuments(mongoTemplate, FROffer1.class);
-        frOffers.forEachRemaining(f -> migrate(mongoTemplate, f, toFROffer(f)));
+        frOffers.forEachRemaining(d -> migrate(mongoTemplate, d, toFROffer(d)));
 
         CloseableIterator<FRParty2> frParties = getLegacyDocuments(mongoTemplate, FRParty2.class);
-        frParties.forEachRemaining(f -> migrate(mongoTemplate, f, toFRParty(f)));
+        frParties.forEachRemaining(d -> migrate(mongoTemplate, d, toFRParty(d)));
 
         CloseableIterator<FRProduct2> frProducts = getLegacyDocuments(mongoTemplate, FRProduct2.class);
-        frProducts.forEachRemaining(f -> migrate(mongoTemplate, f, toFRProduct(f)));
+        frProducts.forEachRemaining(d -> migrate(mongoTemplate, d, toFRProduct(d)));
 
         CloseableIterator<FRScheduledPayment2> frScheduledPayments = getLegacyDocuments(mongoTemplate, FRScheduledPayment2.class);
-        frScheduledPayments.forEachRemaining(f -> migrate(mongoTemplate, f, toFRScheduledPayment(f)));
+        frScheduledPayments.forEachRemaining(d -> migrate(mongoTemplate, d, toFRScheduledPayment(d)));
 
         CloseableIterator<FRStandingOrder5> frStandingOrders = getLegacyDocuments(mongoTemplate, FRStandingOrder5.class);
-        frStandingOrders.forEachRemaining(f -> migrate(mongoTemplate, f, toFRStandingOrder(f)));
+        frStandingOrders.forEachRemaining(d -> migrate(mongoTemplate, d, toFRStandingOrder(d)));
 
         CloseableIterator<FRStatement1> frStatements = getLegacyDocuments(mongoTemplate, FRStatement1.class);
-        frStatements.forEachRemaining(f -> migrate(mongoTemplate, f, toFRStatement(f)));
+        frStatements.forEachRemaining(d -> migrate(mongoTemplate, d, toFRStatement(d)));
 
         CloseableIterator<FRTransaction5> frTransactionsIterator = getLegacyDocuments(mongoTemplate, FRTransaction5.class);
-        frTransactionsIterator.forEachRemaining(f -> migrate(mongoTemplate, f, toFRTransaction(f)));
+        frTransactionsIterator.forEachRemaining(d -> migrate(mongoTemplate, d, toFRTransaction(d)));
 
-        log.info("Finished migrating accounts API data from v3.1.2 to v3.1.6");
+        log.info("Finished migrating Accounts API data from v3.1.2 to v3.1.6");
     }
 }
