@@ -28,6 +28,17 @@ Part of issue 238 - Event notifications API (#290)
 - Fix Event susbcription API for all versions
 - v3.1.2, v3.1.3, v3.1.4, v3.1.5, v3.1.6
 - Fix Update Event Subscription API EntityResponse
+### GitHub [#291](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/291) Release/1.0.5
+[0d5e8da9a11d616](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0d5e8da9a11d616) Jorge Sanchez Perez *2020-10-14 14:47:37*
+Release/1.0.5 (#291)
+
+* Release candidate: prepare release 1.0.105
+
+* Release candidate: prepare for next development iteration
+
+* changelog updated
+
+* change repository uk.maven.org to repo1.maven.org
 [01e143ac8a5097f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/01e143ac8a5097f) JamieB *2020-10-07 09:43:22*
 Release candidate: prepare for next development iteration
 

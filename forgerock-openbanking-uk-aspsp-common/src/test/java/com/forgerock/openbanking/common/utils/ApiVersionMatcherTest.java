@@ -18,20 +18,16 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.api.payment;
+package com.forgerock.openbanking.common.utils;
 
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import org.junit.Test;
 
-import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
-import static com.forgerock.openbanking.common.model.version.OBVersion.v3_0;
-import static com.forgerock.openbanking.common.model.version.OBVersion.v3_1_3;
-import static com.forgerock.openbanking.common.model.version.OBVersion.v3_1_4;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 /**
- * Unit test for {@link ApiVersionMatcher}.
+ * Unit test for {@link ApiVersionUtils}.
  */
 public class ApiVersionMatcherTest {
 
@@ -41,34 +37,46 @@ public class ApiVersionMatcherTest {
         String requestUri = "/open-banking/v3.0/pisp";
 
         // When
-        OBVersion version = getOBVersion(requestUri);
+        OBVersion version = ApiVersionUtils.getOBVersion(requestUri);
 
         // Then
-        assertThat(version).isEqualTo(v3_0);
+        assertThat(version).isEqualTo(OBVersion.v3_0);
     }
 
     @Test
     public void shouldGetVersionGiven3_1_3() {
         // Given
-        String requestUri = "/open-banking/v3.1.3/pisp";
+        String requestUri = "/open-banking/v3.1.3";
 
         // When
-        OBVersion version = getOBVersion(requestUri);
+        OBVersion version = ApiVersionUtils.getOBVersion(requestUri);
 
         // Then
-        assertThat(version).isEqualTo(v3_1_3);
+        assertThat(version).isEqualTo(OBVersion.v3_1_3);
     }
 
     @Test
     public void shouldGetVersionGiven3_1_4() {
         // Given
-        String requestUri = "/open-banking/v3.1.4/pisp";
+        String requestUri = "v3.1.4/pisp";
 
         // When
-        OBVersion version = getOBVersion(requestUri);
+        OBVersion version = ApiVersionUtils.getOBVersion(requestUri);
 
         // Then
-        assertThat(version).isEqualTo(v3_1_4);
+        assertThat(version).isEqualTo(OBVersion.v3_1_4);
+    }
+
+    @Test
+    public void shouldGetVersionGiven3_1_5() {
+        // Given
+        String requestUri = "v3.1.5";
+
+        // When
+        OBVersion version = ApiVersionUtils.getOBVersion(requestUri);
+
+        // Then
+        assertThat(version).isEqualTo(OBVersion.v3_1_5);
     }
 
     @Test
@@ -77,10 +85,10 @@ public class ApiVersionMatcherTest {
         String requestUri = "/open-banking/v10.10.10/pisp";
 
         // When
-        IllegalArgumentException exception = catchThrowableOfType(() -> getOBVersion(requestUri), IllegalArgumentException.class);
+        IllegalArgumentException exception = catchThrowableOfType(() -> ApiVersionUtils.getOBVersion(requestUri), IllegalArgumentException.class);
 
         // Then
-        assertThat(exception.getMessage()).isEqualTo("Unknown version in request URI: " + requestUri);
+        assertThat(exception.getMessage()).isEqualTo("Unknown version value from: " + requestUri);
     }
 
     @Test
@@ -89,10 +97,10 @@ public class ApiVersionMatcherTest {
         String requestUri = "/open-banking/123/pisp";
 
         // When
-        IllegalArgumentException exception = catchThrowableOfType(() -> getOBVersion(requestUri), IllegalArgumentException.class);
+        IllegalArgumentException exception = catchThrowableOfType(() -> ApiVersionUtils.getOBVersion(requestUri), IllegalArgumentException.class);
 
         // Then
-        assertThat(exception.getMessage()).isEqualTo("Unable to determine version from request URI: " + requestUri);
+        assertThat(exception.getMessage()).isEqualTo("Unable to determine version from passed parameter: " + requestUri);
     }
 
 }

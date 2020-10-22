@@ -20,11 +20,14 @@
  */
 package com.forgerock.openbanking.common.conf.discovery;
 
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.discovery.*;
+
+import java.util.Optional;
 
 @Service
 @ConfigurationProperties(prefix = "rs-discovery")
@@ -61,6 +64,21 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksEventNotification3 v_3_1_3;
         public OBDiscoveryAPILinksEventNotification3 v_3_1_4;
         public OBDiscoveryAPILinksEventNotification3 v_3_1_5;
+        public OBDiscoveryAPILinksEventNotification3 v_3_1_6;
+
+        public OBDiscoveryAPILinksEventNotification3 getVersion(OBVersion version){
+            switch (version){
+                case v3_0: return v_3_0;
+                case v3_1: return v_3_1;
+                case v3_1_1: return v_3_1_1;
+                case v3_1_2: return v_3_1_2;
+                case v3_1_3: return v_3_1_3;
+                case v3_1_4: return v_3_1_4;
+                case v3_1_5: return v_3_1_5;
+                case v3_1_6: return v_3_1_6;
+                default: return null;
+            }
+        }
     }
 
     @Data

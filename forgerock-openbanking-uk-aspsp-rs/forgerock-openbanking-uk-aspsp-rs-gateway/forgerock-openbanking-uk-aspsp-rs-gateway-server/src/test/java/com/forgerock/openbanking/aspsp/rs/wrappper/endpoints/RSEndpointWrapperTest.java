@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
@@ -79,6 +80,28 @@ public class RSEndpointWrapperTest {
         testRSEndpointWrapper.verifyJwsDetachedSignature(null, request);
 
         // Then No Exception is thrown
+    }
+
+    @Test
+    public void shouldMatch_verifyMatcherVersion(){
+        // Given
+        String value = "https://tpp.callbackurl.com/v3.1.2/event-notifications";
+        String valueToCompare = "3.1.2";
+
+        OBErrorException exception = catchThrowableOfType(() -> testRSEndpointWrapper.verifyMatcherVersion(value, valueToCompare), OBErrorException.class);;
+        // Then
+        assertThat(exception).isNull();
+    }
+
+    @Test
+    public void shouldFailMatch_verifyMatcherVersion(){
+        // Given
+        String value = "https://tpp.callbackurl.com/v3.1.2/event-notifications";
+        String valueToCompare = "3.1.3";
+
+        OBErrorException exception = catchThrowableOfType(() -> testRSEndpointWrapper.verifyMatcherVersion(value, valueToCompare), OBErrorException.class);;
+        // Then
+        assertThat(exception).hasMessage("The object received is invalid. Reason 'Version on the callback url field https://tpp.callbackurl.com/v3.1.2/event-notifications doesn't match with the version value field 3.1.3'");
     }
 
     // Simple override of abstract class so we can test public 'verify' superclass methods in one place

@@ -20,35 +20,33 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.callbackurl;
 
-import com.forgerock.openbanking.aspsp.rs.store.api.helper.EventsHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtil;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.event.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Controller("CallbackUrlsApiV3.1.2")
 @Slf4j
@@ -57,11 +55,21 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     private CallbackUrlsRepository callbackUrlsRepository;
     private TppRepository tppRepository;
     private final ResourceLinkService resourceLinkService;
+    private final EventResponseUtil eventResponseUtil;
 
+    @Autowired
     public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         this.callbackUrlsRepository = callbackUrlsRepository;
         this.tppRepository = tppRepository;
         this.resourceLinkService = resourceLinkService;
+        this.eventResponseUtil = new EventResponseUtil(resourceLinkService, OBVersion.v3_1_2, true);
+    }
+
+    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtil eventResponseUtil) {
+        this.callbackUrlsRepository = callbackUrlsRepository;
+        this.tppRepository = tppRepository;
+        this.resourceLinkService = resourceLinkService;
+        this.eventResponseUtil = eventResponseUtil;
     }
 
     @Override
@@ -121,7 +129,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(packageResponse(frCallbackUrl1));
+                .body(eventResponseUtil.packageResponse(frCallbackUrl1));
     }
 
     @Override
@@ -142,7 +150,13 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
         return Optional.ofNullable(tppRepository.findByClientId(clientId))
                 .map(Tpp::getId)
                 .map(id -> callbackUrlsRepository.findByTppId(id))
-                .map(urls -> ResponseEntity.ok(packageResponse(urls)))
+                .map(urls -> {
+                    if (urls.isEmpty()) {
+                        log.warn("No CallbackURL found for client id '{}'", clientId);
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                    }
+                    return ResponseEntity.ok(eventResponseUtil.packageResponse(urls));
+                })
                 .orElseThrow(() -> new OBErrorResponseException(
                                 HttpStatus.NOT_FOUND,
                                 OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -180,9 +194,13 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
         if (byId.isPresent()) {
             FRCallbackUrl1 frCallbackUrl1 = byId.get();
-            frCallbackUrl1.setObCallbackUrl(obCallbackUrl1Param);
-            callbackUrlsRepository.save(frCallbackUrl1);
-            return ResponseEntity.ok(packageResponse(frCallbackUrl1));
+            if(eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(frCallbackUrl1.getObCallbackUrl().getData().getVersion())){
+                frCallbackUrl1.setObCallbackUrl(obCallbackUrl1Param);
+                callbackUrlsRepository.save(frCallbackUrl1);
+                return ResponseEntity.ok(eventResponseUtil.packageResponse(frCallbackUrl1));
+            }else{
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Callback URL: '" + callbackUrlId + "' can't be update via an older API version.");
+            }
         } else {
             // Spec isn't clear on if we should
             // 1. Reject a PUT for a resource id that does not exist
@@ -216,9 +234,13 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     ) throws OBErrorResponseException {
         final Optional<FRCallbackUrl1> byId = callbackUrlsRepository.findById(callbackUrlId);
         if (byId.isPresent()) {
-            log.debug("Deleting callback url: {}", byId.get());
-            callbackUrlsRepository.deleteById(callbackUrlId);
-            return ResponseEntity.noContent().build();
+            if(eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(byId.get().obCallbackUrl.getData().getVersion())){
+                log.debug("Deleting callback url: {}", byId.get());
+                callbackUrlsRepository.deleteById(callbackUrlId);
+                return ResponseEntity.noContent().build();
+            }else {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("Callback URL: '" + callbackUrlId + "' can't be delete via an older API version.");
+            }
         } else {
             throw new OBErrorResponseException(
                     HttpStatus.BAD_REQUEST,
@@ -226,42 +248,5 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
                     OBRIErrorType.CALLBACK_URL_NOT_FOUND.toOBError1(callbackUrlId)
             );
         }
-    }
-
-
-    protected OBCallbackUrlsResponse1 packageResponse(final Collection<FRCallbackUrl1> frCallbackUrls) {
-        return new OBCallbackUrlsResponse1()
-                .data(new OBCallbackUrlsResponseData1()
-                        .callbackUrl(
-                                frCallbackUrls.stream()
-                                        .filter(EventsHelper.matchingVersion(OBVersion.v3_1_2))
-                                        .map(this::toOBCallbackUrlResponseData1)
-                                        .collect(Collectors.toList())
-                        )
-                );
-    }
-
-    protected List<OBCallbackUrlResponseData1> callbackUrlFilteredByVersion(final Collection<FRCallbackUrl1> frCallbackUrls, final String version){
-        return frCallbackUrls.stream()
-                .filter(
-                        frCallbackUrl1 -> frCallbackUrl1.obCallbackUrl.getData().getVersion().equals(version)
-                )
-                .map(this::toOBCallbackUrlResponseData1)
-                .collect(Collectors.toList());
-    }
-
-    protected OBCallbackUrlResponse1 packageResponse(FRCallbackUrl1 frCallbackUrl) {
-        return new OBCallbackUrlResponse1()
-                .data(toOBCallbackUrlResponseData1(frCallbackUrl))
-                .meta(new Meta())
-                .links(resourceLinkService.toSelfLink(frCallbackUrl, discovery -> discovery.getV_3_1_2().getGetCallbackUrls()));
-    }
-
-    protected OBCallbackUrlResponseData1 toOBCallbackUrlResponseData1(FRCallbackUrl1 frCallbackUrl) {
-        final OBCallbackUrlData1 data = frCallbackUrl.getObCallbackUrl().getData();
-        return new OBCallbackUrlResponseData1()
-                .url(data.getUrl())
-                .callbackUrlId(frCallbackUrl.getId())
-                .version(data.getVersion());
     }
 }
