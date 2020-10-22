@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.api.event.v3_1_2.callbackurl;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.constants.OpenBankingHttpHeaders;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
-import com.forgerock.openbanking.common.utils.ApiVersionUtils;
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -77,7 +77,7 @@ public class CallbackUrlApiController implements CallbackUrlApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
-                .obVersion(ApiVersionUtils.getOBVersion(request.getRequestURI()))
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f ->
                         {
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
@@ -142,7 +142,7 @@ public class CallbackUrlApiController implements CallbackUrlApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
-                .obVersion(ApiVersionUtils.getOBVersion(request.getRequestURI()))
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .filters(f ->
                         {
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
@@ -175,7 +175,7 @@ public class CallbackUrlApiController implements CallbackUrlApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
-                .obVersion(ApiVersionUtils.getOBVersion(request.getRequestURI()))
+                .obVersion(getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
