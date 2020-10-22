@@ -20,21 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_1;
 
-import com.forgerock.openbanking.aspsp.rs.store.api.helper.EventsHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlResponseData1;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponseData1;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller("CallbackUrlsApiV3.1.1")
 @Slf4j
