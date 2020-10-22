@@ -20,39 +20,25 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1;
 
-import com.forgerock.openbanking.aspsp.rs.store.api.helper.EventsHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlResponseData1;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponseData1;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlResponse1;
 
 @Controller("CallbackUrlsApiV3.1")
 @Slf4j
 public class CallbackUrlsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_0.CallbackUrlsApiController implements CallbackUrlsApi {
 
-    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository) {
-        super(callbackUrlsRepository, tppRepository);
+    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, EventResponseUtilService eventResponseUtilService) {
+        super(callbackUrlsRepository, tppRepository, eventResponseUtilService);
     }
 
     @Override
-    protected OBCallbackUrlsResponse1 packageResponse(Collection<FRCallbackUrl1> frCallbackUrls) {
-        return new OBCallbackUrlsResponse1()
-                .data(new OBCallbackUrlsResponseData1()
-                        .callbackUrl(
-                                frCallbackUrls.stream()
-                                        .filter(EventsHelper.matchingVersion(OBVersion.v3_1))
-                                        .map(this::toOBCallbackUrlResponseData1)
-                                        .collect(Collectors.toList())
-                        )
-                );
+    protected void initialiseResponseUtil() {
+        getEventResponseUtilService().setVersion(OBVersion.v3_1).setShouldHaveMetaSection(true);
     }
 }

@@ -39,15 +39,24 @@ public enum OBVersion {
     v3_1_5,
     v3_1_6;
 
+    /**
+     * Provides the OBversion object if exist <br/>
+     * Accepts formats 'vX.X.X' and 'X.X.X'
+     * @param version string representation
+     * @return the version Enum object
+     */
     public static OBVersion fromString(String version) {
         try {
             if (!StringUtils.isEmpty(version)) {
+                if (!version.startsWith("v")) {
+                    version = "v".concat(version);
+                }
                 return OBVersion.valueOf(
                         version.replace(".", "_")
                                 .toLowerCase()
                 );
             }
-        } catch (IllegalArgumentException e ) {
+        } catch (IllegalArgumentException e) {
             log.debug("No match found for {} in enum: {}", version, OBVersion.class.getName(), e);
         }
         return null;
@@ -62,10 +71,19 @@ public enum OBVersion {
     }
 
     /**
-     * Canonical value of version replacing '_' for '.'
-     * @return canonical string version
+     * Provides the canonical value of version stripping 'v' and replacing '_' for '.'
+     * @return canonical string version formatted to x.x.x
      */
-    public String getCanonicalVersion(){
-        return this.name().replace("_",".");
+    public String getCanonicalVersion() {
+        return this.name().substring(1).replace("_", ".");
     }
+
+    /**
+     * Provides the canonical Enum name replacing '_' for '.'
+     * @return canonical Enum name formatted to vX.X.X
+     */
+    public String getCanonicalName() {
+        return this.name().replace("_", ".");
+    }
+
 }

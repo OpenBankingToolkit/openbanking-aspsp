@@ -23,12 +23,20 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_6.ev
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events.EventSubscriptionsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtilService;
 import org.springframework.stereotype.Controller;
 
 @Controller("EventSubscriptionApiV3.1.6")
 public class EventSubscriptionsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_5.eventsubscription.EventSubscriptionsApiController implements EventSubscriptionsApi {
 
-    public EventSubscriptionsApiController(EventSubscriptionsRepository eventSubscriptionsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
-        super(eventSubscriptionsRepository, tppRepository, resourceLinkService);
+    public EventSubscriptionsApiController(EventSubscriptionsRepository eventSubscriptionsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtilService eventResponseUtilService) {
+        super(eventSubscriptionsRepository, tppRepository, resourceLinkService, eventResponseUtilService);
     }
+
+    @Override
+    protected void initialiseResponseUtil() {
+        getEventResponseUtilService().setVersion(OBVersion.v3_1_6);
+    }
+
 }

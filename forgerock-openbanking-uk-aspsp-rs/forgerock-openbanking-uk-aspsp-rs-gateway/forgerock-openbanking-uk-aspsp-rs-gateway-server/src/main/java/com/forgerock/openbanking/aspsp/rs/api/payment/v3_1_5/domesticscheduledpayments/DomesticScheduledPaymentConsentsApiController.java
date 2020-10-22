@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 
 @Controller("DomesticScheduledPaymentConsentsApiV3.1.5")
 public class DomesticScheduledPaymentConsentsApiController implements DomesticScheduledPaymentConsentsApi {

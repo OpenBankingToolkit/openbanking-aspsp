@@ -83,6 +83,7 @@ public class CallbackUrlApiController implements CallbackUrlApi {
                         {
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
                             f.verifyFinancialId();
+                            f.verifyMatcherVersion(obCallbackUrl1Param.getData().getUrl(), obCallbackUrl1Param.getData().getVersion());
                         }
                 )
                 .execute(
@@ -156,6 +157,7 @@ public class CallbackUrlApiController implements CallbackUrlApi {
                         {
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
                             f.verifyFinancialId();
+                            f.verifyMatcherVersion(obCallbackUrl1Param.getData().getUrl(), obCallbackUrl1Param.getData().getVersion());
                         }
                 ).execute(
                         (String tppId) -> {

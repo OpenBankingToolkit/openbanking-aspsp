@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.IdempotencyService;
+import com.forgerock.openbanking.common.utils.ApiVersionUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -194,12 +195,29 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
         }
     }
 
+    /**
+     * Validate the two parameter passed contains a valid {@link OBVersion} and if they match
+     * @param version
+     * @param versionToCompare
+     * @throws OBErrorException
+     */
+    public void verifyMatcherVersion(String version, String versionToCompare) throws OBErrorException {
+        if (!ApiVersionUtils.getOBVersion(version).equals(ApiVersionUtils.getOBVersion(versionToCompare))) {
+            log.warn("Version on the callback url '{} doesn't match with the version value field '{}'", version, versionToCompare);
+            StringBuilder message = new StringBuilder()
+                    .append("Version on the callback url field ").append(version)
+                    .append(" doesn't match with the version value field ").append(versionToCompare);
+            throw new OBErrorException(OBRIErrorType.REQUEST_OBJECT_INVALID, message.toString());
+        }
+        log.debug("The version url field value '{}' and version field value '{}' match and is valid", version, versionToCompare);
+    }
+
     public void verifyIdempotencyKeyLength(String xIdempotencyKey) throws OBErrorException {
         if (!IdempotencyService.isIdempotencyKeyHeaderValid(xIdempotencyKey)) {
             log.warn("Header value for {} must be between 1 and 40 characters. Provided header {} : {}'", OBHeaders.X_IDEMPOTENCY_KEY, OBHeaders.X_IDEMPOTENCY_KEY, xIdempotencyKey);
             throw new OBErrorException(OBRIErrorType.IDEMPOTENCY_KEY_INVALID,
                     xIdempotencyKey,
-                    (xIdempotencyKey==null)?0:xIdempotencyKey.length()
+                    (xIdempotencyKey == null) ? 0 : xIdempotencyKey.length()
             );
         }
         log.debug("xIdempotency key '{}' is valid length", xIdempotencyKey);
@@ -229,7 +247,7 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
         verifyFinancialId();
     }
 
-    public interface AdditionalFilter<T> {
-        void filter(T wrapper) throws OBErrorException;
-    }
+public interface AdditionalFilter<T> {
+    void filter(T wrapper) throws OBErrorException;
+}
 }

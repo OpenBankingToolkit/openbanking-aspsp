@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.api.event.v3_1_2.callbackurl;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.constants.OpenBankingHttpHeaders;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.utils.ApiVersionUtils;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +41,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
-
-import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
 
 @Controller("CallbackUrlApiV3.1.2")
 @Slf4j
@@ -78,10 +77,11 @@ public class CallbackUrlApiController implements CallbackUrlApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
-                .obVersion(getOBVersion(request.getRequestURI()))
+                .obVersion(ApiVersionUtils.getOBVersion(request.getRequestURI()))
                 .filters(f ->
                         {
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
+                            f.verifyMatcherVersion(obCallbackUrl1Param.getData().getUrl(), obCallbackUrl1Param.getData().getVersion());
                         }
                 )
                 .execute(
@@ -118,7 +118,7 @@ public class CallbackUrlApiController implements CallbackUrlApi {
     }
 
     @Override
-    public ResponseEntity<OBCallbackUrlResponse1> updateCallbackUrl(
+    public ResponseEntity updateCallbackUrl(
             @ApiParam(value = "CallbackUrlId", required = true)
             @PathVariable("CallbackUrlId") String callbackUrlId,
 
@@ -142,10 +142,11 @@ public class CallbackUrlApiController implements CallbackUrlApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
-                .obVersion(getOBVersion(request.getRequestURI()))
+                .obVersion(ApiVersionUtils.getOBVersion(request.getRequestURI()))
                 .filters(f ->
                         {
                             f.verifyJwsDetachedSignature(xJwsSignature, request);
+                            f.verifyMatcherVersion(obCallbackUrl1Param.getData().getUrl(), obCallbackUrl1Param.getData().getVersion());
                         }
                 ).execute(
                         (String tppId) -> {
@@ -174,7 +175,7 @@ public class CallbackUrlApiController implements CallbackUrlApi {
         return rsEndpointWrapperService.eventNotificationEndpoint()
                 .authorization(authorization)
                 .principal(principal)
-                .obVersion(getOBVersion(request.getRequestURI()))
+                .obVersion(ApiVersionUtils.getOBVersion(request.getRequestURI()))
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();

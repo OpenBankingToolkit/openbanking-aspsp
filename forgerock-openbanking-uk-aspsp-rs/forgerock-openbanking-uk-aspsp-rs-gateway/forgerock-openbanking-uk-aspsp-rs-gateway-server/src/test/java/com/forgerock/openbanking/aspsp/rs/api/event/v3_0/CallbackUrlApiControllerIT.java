@@ -23,12 +23,14 @@ package com.forgerock.openbanking.aspsp.rs.api.event.v3_0;
 
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.oidc.services.UserInfoService;
 import com.nimbusds.jwt.SignedJWT;
 import kong.unirest.HttpResponse;
@@ -44,9 +46,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlResponseData1;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponseData1;
+import uk.org.openbanking.datamodel.event.*;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -71,9 +71,9 @@ public class CallbackUrlApiControllerIT {
     private UserInfoService userInfoService;
     @Autowired
     private SpringSecForTest springSecForTest;
-    @MockBean(name="cryptoApiClient") // Required to avoid Spring auto-wiring exception
+    @MockBean(name = "cryptoApiClient") // Required to avoid Spring auto-wiring exception
     private CryptoApiClient cryptoApiClient;
-    @MockBean(name="amResourceServerService") // Required to avoid Spring auto-wiring exception
+    @MockBean(name = "amResourceServerService") // Required to avoid Spring auto-wiring exception
     private AMResourceServerService amResourceServerService;
     @MockBean
     private RsStoreGateway rsStoreGateway;
@@ -90,7 +90,8 @@ public class CallbackUrlApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         OBCallbackUrlsResponse1 obCallbackUrlsResponse = new OBCallbackUrlsResponse1();
-        obCallbackUrlsResponse.data(new OBCallbackUrlsResponseData1().callbackUrl(Collections.singletonList(new OBCallbackUrlResponseData1().callbackUrlId("123").url("https://localhost").version("v3.0"))));
+        obCallbackUrlsResponse.data(new OBCallbackUrlsResponseData1()
+                .callbackUrl(Collections.singletonList(new OBCallbackUrlResponseData1().callbackUrlId("123").url("https://localhost").version(OBVersion.v3_0.getCanonicalVersion()))));
         given(rsStoreGateway.toRsStore(any(), any(), any())).willReturn(ResponseEntity.ok(obCallbackUrlsResponse));
 
         // When
@@ -101,6 +102,31 @@ public class CallbackUrlApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
+    }
+
+    @Test
+    public void createCallbackUrls_badRequest_InvalidObject() throws Exception {
+        // Given
+        String jws = jws("accounts", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        mockAccessTokenVerification(jws);
+        OBCallbackUrl1 obCallbackUrl1 = new OBCallbackUrl1().data(
+                new OBCallbackUrlData1()
+                        .url("https://tpp.domain/v3.1/event-notifications")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
+        );
+
+        HttpResponse<OBCallbackUrlResponse1> response = Unirest.post("https://rs-api:" + port + "/open-banking/"+OBVersion.v3_0.getCanonicalName()+"/callback-urls")
+                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
+                .body(obCallbackUrl1)
+                .asObject(OBCallbackUrlResponse1.class);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getParsingError().get().getOriginalBody()).contains("Version on the callback url field https://tpp.domain/v3.1/event-notifications doesn't match with the version value field 3.0");
+        assertThat(response.getParsingError().get().getOriginalBody()).contains(OBRIErrorType.REQUEST_OBJECT_INVALID.getCode().getValue());
     }
 
     private void mockAccessTokenVerification(String jws) throws ParseException, InvalidTokenException, IOException {

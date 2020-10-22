@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlResponseData1;
@@ -39,20 +40,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CallbackUrlsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1.CallbackUrlsApiController implements CallbackUrlsApi {
 
-    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository) {
-        super(callbackUrlsRepository, tppRepository);
+    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, EventResponseUtilService eventResponseUtilService) {
+        super(callbackUrlsRepository, tppRepository, eventResponseUtilService);
     }
 
     @Override
-    protected OBCallbackUrlsResponse1 packageResponse(Collection<FRCallbackUrl1> frCallbackUrls) {
-        return new OBCallbackUrlsResponse1()
-                .data(new OBCallbackUrlsResponseData1()
-                        .callbackUrl(
-                                frCallbackUrls.stream()
-                                        .filter(EventsHelper.matchingVersion(OBVersion.v3_1_1))
-                                        .map(this::toOBCallbackUrlResponseData1)
-                                        .collect(Collectors.toList())
-                        )
-                );
+    protected void initialiseResponseUtil() {
+        getEventResponseUtilService().setVersion(OBVersion.v3_1_1).setShouldHaveMetaSection(true);
     }
 }

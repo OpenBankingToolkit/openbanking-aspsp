@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticConsentConverter.toOBWriteDomesticConsent2;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
