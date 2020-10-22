@@ -22,23 +22,23 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.version.OBVersion;
-import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtilService;
+import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlResponse1;
 
 @Controller("CallbackUrlsApiV3.1")
 @Slf4j
 public class CallbackUrlsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_0.CallbackUrlsApiController implements CallbackUrlsApi {
 
-    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, EventResponseUtilService eventResponseUtilService) {
-        super(callbackUrlsRepository, tppRepository, eventResponseUtilService);
+    @Autowired
+    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
+        super(callbackUrlsRepository, tppRepository, resourceLinkService, new EventResponseUtil(resourceLinkService, OBVersion.v3_1, true));
     }
 
-    @Override
-    protected void initialiseResponseUtil() {
-        getEventResponseUtilService().setVersion(OBVersion.v3_1).setShouldHaveMetaSection(true);
+    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtil eventResponseUtil) {
+        super(callbackUrlsRepository, tppRepository, resourceLinkService, eventResponseUtil);
     }
 }

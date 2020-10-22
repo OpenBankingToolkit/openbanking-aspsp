@@ -24,7 +24,6 @@ import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.Links;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.event.*;
@@ -33,38 +32,19 @@ import java.util.Collection;
 import java.util.stream.Collectors;
 
 /**
- * Util Service class to handler the Event Notification API responses thru all versions<br />
+ * Util class to handler the Event Notification API responses and conditional checks thru all versions<br />
  */
-@Service
 @Slf4j
-public class EventResponseUtilService {
+public class EventResponseUtil {
 
     private final ResourceLinkService resourceLinkService;
-    private OBVersion version;
-    private boolean shouldHaveMetaSection;
+    public final OBVersion version;
+    public final boolean haveMetaSection;
 
-    public EventResponseUtilService(ResourceLinkService resourceLinkService) {
+    public EventResponseUtil(ResourceLinkService resourceLinkService, OBVersion version, boolean haveMetaSection) {
         this.resourceLinkService = resourceLinkService;
-        this.shouldHaveMetaSection = true;
-        this.version = null;
-    }
-
-    public OBVersion getVersion() {
-        return version;
-    }
-
-    public EventResponseUtilService setVersion(OBVersion version) {
+        this.haveMetaSection = haveMetaSection;
         this.version = version;
-        return this;
-    }
-
-    public boolean isShouldHaveMetaSection() {
-        return shouldHaveMetaSection;
-    }
-
-    public EventResponseUtilService setShouldHaveMetaSection(boolean shouldHaveMetaSection) {
-        this.shouldHaveMetaSection = shouldHaveMetaSection;
-        return this;
     }
 
     /**
@@ -81,9 +61,9 @@ public class EventResponseUtilService {
                                         .map(this::toOBCallbackUrlResponseData1)
                                         .collect(Collectors.toList())
                         )
-                ).meta(checkConditionMetaAndVersion() ? new Meta() : null)
+                ).meta(shouldHaveMetaSection() ? new Meta() : null)
                 .links(
-                        (checkConditionMetaAndVersion() ? toSelfLink(frCallbackUrls.stream().findFirst().get()) : null)
+                        (shouldHaveMetaSection() ? toSelfLink(frCallbackUrls.stream().findFirst().get()) : null)
                 );
     }
 
@@ -97,12 +77,18 @@ public class EventResponseUtilService {
     public OBCallbackUrlResponse1 packageResponse(FRCallbackUrl1 frCallbackUrl) {
         return new OBCallbackUrlResponse1()
                 .data(toOBCallbackUrlResponseData1(frCallbackUrl))
-                .meta(checkConditionMetaAndVersion() ? new Meta() : null)
-                .links(checkConditionMetaAndVersion() ? toSelfLink(frCallbackUrl) : null);
+                .meta(shouldHaveMetaSection() ? new Meta() : null)
+                .links(shouldHaveMetaSection() ? toSelfLink(frCallbackUrl) : null);
     }
 
-    public boolean allowOperationByVersion(String versionToCompare) {
-        return this.version.equals(OBVersion.fromString(versionToCompare)) || this.version.isAfterVersion(OBVersion.fromString(versionToCompare));
+    /**
+     * Check if is allowed to invoke the operation comparing the Api version with the event resource version <br />
+     * A TPP must not allowed to invoke a operation of event from an older api version if the resource was created in a newer version. <br />
+     * @param resourceVersion the value from version field contained on the event resource
+     * @return true when the operation is allow to invoke, otherwise false
+     */
+    public boolean IsAllowedAccessResourceFromApiVersionInstanced(String resourceVersion) {
+        return this.version.equals(OBVersion.fromString(resourceVersion)) || this.version.isAfterVersion(OBVersion.fromString(resourceVersion));
     }
 
     /**
@@ -122,7 +108,7 @@ public class EventResponseUtilService {
         return this.resourceLinkService.toSelfLink(frCallbackUrl, discovery -> discovery.getVersion(version).getGetCallbackUrls());
     }
 
-    private boolean checkConditionMetaAndVersion() {
-        return isShouldHaveMetaSection() && version != null;
+    private boolean shouldHaveMetaSection() {
+        return haveMetaSection && version != null;
     }
 }

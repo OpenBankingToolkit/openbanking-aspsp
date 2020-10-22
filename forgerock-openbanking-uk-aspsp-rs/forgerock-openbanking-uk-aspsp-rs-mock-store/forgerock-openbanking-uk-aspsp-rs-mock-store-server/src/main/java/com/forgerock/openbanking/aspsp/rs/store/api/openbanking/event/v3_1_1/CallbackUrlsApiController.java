@@ -22,8 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_1;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackUrlsRepository;
+import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.version.OBVersion;
-import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtilService;
+import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 
@@ -31,12 +32,8 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class CallbackUrlsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1.CallbackUrlsApiController implements CallbackUrlsApi {
 
-    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, EventResponseUtilService eventResponseUtilService) {
-        super(callbackUrlsRepository, tppRepository, eventResponseUtilService);
-    }
 
-    @Override
-    protected void initialiseResponseUtil() {
-        getEventResponseUtilService().setVersion(OBVersion.v3_1_1).setShouldHaveMetaSection(true);
+    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
+        super(callbackUrlsRepository, tppRepository, resourceLinkService, new EventResponseUtil(resourceLinkService, OBVersion.v3_1_1, true));
     }
 }

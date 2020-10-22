@@ -25,13 +25,14 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.events.CallbackU
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
 import com.forgerock.openbanking.common.model.version.OBVersion;
-import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtilService;
+import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtil;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -54,31 +55,21 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     private CallbackUrlsRepository callbackUrlsRepository;
     private TppRepository tppRepository;
     private final ResourceLinkService resourceLinkService;
-    private final EventResponseUtilService eventResponseUtilService;
+    private final EventResponseUtil eventResponseUtil;
 
-    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtilService eventResponseUtilService) {
+    @Autowired
+    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         this.callbackUrlsRepository = callbackUrlsRepository;
         this.tppRepository = tppRepository;
         this.resourceLinkService = resourceLinkService;
-        this.eventResponseUtilService = eventResponseUtilService;
+        this.eventResponseUtil = new EventResponseUtil(resourceLinkService, OBVersion.v3_1_2, true);
     }
 
-    /**
-     * Provides a way to obtain the instance {@link EventResponseUtilService} injected in the parent instance
-     * @return the response util service used by instance
-     */
-    public EventResponseUtilService getEventResponseUtilService() {
-        return eventResponseUtilService;
-    }
-
-    /**
-     * Provides a way to override the properties of {@link EventResponseUtilService} for every child that extends this parent controller. <br />
-     * Set the version per controller instance. <br />
-     * Set is should have the meta section in the response.
-     */
-    protected void initialiseResponseUtil() {
-        this.eventResponseUtilService.setVersion(OBVersion.v3_1_2);
-        this.eventResponseUtilService.setShouldHaveMetaSection(true);
+    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtil eventResponseUtil) {
+        this.callbackUrlsRepository = callbackUrlsRepository;
+        this.tppRepository = tppRepository;
+        this.resourceLinkService = resourceLinkService;
+        this.eventResponseUtil = eventResponseUtil;
     }
 
     @Override
@@ -103,9 +94,6 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        // initialise response util with the version and properties
-        initialiseResponseUtil();
-
         log.debug("Create new callback URL: {} for client: {}", obCallbackUrl1Param, clientId);
 
         // https://openbanking.atlassian.net/wiki/spaces/DZ/pages/645367055/Event+Notification+API+Specification+-+v3.0#EventNotificationAPISpecification-v3.0-POST/callback-urls
@@ -141,7 +129,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(eventResponseUtilService.packageResponse(frCallbackUrl1));
+                .body(eventResponseUtil.packageResponse(frCallbackUrl1));
     }
 
     @Override
@@ -159,9 +147,6 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        // initialise response util with the version and properties
-        initialiseResponseUtil();
-
         return Optional.ofNullable(tppRepository.findByClientId(clientId))
                 .map(Tpp::getId)
                 .map(id -> callbackUrlsRepository.findByTppId(id))
@@ -170,7 +155,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
                         log.warn("No CallbackURL found for client id '{}'", clientId);
                         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
                     }
-                    return ResponseEntity.ok(eventResponseUtilService.packageResponse(urls));
+                    return ResponseEntity.ok(eventResponseUtil.packageResponse(urls));
                 })
                 .orElseThrow(() -> new OBErrorResponseException(
                                 HttpStatus.NOT_FOUND,
@@ -205,17 +190,14 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        // initialise response util with the version and properties
-        initialiseResponseUtil();
-
         final Optional<FRCallbackUrl1> byId = callbackUrlsRepository.findById(callbackUrlId);
 
         if (byId.isPresent()) {
             FRCallbackUrl1 frCallbackUrl1 = byId.get();
-            if(eventResponseUtilService.allowOperationByVersion(frCallbackUrl1.getObCallbackUrl().getData().getVersion())){
+            if(eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(frCallbackUrl1.getObCallbackUrl().getData().getVersion())){
                 frCallbackUrl1.setObCallbackUrl(obCallbackUrl1Param);
                 callbackUrlsRepository.save(frCallbackUrl1);
-                return ResponseEntity.ok(eventResponseUtilService.packageResponse(frCallbackUrl1));
+                return ResponseEntity.ok(eventResponseUtil.packageResponse(frCallbackUrl1));
             }else{
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Callback URL: '" + callbackUrlId + "' can't be update via an older API version.");
             }
@@ -250,12 +232,9 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        // initialise response util with the version and properties
-        initialiseResponseUtil();
-
         final Optional<FRCallbackUrl1> byId = callbackUrlsRepository.findById(callbackUrlId);
         if (byId.isPresent()) {
-            if(eventResponseUtilService.allowOperationByVersion(byId.get().obCallbackUrl.getData().getVersion())){
+            if(eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(byId.get().obCallbackUrl.getData().getVersion())){
                 log.debug("Deleting callback url: {}", byId.get());
                 callbackUrlsRepository.deleteById(callbackUrlId);
                 return ResponseEntity.noContent().build();

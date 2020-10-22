@@ -25,13 +25,14 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events.EventSu
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.event.FREventSubscription1;
 import com.forgerock.openbanking.common.model.version.OBVersion;
-import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtilService;
+import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtil;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -55,32 +56,21 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
     private final EventSubscriptionsRepository eventSubscriptionsRepository;
     private final TppRepository tppRepository;
     private final ResourceLinkService resourceLinkService;
-    private final EventResponseUtilService eventResponseUtilService;
+    private final EventResponseUtil eventResponseUtil;
 
-
-    public EventSubscriptionApiController(EventSubscriptionsRepository eventSubscriptionsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtilService eventResponseUtilService) {
+    @Autowired
+    public EventSubscriptionApiController(EventSubscriptionsRepository eventSubscriptionsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         this.eventSubscriptionsRepository = eventSubscriptionsRepository;
         this.tppRepository = tppRepository;
         this.resourceLinkService = resourceLinkService;
-        this.eventResponseUtilService = eventResponseUtilService;
+        this.eventResponseUtil = new EventResponseUtil(resourceLinkService, OBVersion.v3_1_2, true);
     }
 
-    /**
-     * Provides a way to obtain the instance {@link EventResponseUtilService} injected in the parent instance
-     * @return the response util service used by instance
-     */
-    public EventResponseUtilService getEventResponseUtilService() {
-        return eventResponseUtilService;
-    }
-
-    /**
-     * Provides a way to override the properties of {@link EventResponseUtilService} for every child that extends this parent controller. <br />
-     * Set the version per controller instance. <br />
-     * Set is should have the meta section in the response.
-     */
-    protected void initialiseResponseUtil() {
-        this.eventResponseUtilService.setVersion(OBVersion.v3_1_2);
-        this.eventResponseUtilService.setShouldHaveMetaSection(true);
+    public EventSubscriptionApiController(EventSubscriptionsRepository eventSubscriptionsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtil eventResponseUtil) {
+        this.eventSubscriptionsRepository = eventSubscriptionsRepository;
+        this.tppRepository = tppRepository;
+        this.resourceLinkService = resourceLinkService;
+        this.eventResponseUtil = eventResponseUtil;
     }
 
     public ResponseEntity createEventSubscription(
@@ -104,9 +94,6 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        // initialise response util with the version and properties
-        initialiseResponseUtil();
-
         log.debug("Create new event subscriptions: {} for client: {}", obEventSubscription, clientId);
 
         // Get the TPP from the header
@@ -158,15 +145,13 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        // initialise response util with the version and properties
-        initialiseResponseUtil();
         log.debug("Read event subscription for client: {}", clientId);
         final Optional<Tpp> tppId = Optional.ofNullable(tppRepository.findByClientId(clientId));
         if (!tppId.isEmpty()) {
             // A TPP must not access a event-subscription on an older version, via the EventSubscriptionId for an event-subscription created in a newer version
             Collection<FREventSubscription1> frEventSubscription1s = Optional.ofNullable(eventSubscriptionsRepository.findByTppId(tppId.get().id))
                     .orElseGet(Collections::emptyList)
-                    .stream().filter(frEventSubs -> eventResponseUtilService.allowOperationByVersion(frEventSubs.obEventSubscription1.getData().getVersion())).collect(Collectors.toList());
+                    .stream().filter(frEventSubs -> eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(frEventSubs.obEventSubscription1.getData().getVersion())).collect(Collectors.toList());
             if (!frEventSubscription1s.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(packageResponse(frEventSubscription1s));
             } else {
@@ -205,9 +190,6 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        // initialise response util with the version and properties
-        initialiseResponseUtil();
-
         final OBEventSubscription1 updatedSubscription =
                 new OBEventSubscription1().data(new OBEventSubscription1Data()
                         .callbackUrl(obEventSubscriptionParam.getData().getCallbackUrl())
@@ -218,7 +200,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         if (byId.isPresent()) {
             FREventSubscription1 existingEventSubscription = byId.get();
             // A TPP must not update a event-subscription on an older version, via the EventSubscriptionId for an event-subscription created in a newer version
-            if (eventResponseUtilService.allowOperationByVersion(existingEventSubscription.obEventSubscription1.getData().getVersion())) {
+            if (eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(existingEventSubscription.obEventSubscription1.getData().getVersion())) {
                 existingEventSubscription.setObEventSubscription1(updatedSubscription);
                 eventSubscriptionsRepository.save(existingEventSubscription);
                 return ResponseEntity.ok(packageResponse(existingEventSubscription));
@@ -252,13 +234,10 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        // initialise response util with the version and properties
-        initialiseResponseUtil();
-
         final Optional<FREventSubscription1> byId = eventSubscriptionsRepository.findById(eventSubscriptionId);
         if (byId.isPresent()) {
             // A TPP must not delete a event-subscription on an older version, via the EventSubscriptionId for an event-subscription created in a newer version
-            if (eventResponseUtilService.allowOperationByVersion(byId.get().obEventSubscription1.getData().getVersion())) {
+            if (eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(byId.get().obEventSubscription1.getData().getVersion())) {
                 log.debug("Deleting event subscriptions URL: {}", byId.get());
                 eventSubscriptionsRepository.deleteById(eventSubscriptionId);
                 return ResponseEntity.noContent().build();
@@ -293,7 +272,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
                     .data(new OBEventSubscriptionsResponse1Data()
                             .eventSubscription(eventSubsByClient))
                     .meta(new Meta())
-                    .links(resourceLinkService.toSelfLink(discovery -> discovery.getVersion(eventResponseUtilService.getVersion()).getGetCallbackUrls()));
+                    .links(resourceLinkService.toSelfLink(discovery -> discovery.getVersion(eventResponseUtil.version).getGetCallbackUrls()));
         }
     }
 
@@ -306,7 +285,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
                         .eventTypes(obEventSubs.getEventTypes())
                         .version(obEventSubs.getVersion())
                 )
-                .links(resourceLinkService.toSelfLink(frEventSubscription1, discovery -> discovery.getVersion(eventResponseUtilService.getVersion()).getGetCallbackUrls()))
+                .links(resourceLinkService.toSelfLink(frEventSubscription1, discovery -> discovery.getVersion(eventResponseUtil.version).getGetCallbackUrls()))
                 .meta(new Meta());
     }
 }
