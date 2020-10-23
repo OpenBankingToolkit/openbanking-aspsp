@@ -39,6 +39,14 @@ Release/1.0.5 (#291)
 * changelog updated
 
 * change repository uk.maven.org to repo1.maven.org
+### GitHub [#295](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/295) Feature 238 - Event Notifications API
+[a88c553b7ae23a1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a88c553b7ae23a1) Jorge Sanchez Perez *2020-10-22 14:33:37*
+Feature 238 - Event Notifications API (#295)
+
+* Implementation of checks and validations
+* Event Notifications utils
+* Make Safe thread Event response util
+* Generic Event Notifications api enhancements
 [01e143ac8a5097f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/01e143ac8a5097f) JamieB *2020-10-07 09:43:22*
 Release candidate: prepare for next development iteration
 
@@ -337,6 +345,7 @@ Release/1.0.102 (#284)
 * Release candidate: prepare for next development iteration
 
 * changelog updated
+### GitHub [#296](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/296) Release/1.0.106
 [aea2d305be072d7](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/aea2d305be072d7) Matt Wills *2020-09-17 08:10:15*
 New Payment consent FR model objects (#296)
 [9f6afb8063341ee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f6afb8063341ee) Jorge Sanchez Perez *2020-04-24 17:06:53*

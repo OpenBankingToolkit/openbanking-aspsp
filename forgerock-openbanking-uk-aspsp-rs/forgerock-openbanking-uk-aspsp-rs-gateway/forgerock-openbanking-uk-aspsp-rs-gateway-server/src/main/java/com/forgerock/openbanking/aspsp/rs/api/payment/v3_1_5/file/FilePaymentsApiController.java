@@ -47,7 +47,7 @@ import java.io.File;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileDataInitiation;
 
 @Controller("FilePaymentsApiV3.1.5")

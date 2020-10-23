@@ -26,6 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.events.CallbackUrlsRe
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.domain.event.FRCallbackUrlData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.model.Tpp;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -44,7 +45,6 @@ import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.event.OBCallbackUrl1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlData1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlResponse1;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -69,14 +69,12 @@ public class CallbackUrlsApiControllerIT {
     @Autowired
     private RSConfiguration rsConfiguration;
 
-
     @MockBean
     private TppRepository tppRepository;
 
     private String clientId;
 
     private Tpp tpp;
-
 
     @Before
     public void setUp() {
@@ -96,11 +94,11 @@ public class CallbackUrlsApiControllerIT {
         OBCallbackUrl1 obCallbackUrl = new OBCallbackUrl1()
                 .data(new OBCallbackUrlData1()
                         .url(url)
-                        .version("V3.0")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
                 );
 
         // When
-        HttpResponse<OBCallbackUrlResponse1> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.0/callback-urls")
+        HttpResponse<OBCallbackUrlResponse1> response = Unirest.post("https://rs-store:" + port + "/open-banking/" + OBVersion.v3_0.getCanonicalName() + "/callback-urls")
                 .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
@@ -112,7 +110,7 @@ public class CallbackUrlsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(201);
         assertThat(response.getBody().getData().getCallbackUrlId()).isNotNull();
         assertThat(response.getBody().getData().getUrl()).isEqualTo(url);
-        assertThat(response.getBody().getData().getVersion()).isEqualTo("V3.0");
+        assertThat(response.getBody().getData().getVersion()).isEqualTo(OBVersion.v3_0.getCanonicalVersion());
 
         final Optional<FRCallbackUrl> byId = callbackUrlsRepository.findById(response.getBody().getData().getCallbackUrlId());
         assertThat(byId.orElseThrow(AssertionError::new).getCallbackUrl().getUrl()).isEqualTo(url);
@@ -123,15 +121,15 @@ public class CallbackUrlsApiControllerIT {
         // Given
         //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
         String callbackId = UUID.randomUUID().toString();
-        callbackUrlsRepository.save(newFRCallbackUrl1(callbackId)); // Existing URL
+        callbackUrlsRepository.save(newFRCallbackUrl(callbackId)); // Existing URL
         OBCallbackUrl1 obCallbackUrl = new OBCallbackUrl1()
                 .data(new OBCallbackUrlData1()
                         .url("http://callback-" + callbackId) // Already exists
-                        .version("V3.0")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
                 );
 
         // When
-        HttpResponse response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.0/callback-urls")
+        HttpResponse response = Unirest.post("https://rs-store:" + port + "/open-banking/" + OBVersion.v3_0.getCanonicalName() + "/callback-urls")
                 .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
@@ -147,41 +145,20 @@ public class CallbackUrlsApiControllerIT {
     }
 
     @Test
-    public void readCallBackUrls_twoResults() throws Exception {
-        // Given
-        //mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
-        callbackUrlsRepository.save(newFRCallbackUrl1(UUID.randomUUID().toString()));
-        callbackUrlsRepository.save(newFRCallbackUrl1(UUID.randomUUID().toString()));
-
-        // When
-        HttpResponse<OBCallbackUrlsResponse1> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.0/callback-urls")
-                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
-                .header(OBHeaders.AUTHORIZATION, "token")
-                .header("x-ob-client-id", clientId)
-                .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
-                .asObject(OBCallbackUrlsResponse1.class);
-
-        // Then
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getBody().getData().getCallbackUrl().size()).isEqualTo(2);
-    }
-
-    @Test
-    public void readCallBackUrls_noResults() throws Exception {
+    public void readCallBackUrls_noResults_notFound() throws Exception {
         // Given
         //mockAuthentication(authenticator, OBRIRole.ROLE_AISP.name());
 
         // When
-        HttpResponse<OBCallbackUrlsResponse1> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.0/callback-urls")
+        HttpResponse<OBCallbackUrlResponse1> response = Unirest.get("https://rs-store:" + port + "/open-banking/" + OBVersion.v3_0.getCanonicalName() + "/callback-urls")
                 .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
                 .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
-                .asObject(OBCallbackUrlsResponse1.class);
+                .asObject(OBCallbackUrlResponse1.class);
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getBody().getData().getCallbackUrl().isEmpty()).isEqualTo(true);
+        assertThat(response.getStatus()).isEqualTo(404);
     }
 
     @Test
@@ -192,15 +169,19 @@ public class CallbackUrlsApiControllerIT {
         OBCallbackUrl1 obCallbackUrl = new OBCallbackUrl1()
                 .data(new OBCallbackUrlData1()
                         .url("http://callback-" + callbackId + "-update")
-                        .version("V3.0")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
                 );
         FRCallbackUrl frCallbackUrl = FRCallbackUrl.builder()
                 .id(callbackId)
+                .callbackUrl(FRCallbackUrlData.builder()
+                        .url("http://callback-update")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
+                        .build())
                 .build();
         callbackUrlsRepository.save(frCallbackUrl);
 
         // When
-        HttpResponse<OBCallbackUrlResponse1> response = Unirest.put("https://rs-store:" + port + "/open-banking/v3.0/callback-urls/" + callbackId)
+        HttpResponse<OBCallbackUrlResponse1> response = Unirest.put("https://rs-store:" + port + "/open-banking/" + OBVersion.v3_0.getCanonicalName() + "/callback-urls/" + callbackId)
                 .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
@@ -212,7 +193,7 @@ public class CallbackUrlsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getCallbackUrlId()).isNotNull();
         assertThat(response.getBody().getData().getUrl()).isEqualTo("http://callback-" + callbackId + "-update");
-        assertThat(response.getBody().getData().getVersion()).isEqualTo("V3.0");
+        assertThat(response.getBody().getData().getVersion()).isEqualTo(OBVersion.v3_0.getCanonicalVersion());
 
         final Optional<FRCallbackUrl> byId = callbackUrlsRepository.findById(callbackId);
         assertThat(byId.orElseThrow(AssertionError::new).getCallbackUrl().getUrl()).isEqualTo("http://callback-" + callbackId + "-update");
@@ -225,11 +206,11 @@ public class CallbackUrlsApiControllerIT {
         OBCallbackUrl1 obCallbackUrl = new OBCallbackUrl1()
                 .data(new OBCallbackUrlData1()
                         .url("http://callback-update")
-                        .version("V3.0")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
                 );
 
         // When
-        HttpResponse response = Unirest.put("https://rs-store:" + port + "/open-banking/v3.0/callback-urls/" + UUID.randomUUID())
+        HttpResponse response = Unirest.put("https://rs-store:" + port + "/open-banking/" + OBVersion.v3_0.getCanonicalName() + "/callback-urls/" + UUID.randomUUID())
                 .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
@@ -249,11 +230,15 @@ public class CallbackUrlsApiControllerIT {
         String callbackId = UUID.randomUUID().toString();
         FRCallbackUrl frCallbackUrl = FRCallbackUrl.builder()
                 .id(callbackId)
+                .callbackUrl(FRCallbackUrlData.builder()
+                        .url("http://callback-update")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
+                        .build())
                 .build();
         callbackUrlsRepository.save(frCallbackUrl);
 
         // When
-        HttpResponse response = Unirest.delete("https://rs-store:" + port + "/open-banking/v3.0/callback-urls/" + callbackId)
+        HttpResponse response = Unirest.delete("https://rs-store:" + port + "/open-banking/" + OBVersion.v3_0.getCanonicalName() + "/callback-urls/" + callbackId)
                 .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
@@ -274,7 +259,7 @@ public class CallbackUrlsApiControllerIT {
         //mockAuthentication(authenticator, OBRIRole.ROLE_PISP.name());
 
         // When
-        HttpResponse response = Unirest.delete("https://rs-store:" + port + "/open-banking/v3.0/callback-urls/" + UUID.randomUUID().toString())
+        HttpResponse response = Unirest.delete("https://rs-store:" + port + "/open-banking/" + OBVersion.v3_0.getCanonicalName() + "/callback-urls/" + UUID.randomUUID().toString())
                 .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
                 .header(OBHeaders.AUTHORIZATION, "token")
                 .header("x-ob-client-id", clientId)
@@ -285,14 +270,15 @@ public class CallbackUrlsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(400);
     }
 
-    private FRCallbackUrl newFRCallbackUrl1(String id) {
+    private FRCallbackUrl newFRCallbackUrl(String id) {
         return FRCallbackUrl.builder()
                 .id(id)
                 .created(DateTime.now())
                 .tppId(tpp.getId())
                 .callbackUrl(FRCallbackUrlData.builder()
                         .url("http://callback-" + id)
-                        .version("v3.0").build())
+                        .version(OBVersion.v3_0.getCanonicalVersion())
+                        .build())
                 .build();
 
     }

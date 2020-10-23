@@ -42,7 +42,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 
 @Controller("EventSubscriptionApiV3.1.2")
 @Slf4j

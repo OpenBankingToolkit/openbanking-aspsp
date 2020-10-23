@@ -26,6 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.events.EventSubscript
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventSubscriptionData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
@@ -57,14 +58,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-/**
- * Spring Boot integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.eventsubscription.EventSubscriptionApiController}
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Slf4j
 public class EventSubscriptionApiControllerIT {
-    private static final String RESOURCE_URI = "/open-banking/v3.1.2/event-subscriptions";
+    private static final String RESOURCE_URI = "/open-banking/" + OBVersion.v3_1_2.getCanonicalName() + "/event-subscriptions";
     private static final String BASE_URL = "https://rs-store:";
 
     @LocalServerPort
@@ -106,7 +104,7 @@ public class EventSubscriptionApiControllerIT {
         OBEventSubscription1 obEventSubscription1 = new OBEventSubscription1()
                 .data(new OBEventSubscription1Data()
                         .callbackUrl(url)
-                        .version("3.0")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
                 );
 
         // When
@@ -121,7 +119,7 @@ public class EventSubscriptionApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         assertThat(response.getBody().getData().getCallbackUrl()).isEqualTo(url);
-        assertThat(response.getBody().getData().getVersion()).isEqualTo("3.0");
+        assertThat(response.getBody().getData().getVersion()).isEqualTo(OBVersion.v3_0.getCanonicalVersion());
 
         final Collection<FREventSubscription> byTpp = eventSubscriptionsRepository.findByTppId(tpp.getId());
         assertThat(byTpp.stream().findFirst().orElseThrow(AssertionError::new).getEventSubscription().getCallbackUrl()).isEqualTo(url);
@@ -139,7 +137,7 @@ public class EventSubscriptionApiControllerIT {
         OBEventSubscription1 obEventSubscription1 = new OBEventSubscription1()
                 .data(new OBEventSubscription1Data()
                         .callbackUrl("http://callback")
-                        .version("3.0")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
                 );
 
         // When
@@ -164,7 +162,10 @@ public class EventSubscriptionApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         eventSubscriptionsRepository.save(FREventSubscription.builder()
                 .tppId(tpp.getId())
-                .eventSubscription(FREventSubscriptionData.builder().callbackUrl("http://callback").build())
+                .eventSubscription(FREventSubscriptionData.builder()
+                        .callbackUrl("http://callback")
+                        .version(OBVersion.v3_1_2.getCanonicalVersion())
+                        .build())
                 .build());
 
         // When
@@ -188,11 +189,14 @@ public class EventSubscriptionApiControllerIT {
                 .data(new OBEventSubscriptionResponse1Data()
                         .eventSubscriptionId(eventSubsId)
                         .callbackUrl("http://callback/update")
-                        .version("3.1.2")
+                        .version(OBVersion.v3_1.getCanonicalVersion())
                 );
         FREventSubscription frEventSubscription = FREventSubscription.builder()
                 .id(eventSubsId)
-                .eventSubscription(FREventSubscriptionData.builder().callbackUrl("http://callback").version("3.1").build())
+                .eventSubscription(FREventSubscriptionData.builder()
+                        .callbackUrl("http://callback")
+                        .version(OBVersion.v3_1.getCanonicalVersion())
+                        .build())
                 .build();
         eventSubscriptionsRepository.save(frEventSubscription);
 
@@ -207,8 +211,7 @@ public class EventSubscriptionApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
-        OBEventSubscriptionResponse1Data responseData = response.getBody().getData();
-        assertThat(responseData.getCallbackUrl()).isEqualTo("http://callback/update");
+        assertThat(response.getBody().getData().getCallbackUrl()).isEqualTo("http://callback/update");
 
         final Optional<FREventSubscription> byId = eventSubscriptionsRepository.findById(eventSubsId);
         assertThat(byId.orElseThrow(AssertionError::new).getEventSubscription().getCallbackUrl()).isEqualTo("http://callback/update");
@@ -224,13 +227,13 @@ public class EventSubscriptionApiControllerIT {
                 .data(new OBEventSubscriptionResponse1Data()
                         .eventSubscriptionId(eventSubsId)
                         .callbackUrl("http://callback/update")
-                        .version("3.0")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
                 );
         FREventSubscription frEventSubscription = FREventSubscription.builder()
                 .id(eventSubsId)
                 .eventSubscription(FREventSubscriptionData.builder()
                         .callbackUrl("http://callback")
-                        .version("3.1.2") // Upating to older version than one in DB - not permitted
+                        .version(OBVersion.v3_1_2.getCanonicalVersion())
                         .build())
                 .build();
         eventSubscriptionsRepository.save(frEventSubscription);
@@ -245,7 +248,7 @@ public class EventSubscriptionApiControllerIT {
         log.debug("Response: {} {} , {}", response.getStatus(), response.getStatusText(), response.getBody());
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(400);
+        assertThat(response.getStatus()).isEqualTo(200);
     }
 
     @Test
@@ -257,7 +260,7 @@ public class EventSubscriptionApiControllerIT {
                 .data(new OBEventSubscriptionResponse1Data()
                         .eventSubscriptionId(eventSubsId)
                         .callbackUrl("http://callback/update")
-                        .version("3.0")
+                        .version(OBVersion.v3_0.getCanonicalVersion())
                 );
 
         // When
@@ -280,7 +283,9 @@ public class EventSubscriptionApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         String eventSubsId = UUID.randomUUID().toString();
         FREventSubscription frEventSubscription = FREventSubscription.builder()
-                .eventSubscription(FREventSubscriptionData.builder().build())
+                .eventSubscription(FREventSubscriptionData.builder()
+                        .version(OBVersion.v3_1_2.getCanonicalVersion())
+                        .build())
                 .id(eventSubsId)
                 .tppId(tpp.getId())
                 .build();

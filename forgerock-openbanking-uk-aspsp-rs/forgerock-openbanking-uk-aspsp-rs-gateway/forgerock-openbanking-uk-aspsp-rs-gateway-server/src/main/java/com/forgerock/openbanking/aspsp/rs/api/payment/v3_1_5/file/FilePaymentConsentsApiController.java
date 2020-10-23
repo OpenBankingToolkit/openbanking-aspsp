@@ -44,7 +44,7 @@ import java.io.File;
 import java.security.Principal;
 import java.util.Collections;
 
-import static com.forgerock.openbanking.aspsp.rs.api.payment.ApiVersionMatcher.getOBVersion;
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 
 @Controller("FilePaymentConsentsApiV3.1.5")

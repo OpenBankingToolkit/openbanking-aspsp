@@ -20,36 +20,23 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_3.callbackurl;
 
-import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.EventsHelper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.events.CallbackUrlsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
-import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponseData1;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Controller("CallbackUrlsApiV3.1.3")
 public class CallbackUrlsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.callbackurl.CallbackUrlsApiController implements CallbackUrlsApi {
 
+    @Autowired
     public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
-        super(callbackUrlsRepository, tppRepository, resourceLinkService);
+        super(callbackUrlsRepository, tppRepository, resourceLinkService, new EventResponseUtil(resourceLinkService, OBVersion.v3_1_2, true));
     }
 
-    @Override
-    protected OBCallbackUrlsResponse1 packageResponse(Collection<FRCallbackUrl> frCallbackUrls) {
-        return new OBCallbackUrlsResponse1()
-                .data(new OBCallbackUrlsResponseData1()
-                        .callbackUrl(
-                                frCallbackUrls.stream()
-                                        .filter(EventsHelper.matchingVersion(OBVersion.v3_1_3))
-                                        .map(this::toOBCallbackUrlResponseData1)
-                                        .collect(Collectors.toList())
-                        )
-                );
+    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtil eventResponseUtil) {
+        super(callbackUrlsRepository, tppRepository, resourceLinkService, eventResponseUtil);
     }
 }

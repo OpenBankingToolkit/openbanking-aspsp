@@ -18,32 +18,46 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.api.payment;
+package com.forgerock.openbanking.common.utils;
 
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public abstract class ApiVersionMatcher {
-
+/**
+ * Versioning Util
+ */
+@Slf4j
+public abstract class ApiVersionUtils {
     private static final Pattern VERSION_PATTERN = Pattern.compile("v[0-9][0-9]?\\.[0-9][0-9]?\\.?[0-9]?[0-9]?");
 
     /**
-     * Provides the version of the API supported by the implementing controller (as specified in the request URI).
-     *
-     * @param requestURI the Request URI containing the API version number (e.g. v3.1.3).
-     * @return The {@link OBVersion} supported in this instance.
+     * Find and Provides the version of the API supported by this instance if it contained in the passed parameter.
+     * @param s
+     *         parameter passed to find the version supported.
+     * @return The {@link OBVersion} matching.
      */
-    public static OBVersion getOBVersion(String requestURI) {
-        Matcher matcher = VERSION_PATTERN.matcher(requestURI);
+    public static OBVersion getOBVersion(String s) {
+        Matcher matcher = VERSION_PATTERN.matcher(format(s));
         if (!matcher.find()) {
-            throw new IllegalArgumentException("Unable to determine version from request URI: " + requestURI);
+            throw new IllegalArgumentException("Unable to determine version from passed parameter: " + s);
         }
         OBVersion version = OBVersion.fromString(matcher.group());
         if (version == null) {
-            throw new IllegalArgumentException("Unknown version in request URI: " + requestURI);
+            log.debug("Unknown version value from: {}", s);
+            throw new IllegalArgumentException("Unknown version value from: " + s);
         }
         return version;
+    }
+
+    /**
+     * Format the value to normalize it the format (vX.X.X)
+     * @param s
+     * @return param formated
+     */
+    private static String format(String s){
+        return s.startsWith("http") || s.startsWith("v") ? s : "v".concat(s);
     }
 }
