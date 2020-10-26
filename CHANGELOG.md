@@ -47,6 +47,15 @@ Feature 238 - Event Notifications API (#295)
 * Event Notifications utils
 * Make Safe thread Event response util
 * Generic Event Notifications api enhancements
+### GitHub [#296](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/296) Release/1.0.106
+[4c04b6c64543efb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4c04b6c64543efb) Jorge Sanchez Perez *2020-10-23 10:18:20*
+Release/1.0.106 (#296)
+
+* Release candidate: prepare release 1.0.106
+
+* Release candidate: prepare for next development iteration
+
+* changelog updated
 [01e143ac8a5097f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/01e143ac8a5097f) JamieB *2020-10-07 09:43:22*
 Release candidate: prepare for next development iteration
 
