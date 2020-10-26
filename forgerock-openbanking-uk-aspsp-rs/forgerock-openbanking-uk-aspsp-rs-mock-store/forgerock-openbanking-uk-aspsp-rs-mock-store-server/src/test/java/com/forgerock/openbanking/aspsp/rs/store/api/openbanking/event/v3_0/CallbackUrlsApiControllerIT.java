@@ -160,7 +160,8 @@ public class CallbackUrlsApiControllerIT {
                 .asObject(OBCallbackUrlResponse1.class);
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(404);
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getBody().getData().getCallbackUrlId()).isNull();
     }
 
     @Test
