@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.event;
 
-import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -60,7 +59,7 @@ public class EventResponseUtil {
                                 frCallbackUrls.stream()
                                         // The resource can be accessed from an equal or newer api version instanced
                                         // filtering the resource can be accessed (resource version <= api version instanced)
-                                        .filter(it -> isAllowedAccessResourceFromApiVersionInstanced(it.obCallbackUrl.getData().getVersion()))
+                                        .filter(it -> isAccessToResourceAllowedFromApiVersion(it.obCallbackUrl.getData().getVersion()))
                                         .map(this::toOBCallbackUrlResponseData1)
                                         .collect(Collectors.toList())
                         )
@@ -91,7 +90,7 @@ public class EventResponseUtil {
      * @param resourceVersion the value from version field contained on the event resource
      * @return true when the operation is allow to invoke, otherwise false
      */
-    public boolean isAllowedAccessResourceFromApiVersionInstanced(String resourceVersion) {
+    public boolean isAccessToResourceAllowedFromApiVersion(String resourceVersion) {
         return this.version.equals(OBVersion.fromString(resourceVersion)) || this.version.isAfterVersion(OBVersion.fromString(resourceVersion));
     }
 

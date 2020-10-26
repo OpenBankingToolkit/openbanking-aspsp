@@ -197,7 +197,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
         if (byId.isPresent()) {
             FRCallbackUrl1 frCallbackUrl1 = byId.get();
-            if(eventResponseUtil.isAllowedAccessResourceFromApiVersionInstanced(frCallbackUrl1.getObCallbackUrl().getData().getVersion())){
+            if(eventResponseUtil.isAccessToResourceAllowedFromApiVersion(frCallbackUrl1.getObCallbackUrl().getData().getVersion())){
                 frCallbackUrl1.setObCallbackUrl(obCallbackUrl1Param);
                 callbackUrlsRepository.save(frCallbackUrl1);
                 return ResponseEntity.ok(eventResponseUtil.packageResponse(frCallbackUrl1));
@@ -236,7 +236,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     ) {
         final Optional<FRCallbackUrl1> byId = callbackUrlsRepository.findById(callbackUrlId);
         if (byId.isPresent()) {
-            if(eventResponseUtil.isAllowedAccessResourceFromApiVersionInstanced(byId.get().obCallbackUrl.getData().getVersion())){
+            if(eventResponseUtil.isAccessToResourceAllowedFromApiVersion(byId.get().obCallbackUrl.getData().getVersion())){
                 log.debug("Deleting callback url: {}", byId.get());
                 callbackUrlsRepository.deleteById(callbackUrlId);
                 return ResponseEntity.noContent().build();
