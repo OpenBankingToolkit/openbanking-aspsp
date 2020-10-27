@@ -180,10 +180,12 @@ public class DetachedJwsVerifierTest {
     }
 
     private void setupMocksForValidJws() throws ParseException, InvalidTokenException, IOException {
+        String ssa = "{\"org_jwks_endpoint\":\"TODO\",\"software_mode\":\"TEST\",\"software_redirect_uris\":[],\"org_status\":\"Active\",\"software_client_id\":\"5f98223fc10e5100103e2c5a\",\"iss\":\"ForgeRock\",\"software_jwks_endpoint\":\"https:\\/\\/service.directory.dev-ob.forgerock.financial:8074\\/api\\/software-statement\\/5f98223fc10e5100103e2c5a\\/application\\/jwk_uri\",\"software_id\":\"5f98223fc10e5100103e2c5a\",\"org_contacts\":[],\"ob_registry_tos\":\"https:\\/\\/directory.dev-ob.forgerock.financial:8074\\/tos\\/\",\"org_id\":\"5f980f21c10e5100103e2c52\",\"software_jwks_revoked_endpoint\":\"TODO\",\"software_roles\":[\"PISP\",\"CBPII\",\"DATA\",\"AISP\"],\"exp\":1604410559,\"org_name\":\"Anonymous\",\"org_jwks_revoked_endpoint\":\"TODO\",\"iat\":1603805759,\"jti\":\"b4934f04-321d-4d85-9cea-ea6015ae4372\"}";
         Tpp tpp = mock(Tpp.class);
         given(tppStoreService.findByClientId(anyString())).willReturn(Optional.of(tpp));
         OIDCRegistrationResponse oidcRegistrationResponse = mock(OIDCRegistrationResponse.class);
         given(tpp.getRegistrationResponse()).willReturn(oidcRegistrationResponse);
+        given(tpp.getSsa()).willReturn(ssa);
         given(oidcRegistrationResponse.getJwks()).willReturn(null);
         given(oidcRegistrationResponse.getJwks_uri()).willReturn(null);
         given(cryptoApiClient.validateDetachedJWS(any(), any(), any(), any(), any())).willReturn(null);
