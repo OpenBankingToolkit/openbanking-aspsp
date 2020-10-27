@@ -151,7 +151,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
             // A TPP must not access a event-subscription on an older version, via the EventSubscriptionId for an event-subscription created in a newer version
             Collection<FREventSubscription1> frEventSubscription1s = Optional.ofNullable(eventSubscriptionsRepository.findByTppId(tppId.get().id))
                     .orElseGet(Collections::emptyList)
-                    .stream().filter(frEventSubs -> eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(frEventSubs.obEventSubscription1.getData().getVersion())).collect(Collectors.toList());
+                    .stream().filter(frEventSubs -> eventResponseUtil.isAccessToResourceAllowedFromApiVersion(frEventSubs.obEventSubscription1.getData().getVersion())).collect(Collectors.toList());
             if (!frEventSubscription1s.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(packageResponse(frEventSubscription1s));
             } else {
@@ -200,7 +200,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         if (byId.isPresent()) {
             FREventSubscription1 existingEventSubscription = byId.get();
             // A TPP must not update a event-subscription on an older version, via the EventSubscriptionId for an event-subscription created in a newer version
-            if (eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(existingEventSubscription.obEventSubscription1.getData().getVersion())) {
+            if (eventResponseUtil.isAccessToResourceAllowedFromApiVersion(existingEventSubscription.obEventSubscription1.getData().getVersion())) {
                 existingEventSubscription.setObEventSubscription1(updatedSubscription);
                 eventSubscriptionsRepository.save(existingEventSubscription);
                 return ResponseEntity.ok(packageResponse(existingEventSubscription));
@@ -237,7 +237,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         final Optional<FREventSubscription1> byId = eventSubscriptionsRepository.findById(eventSubscriptionId);
         if (byId.isPresent()) {
             // A TPP must not delete a event-subscription on an older version, via the EventSubscriptionId for an event-subscription created in a newer version
-            if (eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(byId.get().obEventSubscription1.getData().getVersion())) {
+            if (eventResponseUtil.isAccessToResourceAllowedFromApiVersion(byId.get().obEventSubscription1.getData().getVersion())) {
                 log.debug("Deleting event subscriptions URL: {}", byId.get());
                 eventSubscriptionsRepository.deleteById(eventSubscriptionId);
                 return ResponseEntity.noContent().build();

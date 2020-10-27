@@ -57,13 +57,15 @@ public class EventResponseUtil {
                 .data(new OBCallbackUrlsResponseData1()
                         .callbackUrl(
                                 frCallbackUrls.stream()
-                                        .filter(it -> it.obCallbackUrl.getData().getVersion().equals(version.getCanonicalVersion()))
+                                        // The resource can be accessed from an equal or newer api version instanced
+                                        // filtering the resource can be accessed (resource version <= api version instanced)
+                                        .filter(it -> isAccessToResourceAllowedFromApiVersion(it.obCallbackUrl.getData().getVersion()))
                                         .map(this::toOBCallbackUrlResponseData1)
                                         .collect(Collectors.toList())
                         )
                 ).meta(shouldHaveMetaSection() ? new Meta() : null)
                 .links(
-                        (shouldHaveMetaSection() ? toSelfLink(frCallbackUrls.stream().findFirst().get()) : null)
+                        (shouldHaveMetaSection() ? (!frCallbackUrls.isEmpty() ? toSelfLink(frCallbackUrls.stream().findFirst().get()) : null) : null)
                 );
     }
 
@@ -82,12 +84,13 @@ public class EventResponseUtil {
     }
 
     /**
-     * Check if is allowed to invoke the operation comparing the Api version with the event resource version <br />
+     * Check if is allowed to invoke the operation or access the resources comparing the Api version with the event resource version <br />
      * A TPP must not allowed to invoke a operation of event from an older api version if the resource was created in a newer version. <br />
+     * This method is being used also to filter the resources that can be accessed by the api instanced <br />
      * @param resourceVersion the value from version field contained on the event resource
      * @return true when the operation is allow to invoke, otherwise false
      */
-    public boolean IsAllowedAccessResourceFromApiVersionInstanced(String resourceVersion) {
+    public boolean isAccessToResourceAllowedFromApiVersion(String resourceVersion) {
         return this.version.equals(OBVersion.fromString(resourceVersion)) || this.version.isAfterVersion(OBVersion.fromString(resourceVersion));
     }
 
