@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository;
+package com.forgerock.openbanking.repositories;
 
 import com.forgerock.openbanking.model.Tpp;
 import org.joda.time.DateTime;
@@ -30,7 +30,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Collection;
 
 @RepositoryRestResource
-public interface TppRepository extends MongoRepository<Tpp, String> {
+public interface TppRepositoryOld extends MongoRepository<Tpp, String> {
 
     Collection<Tpp> findByCertificateCn(@Param("certificateCn") String certificateCn);
 
