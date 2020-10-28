@@ -56,6 +56,17 @@ Release/1.0.106 (#296)
 * Release candidate: prepare for next development iteration
 
 * changelog updated
+### GitHub [#298](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/298) Feature/238 3 event notifications
+[d7bb9446f0f1983](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d7bb9446f0f1983) Jorge Sanchez Perez *2020-10-27 08:43:12*
+Feature/238 3 event notifications (#298)
+
+* Event Notifications API - Feature 238
+- improvements callback URL response
+  - Response data empty with htpp code 200 when doesn't exist callback resource to return
+
+* New integration test implemented for callbackurl 3.1.2
+
+* update method name
 [01e143ac8a5097f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/01e143ac8a5097f) JamieB *2020-10-07 09:43:22*
 Release candidate: prepare for next development iteration
 
