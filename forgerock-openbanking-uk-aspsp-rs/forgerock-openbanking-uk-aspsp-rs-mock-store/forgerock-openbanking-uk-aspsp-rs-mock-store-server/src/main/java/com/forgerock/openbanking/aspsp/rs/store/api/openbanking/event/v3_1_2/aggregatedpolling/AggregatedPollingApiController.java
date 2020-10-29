@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.aggregatedpolling;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
+import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.service.event.EventPollingService;
 import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventPolling;
 import com.forgerock.openbanking.common.openbanking.OBReference;

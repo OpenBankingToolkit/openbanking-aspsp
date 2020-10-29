@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.callbackurl;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.events.CallbackUrlsRepository;
+import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -45,6 +45,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -155,7 +156,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
                 .map(urls -> {
                     if (urls.isEmpty()) {
                         log.warn("No CallbackURL found for client id '{}'", clientId);
-                        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                        return ResponseEntity.ok(eventResponseUtil.packageResponse(Collections.emptyList()));
                     }
                     return ResponseEntity.ok(eventResponseUtil.packageResponse(urls));
                 })
@@ -196,7 +197,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
 
         if (byId.isPresent()) {
             FRCallbackUrl frCallbackUrl = byId.get();
-            if (eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(frCallbackUrl.getCallbackUrl().getVersion())) {
+            if (eventResponseUtil.isAccessToResourceAllowedFromApiVersion(frCallbackUrl.getCallbackUrl().getVersion())) {
                 frCallbackUrl.setCallbackUrl(toFRCallbackUrlData(obCallbackUrl1Param));
                 callbackUrlsRepository.save(frCallbackUrl);
                 return ResponseEntity.ok(eventResponseUtil.packageResponse(frCallbackUrl));
@@ -236,7 +237,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
     ) throws OBErrorResponseException {
         final Optional<FRCallbackUrl> byId = callbackUrlsRepository.findById(callbackUrlId);
         if (byId.isPresent()) {
-            if (eventResponseUtil.IsAllowedAccessResourceFromApiVersionInstanced(byId.get().getCallbackUrl().getVersion())) {
+            if (eventResponseUtil.isAccessToResourceAllowedFromApiVersion(byId.get().getCallbackUrl().getVersion())) {
                 log.debug("Deleting callback url: {}", byId.get());
                 callbackUrlsRepository.deleteById(callbackUrlId);
                 return ResponseEntity.noContent().build();

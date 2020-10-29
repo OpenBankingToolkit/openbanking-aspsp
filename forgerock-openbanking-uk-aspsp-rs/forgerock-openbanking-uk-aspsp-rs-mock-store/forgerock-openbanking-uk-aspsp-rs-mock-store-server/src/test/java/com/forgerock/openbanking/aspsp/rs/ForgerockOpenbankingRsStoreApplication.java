@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.ManualRegistrationApplicationRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
+import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationApplication;
 import com.forgerock.openbanking.model.Tpp;
 import org.springframework.boot.SpringApplication;

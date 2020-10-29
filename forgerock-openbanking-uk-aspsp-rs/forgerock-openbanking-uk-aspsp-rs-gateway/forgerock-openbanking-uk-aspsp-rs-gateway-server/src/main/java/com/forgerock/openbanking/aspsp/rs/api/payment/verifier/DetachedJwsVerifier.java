@@ -28,6 +28,7 @@ import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
+import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jose.util.StandardCharset;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
@@ -42,6 +43,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 import java.util.Base64;
+import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -83,10 +85,16 @@ public class DetachedJwsVerifier {
             }
             UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
             Tpp tpp = tppStoreService.findByClientId(currentUser.getUsername()).get();
+            String softwareStatement = tpp.getSsa();
+            Map<String, Object> softwareStatmentObjects = JSONObjectUtils.parse(softwareStatement);
+            Object orgId = (String) softwareStatmentObjects.get("org_id");
+            String softwareId = (String) softwareStatmentObjects.get("software_id");
+            String expectedIssuer = orgId + "/" + softwareId;
+
             if (tpp.getRegistrationResponse().getJwks() != null) {
-                cryptoApiClient.validateDetachedJWSWithJWK(detachedJws, body, null, tpp.getClientId(), tpp.getRegistrationResponse().getJwks().getKeys().get(0));
+                cryptoApiClient.validateDetachedJWSWithJWK(detachedJws, body, null, expectedIssuer, tpp.getRegistrationResponse().getJwks().getKeys().get(0));
             } else {
-                cryptoApiClient.validateDetachedJWS(detachedJws, body, null, tpp.getClientId(), tpp.getRegistrationResponse().getJwks_uri());
+                cryptoApiClient.validateDetachedJWS(detachedJws, body, null, expectedIssuer, tpp.getRegistrationResponse().getJwks_uri());
             }
         } catch (InvalidTokenException e) {
             log.warn("Invalid detached signature {}", detachedJws, e);

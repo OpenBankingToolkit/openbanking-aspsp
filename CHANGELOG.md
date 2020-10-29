@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[03aa1764ad272fd](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/03aa1764ad272fd) JamieB *2020-10-28 15:31:53*
+Release candidate: prepare for next development iteration
+## 1.0.107
 ### GitHub [#288](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/288) Feature 238 - Events
 [0d0f71bf542d439](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0d0f71bf542d439) Jorge Sanchez Perez *2020-10-12 14:52:04*
 Feature 238 - Events (#288)
@@ -56,6 +59,31 @@ Release/1.0.106 (#296)
 * Release candidate: prepare for next development iteration
 
 * changelog updated
+### GitHub [#298](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/298) Feature/238 3 event notifications
+[d7bb9446f0f1983](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d7bb9446f0f1983) Jorge Sanchez Perez *2020-10-27 08:43:12*
+Feature/238 3 event notifications (#298)
+
+* Event Notifications API - Feature 238
+- improvements callback URL response
+  - Response data empty with htpp code 200 when doesn't exist callback resource to return
+
+* New integration test implemented for callbackurl 3.1.2
+
+* update method name
+[d38b02082439ac4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d38b02082439ac4) JamieB *2020-10-28 15:31:44*
+Release candidate: prepare release 1.0.107
+[6e3353ad3843cf5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6e3353ad3843cf5) JamieB *2020-10-28 15:20:56*
+Use non-snapshot version of openbanking-commons
+
+Part of https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/12
+[1687d23e9fba497](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1687d23e9fba497) JamieB *2020-10-28 08:06:51*
+Uses TppRepository from commons
+
+Part fix for https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/12
+[98f89a3fb19e57e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/98f89a3fb19e57e) JamieB *2020-10-27 17:40:58*
+Expects the jws iss to be {{orgId}}/{{softwareId}}
+
+Part fix for https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/12
 [01e143ac8a5097f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/01e143ac8a5097f) JamieB *2020-10-07 09:43:22*
 Release candidate: prepare for next development iteration
 
