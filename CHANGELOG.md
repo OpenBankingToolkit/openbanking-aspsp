@@ -1,8 +1,75 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#296](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/296) Release/1.0.106
+[bc8b0505430a540](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bc8b0505430a540) Matt Wills *2020-10-30 09:11:13*
+Test commit on new machine (minor change) #296
+[2041ada4ae95476](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2041ada4ae95476) Matt Wills *2020-10-21 09:51:59*
+Migration of Events and Funds documents to v3.1.6 objects with new FR model domain (#296)
+[5dc29d11646472e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5dc29d11646472e) Matt Wills *2020-10-20 13:42:20*
+Migration of additional documents to simplified naming strategy, with new FR model objects (#296)
+[d446ad3686aef5e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d446ad3686aef5e) Matt Wills *2020-10-19 10:38:21*
+Restored account data migration. Renamed migration specific converters to xMigrator to avoid name conflicts and to make it clear they're only intended for migration (#296)
+[695f72670736d36](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/695f72670736d36) Matt Wills *2020-10-15 09:37:29*
+Fixed verifyRiskAndInitiation check (#296)
+[4d1aafe7ee6f144](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4d1aafe7ee6f144) Matt Wills *2020-10-14 20:03:51*
+Reverted FRAccountData and FRUserData back to OB objects (as these are passed back to the customer). Moved them out of the persistence package, since they are not saved in Mongo (#296).
+[1dffc5e810b2f92](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1dffc5e810b2f92) Matt Wills *2020-10-14 08:04:42*
+Removed redundant findByIdentification method to fix Spring wiring issue (#296)
+[61d0a2236bb1e1a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/61d0a2236bb1e1a) Matt Wills *2020-10-13 15:16:01*
+Replaced OBWriteInternationalConsentResponse6DataExchangeRateInformation with FRExchangeRateInformation within international document classes.
+Made collections within FR domain objects plural (#296).
+[2a4eed2bb99661b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2a4eed2bb99661b) Matt Wills *2020-10-07 09:57:55*
+Accounts, Events and Funds confirmation refactoring (#296)
+
+Stage 1: Removed previous version mongo documents and repositories. Switched to one set of FR documents and repositories (with no number prefix) (#296)
+
+To do:
+Stage 2: Either fix or remove CDR
+Stage 3: Create new FR domain domains objects
+Stage 4: Convert document classes to use new domain objects
+Stage 5: Fix account, event and funds migration
+[63c3e732e8d57a6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/63c3e732e8d57a6) Matt Wills *2020-10-07 09:44:11*
+Added javadoc to FR domain objects (#296)
+[5c3272baf991774](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5c3272baf991774) Matt Wills *2020-10-07 09:44:11*
+Fixed idempotency checks and made logging more consistent (#296)
+[4695f1f772077f9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4695f1f772077f9) Matt Wills *2020-10-07 09:44:11*
+Tidied up currency conversion (#296)
+[0d38bbf3db00f45](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0d38bbf3db00f45) Matt Wills *2020-10-07 09:44:11*
+Rebased master. Bumped version of parent to include required changes from uk-datamodel. Removed unused method from DetachedJwsVerifier (#296)
+[7c2e54213d1c60d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7c2e54213d1c60d) Matt Wills *2020-10-07 09:44:10*
+FR mongo submission documents now using new FR submission objects, instead of OB model (#296)
+[13b68b0a65d94b0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/13b68b0a65d94b0) Matt Wills *2020-10-07 09:44:10*
+Moved accounts, events and funds FR documents under persistence package (#296)
+[c22b492c588e5a7](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c22b492c588e5a7) Matt Wills *2020-10-07 09:44:09*
+Moved accounts, events and funds FR documents under persistence package (#296)
+[2b02a773e708540](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2b02a773e708540) Matt Wills *2020-10-07 09:44:09*
+Renamed and moved submission repositories and FR documents (#296)
+[3dde9c0acdfc25a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3dde9c0acdfc25a) Matt Wills *2020-10-07 09:44:08*
+Changed FR consent mongo document classes to use new FR model objects, instead of OB model. Fixes to ITs to follow (#296)
+[309b9f0bdfb21b3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/309b9f0bdfb21b3) Matt Wills *2020-10-07 09:44:08*
+Added domain objects for Submission based FR document classes (#296)
+[1e6c0f3b555e68d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1e6c0f3b555e68d) Matt Wills *2020-10-07 09:44:08*
+Fixed ITs (#296)
+[0ac2d389d451ab0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0ac2d389d451ab0) Matt Wills *2020-10-07 09:44:08*
+Removed redundant submission repositories and FR documents (#296)
 [03aa1764ad272fd](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/03aa1764ad272fd) JamieB *2020-10-28 15:31:53*
 Release candidate: prepare for next development iteration
+[dc9ee81b8f4aef9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/dc9ee81b8f4aef9) Matt Wills *2020-10-13 13:48:35*
+Removed CDR poms (which were re-introduced after merging master)
+[ff15efad0332659](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ff15efad0332659) Matt Wills *2020-10-13 13:27:08*
+Added javadoc and moved EventsHelper
+[d8e7b27d359bbdb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d8e7b27d359bbdb) Matt Wills *2020-10-13 12:21:24*
+Multiple required changes to compile and run tests, after moving to new FR domain model
+[467a046c17283ea](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/467a046c17283ea) Matt Wills *2020-10-13 11:09:01*
+Added FR Event and Funds domain model for storing within mongo
+[b671faa44d1fd32](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b671faa44d1fd32) Matt Wills *2020-10-08 09:16:23*
+Added FR Account domain model for storing within mongo
+Renamed some of the existing payment domain objects due to name clashes
+[2392d90dee57361](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2392d90dee57361) Matt Wills *2020-10-07 11:16:36*
+Removed CDR modules
+[f41ead4b52c921f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f41ead4b52c921f) Matt Wills *2020-10-07 09:44:08*
+Removed legacy payment consent repositories and their corresponding FR document classes. Removed redundant converters. Updated conversion methods within API controllers
 ## 1.0.107
 ### GitHub [#288](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/288) Feature 238 - Events
 [0d0f71bf542d439](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0d0f71bf542d439) Jorge Sanchez Perez *2020-10-12 14:52:04*
