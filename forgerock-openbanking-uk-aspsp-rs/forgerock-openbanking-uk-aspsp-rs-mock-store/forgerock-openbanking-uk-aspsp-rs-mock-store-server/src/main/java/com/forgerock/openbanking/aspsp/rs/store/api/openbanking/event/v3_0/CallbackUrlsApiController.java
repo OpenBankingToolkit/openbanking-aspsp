@@ -209,7 +209,7 @@ public class CallbackUrlsApiController implements CallbackUrlsApi {
             // Spec isn't clear on if we should
             // 1. Reject a PUT for a resource id that does not exist
             // 2. Create a new resource for a PUT for resource id that does not exist
-            // Option 2 is more restful but the examples in spec only use PUT for amending urls so currently I am implementing option 1.
+            // Option 2 is more restful but the examples in spec only use PUT for amending urls so I am implementing option 1.
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Callback URL: '" + callbackUrlId + "' can't be found");
         }
     }
