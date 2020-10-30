@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.common.services.store.balance;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -48,7 +48,7 @@ public class BalanceStoreServiceImpl implements BalanceStoreService {
     @Override
     public Optional getBalance(String accountId, OBBalanceType1Code type) {
 
-        ParameterizedTypeReference<Optional<FRBalance1>> ptr = new ParameterizedTypeReference<Optional<FRBalance1>>(){};
+        ParameterizedTypeReference<Optional<FRBalance>> ptr = new ParameterizedTypeReference<Optional<FRBalance>>(){};
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + "/api/balances/search/findByAccountId");
@@ -56,7 +56,7 @@ public class BalanceStoreServiceImpl implements BalanceStoreService {
         builder.queryParam("type", type.name());
         URI uri = builder.build().encode().toUri();
 
-        ResponseEntity<Optional<FRBalance1>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<Optional<FRBalance>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
         return entity.getBody();
     }
 
@@ -66,8 +66,8 @@ public class BalanceStoreServiceImpl implements BalanceStoreService {
      * @param balance a balance
      */
     @Override
-    public void updateBalance(FRBalance balance) {
-        HttpEntity<FRBalance> request = new HttpEntity<>(balance, new HttpHeaders());
+    public void updateBalance(Balance balance) {
+        HttpEntity<Balance> request = new HttpEntity<>(balance, new HttpHeaders());
         restTemplate.exchange(
                 rsStoreRoot + "/api/balances/",
                 HttpMethod.PUT, request, Void.class);

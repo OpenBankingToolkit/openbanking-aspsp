@@ -27,14 +27,15 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.
 
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderConsentRepository;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import lombok.extern.slf4j.Slf4j;
@@ -45,19 +46,20 @@ import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6Data;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse5Data.PermissionEnum;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.v3_1_3.converter.payment.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalStandingOrderConsentResponse5DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_3.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalStandingOrderConsentResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsent6;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBWriteInternationalStandingOrderConsentResponse5DataPermission;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
@@ -65,12 +67,12 @@ import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInte
 @Slf4j
 public class InternationalStandingOrderConsentsApiController implements InternationalStandingOrderConsentsApi {
 
-    private final InternationalStandingOrderConsent5Repository internationalStandingOrderConsentRepository;
+    private final InternationalStandingOrderConsentRepository internationalStandingOrderConsentRepository;
     private final TppRepository tppRepository;
     private final ResourceLinkService resourceLinkService;
     private final ConsentMetricService consentMetricService;
 
-    public InternationalStandingOrderConsentsApiController(ConsentMetricService consentMetricService, InternationalStandingOrderConsent5Repository internationalStandingOrderConsentRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
+    public InternationalStandingOrderConsentsApiController(ConsentMetricService consentMetricService, InternationalStandingOrderConsentRepository internationalStandingOrderConsentRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         this.internationalStandingOrderConsentRepository = internationalStandingOrderConsentRepository;
         this.tppRepository = tppRepository;
         this.resourceLinkService = resourceLinkService;
@@ -90,32 +92,34 @@ public class InternationalStandingOrderConsentsApiController implements Internat
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received '{}'.", obWriteInternationalStandingOrderConsent5);
+        log.debug("Received: '{}'", obWriteInternationalStandingOrderConsent5);
+        FRWriteInternationalStandingOrderConsent frStandingOrderConsent = toFRWriteInternationalStandingOrderConsent(obWriteInternationalStandingOrderConsent5);
+        log.trace("Converted to: '{}'", frStandingOrderConsent);
 
         Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        Optional<FRInternationalStandingOrderConsent5> consentByIdempotencyKey = internationalStandingOrderConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRInternationalStandingOrderConsent> consentByIdempotencyKey = internationalStandingOrderConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, obWriteInternationalStandingOrderConsent5, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalStandingOrderConsent());
+            validateIdempotencyRequest(xIdempotencyKey, frStandingOrderConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalStandingOrderConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
-        FRInternationalStandingOrderConsent5 internationalStandingOrderConsent = FRInternationalStandingOrderConsent5.builder()
+        FRInternationalStandingOrderConsent internationalStandingOrderConsent = FRInternationalStandingOrderConsent.builder()
                 .id(IntentType.PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .internationalStandingOrderConsent(toOBWriteInternationalStandingOrderConsent6(obWriteInternationalStandingOrderConsent5))
+                .internationalStandingOrderConsent(frStandingOrderConsent)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
                 .idempotencyKey(xIdempotencyKey)
                 .version(VersionPathExtractor.getVersionFromPath(request))
                 .build();
-        log.debug("Saving consent: {}", internationalStandingOrderConsent);
+        log.debug("Saving consent: '{}'", internationalStandingOrderConsent);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(internationalStandingOrderConsent.getId(), internationalStandingOrderConsent.getStatus().name()));
         internationalStandingOrderConsent = internationalStandingOrderConsentRepository.save(internationalStandingOrderConsent);
-        log.info("Created consent id: {}", internationalStandingOrderConsent.getId());
+        log.info("Created consent id: '{}'", internationalStandingOrderConsent.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(internationalStandingOrderConsent));
     }
 
@@ -129,32 +133,28 @@ public class InternationalStandingOrderConsentsApiController implements Internat
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRInternationalStandingOrderConsent5> isInternationalStandingOrderConsent = internationalStandingOrderConsentRepository.findById(consentId);
+        Optional<FRInternationalStandingOrderConsent> isInternationalStandingOrderConsent = internationalStandingOrderConsentRepository.findById(consentId);
         if (!isInternationalStandingOrderConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("International  consent '" + consentId + "' can't be found");
         }
-        FRInternationalStandingOrderConsent5 internationalStandingOrderConsent = isInternationalStandingOrderConsent.get();
+        FRInternationalStandingOrderConsent internationalStandingOrderConsent = isInternationalStandingOrderConsent.get();
 
         return ResponseEntity.ok(packageResponse(internationalStandingOrderConsent));
     }
 
-    private OBWriteInternationalStandingOrderConsentResponse5 packageResponse(FRInternationalStandingOrderConsent5 internationalStandingOrderConsent) {
+    private OBWriteInternationalStandingOrderConsentResponse5 packageResponse(FRInternationalStandingOrderConsent internationalStandingOrderConsent) {
         return new OBWriteInternationalStandingOrderConsentResponse5()
                 .data(new OBWriteInternationalStandingOrderConsentResponse5Data()
-                        .initiation(internationalStandingOrderConsent.getInitiation())
+                        .initiation(toOBWriteInternationalStandingOrder4DataInitiation(internationalStandingOrderConsent.getInitiation()))
                         .status(toOBWriteInternationalStandingOrderConsentResponse5DataStatus(internationalStandingOrderConsent.getStatus()))
                         .creationDateTime(internationalStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(internationalStandingOrderConsent.getStatusUpdate())
                         .consentId(internationalStandingOrderConsent.getId())
-                        .permission(toPermission(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getPermission()))
+                        .permission(toOBWriteInternationalStandingOrderConsentResponse5DataPermission(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getPermission()))
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getAuthorisation()))
-                ).risk(internationalStandingOrderConsent.getRisk())
+                ).risk(toOBRisk1(internationalStandingOrderConsent.getRisk()))
                 .links(resourceLinkService.toSelfLink(internationalStandingOrderConsent, discovery -> getVersion(discovery).getGetInternationalStandingOrderConsent()))
                 .meta(new Meta());
-    }
-
-    private PermissionEnum toPermission(OBWriteInternationalStandingOrderConsent6Data.PermissionEnum permission) {
-        return permission == null ? null : PermissionEnum.valueOf(permission.name());
     }
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {

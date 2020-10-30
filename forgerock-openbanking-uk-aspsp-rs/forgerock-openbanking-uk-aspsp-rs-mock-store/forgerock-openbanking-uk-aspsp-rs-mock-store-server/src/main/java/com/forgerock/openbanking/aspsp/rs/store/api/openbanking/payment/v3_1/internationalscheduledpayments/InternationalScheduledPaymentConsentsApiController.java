@@ -23,13 +23,15 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.in
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalScheduledConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledConsent;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
@@ -49,9 +51,7 @@ import uk.org.openbanking.datamodel.payment.OBFundsAvailableResult1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduledConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse2;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,22 +60,23 @@ import java.security.Principal;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBAuthorisation1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBExchangeRate2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBInternationalScheduled2;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsent5;
 
 @Controller("InternationalScheduledPaymentConsentsApiV3.1")
 @Slf4j
 public class InternationalScheduledPaymentConsentsApiController implements InternationalScheduledPaymentConsentsApi {
-    private final InternationalScheduledConsent5Repository internationalScheduledConsentRepository;
+    private final InternationalScheduledConsentRepository internationalScheduledConsentRepository;
     private final TppRepository tppRepository;
     private final FundsAvailabilityService fundsAvailabilityService;
     private final ResourceLinkService resourceLinkService;
     private ConsentMetricService consentMetricService;
 
-    public InternationalScheduledPaymentConsentsApiController(ConsentMetricService consentMetricService, InternationalScheduledConsent5Repository internationalScheduledConsentRepository, TppRepository tppRepository, FundsAvailabilityService fundsAvailabilityService, ResourceLinkService resourceLinkService) {
+    public InternationalScheduledPaymentConsentsApiController(ConsentMetricService consentMetricService, InternationalScheduledConsentRepository internationalScheduledConsentRepository, TppRepository tppRepository, FundsAvailabilityService fundsAvailabilityService, ResourceLinkService resourceLinkService) {
         this.internationalScheduledConsentRepository = internationalScheduledConsentRepository;
         this.tppRepository = tppRepository;
         this.fundsAvailabilityService = fundsAvailabilityService;
@@ -83,7 +84,6 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         this.consentMetricService = consentMetricService;
     }
 
-    @Override
     public ResponseEntity<OBWriteInternationalScheduledConsentResponse2> createInternationalScheduledPaymentConsents(
             @ApiParam(value = "Default", required = true)
             @Valid
@@ -121,34 +121,34 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received '{}'.", obWriteInternationalScheduledConsent2);
-        OBWriteInternationalScheduledConsent5 consent5 = toOBWriteInternationalScheduledConsent5(obWriteInternationalScheduledConsent2);
-        log.trace("Converted request body to {}", consent5.getClass());
+        log.debug("Received: '{}'", obWriteInternationalScheduledConsent2);
+        FRWriteInternationalScheduledConsent frScheduledConsent = toFRWriteInternationalScheduledConsent(obWriteInternationalScheduledConsent2);
+        log.trace("Converted to: '{}'", frScheduledConsent);
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        Optional<FRInternationalScheduledConsent5> consentByIdempotencyKey = internationalScheduledConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRInternationalScheduledConsent> consentByIdempotencyKey = internationalScheduledConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, consent5, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalScheduledConsent());
+            validateIdempotencyRequest(xIdempotencyKey, frScheduledConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalScheduledConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
-        FRInternationalScheduledConsent5 internationalScheduledConsent = FRInternationalScheduledConsent5.builder()
+        FRInternationalScheduledConsent internationalScheduledConsent = FRInternationalScheduledConsent.builder()
                 .id(IntentType.PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGAUTHORISATION)
-                .internationalScheduledConsent(consent5)
+                .internationalScheduledConsent(frScheduledConsent)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .statusUpdate(DateTime.now())
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
-        log.debug("Saving consent: {}", internationalScheduledConsent);
+        log.debug("Saving consent: '{}'", internationalScheduledConsent);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(internationalScheduledConsent.getId(), internationalScheduledConsent.getStatus().name()));
         internationalScheduledConsent = internationalScheduledConsentRepository.save(internationalScheduledConsent);
-        log.info("Created consent id: {}", internationalScheduledConsent.getId());
+        log.info("Created consent id: '{}'", internationalScheduledConsent.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(internationalScheduledConsent));
     }
 
@@ -180,11 +180,11 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRInternationalScheduledConsent5> isScheduledConsent = internationalScheduledConsentRepository.findById(consentId);
+        Optional<FRInternationalScheduledConsent> isScheduledConsent = internationalScheduledConsentRepository.findById(consentId);
         if (!isScheduledConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("International scheduled consent '" + consentId + "' can't be found");
         }
-        FRInternationalScheduledConsent5 internationalScheduledConsent = isScheduledConsent.get();
+        FRInternationalScheduledConsent internationalScheduledConsent = isScheduledConsent.get();
 
         return ResponseEntity.ok(packageResponse(internationalScheduledConsent));
     }
@@ -220,11 +220,11 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRInternationalScheduledConsent5> isScheduledConsent = internationalScheduledConsentRepository.findById(consentId);
+        Optional<FRInternationalScheduledConsent> isScheduledConsent = internationalScheduledConsentRepository.findById(consentId);
         if (!isScheduledConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("International scheduled consent '" + consentId + "' can't be found");
         }
-        FRInternationalScheduledConsent5 internationalScheduledConsent = isScheduledConsent.get();
+        FRInternationalScheduledConsent internationalScheduledConsent = isScheduledConsent.get();
 
 
         // Check if funds are available on the account selected in consent
@@ -245,8 +245,8 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                 );
     }
 
-    private OBWriteInternationalScheduledConsentResponse2 packageResponse(FRInternationalScheduledConsent5 internationalScheduledConsent) {
-        final OBWriteInternationalScheduled3DataInitiation initiation = internationalScheduledConsent.getInitiation();
+    private OBWriteInternationalScheduledConsentResponse2 packageResponse(FRInternationalScheduledConsent internationalScheduledConsent) {
+        FRWriteInternationalScheduledDataInitiation initiation = internationalScheduledConsent.getInitiation();
         return new OBWriteInternationalScheduledConsentResponse2()
                 .data(new OBWriteDataInternationalScheduledConsentResponse2()
                         .initiation(toOBInternationalScheduled2(initiation))
@@ -259,7 +259,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                         .expectedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                         .authorisation(toOBAuthorisation1(internationalScheduledConsent.getInternationalScheduledConsent().getData().getAuthorisation()))
                 )
-                .risk(internationalScheduledConsent.getRisk())
+                .risk(toOBRisk1(internationalScheduledConsent.getRisk()))
                 .links(resourceLinkService.toSelfLink(internationalScheduledConsent, discovery -> discovery.getV_3_1().getGetInternationalScheduledPaymentConsent()))
                 .meta(new Meta());
     }

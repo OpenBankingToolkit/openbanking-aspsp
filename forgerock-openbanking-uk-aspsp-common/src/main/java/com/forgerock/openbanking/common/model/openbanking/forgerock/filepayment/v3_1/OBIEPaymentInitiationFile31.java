@@ -23,6 +23,7 @@ package com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FileParseException;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
@@ -34,7 +35,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.payment.OBDomestic2;
 import uk.org.openbanking.datamodel.payment.OBRemittanceInformation1;
 
@@ -42,6 +42,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 
 /**
  * This is an internal model of the JSON-based "UK.OBIE.PaymentInitiation.3.1" file type
@@ -74,7 +76,7 @@ public class OBIEPaymentInitiationFile31 implements PaymentFile {
     public BigDecimal getControlSum() {
         return payments.stream()
                 .map(FRFilePayment::getInstructedAmount)
-                .map(OBActiveOrHistoricCurrencyAndAmount::getAmount)
+                .map(FRAmount::getAmount)
                 .map(BigDecimal::new)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
@@ -121,7 +123,7 @@ public class OBIEPaymentInitiationFile31 implements PaymentFile {
         return FRFilePayment.builder()
                 .instructionIdentification(payment.getInstructionIdentification())
                 .endToEndIdentification(payment.getEndToEndIdentification())
-                .instructedAmount(payment.getInstructedAmount())
+                .instructedAmount(toFRAmount(payment.getInstructedAmount()))
                 .created(DateTime.now())
                 .creditorAccountIdentification(payment.getCreditorAccount().getIdentification())
                 .remittanceReference(remittanceInformation.map(OBRemittanceInformation1::getReference).orElse(""))

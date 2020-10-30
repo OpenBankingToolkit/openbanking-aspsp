@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report;
 
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRFileConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -56,7 +56,7 @@ public class PaymentReportFile1Service {
         this.obiePainXmlReportBuilder = obiePainXmlReportBuilder;
     }
 
-    public String createPaymentReport(final FRFileConsent1 consent) throws OBErrorResponseException {
+    public String createPaymentReport(final FRFileConsent consent) throws OBErrorResponseException {
         log.debug("Create file payment report for consent: {}", consent);
         Preconditions.checkNotNull(consent, "Consent cannot be null");
         Preconditions.checkArgument(!StringUtils.isEmpty(consent.getFileContent()), "File consent cannot have empty file content when generating report file"); // Should not reach this stage so illegal argument exception due to coding error

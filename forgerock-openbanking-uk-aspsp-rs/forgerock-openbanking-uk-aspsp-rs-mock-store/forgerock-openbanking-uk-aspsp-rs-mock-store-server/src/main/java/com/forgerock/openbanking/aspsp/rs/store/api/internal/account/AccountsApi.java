@@ -25,8 +25,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequestMapping(value = "/api/accounts")
 public interface AccountsApi {
@@ -42,7 +41,7 @@ public interface AccountsApi {
     @RequestMapping(value = "/search/findByUserId",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<List<FRAccountWithBalance>> getAccounts(
+    ResponseEntity<List<AccountWithBalance>> getAccounts(
             @RequestParam("userId") String userId,
             @RequestParam(value = "withBalance", required = false, defaultValue = "false") Boolean withBalance
     );
@@ -50,22 +49,15 @@ public interface AccountsApi {
     @RequestMapping(value = "/permissions/{accountId}",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<FRAccount4> findByAccountId(
+    ResponseEntity<FRAccount> findByAccountId(
             @PathVariable("accountId") String accountId,
             @RequestParam("permissions") List<String> permissions
-    );
-
-    @RequestMapping(value = "/search/findByIdentification",
-            produces = { "application/json; charset=utf-8" },
-            method = RequestMethod.GET)
-    ResponseEntity<Optional<FRAccount4>> findByIdentification(
-            @RequestParam("identification") String identification
     );
 
     @RequestMapping(value = "/{accountId}",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<FRAccount4> getAccount(
+    ResponseEntity<FRAccount> getAccount(
             @PathVariable("accountId") String accountId
     );
 }

@@ -23,10 +23,12 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderConsentRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -61,9 +63,12 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorAgentTestDataFactory.aValidFRDataInitiationCreditorAgent;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRDataInitiationCreditorTestDataFactory.aValidFRDataInitiationCreditor;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderDataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBWriteInternationalStandingOrder4DataInitiation;
 import static uk.org.openbanking.testsupport.payment.OBWriteInternationalStandingOrderConsentTestDataFactory.aValidOBWriteInternationalStandingOrderConsent3;
 
 /**
@@ -77,7 +82,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private InternationalStandingOrderConsent5Repository repository;
+    private InternationalStandingOrderConsentRepository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -97,7 +102,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
     public void testGetInternationalStandingOrderPaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalStandingOrderConsent5 consent = JMockData.mock(FRInternationalStandingOrderConsent5.class);
+        FRInternationalStandingOrderConsent consent = JMockData.mock(FRInternationalStandingOrderConsent.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         setupTestConsentInitiation(consent.getInitiation());
         repository.save(consent);
@@ -111,7 +116,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(toOBWriteInternationalStandingOrder4DataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
+        assertThat(toFRWriteInternationalStandingOrderDataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
         assertThat(response.getBody().getData().getStatus()).isEqualTo(consent.getStatus().toOBExternalConsentStatus1Code());
     }
 
@@ -119,7 +124,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
     public void testGetInternationalStandingOrderPaymentConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRInternationalStandingOrderConsent5 consent = JMockData.mock(FRInternationalStandingOrderConsent5.class);
+        FRInternationalStandingOrderConsent consent = JMockData.mock(FRInternationalStandingOrderConsent.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
         // When
@@ -161,9 +166,9 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteInternationalStandingOrderConsentResponse3 consentResponse = response.getBody();
-        FRInternationalStandingOrderConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRInternationalStandingOrderConsent consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(toOBWriteInternationalStandingOrder4DataInitiation(consentResponse.getData().getInitiation()));
+        assertThat(consent.getInitiation()).isEqualTo(toFRWriteInternationalStandingOrderDataInitiation(consentResponse.getData().getInitiation()));
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
         assertThat(consent.getPispName()).isEqualTo(PaymentTestHelper.MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
@@ -180,12 +185,25 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         initiation.numberOfPayments("12");
         initiation.setCreditor(new OBWriteInternational3DataInitiationCreditor().name("user").postalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square"))));
         initiation.setCreditorAgent(new OBWriteInternationalStandingOrder4DataInitiationCreditorAgent().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber"));
-        initiation.getCreditor().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
-        initiation.getCreditorAgent().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
-        initiation.getCreditorAgent().setPostalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square")));
         initiation.setExtendedPurpose(null);
         initiation.setDestinationCountryCode("GB");
         initiation.setSupplementaryData(new OBSupplementaryData1());
+    }
+
+    private static void setupTestConsentInitiation(FRWriteInternationalStandingOrderDataInitiation initiation) {
+        initiation.setPurpose("test");
+        initiation.setInstructedAmount(aValidFRAmount());
+        initiation.setCurrencyOfTransfer("GBP");
+        initiation.setFirstPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFinalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFrequency("EvryDay");
+        initiation.setReference("123");
+        initiation.setNumberOfPayments("12");
+        initiation.setCreditor(aValidFRDataInitiationCreditor());
+        initiation.setCreditorAgent(aValidFRDataInitiationCreditorAgent());
+        initiation.setExtendedPurpose(null);
+        initiation.setDestinationCountryCode("GB");
+        initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
     }
 
 }

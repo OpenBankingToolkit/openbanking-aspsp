@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +29,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Service
-public class DomesticScheduledPaymentService implements PaymentService<FRDomesticScheduledConsent5> {
+public class DomesticScheduledPaymentService implements PaymentService<FRDomesticScheduledConsent> {
     private static final String BASE_RESOURCE_PATH = "/api/domestic-scheduled-payments/";
 
     private String rsStoreRoot;
@@ -42,14 +42,14 @@ public class DomesticScheduledPaymentService implements PaymentService<FRDomesti
         this.rsStoreRoot = rsStoreRoot;
     }
 
-    public void updatePayment(FRDomesticScheduledConsent5 consent) {
+    public void updatePayment(FRDomesticScheduledConsent consent) {
         log.debug("Update the consent in the store. {}", consent);
         restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH, consent);
     }
 
-    public FRDomesticScheduledConsent5 getPayment(String consentId) {
+    public FRDomesticScheduledConsent getPayment(String consentId) {
         log.debug("Getting consent for {}", consentId);
-        return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId, FRDomesticScheduledConsent5.class);
+        return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId, FRDomesticScheduledConsent.class);
     }
 
 }

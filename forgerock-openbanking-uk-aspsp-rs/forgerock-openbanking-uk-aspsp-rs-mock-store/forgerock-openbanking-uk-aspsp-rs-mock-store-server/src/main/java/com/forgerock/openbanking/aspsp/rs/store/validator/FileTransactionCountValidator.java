@@ -22,8 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.validator;
 
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
@@ -37,17 +36,7 @@ public class FileTransactionCountValidator {
      * @param paymentFile Payment file body
      * @throws OBErrorException Validation failed
      */
-    public static void validate(FRFileConsent2 consent, PaymentFile paymentFile) throws OBErrorException {
-        validate(paymentFile.getNumberOfTransactions(), Integer.valueOf(consent.getInitiation().getNumberOfTransactions()), consent.getId());
-    }
-
-    /**
-     * Check that the number of transaction contained in a payment file is equal to the stated number of transaction is the file payment consent metadata.
-     * @param consent File payment consent
-     * @param paymentFile Payment file body
-     * @throws OBErrorException Validation failed
-     */
-    public static void validate(FRFileConsent5 consent, PaymentFile paymentFile) throws OBErrorException {
+    public static void validate(FRFileConsent consent, PaymentFile paymentFile) throws OBErrorException {
         validate(paymentFile.getNumberOfTransactions(), Integer.valueOf(consent.getInitiation().getNumberOfTransactions()), consent.getId());
     }
 

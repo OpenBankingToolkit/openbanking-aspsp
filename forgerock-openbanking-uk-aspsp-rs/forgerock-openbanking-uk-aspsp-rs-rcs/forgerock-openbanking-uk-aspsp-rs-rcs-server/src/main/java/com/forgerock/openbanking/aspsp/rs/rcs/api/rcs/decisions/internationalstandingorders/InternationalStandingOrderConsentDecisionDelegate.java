@@ -23,8 +23,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalst
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.InternationalStandingOrderConsentDecision;
 import com.forgerock.openbanking.common.services.store.payment.InternationalStandingOrderService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -39,9 +39,9 @@ class InternationalStandingOrderConsentDecisionDelegate implements ConsentDecisi
     private PaymentConsentDecisionUpdater paymentConsentDecisionUpdater;
     private InternationalStandingOrderService paymentsService;
     private ObjectMapper objectMapper;
-    private FRInternationalStandingOrderConsent5 payment;
+    private FRInternationalStandingOrderConsent payment;
 
-    InternationalStandingOrderConsentDecisionDelegate(PaymentConsentDecisionUpdater paymentConsentDecisionUpdater, InternationalStandingOrderService paymentsService, ObjectMapper objectMapper, FRInternationalStandingOrderConsent5 consent) {
+    InternationalStandingOrderConsentDecisionDelegate(PaymentConsentDecisionUpdater paymentConsentDecisionUpdater, InternationalStandingOrderService paymentsService, ObjectMapper objectMapper, FRInternationalStandingOrderConsent consent) {
         this.paymentConsentDecisionUpdater = paymentConsentDecisionUpdater;
         this.paymentsService = paymentsService;
         this.objectMapper = objectMapper;
@@ -65,7 +65,7 @@ class InternationalStandingOrderConsentDecisionDelegate implements ConsentDecisi
     }
 
     @Override
-    public void autoaccept(List<FRAccount2> accounts, String username) throws OBErrorException {
+    public void autoaccept(List<FRAccount> accounts, String username) throws OBErrorException {
         paymentConsentDecisionUpdater.applyUpdate(username, accounts.get(0).getId(), true, p -> paymentsService.updatePayment(p), payment);
     }
 }

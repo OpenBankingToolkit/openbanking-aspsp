@@ -22,14 +22,14 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.
 
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import org.springframework.stereotype.Controller;
 
 @Controller("InternationalPaymentConsentsApiV3.1.1")
 public class InternationalPaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments.InternationalPaymentConsentsApiController implements InternationalPaymentConsentsApi {
-    public InternationalPaymentConsentsApiController(ConsentMetricService consentMetricService, InternationalConsent5Repository internationalConsentRepository, TppRepository tppRepository, FundsAvailabilityService fundsAvailabilityService, ResourceLinkService resourceLinkService) {
+    public InternationalPaymentConsentsApiController(ConsentMetricService consentMetricService, InternationalConsentRepository internationalConsentRepository, TppRepository tppRepository, FundsAvailabilityService fundsAvailabilityService, ResourceLinkService resourceLinkService) {
         super(consentMetricService, internationalConsentRepository, tppRepository, fundsAvailabilityService, resourceLinkService);
     }
 }

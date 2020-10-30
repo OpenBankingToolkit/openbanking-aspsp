@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_2.domesticstandingorders;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.DomesticStandingOrderPaymentSubmission3Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticStandingOrderConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -30,7 +30,7 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class DomesticStandingOrdersApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrdersApiController implements DomesticStandingOrdersApi {
 
-    public DomesticStandingOrdersApiController(DomesticStandingOrderConsent5Repository domesticStandingOrderConsentRepository, DomesticStandingOrderPaymentSubmission3Repository domesticStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public DomesticStandingOrdersApiController(DomesticStandingOrderConsentRepository domesticStandingOrderConsentRepository, DomesticStandingOrderPaymentSubmissionRepository domesticStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
         super(domesticStandingOrderConsentRepository, domesticStandingOrderPaymentSubmissionRepository, resourceLinkService);
     }
 }

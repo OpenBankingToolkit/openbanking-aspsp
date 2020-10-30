@@ -25,8 +25,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_6.domesticscheduledpayments;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.DomesticScheduledPaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticScheduledConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import org.springframework.stereotype.Controller;
@@ -35,8 +35,8 @@ import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 @Controller("DomesticScheduledPaymentsApiV3.1.6")
 public class DomesticScheduledPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.domesticscheduledpayments.DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
 
-    public DomesticScheduledPaymentsApiController(DomesticScheduledConsent5Repository domesticScheduledConsentRepository,
-                                                  DomesticScheduledPaymentSubmission2Repository domesticScheduledPaymentSubmissionRepository,
+    public DomesticScheduledPaymentsApiController(DomesticScheduledConsentRepository domesticScheduledConsentRepository,
+                                                  DomesticScheduledPaymentSubmissionRepository domesticScheduledPaymentSubmissionRepository,
                                                   ResourceLinkService resourceLinkService) {
         super(domesticScheduledConsentRepository, domesticScheduledPaymentSubmissionRepository, resourceLinkService);
     }

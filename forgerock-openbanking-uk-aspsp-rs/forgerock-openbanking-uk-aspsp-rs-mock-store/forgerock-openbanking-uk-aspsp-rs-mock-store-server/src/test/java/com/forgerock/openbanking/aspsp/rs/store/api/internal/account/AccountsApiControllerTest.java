@@ -20,18 +20,18 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.account;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRCashBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBCashBalance1;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,9 +45,9 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class AccountsApiControllerTest {
     @Mock
-    private FRAccount4Repository accountsRepository;
+    private FRAccountRepository accountsRepository;
     @Mock
-    private FRBalance1Repository balanceRepository;
+    private FRBalanceRepository balanceRepository;
     @InjectMocks
     AccountsApiController accountsApiController;
 
@@ -55,15 +55,15 @@ public class AccountsApiControllerTest {
     public void getAccounts_noBalances() {
         // Given
         given(accountsRepository.findByUserID(any())).willReturn(Collections.singletonList(
-                FRAccount4.builder().id("111").build()
+                FRAccount.builder().id("111").build()
         ));
         given(balanceRepository.findByAccountIdIn(any())).willReturn(Collections.emptyList());
 
         // When
-        ResponseEntity<List<FRAccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
+        ResponseEntity<List<AccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
 
         // Then
-        List<FRAccountWithBalance> results = Objects.requireNonNull(result.getBody());
+        List<AccountWithBalance> results = Objects.requireNonNull(result.getBody());
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).getBalances()).isEmpty();
     }
@@ -74,7 +74,7 @@ public class AccountsApiControllerTest {
         given(accountsRepository.findByUserID(any())).willReturn(Collections.emptyList());
 
         // When
-        ResponseEntity<List<FRAccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
+        ResponseEntity<List<AccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
 
         // Then
         assertThat(Objects.requireNonNull(result.getBody())).isEmpty();
@@ -84,14 +84,14 @@ public class AccountsApiControllerTest {
     public void getAccounts_balanceNotRequired() {
         // Given
         given(accountsRepository.findByUserID(any())).willReturn(Collections.singletonList(
-                FRAccount4.builder().id("111").build()
+                FRAccount.builder().id("111").build()
         ));
 
         // When
-        ResponseEntity<List<FRAccountWithBalance>> result = accountsApiController.getAccounts("user1", false);
+        ResponseEntity<List<AccountWithBalance>> result = accountsApiController.getAccounts("user1", false);
 
         // Then
-        List<FRAccountWithBalance> results = Objects.requireNonNull(result.getBody());
+        List<AccountWithBalance> results = Objects.requireNonNull(result.getBody());
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).getBalances().size()).isEqualTo(0);
         verifyZeroInteractions(balanceRepository);
@@ -101,17 +101,17 @@ public class AccountsApiControllerTest {
     public void getAccounts_withBalance() {
         // Given
         given(accountsRepository.findByUserID(any())).willReturn(Collections.singletonList(
-                FRAccount4.builder().id("111").build()
+                FRAccount.builder().id("111").build()
         ));
         given(balanceRepository.findByAccountIdIn(any())).willReturn(Collections.singletonList(
-                FRBalance1.builder().accountId("111").balance(new OBCashBalance1().accountId("111")).build()
+                FRBalance.builder().accountId("111").balance(FRCashBalance.builder().accountId("111").build()).build()
         ));
 
         // When
-        ResponseEntity<List<FRAccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
+        ResponseEntity<List<AccountWithBalance>> result = accountsApiController.getAccounts("user1", true);
 
         // Then
-        List<FRAccountWithBalance> results = Objects.requireNonNull(result.getBody());
+        List<AccountWithBalance> results = Objects.requireNonNull(result.getBody());
         assertThat(results.size()).isEqualTo(1);
         assertThat(results.get(0).getBalances().size()).isEqualTo(1);
     }

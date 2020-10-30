@@ -21,9 +21,9 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -42,6 +42,7 @@ import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadAccount2;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBExternalAccountType1Code;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -52,7 +53,7 @@ public class Accounts2ApiControllerIT {
     private int port;
 
     @Autowired
-    private FRAccount4Repository frAccountRepository;
+    private FRAccountRepository frAccountRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -69,7 +70,7 @@ public class Accounts2ApiControllerIT {
     public void testGetAnAccount() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
-        FRAccount4 account = JMockData.mock(FRAccount4.class);
+        FRAccount account = JMockData.mock(FRAccount.class);
         frAccountRepository.save(account);
 
         // When
@@ -84,8 +85,8 @@ public class Accounts2ApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getAccount().get(0).getAccountId()).isEqualTo(account.getAccount().getAccountId());
         assertThat(response.getBody().getData().getAccount().get(0).getCurrency()).isEqualTo(account.getAccount().getCurrency());
-        assertThat(response.getBody().getData().getAccount().get(0).getAccountType()).isEqualTo(account.getAccount().getAccountType());
-        assertThat(response.getBody().getData().getAccount().get(0).getAccount().get(0).getIdentification()).isEqualTo(account.getAccount().getAccount().get(0).getIdentification());
+        assertThat(response.getBody().getData().getAccount().get(0).getAccountType()).isEqualTo(toOBExternalAccountType1Code(account.getAccount().getAccountType()));
+        assertThat(response.getBody().getData().getAccount().get(0).getAccount().get(0).getIdentification()).isEqualTo(account.getAccount().getAccounts().get(0).getIdentification());
     }
 
 }

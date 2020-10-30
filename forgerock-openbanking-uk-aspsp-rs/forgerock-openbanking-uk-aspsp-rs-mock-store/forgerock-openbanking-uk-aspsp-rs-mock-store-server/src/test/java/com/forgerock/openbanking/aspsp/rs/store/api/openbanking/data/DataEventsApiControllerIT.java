@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.common.model.data.FRDataEvent;
 import com.forgerock.openbanking.common.model.data.OBEventNotification2;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventNotification;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.nimbusds.jwt.JWTClaimsSet;
 import org.junit.Before;

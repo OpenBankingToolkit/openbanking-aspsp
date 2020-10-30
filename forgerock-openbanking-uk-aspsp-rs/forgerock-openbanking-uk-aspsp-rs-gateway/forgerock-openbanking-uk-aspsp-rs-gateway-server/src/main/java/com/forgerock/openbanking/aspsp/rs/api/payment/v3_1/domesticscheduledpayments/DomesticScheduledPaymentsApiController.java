@@ -21,8 +21,11 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.domesticscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData.FRScheduleType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
@@ -41,8 +44,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.org.openbanking.datamodel.account.OBExternalScheduleType1Code;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse2;
 
@@ -51,10 +52,9 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBWriteDomesticScheduled2DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -82,7 +82,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
     public ResponseEntity<OBWriteDomesticScheduledResponse2> createDomesticScheduledPayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteDomesticScheduled2 obWriteDomesticScheduled2param,
+            @RequestBody OBWriteDomesticScheduled2 obWriteDomesticScheduled2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -113,8 +113,8 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
 
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteDomesticScheduled2param.getData().getConsentId();
-        FRDomesticScheduledConsent5 payment = paymentsService.getPayment(consentId);
+        String consentId = obWriteDomesticScheduled2.getData().getConsentId();
+        FRDomesticScheduledConsent payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -125,25 +125,29 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(toOBWriteDomesticScheduled2DataInitiation(obWriteDomesticScheduled2param.getData().getInitiation()), obWriteDomesticScheduled2param.getRisk());
+                    f.verifyRiskAndInitiation(
+                            toFRWriteDomesticScheduledDataInitiation(obWriteDomesticScheduled2.getData().getInitiation()),
+                            toFRRisk(obWriteDomesticScheduled2.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
                         (String tppId) -> {
                             //Modify the status of the payment
                             LOGGER.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
-                            OBScheduledPayment1 scheduledPayment = new OBScheduledPayment1()
+                            FRWriteDomesticScheduledDataInitiation paymentInitiation = payment.getInitiation();
+                            FRScheduledPaymentData scheduledPayment = FRScheduledPaymentData.builder()
                                     .accountId(payment.getAccountId())
-                                    .creditorAccount(toOBCashAccount3(payment.getInitiation().getCreditorAccount()))
-                                    .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()))
+                                    .creditorAccount(paymentInitiation.getCreditorAccount())
+                                    .instructedAmount(paymentInitiation.getInstructedAmount())
                                     // Set to EXECUTION because we are creating the creditor payment
-                                    .scheduledType(OBExternalScheduleType1Code.EXECUTION)
-                                    .scheduledPaymentDateTime(payment.getInitiation().getRequestedExecutionDateTime())
-                                    .scheduledPaymentId(payment.getId());
+                                    .scheduledType(FRScheduleType.EXECUTION)
+                                    .scheduledPaymentDateTime(paymentInitiation.getRequestedExecutionDateTime())
+                                    .scheduledPaymentId(payment.getId())
+                                    .build();
                             // optionals
-                            if (payment.getInitiation().getRemittanceInformation() != null) {
-                                if (!StringUtils.isEmpty(payment.getInitiation().getRemittanceInformation().getReference())) {
-                                    scheduledPayment.reference(payment.getInitiation().getRemittanceInformation().getReference());
+                            if (paymentInitiation.getRemittanceInformation() != null) {
+                                if (!StringUtils.isEmpty(paymentInitiation.getRemittanceInformation().getReference())) {
+                                    scheduledPayment.setReference(paymentInitiation.getRemittanceInformation().getReference());
                                 }
                             }
                             String pispId = tppStoreService.findByClientId(tppId)
@@ -157,7 +161,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticScheduledResponse2.class, obWriteDomesticScheduled2param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticScheduledResponse2.class, obWriteDomesticScheduled2);
                         }
                 );
     }

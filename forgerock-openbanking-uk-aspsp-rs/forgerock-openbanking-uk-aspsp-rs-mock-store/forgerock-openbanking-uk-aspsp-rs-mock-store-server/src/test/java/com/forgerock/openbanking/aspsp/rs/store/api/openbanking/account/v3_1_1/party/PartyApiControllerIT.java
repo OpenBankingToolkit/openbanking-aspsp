@@ -21,9 +21,10 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.party;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party.FRParty2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRParty2;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRPartyData;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -37,12 +38,12 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBParty2;
 import uk.org.openbanking.datamodel.account.OBReadParty2;
 import uk.org.openbanking.datamodel.account.OBReadParty3;
 
 import java.util.UUID;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter.toOBParty2;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -53,27 +54,27 @@ public class PartyApiControllerIT {
     private int port;
 
     @Autowired
-    private FRParty2Repository frPartyRepository;
+    private FRPartyRepository frPartyRepository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
     private RSConfiguration rsConfiguration;
 
 
-    private FRParty2 accountParty;
-    private FRParty2 userParty;
+    private FRParty accountParty;
+    private FRParty userParty;
 
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
-        accountParty = JMockData.mock(FRParty2.class);
+        accountParty = JMockData.mock(FRParty.class);
         accountParty.setAccountId(UUID.randomUUID().toString());
-        accountParty.setParty(new OBParty2().partyId("accountParty"));
+        accountParty.setParty(FRPartyData.builder().partyId("accountParty").build());
         frPartyRepository.save(accountParty);
 
-        userParty = JMockData.mock(FRParty2.class);
+        userParty = JMockData.mock(FRParty.class);
         userParty.setUserId(UUID.randomUUID().toString());
-        userParty.setParty(new OBParty2().partyId("userParty"));
+        userParty.setParty(FRPartyData.builder().partyId("userParty").build());
         frPartyRepository.save(userParty);
     }
 
@@ -95,8 +96,8 @@ public class PartyApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getParty().size()).isEqualTo(2);
-        assertThat(response.getBody().getData().getParty().get(0)).isEqualTo(accountParty.getParty());
-        assertThat(response.getBody().getData().getParty().get(1)).isEqualTo(userParty.getParty());
+        assertThat(response.getBody().getData().getParty().get(0)).isEqualTo(toOBParty2(accountParty.getParty()));
+        assertThat(response.getBody().getData().getParty().get(1)).isEqualTo(toOBParty2(userParty.getParty()));
     }
 
     @Test
@@ -114,7 +115,7 @@ public class PartyApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getBody().getData().getParty()).isEqualTo(accountParty.getParty());
+        assertThat(response.getBody().getData().getParty()).isEqualTo(toOBParty2(accountParty.getParty()));
     }
 
     @Test
@@ -124,9 +125,9 @@ public class PartyApiControllerIT {
         String username = UUID.randomUUID().toString();
         //springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
 
-        FRParty2 userParty = JMockData.mock(FRParty2.class);
+        FRParty userParty = JMockData.mock(FRParty.class);
         userParty.setUserId(username);
-        userParty.setParty(new OBParty2().partyId("2"));
+        userParty.setParty(FRPartyData.builder().partyId("2").build());
         frPartyRepository.save(userParty);
 
         // When
@@ -140,6 +141,6 @@ public class PartyApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
-        assertThat(response.getBody().getData().getParty()).isEqualTo(userParty.getParty());
+        assertThat(response.getBody().getData().getParty()).isEqualTo(toOBParty2(userParty.getParty()));
     }
 }

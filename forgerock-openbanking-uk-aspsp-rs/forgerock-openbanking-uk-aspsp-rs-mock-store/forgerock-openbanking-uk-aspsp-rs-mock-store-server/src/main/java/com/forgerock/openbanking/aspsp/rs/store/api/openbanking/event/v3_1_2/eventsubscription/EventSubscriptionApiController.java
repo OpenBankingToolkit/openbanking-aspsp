@@ -21,9 +21,10 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.eventsubscription;
 
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events.EventSubscriptionsRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.EventSubscriptionsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.event.FREventSubscription1;
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventSubscriptionData;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtil;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -41,13 +42,25 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Links;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.event.*;
+import uk.org.openbanking.datamodel.event.OBEventSubscription1;
+import uk.org.openbanking.datamodel.event.OBEventSubscription1Data;
+import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1;
+import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1Data;
+import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1;
+import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1Data;
+import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1DataEventSubscription;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.event.FREventSubscriptionConverter.toFREventSubscriptionData;
 
 @Controller("EventSubscriptionApiV3.1.2")
 @Slf4j
@@ -108,7 +121,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         }
 
         // Check if an event already exists for this TPP
-        final Collection<FREventSubscription1> byClientId = eventSubscriptionsRepository.findByTppId(isTpp.get().getId());
+        final Collection<FREventSubscription> byClientId = eventSubscriptionsRepository.findByTppId(isTpp.get().getId());
         if (!byClientId.isEmpty()) {
             log.debug("An event subscription already exists for this TPP client id: '{}' for the version: {}", clientId, byClientId.stream().findFirst().get());
             throw new OBErrorResponseException(
@@ -119,16 +132,16 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         }
 
         // Persist the event subscription
-        FREventSubscription1 frEventSubscription1 = FREventSubscription1.builder()
+        FREventSubscription frEventSubscription = FREventSubscription.builder()
                 .id(UUID.randomUUID().toString())
                 .tppId(isTpp.get().getId())
-                .obEventSubscription1(obEventSubscription)
+                .eventSubscription(toFREventSubscriptionData(obEventSubscription))
                 .build();
-        eventSubscriptionsRepository.save(frEventSubscription1);
+        eventSubscriptionsRepository.save(frEventSubscription);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(packageResponse(frEventSubscription1));
+                .body(packageResponse(frEventSubscription));
     }
 
     public ResponseEntity readEventSubscription(
@@ -149,11 +162,11 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         final Optional<Tpp> tppId = Optional.ofNullable(tppRepository.findByClientId(clientId));
         if (!tppId.isEmpty()) {
             // A TPP must not access a event-subscription on an older version, via the EventSubscriptionId for an event-subscription created in a newer version
-            Collection<FREventSubscription1> frEventSubscription1s = Optional.ofNullable(eventSubscriptionsRepository.findByTppId(tppId.get().id))
+            Collection<FREventSubscription> frEventSubscriptions = Optional.ofNullable(eventSubscriptionsRepository.findByTppId(tppId.get().id))
                     .orElseGet(Collections::emptyList)
-                    .stream().filter(frEventSubs -> eventResponseUtil.isAccessToResourceAllowedFromApiVersion(frEventSubs.obEventSubscription1.getData().getVersion())).collect(Collectors.toList());
-            if (!frEventSubscription1s.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.OK).body(packageResponse(frEventSubscription1s));
+                    .stream().filter(frEventSubs -> eventResponseUtil.isAccessToResourceAllowedFromApiVersion(frEventSubs.getEventSubscription().getVersion())).collect(Collectors.toList());
+            if (!frEventSubscriptions.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.OK).body(packageResponse(frEventSubscriptions));
             } else {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("The event subscription can't be read via an older API version.");
             }
@@ -196,12 +209,12 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
                         .eventTypes(obEventSubscriptionParam.getData().getEventTypes())
                         .version(obEventSubscriptionParam.getData().getVersion())
                 );
-        final Optional<FREventSubscription1> byId = eventSubscriptionsRepository.findById(eventSubscriptionId);
+        final Optional<FREventSubscription> byId = eventSubscriptionsRepository.findById(eventSubscriptionId);
         if (byId.isPresent()) {
-            FREventSubscription1 existingEventSubscription = byId.get();
+            FREventSubscription existingEventSubscription = byId.get();
             // A TPP must not update a event-subscription on an older version, via the EventSubscriptionId for an event-subscription created in a newer version
-            if (eventResponseUtil.isAccessToResourceAllowedFromApiVersion(existingEventSubscription.obEventSubscription1.getData().getVersion())) {
-                existingEventSubscription.setObEventSubscription1(updatedSubscription);
+            if (eventResponseUtil.isAccessToResourceAllowedFromApiVersion(existingEventSubscription.getEventSubscription().getVersion())) {
+                existingEventSubscription.setEventSubscription(toFREventSubscriptionData(updatedSubscription));
                 eventSubscriptionsRepository.save(existingEventSubscription);
                 return ResponseEntity.ok(packageResponse(existingEventSubscription));
             } else {
@@ -234,10 +247,10 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        final Optional<FREventSubscription1> byId = eventSubscriptionsRepository.findById(eventSubscriptionId);
+        final Optional<FREventSubscription> byId = eventSubscriptionsRepository.findById(eventSubscriptionId);
         if (byId.isPresent()) {
             // A TPP must not delete a event-subscription on an older version, via the EventSubscriptionId for an event-subscription created in a newer version
-            if (eventResponseUtil.isAccessToResourceAllowedFromApiVersion(byId.get().obEventSubscription1.getData().getVersion())) {
+            if (eventResponseUtil.isAccessToResourceAllowedFromApiVersion(byId.get().getEventSubscription().getVersion())) {
                 log.debug("Deleting event subscriptions URL: {}", byId.get());
                 eventSubscriptionsRepository.deleteById(eventSubscriptionId);
                 return ResponseEntity.noContent().build();
@@ -253,13 +266,13 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         }
     }
 
-    private OBEventSubscriptionsResponse1 packageResponse(Collection<FREventSubscription1> eventSubs) {
+    private OBEventSubscriptionsResponse1 packageResponse(Collection<FREventSubscription> eventSubs) {
         List<OBEventSubscriptionsResponse1DataEventSubscription> eventSubsByClient = eventSubs.stream()
                 .map(e -> new OBEventSubscriptionsResponse1DataEventSubscription()
-                        .callbackUrl(e.getObEventSubscription1().getData().getCallbackUrl())
+                        .callbackUrl(e.getEventSubscription().getCallbackUrl())
                         .eventSubscriptionId(e.getId())
-                        .eventTypes(e.getObEventSubscription1().getData().getEventTypes())
-                        .version(e.getObEventSubscription1().getData().getVersion())
+                        .eventTypes(e.getEventSubscription().getEventTypes())
+                        .version(e.getEventSubscription().getVersion())
                 ).collect(Collectors.toList());
 
         if (eventSubsByClient.isEmpty()) {
@@ -276,16 +289,16 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
         }
     }
 
-    private OBEventSubscriptionResponse1 packageResponse(FREventSubscription1 frEventSubscription1) {
-        OBEventSubscription1Data obEventSubs = frEventSubscription1.getObEventSubscription1().getData();
+    private OBEventSubscriptionResponse1 packageResponse(FREventSubscription frEventSubscription) {
+        FREventSubscriptionData obEventSubs = frEventSubscription.getEventSubscription();
         return new OBEventSubscriptionResponse1()
                 .data(new OBEventSubscriptionResponse1Data()
                         .callbackUrl(obEventSubs.getCallbackUrl())
-                        .eventSubscriptionId(frEventSubscription1.getId())
+                        .eventSubscriptionId(frEventSubscription.getId())
                         .eventTypes(obEventSubs.getEventTypes())
                         .version(obEventSubs.getVersion())
                 )
-                .links(resourceLinkService.toSelfLink(frEventSubscription1, discovery -> discovery.getVersion(eventResponseUtil.version).getGetCallbackUrls()))
+                .links(resourceLinkService.toSelfLink(frEventSubscription, discovery -> discovery.getVersion(eventResponseUtil.version).getGetCallbackUrls()))
                 .meta(new Meta());
     }
 }

@@ -21,13 +21,13 @@
 package com.forgerock.openbanking.common.services.store.accountrequest;
 
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
 
 import java.util.Optional;
 
 public interface AccountRequestStoreService {
 
-    Optional<FRAccountRequest> get(String accountRequestId);
+    Optional<AccountRequest> get(String accountRequestId);
 
-    void save(FRAccountRequest accountRequest);
+    void save(AccountRequest accountRequest);
 }

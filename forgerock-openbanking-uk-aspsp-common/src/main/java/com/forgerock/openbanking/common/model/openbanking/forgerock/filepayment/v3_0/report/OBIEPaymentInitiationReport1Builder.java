@@ -25,7 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FileParseException;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.payment.FRFileConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,10 +34,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBDomestic1;
+import uk.org.openbanking.datamodel.payment.OBRemittanceInformation1;
+import uk.org.openbanking.datamodel.payment.OBTransactionIndividualStatus1Code;
+import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticResponse1;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse1;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @Slf4j
 @Component
@@ -50,7 +56,7 @@ public class OBIEPaymentInitiationReport1Builder {
         this.objectMapper = objectMapper;
     }
 
-    String toPaymentReport(final FRFileConsent1 consent) {
+    String toPaymentReport(final FRFileConsent consent) {
         log.debug("Create {} report file for consent id: {}", consent.getFileType(), consent.getId());
         final List<OBWriteDomesticResponse1> payments =
                 consent.getPayments().stream()
@@ -72,7 +78,7 @@ public class OBIEPaymentInitiationReport1Builder {
         }
     }
 
-    private static OBWriteDomesticResponse1 mapDomesticPayment(FRFileConsent1 consent, FRFilePayment filePayment) {
+    private static OBWriteDomesticResponse1 mapDomesticPayment(FRFileConsent consent, FRFilePayment filePayment) {
             OBWriteDomesticResponse1 response = new OBWriteDomesticResponse1()
             .data(new OBWriteDataDomesticResponse1()
                     .initiation(
@@ -81,7 +87,7 @@ public class OBIEPaymentInitiationReport1Builder {
                             new OBDomestic1()
                             .instructionIdentification(filePayment.getInstructionIdentification())
                             .endToEndIdentification(filePayment.getEndToEndIdentification())
-                            .instructedAmount(filePayment.getInstructedAmount())
+                            .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(filePayment.getInstructedAmount()))
                             .remittanceInformation(new OBRemittanceInformation1()
                                     .reference(filePayment.getRemittanceReference())
                                     .unstructured(filePayment.getRemittanceUnstructured()))

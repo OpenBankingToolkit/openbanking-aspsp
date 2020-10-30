@@ -20,13 +20,13 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_5.accounts;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import org.springframework.stereotype.Controller;
 
 @Controller("AccountsApiV3.1.5")
 public class AccountsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_4.accounts.AccountsApiController implements AccountsApi {
 
-    public AccountsApiController(FRAccount4Repository frAccount4Repository) {
-        super(frAccount4Repository);
+    public AccountsApiController(FRAccountRepository frAccountRepository) {
+        super(frAccountRepository);
     }
 }

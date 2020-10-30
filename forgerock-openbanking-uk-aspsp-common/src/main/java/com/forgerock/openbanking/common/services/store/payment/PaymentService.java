@@ -21,13 +21,13 @@
 package com.forgerock.openbanking.common.services.store.payment;
 
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 
 /**
  * An internal Payment service
  * @param <T> A type of payment consent
  */
-public interface PaymentService<T extends FRPaymentConsent> {
+public interface PaymentService<T extends PaymentConsent> {
 
     /**
      * Get payment consent by id

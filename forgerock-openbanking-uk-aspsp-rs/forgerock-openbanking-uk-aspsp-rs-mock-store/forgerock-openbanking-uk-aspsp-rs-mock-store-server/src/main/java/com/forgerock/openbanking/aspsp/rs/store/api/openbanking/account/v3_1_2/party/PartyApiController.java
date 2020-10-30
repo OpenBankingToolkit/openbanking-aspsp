@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_2.party;
 
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 
@@ -27,4 +28,7 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class PartyApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.party.PartyApiController implements PartyApi {
 
+    public PartyApiController(FRPartyRepository frPartyRepository) {
+        super(frPartyRepository);
+    }
 }

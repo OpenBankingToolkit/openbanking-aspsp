@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.rs.ui.model;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_0.account.data.FRUserData3;
+import com.forgerock.openbanking.common.model.data.FRUserData;
 import lombok.Builder;
 import lombok.Data;
 
@@ -36,5 +36,5 @@ public class User {
     private String status;
     private String defaultProfile;
 
-    private FRUserData3 data;
+    private FRUserData data;
 }

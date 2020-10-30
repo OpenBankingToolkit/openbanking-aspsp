@@ -22,7 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.error.exception.PermissionDenyException;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import org.joda.time.DateTime;
@@ -30,8 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -43,10 +43,10 @@ import java.util.Optional;
 public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWrapper<T, R>, R> extends  RSEndpointWrapper<T, R> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountsApiEndpointWrapper.class);
 
-    protected List<OBExternalPermissions1Code> minimumPermissions;
+    protected List<FRExternalPermissionsCode> minimumPermissions;
     protected String page = "";
     protected String accountId = null;
-    protected FRAccountRequest accountRequest;
+    protected AccountRequest accountRequest;
     protected DateTime fromBookingDateTime;
     protected DateTime toBookingDateTime;
 
@@ -54,7 +54,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
         super(rsEndpointWrapperService);
     }
 
-    public T minimumPermissions(OBExternalPermissions1Code... permissions) {
+    public T minimumPermissions(FRExternalPermissionsCode... permissions) {
         this.minimumPermissions = Arrays.asList(permissions);
         return (T) this;
     }
@@ -107,7 +107,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
     }
 
     public void verifyAccountRequestStatus() throws OBErrorException {
-        OBExternalRequestStatus1Code status = getAccountRequest().getStatus();
+        FRExternalRequestStatusCode status = getAccountRequest().getStatus();
         switch (status) {
             case AWAITINGAUTHORISATION:
                 LOGGER.info("Account request hasn't been authorised yet. Account request: {}", getAccountRequest());
@@ -141,7 +141,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
         }
     }
 
-    public FRAccountRequest getAccountRequest() throws OBErrorException {
+    public AccountRequest getAccountRequest() throws OBErrorException {
 
         if (accountRequest == null) {
             try {
@@ -149,7 +149,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
                 String accountRequestId = rsEndpointWrapperService.accessTokenService.getIntentId(accessToken);
 
                 LOGGER.info("Account request id {}", accountRequestId);
-                Optional<FRAccountRequest> isAccountRequest = rsEndpointWrapperService.accountRequestStore.get(accountRequestId);
+                Optional<AccountRequest> isAccountRequest = rsEndpointWrapperService.accountRequestStore.get(accountRequestId);
                 if (!isAccountRequest.isPresent()) {
                     LOGGER.warn("Couldn't not find the account request {}", accountRequestId);
                     throw new OBErrorException(OBRIErrorType.ACCOUNT_REQUEST_NOT_FOUND,

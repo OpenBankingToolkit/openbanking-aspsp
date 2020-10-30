@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.common.services.store.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,22 +54,22 @@ public class SinglePaymentService {
      * @param paymentId the payment ID
      * @return the payment corresponding to the ID or null if not found
      */
-    public FRPaymentSetup1 getPayment(String paymentId) {
+    public FRPaymentSetup getPayment(String paymentId) {
         LOGGER.debug("Read the payment '{}' from the store", paymentId);
         // TODO change payment api
-        return restTemplate.exchange(rsStoreRoot + "/api/payments/" + paymentId, HttpMethod.GET, null, FRPaymentSetup1.class).getBody();
+        return restTemplate.exchange(rsStoreRoot + "/api/payments/" + paymentId, HttpMethod.GET, null, FRPaymentSetup.class).getBody();
     }
 
-    public Collection<FRPaymentSetup1> getAllPaymentsInProcess() {
+    public Collection<FRPaymentSetup> getAllPaymentsInProcess() {
         LOGGER.debug("Read all the payments");
-        ParameterizedTypeReference<List<FRPaymentSetup1>> ptr =
-                new ParameterizedTypeReference<List<FRPaymentSetup1>>() {};
+        ParameterizedTypeReference<List<FRPaymentSetup>> ptr =
+                new ParameterizedTypeReference<List<FRPaymentSetup>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + "/api/payments/search/findByStatus"
         );
         builder.queryParam("status", ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRPaymentSetup1>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<List<FRPaymentSetup>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
 
         return entity.getBody();
     }
@@ -79,13 +79,13 @@ public class SinglePaymentService {
      *
      * @param payment a payment
      */
-    public void updatePayment(FRPaymentSetup1 payment) {
+    public void updatePayment(FRPaymentSetup payment) {
         LOGGER.debug("Update the payment in the store. FRPaymentConsent={}", payment);
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + "/api/payments/"
         );
         URI uri = builder.build().encode().toUri();
-        HttpEntity<FRPaymentSetup1> request = new HttpEntity<>(payment, new HttpHeaders());
+        HttpEntity<FRPaymentSetup> request = new HttpEntity<>(payment, new HttpHeaders());
 
         restTemplate.exchange(uri, HttpMethod.PUT, request, Void.class);
     }

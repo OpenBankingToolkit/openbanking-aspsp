@@ -20,15 +20,15 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.service.event;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.FRPendingEventsRepository;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.FRPendingEventsRepository;
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventPolling;
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventPollingError;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventNotification;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
-import uk.org.openbanking.datamodel.event.OBEventPolling1;
-import uk.org.openbanking.datamodel.event.OBEventPolling1SetErrs;
 
 import java.util.Collections;
 import java.util.Map;
@@ -54,8 +54,9 @@ public class EventPollingServiceTest {
     @Test
     public void acknowledgeEvents_findAndDeleteTwoEvents_ignoreEventNotfound() {
         // Given
-        OBEventPolling1 pollingRequest = new OBEventPolling1()
-                .ack(ImmutableList.of("11111", "22222", "NotFound"));
+        FREventPolling pollingRequest = FREventPolling.builder()
+                .ack(ImmutableList.of("11111", "22222", "NotFound"))
+                .build();
 
         // When
         eventPollingService.acknowledgeEvents(pollingRequest, TPP_ID);
@@ -68,8 +69,9 @@ public class EventPollingServiceTest {
     @Test
     public void acknowledgeEvents_emptyList() {
         // Given
-        OBEventPolling1 pollingRequest = new OBEventPolling1()
-                .ack(Collections.emptyList());
+        FREventPolling pollingRequest = FREventPolling.builder()
+                .ack(Collections.emptyList())
+                .build();
 
         // When
         eventPollingService.acknowledgeEvents(pollingRequest, TPP_ID);
@@ -81,8 +83,9 @@ public class EventPollingServiceTest {
     @Test
     public void acknowledgeEvents_nullList() {
         // Given
-        OBEventPolling1 pollingRequest = new OBEventPolling1()
-                .ack(null);
+        FREventPolling pollingRequest = FREventPolling.builder()
+                .ack(null)
+                .build();
 
         // When
         eventPollingService.acknowledgeEvents(pollingRequest, TPP_ID);
@@ -99,8 +102,9 @@ public class EventPollingServiceTest {
                 .jti("11111")
                 .errors(null)
                 .build();
-        OBEventPolling1 pollingRequest = new OBEventPolling1()
-                .setErrs(Collections.singletonMap("11111", new OBEventPolling1SetErrs().err("err1").description("error msg")));
+        FREventPolling pollingRequest = FREventPolling.builder()
+                .setErrs(Collections.singletonMap("11111", FREventPollingError.builder().error("err1").description("error msg").build()))
+                .build();
         when(mockRepo.findByTppIdAndJti(any(), any())).thenReturn(Optional.of(existingNotification));
 
         // When
@@ -108,15 +112,16 @@ public class EventPollingServiceTest {
 
         // Then
         verify(mockRepo, times(1)).save(any());
-        assertThat(existingNotification.getErrors().getErr()).isEqualTo("err1");
+        assertThat(existingNotification.getErrors().getError()).isEqualTo("err1");
         assertThat(existingNotification.getErrors().getDescription()).isEqualTo("error msg");
     }
 
     @Test
     public void recordTppEventErrors_notificationDoesNotExist_doNothing() {
         // Given
-        OBEventPolling1 pollingRequest = new OBEventPolling1()
-                .setErrs(Collections.singletonMap("11111", new OBEventPolling1SetErrs().err("err1").description("error msg")));
+        FREventPolling pollingRequest = FREventPolling.builder()
+                .setErrs(Collections.singletonMap("11111", FREventPollingError.builder().error("err1").description("error msg").build()))
+                .build();
         when(mockRepo.findByTppIdAndJti(any(), any())).thenReturn(Optional.empty());
 
         // When
@@ -129,8 +134,9 @@ public class EventPollingServiceTest {
     @Test
     public void recordTppEventErrors_noErrors_doNothing() {
         // Given
-        OBEventPolling1 pollingRequest = new OBEventPolling1()
-                .setErrs(null);
+        FREventPolling pollingRequest = FREventPolling.builder()
+                .setErrs(null)
+                .build();
 
         // When
         eventPollingService.recordTppEventErrors(pollingRequest, TPP_ID);
@@ -155,9 +161,10 @@ public class EventPollingServiceTest {
         when(mockRepo.findByTppId(eq(TPP_ID))).thenReturn(ImmutableList.of(existingNotification1, existingNotification2));
 
         // When
-        OBEventPolling1 pollingRequest = new OBEventPolling1()
+        FREventPolling pollingRequest = FREventPolling.builder()
                 .maxEvents(100)
-                .returnImmediately(true);
+                .returnImmediately(true)
+                .build();
         Map<String, String> eventNotifications = eventPollingService.fetchNewEvents(pollingRequest, TPP_ID);
 
         // Then
@@ -178,14 +185,15 @@ public class EventPollingServiceTest {
                 .id("2")
                 .jti("22222")
                 .signedJwt("test222")
-                .errors(new OBEventPolling1SetErrs().err("err1").description("error"))
+                .errors(FREventPollingError.builder().error("err1").description("error").build())
                 .build();
         when(mockRepo.findByTppId(eq(TPP_ID))).thenReturn(ImmutableList.of(existingNotificationWithoutError, existingNotificationWithError));
 
         // When
-        OBEventPolling1 pollingRequest = new OBEventPolling1()
+        FREventPolling pollingRequest = FREventPolling.builder()
                 .maxEvents(null) // Do not restrict
-                .returnImmediately(true);
+                .returnImmediately(true)
+                .build();
         Map<String, String> eventNotifications = eventPollingService.fetchNewEvents(pollingRequest, TPP_ID);
 
         // Then
@@ -196,9 +204,10 @@ public class EventPollingServiceTest {
     @Test
     public void fetchNewEvents_zeroEventsRequested_returnNothing() throws Exception{
         // When
-        OBEventPolling1 pollingRequest = new OBEventPolling1()
+        FREventPolling pollingRequest = FREventPolling.builder()
                 .maxEvents(0)
-                .returnImmediately(true);
+                .returnImmediately(true)
+                .build();
         Map<String, String> eventNotifications = eventPollingService.fetchNewEvents(pollingRequest, TPP_ID);
 
         // Then
@@ -210,9 +219,10 @@ public class EventPollingServiceTest {
     @Test
     public void fetchNewEvents_longPollingRequest_rejectUnsupported() throws Exception{
         // Given
-        OBEventPolling1 pollingRequest = new OBEventPolling1()
+        FREventPolling pollingRequest = FREventPolling.builder()
                 .maxEvents(10)
-                .returnImmediately(false);
+                .returnImmediately(false)
+                .build();
 
         assertThatThrownBy(() ->
                 // When

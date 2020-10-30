@@ -20,10 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions;
 
-
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -49,13 +48,13 @@ public class PaymentConsentDecisionUpdater {
         this.accountStoreService = accountStoreService;
     }
 
-    public <T extends FRPaymentConsent> void applyUpdate(String userId, String accountId, boolean decision, Consumer<T> paymentConsentUpdater, T paymentConsent) throws OBErrorException {
+    public <T extends PaymentConsent> void applyUpdate(String userId, String accountId, boolean decision, Consumer<T> paymentConsentUpdater, T paymentConsent) throws OBErrorException {
         if (decision) {
             if (StringUtils.isEmpty(accountId)) {
                 log.error("No account was selected for payment [{}] by user {} for consent: {}", userId, paymentConsent);
                 throw new IllegalArgumentException("Missing account id");
             }
-            List<FRAccount2> accounts = accountStoreService.get(userId);
+            List<FRAccount> accounts = accountStoreService.get(userId);
             boolean isAny = accounts.stream()
                     .anyMatch(account -> account.getId().equals(accountId));
             if (!isAny) {

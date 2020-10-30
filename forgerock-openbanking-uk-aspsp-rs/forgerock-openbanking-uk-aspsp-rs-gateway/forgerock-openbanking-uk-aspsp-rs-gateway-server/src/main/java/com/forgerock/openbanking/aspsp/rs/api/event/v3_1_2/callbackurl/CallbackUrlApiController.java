@@ -23,7 +23,6 @@ package com.forgerock.openbanking.aspsp.rs.api.event.v3_1_2.callbackurl;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.constants.OpenBankingHttpHeaders;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
-import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -42,10 +41,11 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
+
 @Controller("CallbackUrlApiV3.1.2")
 @Slf4j
 public class CallbackUrlApiController implements CallbackUrlApi {
-
 
     private RSEndpointWrapperService rsEndpointWrapperService;
     private RsStoreGateway rsStoreGateway;

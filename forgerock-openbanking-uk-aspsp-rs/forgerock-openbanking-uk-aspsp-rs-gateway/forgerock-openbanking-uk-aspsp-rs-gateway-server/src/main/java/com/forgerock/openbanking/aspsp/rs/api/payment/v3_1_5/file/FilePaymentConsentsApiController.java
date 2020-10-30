@@ -26,7 +26,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_5.file;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -106,7 +106,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             Principal principal
     ) throws OBErrorResponseException {
         final String contentTypeOfFile = request.getHeader(CONTENT_TYPE);
-        FRFileConsent5 consent = filePaymentService.getPayment(consentId);
+        FRFileConsent consent = filePaymentService.getPayment(consentId);
 
         return rsEndpointWrapperService.filePaymentEndpoint()
                 .authorization(authorization)

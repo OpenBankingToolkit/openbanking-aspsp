@@ -21,8 +21,9 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.InternationalStandingOrderPaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.InternationalStandingOrderService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -38,7 +39,6 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBAccount3Account;
 
 import java.util.List;
 import java.util.Optional;
@@ -61,9 +61,9 @@ public class RCSInternationalStandingOrderPaymentDetailsApiTest {
     @Test
     public void shouldReturnAllAccountsWhenNoDebtor() throws OBErrorException {
         // Given
-        List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<List<FRAccountWithBalance>>() {
+        List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<List<AccountWithBalance>>() {
         });
-        FRInternationalStandingOrderConsent5 consent = JMockData.mock(FRInternationalStandingOrderConsent5.class);
+        FRInternationalStandingOrderConsent consent = JMockData.mock(FRInternationalStandingOrderConsent.class);
         consent.getInitiation().setDebtorAccount(null);
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";
@@ -81,9 +81,9 @@ public class RCSInternationalStandingOrderPaymentDetailsApiTest {
     @Test
     public void shouldReturnRequestedAccountWhenDebtor() throws OBErrorException {
         // Given
-        List<FRAccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
-        FRInternationalStandingOrderConsent5 consent = JMockData.mock(FRInternationalStandingOrderConsent5.class);
-        OBAccount3Account firstAccount = accounts.get(0).getAccount().getAccount().get(0);
+        List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
+        FRInternationalStandingOrderConsent consent = JMockData.mock(FRInternationalStandingOrderConsent.class);
+        FRAccountIdentifier firstAccount = accounts.get(0).getAccount().getAccounts().get(0);
         consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
         given(paymentService.getPayment("")).willReturn(consent);
         String clientId = "clientId";

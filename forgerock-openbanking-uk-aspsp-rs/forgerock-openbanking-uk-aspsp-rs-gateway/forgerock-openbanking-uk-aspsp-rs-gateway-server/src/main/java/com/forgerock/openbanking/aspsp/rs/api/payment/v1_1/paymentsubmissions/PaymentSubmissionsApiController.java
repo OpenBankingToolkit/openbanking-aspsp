@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v1_1.paymentsubmissions;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -46,6 +46,8 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("PaymentSubmissionsApiV1.1")
@@ -95,7 +97,7 @@ public class PaymentSubmissionsApiController implements PaymentSubmissionsApi {
     ) throws OBErrorResponseException {
 
         String paymentId = paymentSubmission.getData().getPaymentId();
-        FRPaymentSetup1 payment = paymentsService.getPayment(paymentId);
+        FRPaymentSetup payment = paymentsService.getPayment(paymentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -106,7 +108,7 @@ public class PaymentSubmissionsApiController implements PaymentSubmissionsApi {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(paymentSubmission.getData().getInitiation(), paymentSubmission.getRisk());
+                    f.verifyRiskAndInitiation(toFRWriteDomesticDataInitiation(paymentSubmission.getData().getInitiation()), toFRRisk(paymentSubmission.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -164,4 +166,5 @@ public class PaymentSubmissionsApiController implements PaymentSubmissionsApi {
                         }
                 );
     }
+
 }

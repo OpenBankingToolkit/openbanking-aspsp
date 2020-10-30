@@ -22,8 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticPaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -33,13 +34,12 @@ import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j
@@ -58,17 +58,17 @@ public class RCSDomesticPaymentDetailsApi implements RCSDetailsApi {
     }
 
     @Override
-    public ResponseEntity consentDetails(String remoteConsentRequest, List<FRAccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
+    public ResponseEntity consentDetails(String remoteConsentRequest, List<AccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
         log.debug("Received a consent request with consent_request='{}'", remoteConsentRequest);
         log.debug("=> The payment id '{}'", consentId);
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRDomesticConsent5 domesticConsent = paymentService.getPayment(consentId);
+        FRDomesticConsent domesticConsent = paymentService.getPayment(consentId);
 
         // Only show the debtor account if specified in consent
         if (domesticConsent.getInitiation().getDebtorAccount() != null) {
-            Optional<FRAccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(domesticConsent.getInitiation().getDebtorAccount().getIdentification(), accounts);
+            Optional<AccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(domesticConsent.getInitiation().getDebtorAccount().getIdentification(), accounts);
             if (matchingUserAccount.isEmpty()) {
                 log.error("The PISP '{}' created the payment request '{}' but the debtor account: {} on the payment consent " +
                         " is not one of the user's accounts: {}.", domesticConsent.getPispId(), consentId, domesticConsent.getInitiation().getDebtorAccount(), accounts);
@@ -102,7 +102,7 @@ public class RCSDomesticPaymentDetailsApi implements RCSDetailsApi {
                 .clientId(clientId)
                 .paymentReference(Optional.ofNullable(
                         domesticConsent.getInitiation().getRemittanceInformation())
-                        .map(OBWriteDomestic2DataInitiationRemittanceInformation::getReference)
+                        .map(FRRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
     }

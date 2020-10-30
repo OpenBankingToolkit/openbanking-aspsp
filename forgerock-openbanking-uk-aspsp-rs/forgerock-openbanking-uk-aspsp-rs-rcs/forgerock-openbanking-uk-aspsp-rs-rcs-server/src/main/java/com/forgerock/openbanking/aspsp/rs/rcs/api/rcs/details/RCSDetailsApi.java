@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import org.slf4j.Logger;
@@ -33,7 +33,7 @@ import java.util.List;
 public interface RCSDetailsApi {
     Logger log = LoggerFactory.getLogger(RCSDetailsApi.class);
 
-    ResponseEntity consentDetails(String remoteConsentRequest, List<FRAccountWithBalance> accounts, String username,
+    ResponseEntity consentDetails(String remoteConsentRequest, List<AccountWithBalance> accounts, String username,
                                   String consentId, String clientId) throws OBErrorException;
 
     /**

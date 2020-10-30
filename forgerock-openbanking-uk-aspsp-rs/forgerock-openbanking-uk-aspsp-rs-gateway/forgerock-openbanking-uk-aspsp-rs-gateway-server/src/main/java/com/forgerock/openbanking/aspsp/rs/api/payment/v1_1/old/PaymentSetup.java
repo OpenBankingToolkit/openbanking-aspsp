@@ -21,9 +21,9 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v1_1.old;
 
 import com.forgerock.openbanking.aspsp.rs.api.OBHeaders;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +31,8 @@ import uk.org.openbanking.datamodel.payment.OBPaymentDataSetupResponse1;
 import uk.org.openbanking.datamodel.payment.OBTransactionIndividualStatus1Code;
 import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetup1;
 import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetupResponse1;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
 
 @Slf4j
 @Service
@@ -48,9 +50,9 @@ public class PaymentSetup {
         String paymentID = paymentId.create();
         log.debug("FRPaymentConsent ID generated '{}'.", paymentID);
 
-        FRPaymentSetup1 payment = registerPendingPayment(tppId, paymentSetupPOSTRequest, paymentID);
+        FRPaymentSetup payment = registerPendingPayment(tppId, paymentSetupPOSTRequest, paymentID);
 
-        FRPaymentSetup1 paymentSetupEntity = tracePaymentSetup(headers, paymentSetupPOSTRequest, paymentID);
+        FRPaymentSetup paymentSetupEntity = tracePaymentSetup(headers, paymentSetupPOSTRequest, paymentID);
 
         updatePaymentToAcceptedTechnicalValidation(payment);
 
@@ -59,29 +61,29 @@ public class PaymentSetup {
 
     }
 
-    private FRPaymentSetup1 registerPendingPayment(String tppId, OBPaymentSetup1 paymentSetupPOSTRequest, String paymentID) {
-        FRPaymentSetup1 payment = new FRPaymentSetup1();
+    private FRPaymentSetup registerPendingPayment(String tppId, OBPaymentSetup1 paymentSetupPOSTRequest, String paymentID) {
+        FRPaymentSetup payment = new FRPaymentSetup();
         payment.setStatus(ConsentStatusCode.PENDING);
         payment.setPisp(tppStoreService.findByClientId(tppId).get());
         //return paymentsService.createPayment(payment);
         return null;
     }
 
-    private FRPaymentSetup1 tracePaymentSetup(OBHeaders headers, OBPaymentSetup1 paymentSetupPOSTRequest, String paymentID) {
-        FRPaymentSetup1 paymentSetupEntity = new FRPaymentSetup1();
+    private FRPaymentSetup tracePaymentSetup(OBHeaders headers, OBPaymentSetup1 paymentSetupPOSTRequest, String paymentID) {
+        FRPaymentSetup paymentSetupEntity = new FRPaymentSetup();
         paymentSetupEntity.setId(paymentID);
-        paymentSetupEntity.setPaymentSetupRequest(paymentSetupPOSTRequest);
+        paymentSetupEntity.setPaymentSetupRequest(toFRWriteDomesticConsent(paymentSetupPOSTRequest));
         //paymentSetupEntity = paymentSetupsService.createPaymentSetup(paymentSetupEntity);
         return paymentSetupEntity;
     }
 
-    private void updatePaymentToAcceptedTechnicalValidation(FRPaymentConsent payment) {
+    private void updatePaymentToAcceptedTechnicalValidation(PaymentConsent payment) {
         payment.setStatus(ConsentStatusCode.ACCEPTEDTECHNICALVALIDATION);
     }
 
     private OBPaymentSetupResponse1 updatePaymentSetup(OBPaymentSetup1 paymentSetupPOSTRequest,
-                                                       FRPaymentConsent payment,
-                                                       FRPaymentSetup1 paymentSetupEntity) {
+                                                       PaymentConsent payment,
+                                                       FRPaymentSetup paymentSetupEntity) {
 
         //Create Payment Setup response
         OBPaymentDataSetupResponse1 data = new OBPaymentDataSetupResponse1()

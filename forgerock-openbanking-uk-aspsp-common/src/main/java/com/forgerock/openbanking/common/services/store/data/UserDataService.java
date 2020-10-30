@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.store.data;
 
 import com.forgerock.openbanking.common.conf.data.DataConfigurationProperties;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.account.data.FRUserData3;
+import com.forgerock.openbanking.common.model.data.FRUserData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,7 @@ public class UserDataService {
         return restTemplate.exchange(uri, HttpMethod.GET, request, Boolean.class).getBody();
     }
 
-    public FRUserData3 exportUserData(String userId) {
+    public FRUserData exportUserData(String userId) {
         LOGGER.debug("Export data for user {}", userId);
 
         HttpEntity request = new HttpEntity<>(null, new HttpHeaders());
@@ -64,10 +64,10 @@ public class UserDataService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/api/data/user");
         builder.queryParam("userId", userId);
         URI uri = builder.build().encode().toUri();
-        return restTemplate.exchange(uri, HttpMethod.GET, request, FRUserData3.class).getBody();
+        return restTemplate.exchange(uri, HttpMethod.GET, request, FRUserData.class).getBody();
     }
 
-    public FRUserData3 createUserData(FRUserData3 userData) {
+    public FRUserData createUserData(FRUserData userData) {
         LOGGER.debug("Create data for user {}", userData);
 
         HttpEntity request = new HttpEntity<>(userData, new HttpHeaders());
@@ -75,10 +75,10 @@ public class UserDataService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/api/data/user");
 
         URI uri = builder.build().encode().toUri();
-        return restTemplate.exchange(uri, HttpMethod.POST, request, FRUserData3.class).getBody();
+        return restTemplate.exchange(uri, HttpMethod.POST, request, FRUserData.class).getBody();
     }
 
-    public FRUserData3 updateUserData(FRUserData3 userData) {
+    public FRUserData updateUserData(FRUserData userData) {
         LOGGER.debug("Update data for w user {}", userData);
 
         HttpEntity request = new HttpEntity<>(userData, new HttpHeaders());
@@ -86,7 +86,7 @@ public class UserDataService {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/api/data/user");
 
         URI uri = builder.build().encode().toUri();
-        return restTemplate.exchange(uri, HttpMethod.PUT, request, FRUserData3.class).getBody();
+        return restTemplate.exchange(uri, HttpMethod.PUT, request, FRUserData.class).getBody();
     }
 
     public boolean deleteUserData(String userId) {
@@ -100,11 +100,11 @@ public class UserDataService {
         return restTemplate.exchange(uri, HttpMethod.DELETE, request, Boolean.class).getBody();
     }
 
-    public FRUserData3 generateUserData(String userId) {
+    public FRUserData generateUserData(String userId) {
         return generateUserData(userId.toLowerCase(), dataConfig.getDefaultProfile());
     }
 
-    public FRUserData3 generateUserData(String userId, String profile) {
+    public FRUserData generateUserData(String userId, String profile) {
         LOGGER.debug("Generate data for user {}", userId);
 
         HttpEntity request = new HttpEntity<>(null, new HttpHeaders());
@@ -114,6 +114,6 @@ public class UserDataService {
         builder.queryParam("username", userId);
         builder.queryParam("profile", profile);
         URI uri = builder.build().encode().toUri();
-        return restTemplate.exchange(uri, HttpMethod.POST, request, FRUserData3.class).getBody();
+        return restTemplate.exchange(uri, HttpMethod.POST, request, FRUserData.class).getBody();
     }
 }

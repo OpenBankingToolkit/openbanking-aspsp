@@ -26,7 +26,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.scheduledpayment;
 
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRScheduledPayment4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
 import org.joda.time.DateTime;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -45,23 +45,23 @@ public interface ScheduledPaymentApi {
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.POST)
-    ResponseEntity<FRScheduledPayment4> create(
-            @RequestBody FRScheduledPayment4 scheduledPayment
+    ResponseEntity<FRScheduledPayment> create(
+            @RequestBody FRScheduledPayment scheduledPayment
     );
 
     @RequestMapping(value = "/{id}",
             produces = {"application/json; charset=utf-8"},
             consumes = {"application/json; charset=utf-8"},
             method = RequestMethod.PUT)
-    ResponseEntity<FRScheduledPayment4> update(
-            @RequestBody FRScheduledPayment4 scheduledPayment,
+    ResponseEntity<FRScheduledPayment> update(
+            @RequestBody FRScheduledPayment scheduledPayment,
             @PathVariable("id") String id
     );
 
     @RequestMapping(value = "/search/find",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
-    ResponseEntity<List<FRScheduledPayment4>> getAll(
+    ResponseEntity<List<FRScheduledPayment>> getAll(
             @RequestParam("status") ScheduledPaymentStatus status,
             @RequestParam("toDateTime")
             @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ssZZ")

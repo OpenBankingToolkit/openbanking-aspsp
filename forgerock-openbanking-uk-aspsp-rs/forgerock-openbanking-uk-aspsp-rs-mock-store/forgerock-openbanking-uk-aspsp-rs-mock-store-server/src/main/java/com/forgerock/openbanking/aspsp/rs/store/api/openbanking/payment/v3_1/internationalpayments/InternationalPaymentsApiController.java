@@ -21,12 +21,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.internationalpayments;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1.payments.InternationalPaymentSubmission2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRInternationalPaymentSubmission2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternational;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -51,17 +52,21 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBExchangeRate2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBInternational2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBExchangeRateConverter.toOBExchangeRate2;
 
 @Controller("InternationalPaymentsApiV3.1")
 @Slf4j
 public class InternationalPaymentsApiController implements InternationalPaymentsApi {
-    private final InternationalConsent5Repository internationalConsentRepository;
-    private final InternationalPaymentSubmission2Repository internationalPaymentSubmissionRepository;
+    private final InternationalConsentRepository internationalConsentRepository;
+    private final InternationalPaymentSubmissionRepository internationalPaymentSubmissionRepository;
     private final ResourceLinkService resourceLinkService;
 
-    public InternationalPaymentsApiController(InternationalConsent5Repository internationalConsentRepository, InternationalPaymentSubmission2Repository internationalPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public InternationalPaymentsApiController(InternationalConsentRepository internationalConsentRepository,
+                                              InternationalPaymentSubmissionRepository internationalPaymentSubmissionRepository,
+                                              ResourceLinkService resourceLinkService) {
         this.internationalConsentRepository = internationalConsentRepository;
         this.internationalPaymentSubmissionRepository = internationalPaymentSubmissionRepository;
         this.resourceLinkService = resourceLinkService;
@@ -71,7 +76,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
     public ResponseEntity createInternationalPayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteInternational2 obWriteInternational2Param,
+            @RequestBody OBWriteInternational2 obWriteInternational2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -102,12 +107,12 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteInternational2Param);
+        log.debug("Received payment submission: '{}'", obWriteInternational2);
+        FRWriteInternational frWriteInternational = toFRWriteInternational(obWriteInternational2);
+        log.trace("Converted to: '{}'", frWriteInternational);
 
-        System.out.println("obWriteInternational2Param = " + obWriteInternational2Param);
-
-        String paymentId = obWriteInternational2Param.getData().getConsentId();
-        FRInternationalConsent5 paymentConsent = internationalConsentRepository.findById(paymentId)
+        String paymentId = obWriteInternational2.getData().getConsentId();
+        FRInternationalConsent paymentConsent = internationalConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -115,9 +120,9 @@ public class InternationalPaymentsApiController implements InternationalPayments
                 );
         log.debug("Found consent '{}' to match this payment id: {} ", paymentConsent, paymentId);
 
-        FRInternationalPaymentSubmission2 frPaymentSubmission = FRInternationalPaymentSubmission2.builder()
+        FRInternationalPaymentSubmission frPaymentSubmission = FRInternationalPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalPayment(obWriteInternational2Param)
+                .internationalPayment(frWriteInternational)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -156,25 +161,25 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRInternationalPaymentSubmission2> isPaymentSubmission = internationalPaymentSubmissionRepository.findById(internationalPaymentId);
+        Optional<FRInternationalPaymentSubmission> isPaymentSubmission = internationalPaymentSubmissionRepository.findById(internationalPaymentId);
         if (!isPaymentSubmission.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + internationalPaymentId + "' can't be found");
         }
-        FRInternationalPaymentSubmission2 frPaymentSubmission = isPaymentSubmission.get();
+        FRInternationalPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRInternationalConsent5> isPaymentSetup = internationalConsentRepository.findById(internationalPaymentId);
+        Optional<FRInternationalConsent> isPaymentSetup = internationalConsentRepository.findById(internationalPaymentId);
         if (!isPaymentSetup.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + internationalPaymentId + "' can't be found");
         }
-        FRInternationalConsent5 frPaymentSetup = isPaymentSetup.get();
+        FRInternationalConsent frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteInternationalResponse2 packagePayment(FRInternationalPaymentSubmission2 frPaymentSubmission, FRInternationalConsent5 frInternationalConsent) {
+    private OBWriteInternationalResponse2 packagePayment(FRInternationalPaymentSubmission frPaymentSubmission, FRInternationalConsent frInternationalConsent) {
         return new OBWriteInternationalResponse2()
                 .data(new OBWriteDataInternationalResponse2()
                         .internationalPaymentId(frPaymentSubmission.getId())
-                        .initiation(frPaymentSubmission.getInternationalPayment().getData().getInitiation())
+                        .initiation(toOBInternational2(frPaymentSubmission.getInternationalPayment().getData().getInitiation()))
                         .creationDateTime(frInternationalConsent.getCreated())
                         .statusUpdateDateTime(frInternationalConsent.getStatusUpdate())
                         .status(frInternationalConsent.getStatus().toOBTransactionIndividualStatus1Code())

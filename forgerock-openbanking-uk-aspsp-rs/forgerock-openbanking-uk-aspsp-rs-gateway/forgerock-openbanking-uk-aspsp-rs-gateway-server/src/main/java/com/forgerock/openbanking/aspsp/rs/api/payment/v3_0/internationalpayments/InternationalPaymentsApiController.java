@@ -21,9 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.internationalpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRInternationalConsentConverter;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -31,7 +30,6 @@ import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +45,9 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalConverter.toOBWriteInternational3DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -57,20 +56,21 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InternationalPaymentsApiController.class);
 
-    @Autowired
-    private InternationalPaymentService paymentsService;
-    @Autowired
-    private RSEndpointWrapperService rsEndpointWrapperService;
-    @Autowired
-    private RsStoreGateway rsStoreGateway;
-    @Autowired
-    private FRInternationalConsentConverter frInternationalConsentConverter;
+    private final InternationalPaymentService paymentsService;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
+
+    public InternationalPaymentsApiController(InternationalPaymentService paymentsService, RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway) {
+        this.paymentsService = paymentsService;
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+    }
 
     @Override
     public ResponseEntity<OBWriteInternationalResponse1> createInternationalPayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteInternational1 obWriteInternational1Param,
+            @RequestBody OBWriteInternational1 obWriteInternational1,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -101,8 +101,8 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteInternational1Param.getData().getConsentId();
-        FRInternationalConsent5 payment = paymentsService.getPayment(consentId);
+        String consentId = obWriteInternational1.getData().getConsentId();
+        FRInternationalConsent payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -113,7 +113,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(toOBWriteInternational3DataInitiation(obWriteInternational1Param.getData().getInitiation()), obWriteInternational1Param.getRisk());
+                    f.verifyRiskAndInitiation(toFRWriteInternationalDataInitiation(obWriteInternational1.getData().getInitiation()), toFRRisk(obWriteInternational1.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -127,7 +127,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteInternationalResponse1.class, obWriteInternational1Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteInternationalResponse1.class, obWriteInternational1);
                         }
                 );
     }

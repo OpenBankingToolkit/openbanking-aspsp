@@ -23,10 +23,11 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_0.ac
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.accounts.accountaccessconsents.FRAccountAccessConsent1Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accountsaccessconsents.FRAccountAccessConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -53,6 +54,8 @@ import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRReadConsentResponseConverter.toFRReadConsentResponse;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRReadConsentResponseConverter.toOBReadConsentResponse1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("AccountAccessConsentsApiV3.0")
@@ -62,7 +65,7 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
     @Autowired
     private TppRepository tppRepository;
     @Autowired
-    private FRAccountAccessConsent1Repository frAccountAccessConsent1Repository;
+    private FRAccountAccessConsentRepository frAccountAccessConsentRepository;
     @Autowired
     private ConsentMetricService consentMetricService;
 
@@ -114,15 +117,15 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
                         .transactionToDateTime(body.getData().getTransactionToDateTime()))
                 .risk(body.getRisk());
 
-        FRAccountAccessConsent1 accountAccessConsent = new FRAccountAccessConsent1();
+        FRAccountAccessConsent accountAccessConsent = new FRAccountAccessConsent();
         accountAccessConsent.setId(consentId);
         accountAccessConsent.setConsentId(consentId);
-        accountAccessConsent.setAccountAccessConsent(response);
+        accountAccessConsent.setAccountAccessConsent(toFRReadConsentResponse(response));
         accountAccessConsent.setAisp(tppRepository.findByClientId(aispId));
         accountAccessConsent.setObVersion(VersionPathExtractor.getVersionFromPath(request));
 
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(accountAccessConsent.getId(), accountAccessConsent.getStatus().name()));
-        accountAccessConsent = frAccountAccessConsent1Repository.save(accountAccessConsent);
+        accountAccessConsent = frAccountAccessConsentRepository.save(accountAccessConsent);
 
         LOGGER.debug("Account access consent created {}",
                 accountAccessConsent.getAccountAccessConsent());
@@ -146,7 +149,7 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent
     ) throws OBErrorResponseException {
 
-        Optional<FRAccountAccessConsent1> accountAccessConsent = frAccountAccessConsent1Repository.findByConsentId(consentId);
+        Optional<FRAccountAccessConsent> accountAccessConsent = frAccountAccessConsentRepository.findByConsentId(consentId);
         if (!accountAccessConsent.isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -154,12 +157,12 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
 
         }
         LOGGER.debug("Account access consent revoked with id {}", consentId);
-        FRAccountAccessConsent1 frAccountAccessConsent1 = accountAccessConsent.get();
-        frAccountAccessConsent1.getAccountAccessConsent().getData().setStatus(OBExternalRequestStatus1Code.REVOKED);
+        FRAccountAccessConsent frAccountAccessConsent = accountAccessConsent.get();
+        frAccountAccessConsent.getAccountAccessConsent().getData().setStatus(FRExternalRequestStatusCode.REVOKED);
         consentMetricService.sendConsentActivity(
-                new ConsentStatusEntry(frAccountAccessConsent1.getAccountAccessConsent().getData().getConsentId(),
-                        frAccountAccessConsent1.getAccountAccessConsent().getData().getStatus().name()));
-        frAccountAccessConsent1Repository.save(frAccountAccessConsent1);
+                new ConsentStatusEntry(frAccountAccessConsent.getAccountAccessConsent().getData().getConsentId(),
+                        frAccountAccessConsent.getAccountAccessConsent().getData().getStatus().name()));
+        frAccountAccessConsentRepository.save(frAccountAccessConsent);
         LOGGER.debug("Account access consent revoked");
 
         return ResponseEntity.ok("Account access consent '" + consentId + "' deleted");
@@ -190,11 +193,12 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent
     ) throws OBErrorResponseException {
         LOGGER.debug("Read Account access consent with id {}", consentId);
-        Optional<FRAccountAccessConsent1> accountAccessConsent = frAccountAccessConsent1Repository.findById(consentId);
+        Optional<FRAccountAccessConsent> accountAccessConsent = frAccountAccessConsentRepository.findById(consentId);
         LOGGER.debug("Read successful with id {}", consentId);
         MultiValueMap<String, String> headers = new HttpHeaders();
         headers.put(OBHeaders.X_FAPI_INTERACTION_ID, Arrays.asList(xFapiInteractionId));
-        return new ResponseEntity<>(accountAccessConsent.get().getAccountAccessConsent(), headers, HttpStatus.OK);
+        OBReadConsentResponse1 consentResponse1 = toOBReadConsentResponse1(accountAccessConsent.get().getAccountAccessConsent());
+        return new ResponseEntity<>(consentResponse1, headers, HttpStatus.OK);
     }
 
 }

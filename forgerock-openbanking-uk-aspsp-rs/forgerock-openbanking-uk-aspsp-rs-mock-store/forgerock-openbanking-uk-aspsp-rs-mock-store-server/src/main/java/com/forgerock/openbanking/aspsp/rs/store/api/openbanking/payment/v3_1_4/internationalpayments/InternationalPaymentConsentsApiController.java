@@ -26,9 +26,8 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_4.internationalpayments;
 
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
-//import com.forgerock.openbanking.aspsp.rs.store.repository.TppRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalConsentRepository;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalConsent5Repository;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
@@ -39,7 +38,7 @@ import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 public class InternationalPaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.internationalpayments.InternationalPaymentConsentsApiController implements InternationalPaymentConsentsApi {
 
     public InternationalPaymentConsentsApiController(ConsentMetricService consentMetricService,
-                                                     InternationalConsent5Repository internationalConsentRepository,
+                                                     InternationalConsentRepository internationalConsentRepository,
                                                      TppRepository tppRepository,
                                                      FundsAvailabilityService fundsAvailabilityService,
                                                      ResourceLinkService resourceLinkService) {

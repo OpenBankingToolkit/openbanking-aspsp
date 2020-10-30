@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.domesticscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Before;
@@ -41,13 +41,13 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class DomesticScheduledPaymentConsentDecisionDelegateTest extends AbstractDecisionDelegateTest {
     private DomesticScheduledPaymentService paymentService;
-    private FRDomesticScheduledConsent5 consent;
+    private FRDomesticScheduledConsent consent;
     private DomesticScheduledPaymentConsentDecisionDelegate decisionDelegate;
 
     @Before
     public void setup() {
         paymentService = mock(DomesticScheduledPaymentService.class);
-        consent = FRDomesticScheduledConsent5.builder()
+        consent = FRDomesticScheduledConsent.builder()
                 .id(CONSENT_ID)
                 .pispId(PISP_ID)
                 .userId(USER_ID)

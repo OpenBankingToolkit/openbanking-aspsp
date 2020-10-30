@@ -21,12 +21,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.internationalstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.InternationalStandingOrderPaymentSubmission3Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.InternationalStandingOrderConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRInternationalStandingOrderPaymentSubmission3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrder;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -43,7 +44,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalStandingOrderResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -52,18 +52,20 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBInternationalStandingOrder1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalStandingOrderConverter.toOBInternationalStandingOrder1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrder3;
 
 @Controller("InternationalStandingOrdersApiV3.0")
 @Slf4j
 public class InternationalStandingOrdersApiController implements InternationalStandingOrdersApi {
-    private InternationalStandingOrderConsent5Repository internationalStandingOrderConsentRepository;
-    private InternationalStandingOrderPaymentSubmission3Repository internationalStandingOrderPaymentSubmissionRepository;
+    private InternationalStandingOrderConsentRepository internationalStandingOrderConsentRepository;
+    private InternationalStandingOrderPaymentSubmissionRepository internationalStandingOrderPaymentSubmissionRepository;
     private ResourceLinkService resourceLinkService;
 
-    public InternationalStandingOrdersApiController(InternationalStandingOrderConsent5Repository internationalStandingOrderConsentRepository, InternationalStandingOrderPaymentSubmission3Repository internationalStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public InternationalStandingOrdersApiController(InternationalStandingOrderConsentRepository internationalStandingOrderConsentRepository,
+                                                    InternationalStandingOrderPaymentSubmissionRepository internationalStandingOrderPaymentSubmissionRepository,
+                                                    ResourceLinkService resourceLinkService) {
         this.internationalStandingOrderConsentRepository = internationalStandingOrderConsentRepository;
         this.internationalStandingOrderPaymentSubmissionRepository = internationalStandingOrderPaymentSubmissionRepository;
         this.resourceLinkService = resourceLinkService;
@@ -102,12 +104,12 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteInternationalStandingOrder1);
-        OBWriteInternationalStandingOrder3 payment = toOBWriteInternationalStandingOrder3(obWriteInternationalStandingOrder1);
-        log.trace("Converted to: {}", payment.getClass());
+        log.debug("Received payment submission: '{}'", obWriteInternationalStandingOrder1);
+        FRWriteInternationalStandingOrder frStandingOrder = toFRWriteInternationalStandingOrder(obWriteInternationalStandingOrder1);
+        log.trace("Converted to: '{}'", frStandingOrder);
 
-        String paymentId = payment.getData().getConsentId();
-        FRInternationalStandingOrderConsent5 paymentConsent = internationalStandingOrderConsentRepository.findById(paymentId)
+        String paymentId = frStandingOrder.getData().getConsentId();
+        FRInternationalStandingOrderConsent paymentConsent = internationalStandingOrderConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -115,13 +117,13 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 );
         log.debug("Found consent '{}' to match this payment id: {} ", paymentConsent, paymentId);
 
-        FRInternationalStandingOrderPaymentSubmission3 frPaymentSubmission = FRInternationalStandingOrderPaymentSubmission3.builder()
+        FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = FRInternationalStandingOrderPaymentSubmission.builder()
                 .id(paymentId)
-                .internationalStandingOrder(payment)
+                .internationalStandingOrder(frStandingOrder)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
-                .obVersion(VersionPathExtractor.getVersionFromPath(request))
+                .version(VersionPathExtractor.getVersionFromPath(request))
                 .build();
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(internationalStandingOrderPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
@@ -155,29 +157,29 @@ public class InternationalStandingOrdersApiController implements InternationalSt
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRInternationalStandingOrderPaymentSubmission3> isPaymentSubmission = internationalStandingOrderPaymentSubmissionRepository.findById(internationalStandingOrderPaymentId);
+        Optional<FRInternationalStandingOrderPaymentSubmission> isPaymentSubmission = internationalStandingOrderPaymentSubmissionRepository.findById(internationalStandingOrderPaymentId);
         if (!isPaymentSubmission.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + internationalStandingOrderPaymentId + "' can't be found");
         }
-        FRInternationalStandingOrderPaymentSubmission3 frPaymentSubmission = isPaymentSubmission.get();
+        FRInternationalStandingOrderPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRInternationalStandingOrderConsent5> isPaymentSetup = internationalStandingOrderConsentRepository.findById(internationalStandingOrderPaymentId);
+        Optional<FRInternationalStandingOrderConsent> isPaymentSetup = internationalStandingOrderConsentRepository.findById(internationalStandingOrderPaymentId);
         if (!isPaymentSetup.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + internationalStandingOrderPaymentId + "' can't be found");
         }
-        FRInternationalStandingOrderConsent5 frPaymentSetup = isPaymentSetup.get();
+        FRInternationalStandingOrderConsent frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteInternationalStandingOrderResponse1 packagePayment(FRInternationalStandingOrderPaymentSubmission3 frPaymentSubmission, FRInternationalStandingOrderConsent5 FRInternationalStandingOrderConsent5) {
+    private OBWriteInternationalStandingOrderResponse1 packagePayment(FRInternationalStandingOrderPaymentSubmission frPaymentSubmission, FRInternationalStandingOrderConsent FRInternationalStandingOrderConsent) {
         return new OBWriteInternationalStandingOrderResponse1()
                 .data(new OBWriteDataInternationalStandingOrderResponse1()
                         .internationalStandingOrderId(frPaymentSubmission.getId())
                         .initiation(toOBInternationalStandingOrder1(frPaymentSubmission.getInternationalStandingOrder().getData().getInitiation()))
-                        .creationDateTime(FRInternationalStandingOrderConsent5.getCreated())
-                        .statusUpdateDateTime(FRInternationalStandingOrderConsent5.getStatusUpdate())
-                        .status(FRInternationalStandingOrderConsent5.getStatus().toOBExternalStatusCode1())
-                        .consentId(FRInternationalStandingOrderConsent5.getId())
+                        .creationDateTime(FRInternationalStandingOrderConsent.getCreated())
+                        .statusUpdateDateTime(FRInternationalStandingOrderConsent.getStatusUpdate())
+                        .status(FRInternationalStandingOrderConsent.getStatus().toOBExternalStatusCode1())
+                        .consentId(FRInternationalStandingOrderConsent.getId())
                 )
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> discovery.getV_3_0().getGetInternationalStandingOrder()))
                 .meta(new Meta());

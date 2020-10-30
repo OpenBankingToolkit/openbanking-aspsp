@@ -20,55 +20,65 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.party;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party.FRParty2Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRParty2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRParty;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import uk.org.openbanking.datamodel.account.OBParty2;
+import uk.org.openbanking.datamodel.account.OBReadParty2;
+import uk.org.openbanking.datamodel.account.OBReadParty2Data;
+import uk.org.openbanking.datamodel.account.OBReadParty3;
+import uk.org.openbanking.datamodel.account.OBReadParty3Data;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRPartyConverter.toOBParty2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("PartyApiV3.1.1")
 @Slf4j
 public class PartyApiController implements PartyApi {
-    @Autowired
-    private FRParty2Repository frParty2Repository;
+
+    private final FRPartyRepository frPartyRepository;
+
+    public PartyApiController(FRPartyRepository frPartyRepository) {
+        this.frPartyRepository = frPartyRepository;
+    }
 
     @Override
     public ResponseEntity<OBReadParty2> getAccountParty(
-            @ApiParam(value = "A unique identifier used to identify the account resource.",required=true)
+            @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
             @PathVariable("AccountId") String accountId,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
-            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
-                    "Sun, 10 Sep 2017 19:43:31 UTC" )
+                    "Sun, 10 Sep 2017 19:43:31 UTC")
 
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
 
-            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
 
-            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
-            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
@@ -80,38 +90,39 @@ public class PartyApiController implements PartyApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Read party for account {} with minimumPermissions {}", accountId, permissions);
-        FRParty2 party = frParty2Repository.byAccountIdWithPermissions(accountId, permissions);
+        FRParty party = frPartyRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions));
         int totalPages = 1;
 
-        return ResponseEntity.ok(new OBReadParty2().data(new OBReadParty2Data().party(
-                party.getParty()))
+        return ResponseEntity.ok(new OBReadParty2()
+                .data(new OBReadParty2Data()
+                        .party(toOBParty2(party.getParty())))
                 .links(PaginationUtil.generateLinks(httpUrl, 0, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
     @Override
     public ResponseEntity<OBReadParty3> getAccountParties(
-            @ApiParam(value = "A unique identifier used to identify the account resource.",required=true)
+            @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
             @PathVariable("AccountId") String accountId,
 
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
-            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
-                    "Sun, 10 Sep 2017 19:43:31 UTC" )
+                    "Sun, 10 Sep 2017 19:43:31 UTC")
 
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
 
-            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
 
-            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
-            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
@@ -126,45 +137,45 @@ public class PartyApiController implements PartyApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Read party for account {} with minimumPermissions {}", accountId, permissions);
-        FRParty2 accountParty = frParty2Repository.byAccountIdWithPermissions(accountId, permissions);
+        FRParty accountParty = frPartyRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions));
         List<OBParty2> parties = new ArrayList<>();
-        if (accountParty !=null) {
+        if (accountParty != null) {
             log.debug("Found account party '{}' for id: {}", accountId, accountId);
-            parties.add(accountParty.getParty());
+            parties.add(toOBParty2(accountParty.getParty()));
         }
 
-        FRParty2 userParty = frParty2Repository.byUserIdWithPermissions(userId, permissions);
-        if (userParty !=null) {
+        FRParty userParty = frPartyRepository.byUserIdWithPermissions(userId, toFRExternalPermissionsCodeList(permissions));
+        if (userParty != null) {
             log.debug("Found user party '{}' for id: {}", userParty, userId);
-            parties.add(userParty.getParty());
+            parties.add(toOBParty2(userParty.getParty()));
         }
 
         int totalPages = 1;
-        return ResponseEntity.ok(new OBReadParty3().data(
-                new OBReadParty3Data().party(parties))
+        return ResponseEntity.ok(new OBReadParty3()
+                .data(new OBReadParty3Data().party(parties))
                 .links(PaginationUtil.generateLinks(httpUrl, 0, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }
 
     @Override
     public ResponseEntity<OBReadParty2> getParty(
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB." ,required=true)
-            @RequestHeader(value="x-fapi-financial-id", required=true) String xFapiFinancialId,
+            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
+            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
 
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  " +
                     "All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  " +
-                    "Sun, 10 Sep 2017 19:43:31 UTC" )
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+                    "Sun, 10 Sep 2017 19:43:31 UTC")
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
-            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
+            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
 
-            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
-            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
@@ -179,11 +190,12 @@ public class PartyApiController implements PartyApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Reading party from user id {}", userId);
-        FRParty2 party = frParty2Repository.byUserIdWithPermissions(userId, permissions);
+        FRParty party = frPartyRepository.byUserIdWithPermissions(userId, toFRExternalPermissionsCodeList(permissions));
         int totalPages = 1;
 
-        return ResponseEntity.ok(new OBReadParty2().data(new OBReadParty2Data().party(
-                party.getParty()))
+        return ResponseEntity.ok(new OBReadParty2()
+                .data(new OBReadParty2Data()
+                        .party(toOBParty2(party.getParty())))
                 .links(PaginationUtil.generateLinks(httpUrl, 0, totalPages))
                 .meta(PaginationUtil.generateMetaData(totalPages)));
     }

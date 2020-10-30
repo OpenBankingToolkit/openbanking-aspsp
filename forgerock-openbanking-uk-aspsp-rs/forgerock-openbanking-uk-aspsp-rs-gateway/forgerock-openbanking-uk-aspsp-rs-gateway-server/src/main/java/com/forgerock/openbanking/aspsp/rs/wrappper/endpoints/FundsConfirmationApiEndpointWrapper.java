@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -39,17 +39,17 @@ import static com.forgerock.openbanking.model.error.OBRIErrorType.REQUEST_FIELD_
 
 @Slf4j
 public class FundsConfirmationApiEndpointWrapper extends RSEndpointWrapper<FundsConfirmationApiEndpointWrapper, FundsConfirmationApiEndpointWrapper.FundsConfirmationRestEndpointContent> {
-    private FRFundsConfirmationConsent1 consent;
+    private FRFundsConfirmationConsent consent;
 
     public FundsConfirmationApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
         super(RSEndpointWrapperService);
     }
 
-    public FRFundsConfirmationConsent1 getConsent() {
+    public FRFundsConfirmationConsent getConsent() {
         return consent;
     }
 
-    public FundsConfirmationApiEndpointWrapper consent(FRFundsConfirmationConsent1 consent) {
+    public FundsConfirmationApiEndpointWrapper consent(FRFundsConfirmationConsent consent) {
         this.consent = consent;
         return this;
     }
@@ -85,7 +85,7 @@ public class FundsConfirmationApiEndpointWrapper extends RSEndpointWrapper<Funds
 
 
     public void verifyConsentExpiration() throws OBErrorException {
-        final DateTime expirationDateTime = consent.getFundsConfirmationConsent().getData().getExpirationDateTime();
+        final DateTime expirationDateTime = consent.getFundsConfirmationConsent().getExpirationDateTime();
         if (expirationDateTime!=null
                 && expirationDateTime.isBefore(DateTime.now())) {
             log.debug("Funds confirmation ({}) has expired.", consent.getId());

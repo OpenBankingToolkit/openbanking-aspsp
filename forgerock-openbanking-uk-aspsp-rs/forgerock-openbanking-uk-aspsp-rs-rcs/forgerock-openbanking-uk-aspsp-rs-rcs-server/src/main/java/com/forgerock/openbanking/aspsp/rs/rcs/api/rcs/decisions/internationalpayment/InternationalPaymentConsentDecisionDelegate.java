@@ -23,8 +23,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalpa
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.InternationalPaymentConsentDecision;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -39,9 +39,9 @@ class InternationalPaymentConsentDecisionDelegate implements ConsentDecisionDele
     private PaymentConsentDecisionUpdater paymentConsentDecisionUpdater;
     private InternationalPaymentService paymentsService;
     private ObjectMapper objectMapper;
-    private FRInternationalConsent5 payment;
+    private FRInternationalConsent payment;
 
-    InternationalPaymentConsentDecisionDelegate(PaymentConsentDecisionUpdater paymentConsentDecisionUpdater, InternationalPaymentService paymentsService, ObjectMapper objectMapper, FRInternationalConsent5 consent) {
+    InternationalPaymentConsentDecisionDelegate(PaymentConsentDecisionUpdater paymentConsentDecisionUpdater, InternationalPaymentService paymentsService, ObjectMapper objectMapper, FRInternationalConsent consent) {
         this.paymentConsentDecisionUpdater = paymentConsentDecisionUpdater;
         this.paymentsService = paymentsService;
         this.objectMapper = objectMapper;
@@ -65,7 +65,7 @@ class InternationalPaymentConsentDecisionDelegate implements ConsentDecisionDele
     }
 
     @Override
-    public void autoaccept(List<FRAccount2> accounts, String username) throws OBErrorException {
+    public void autoaccept(List<FRAccount> accounts, String username) throws OBErrorException {
         paymentConsentDecisionUpdater.applyUpdate(username, accounts.get(0).getId(), true, p -> paymentsService.updatePayment(p), payment);
     }
 }

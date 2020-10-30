@@ -25,13 +25,12 @@ import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.MoneyTransferPaym
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.PaymPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
-import lombok.extern.slf4j.XSlf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +42,7 @@ import java.util.Arrays;
 @Slf4j
 public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEndpointWrapper, PaymentsApiEndpointWrapper.PaymentRestEndpointContent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentsApiEndpointWrapper.class);
-    private FRPaymentConsent payment;
+    private PaymentConsent payment;
     private final BalanceTransferPaymentValidator balanceTransferPaymentValidator;
     private final MoneyTransferPaymentValidator moneyTransferPaymentValidator;
     private final PaymPaymentValidator paymPaymentValidator;
@@ -61,7 +60,7 @@ public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEnd
         this.riskValidator = riskValidator;
     }
 
-    public PaymentsApiEndpointWrapper payment(FRPaymentConsent payment) {
+    public PaymentsApiEndpointWrapper payment(PaymentConsent payment) {
         this.payment = payment;
         return this;
     }

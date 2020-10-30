@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRPaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -41,7 +41,7 @@ import static com.forgerock.openbanking.common.services.openbanking.IdempotencyS
  * @param <T> Type of payment submission (e.g. domestic single, international scheduled etc etc )
  */
 @Slf4j
-public class IdempotentRepositoryAdapter<T extends FRPaymentSubmission> {
+public class IdempotentRepositoryAdapter<T extends PaymentSubmission> {
 
     private final MongoRepository<T, String> repo;
 

@@ -28,7 +28,7 @@ import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RcsService;
 import com.forgerock.openbanking.common.conf.RcsConfiguration;
 import com.forgerock.openbanking.common.constants.RCSConstants;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.data.UserDataService;
@@ -107,7 +107,7 @@ public class AutodecisionsApiController implements AutodecisionsApi {
             Map<String, String> profile = userProfileService.getProfile(ssoToken, amOpenBankingConfiguration.endpointUserProfile,
                     amOpenBankingConfiguration.cookieName);
             String username = profile.get(amOpenBankingConfiguration.userProfileId);
-            List<FRAccount2> accounts = getAccountOrGenerateData(username);
+            List<FRAccount> accounts = getAccountOrGenerateData(username);
             //Call the right decision controller, cased on the intent type
             ConsentDecisionDelegate consentDecisionController = intentTypeService.getConsentDecision(intentId);
             consentDecisionController.autoaccept(accounts, username);
@@ -147,8 +147,8 @@ public class AutodecisionsApiController implements AutodecisionsApi {
         }
     }
 
-    private List<FRAccount2> getAccountOrGenerateData(String username) {
-        List<FRAccount2> accounts;
+    private List<FRAccount> getAccountOrGenerateData(String username) {
+        List<FRAccount> accounts;
         try {
             accounts = accountsService.get(username);
             if (accounts.isEmpty()) {

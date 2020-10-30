@@ -23,8 +23,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.filepayments;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.FilePaymentConsentDecision;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -39,9 +39,9 @@ class FilePaymentConsentDecisionDelegate implements ConsentDecisionDelegate {
     private PaymentConsentDecisionUpdater paymentConsentDecisionUpdater;
     private FilePaymentService paymentsService;
     private ObjectMapper objectMapper;
-    private FRFileConsent5 payment;
+    private FRFileConsent payment;
 
-    FilePaymentConsentDecisionDelegate(PaymentConsentDecisionUpdater paymentConsentDecisionUpdater, FilePaymentService paymentsService, ObjectMapper objectMapper, FRFileConsent5 payment) {
+    FilePaymentConsentDecisionDelegate(PaymentConsentDecisionUpdater paymentConsentDecisionUpdater, FilePaymentService paymentsService, ObjectMapper objectMapper, FRFileConsent payment) {
         this.paymentConsentDecisionUpdater = paymentConsentDecisionUpdater;
         this.paymentsService = paymentsService;
         this.objectMapper = objectMapper;
@@ -66,7 +66,7 @@ class FilePaymentConsentDecisionDelegate implements ConsentDecisionDelegate {
     }
 
     @Override
-    public void autoaccept(List<FRAccount2> accounts, String username) throws OBErrorException {
+    public void autoaccept(List<FRAccount> accounts, String username) throws OBErrorException {
         paymentConsentDecisionUpdater.applyUpdate(username, accounts.get(0).getId(), true, p -> paymentsService.updatePayment(p), payment);
     }
 }

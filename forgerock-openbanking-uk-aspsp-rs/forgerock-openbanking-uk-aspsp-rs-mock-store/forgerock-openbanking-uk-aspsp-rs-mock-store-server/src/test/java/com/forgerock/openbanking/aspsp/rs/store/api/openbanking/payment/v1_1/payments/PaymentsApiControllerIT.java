@@ -21,11 +21,11 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v1_1.payments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FRPaymentSetupRepository;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.payments.paymentsetup.FRPaymentSetup1Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -55,6 +55,7 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_PISP_ID;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_PISP_NAME;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.setupMockTpp;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBInitiation1;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.jodatime.api.Assertions.assertThat;
 
@@ -71,7 +72,7 @@ public class PaymentsApiControllerIT {
     @Autowired
     private RSConfiguration rsConfiguration;
     @Autowired
-    private FRPaymentSetup1Repository repository;
+    private FRPaymentSetupRepository repository;
 
 
     @MockBean
@@ -113,11 +114,11 @@ public class PaymentsApiControllerIT {
         log.error("The response: {}", response);
         assertThat(response.getStatus()).isEqualTo(201);
         OBPaymentSetupResponse1 consentResponse = response.getBody();
-        FRPaymentSetup1 consent = repository.findById(consentResponse.getData().getPaymentId()).get();
+        FRPaymentSetup consent = repository.findById(consentResponse.getData().getPaymentId()).get();
         assertThat(consent.getPispName()).isEqualTo(MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getPaymentId());
-        assertThat(consent.getInitiation()).isEqualTo(consentResponse.getData().getInitiation());
+        assertThat(toOBInitiation1(consent.getInitiation())).isEqualTo(consentResponse.getData().getInitiation());
         assertThat(consent.getStatus().toOBTransactionIndividualStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
 
         // Is between start of test and now
@@ -129,7 +130,7 @@ public class PaymentsApiControllerIT {
     public void shouldGetSinglePaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRPaymentSetup1 consent = JMockData.mock(FRPaymentSetup1.class);
+        FRPaymentSetup consent = JMockData.mock(FRPaymentSetup.class);
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
         repository.save(consent);
 
@@ -147,7 +148,7 @@ public class PaymentsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         OBPaymentSetupResponse1 consentResponse = response.getBody();
         assertThat(consentResponse.getData().getPaymentId()).isEqualTo(consent.getId());
-        assertThat(consentResponse.getData().getInitiation()).isEqualTo(consent.getInitiation());
+        assertThat(consentResponse.getData().getInitiation()).isEqualTo(toOBInitiation1(consent.getInitiation()));
         assertThat(consentResponse.getData().getStatus()).isEqualTo(consent.getStatus().toOBTransactionIndividualStatus1Code());
         assertThat(consentResponse.getData().getCreationDateTime()).isEqualToIgnoringMillis(consent.getCreated());
     }

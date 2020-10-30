@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Test;
@@ -53,10 +53,10 @@ public class PaymentConsentDecisionUpdaterTest {
     @Test
     public void paymentDecisionAllowed_applyUpdateToConsent() throws Exception {
         // Given
-        FRAccount2 account = new FRAccount2();
+        FRAccount account = new FRAccount();
         account.id = ACCOUNT_ID;
         when(accountStoreService.get(USER_ID)).thenReturn(Collections.singletonList(account));
-        FRDomesticConsent5 paymentConsent = new FRDomesticConsent5();
+        FRDomesticConsent paymentConsent = new FRDomesticConsent();
 
         // When
         paymentConsentDecisionUpdater.applyUpdate(USER_ID, ACCOUNT_ID, true, p -> {}, paymentConsent);
@@ -69,24 +69,24 @@ public class PaymentConsentDecisionUpdaterTest {
     @Test
     public void paymentDecisionAllowed_butUserDoesNotOwnAccount_rejectWithException() {
         // Given
-        FRAccount2 account = new FRAccount2();
+        FRAccount account = new FRAccount();
         account.id = "differentId";
         when(accountStoreService.get(USER_ID)).thenReturn(Collections.singletonList(account));
-        FRDomesticConsent5 paymentConsent = new FRDomesticConsent5();
+        FRDomesticConsent paymentConsent = new FRDomesticConsent();
 
         // When
         assertThatThrownBy(() ->
             paymentConsentDecisionUpdater.applyUpdate(USER_ID, ACCOUNT_ID, true, p -> {}, paymentConsent))
         // Then
         .isExactlyInstanceOf(OBErrorException.class)
-        .hasMessage("The PSU user1 is trying to share an account 'acc123' he doesn't own. List of his accounts '[FRAccount2(id=differentId, userID=null, account=null, latestStatementId=null, created=null, updated=null)]'");
+        .hasMessage("The PSU user1 is trying to share an account 'acc123' he doesn't own. List of his accounts '[FRAccount(id=differentId, userID=null, account=null, latestStatementId=null, created=null, updated=null)]'");
 
     }
 
     @Test
     public void paymentDecisionAllowed_missingAccountId_rejectWithException() {
         // Given
-        FRDomesticConsent5 paymentConsent = new FRDomesticConsent5();
+        FRDomesticConsent paymentConsent = new FRDomesticConsent();
 
         // When
         assertThatThrownBy(() ->
@@ -100,7 +100,7 @@ public class PaymentConsentDecisionUpdaterTest {
     @Test
     public void paymentDecisionDeclined_applyRejectedUpdateToConsent() throws Exception {
         // Given
-        FRDomesticConsent5 paymentConsent = new FRDomesticConsent5();
+        FRDomesticConsent paymentConsent = new FRDomesticConsent();
 
         // When
         paymentConsentDecisionUpdater.applyUpdate(USER_ID, null, false, p -> {}, paymentConsent);

@@ -20,8 +20,9 @@
  */
 package com.forgerock.openbanking.common.services.store.account.scheduledpayment;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRScheduledPayment1;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -33,7 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 
 import java.net.URI;
 import java.util.Collection;
@@ -54,9 +54,9 @@ public class ScheduledPaymentService {
         this.rsStoreRoot = rsStoreRoot;
     }
 
-    public void createSchedulePayment(OBScheduledPayment1 scheduledPayment,String pispId) {
+    public void createSchedulePayment(FRScheduledPaymentData scheduledPayment, String pispId) {
         log.debug("Create a scheduled payment in the store. {}", scheduledPayment);
-        FRScheduledPayment1 frScheduledPayment = FRScheduledPayment1.builder()
+        FRScheduledPayment frScheduledPayment = FRScheduledPayment.builder()
                 .scheduledPayment(scheduledPayment)
                 .id(scheduledPayment.getScheduledPaymentId())
                 .accountId(scheduledPayment.getAccountId())
@@ -66,10 +66,11 @@ public class ScheduledPaymentService {
         restTemplate.postForObject(rsStoreRoot + BASE_RESOURCE_PATH, frScheduledPayment, String.class);
     }
 
-    public Collection<FRScheduledPayment1> getPendingAndDueScheduledPayments() {
+    public Collection<FRScheduledPayment> getPendingAndDueScheduledPayments() {
         log.debug("Get pending scheduled payments in the store.");
-        ParameterizedTypeReference<List<FRScheduledPayment1>> ptr =
-                new ParameterizedTypeReference<List<FRScheduledPayment1>>() {};
+        ParameterizedTypeReference<List<FRScheduledPayment>> ptr =
+                new ParameterizedTypeReference<List<FRScheduledPayment>>() {
+                };
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + BASE_RESOURCE_PATH + "search/find"
         );
@@ -77,13 +78,13 @@ public class ScheduledPaymentService {
         builder.queryParam("toDate", DateTime.now().toString(ISODateTimeFormat.dateTimeNoMillis()));
         URI uri = builder.build().encode().toUri();
         log.debug("Calling URI: {}", uri);
-        ResponseEntity<List<FRScheduledPayment1>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<List<FRScheduledPayment>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
         return entity.getBody();
     }
 
-    public void updateSchedulePayment(FRScheduledPayment1 scheduledPayment) {
+    public void updateSchedulePayment(FRScheduledPayment scheduledPayment) {
         log.debug("Update a scheduled payment in the store. {}", scheduledPayment);
-        restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH+"/"+scheduledPayment.getId(), scheduledPayment);
+        restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH + "/" + scheduledPayment.getId(), scheduledPayment);
     }
 
 

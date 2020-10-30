@@ -22,17 +22,18 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.fi
 
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.FileConsent5Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.aspsp.rs.store.validator.ControlSumValidator;
 import com.forgerock.openbanking.aspsp.rs.store.validator.FileTransactionCountValidator;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFileConsent;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFileFactory;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
@@ -54,7 +55,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDataFileConsentResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsent1;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsent3;
 import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,21 +65,21 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBAuthorisation1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBFile1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBConsentAuthorisationConverter.toOBAuthorisation1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter.toOBFile1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteFileConsentConverter.toOBWriteFileConsent3;
 
 @Controller("FilePaymentConsentsApiV3.0")
 @Slf4j
 public class FilePaymentConsentsApiController implements FilePaymentConsentsApi {
     private final TppRepository tppRepository;
-    private final FileConsent5Repository fileConsentRepository;
+    private final FileConsentRepository fileConsentRepository;
     private final ResourceLinkService resourceLinkService;
     private ConsentMetricService consentMetricService;
 
     @Autowired
-    public FilePaymentConsentsApiController(ConsentMetricService consentMetricService, TppRepository tppRepository, FileConsent5Repository fileConsentRepository, ResourceLinkService resourceLinkService) {
+    public FilePaymentConsentsApiController(ConsentMetricService consentMetricService, TppRepository tppRepository, FileConsentRepository fileConsentRepository, ResourceLinkService resourceLinkService) {
         this.tppRepository = tppRepository;
         this.fileConsentRepository = fileConsentRepository;
         this.resourceLinkService = resourceLinkService;
@@ -124,9 +124,9 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received '{}'.", obWriteFileConsent1);
-        OBWriteFileConsent3 consent3 = toOBWriteFileConsent3(obWriteFileConsent1);
-        log.debug("Converted to OBWriteFileConsent2: {}", consent3);
+        log.debug("Received: '{}'", obWriteFileConsent1);
+        FRWriteFileConsent frWriteFileConsent = toFRWriteFileConsent(obWriteFileConsent1);
+        log.trace("Converted to: '{}'", frWriteFileConsent);
 
         final Tpp tpp = Optional.ofNullable(tppRepository.findByClientId(clientId))
                 .orElseThrow(() -> new OBErrorResponseException(
@@ -136,17 +136,17 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                         Collections.singletonList(OBRIErrorType.REQUEST_INVALID_HEADER.toOBError1("x-ob-client-id"))
                 ));
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        Optional<FRFileConsent5> consentByIdempotencyKey = fileConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRFileConsent> consentByIdempotencyKey = fileConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
-            validateIdempotencyRequest(xIdempotencyKey, consent3, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getWriteFileConsent());
+            validateIdempotencyRequest(xIdempotencyKey, frWriteFileConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getWriteFileConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
             return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
-        FRFileConsent5 fileConsent = FRFileConsent5.builder().id(IntentType.PAYMENT_FILE_CONSENT.generateIntentId())
+        FRFileConsent fileConsent = FRFileConsent.builder().id(IntentType.PAYMENT_FILE_CONSENT.generateIntentId())
                 .status(ConsentStatusCode.AWAITINGUPLOAD)
-                .writeFileConsent(consent3)
+                .writeFileConsent(frWriteFileConsent)
                 .pispId(tpp.getId())
                 .pispName(tpp.getOfficialName())
                 .created(DateTime.now())
@@ -155,10 +155,10 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
                 .idempotencyKey(xIdempotencyKey)
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
-        log.debug("Saving consent: {}", fileConsent);
+        log.debug("Saving consent: '{}'", fileConsent);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(fileConsent.getId(), fileConsent.getStatus().name()));
         fileConsent = fileConsentRepository.save(fileConsent);
-        log.info("Created consent id: {}", fileConsent.getId());
+        log.info("Created consent id: '{}'", fileConsent.getId());
         return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(fileConsent));
     }
 
@@ -200,9 +200,9 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.trace("Received '{}'.", fileParam);
+        log.trace("Received: '{}'", fileParam);
 
-        final FRFileConsent5 fileConsent = fileConsentRepository.findById(consentId)
+        final FRFileConsent fileConsent = fileConsentRepository.findById(consentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -314,7 +314,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
             Principal principal
     ) throws OBErrorResponseException {
         return fileConsentRepository.findById(consentId)
-                .map(FRFileConsent5::getFileContent)
+                .map(FRFileConsent::getFileContent)
                 .map(fileStr -> new ByteArrayResource(fileStr.getBytes()))
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new OBErrorResponseException(
@@ -326,7 +326,7 @@ public class FilePaymentConsentsApiController implements FilePaymentConsentsApi 
 
     }
 
-    private OBWriteFileConsentResponse1 packageResponse(FRFileConsent5 fileConsent) {
+    private OBWriteFileConsentResponse1 packageResponse(FRFileConsent fileConsent) {
         return new OBWriteFileConsentResponse1()
                 .data(new OBWriteDataFileConsentResponse1()
                         .consentId(fileConsent.getId())

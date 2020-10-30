@@ -27,7 +27,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.internationalpayme
 
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.ExchangeRateVerifier;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -136,7 +136,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        FRInternationalConsent5 payment = paymentsService.getPayment(consentId);
+        FRInternationalConsent payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentEndpoint()
                 .authorization(authorization)

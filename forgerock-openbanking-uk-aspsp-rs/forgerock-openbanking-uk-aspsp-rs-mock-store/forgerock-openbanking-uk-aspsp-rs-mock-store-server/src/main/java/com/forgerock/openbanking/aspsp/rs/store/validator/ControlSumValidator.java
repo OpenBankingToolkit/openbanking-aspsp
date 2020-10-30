@@ -22,8 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.validator;
 
 
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.PaymentFile;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRFileConsent2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
@@ -40,18 +39,7 @@ public class ControlSumValidator {
      * @param consent Payment file consent
      * @throws OBErrorException Validation failed
      */
-    public static void validate(FRFileConsent2 consent, PaymentFile paymentFile) throws OBErrorException {
-        validate(paymentFile, consent.getInitiation().getControlSum(), consent.getId());
-    }
-
-    /**
-     * Check that the provided payment file and payment file consent metadata have the same control sum (defined as sum of all transaction amounts in file).
-     * This is an extra validation step to ensure correct and valid file has been uploaded for the consent
-     * @param paymentFile Payment file body
-     * @param consent Payment file consent
-     * @throws OBErrorException Validation failed
-     */
-    public static void validate(FRFileConsent5 consent, PaymentFile paymentFile) throws OBErrorException {
+    public static void validate(FRFileConsent consent, PaymentFile paymentFile) throws OBErrorException {
         validate(paymentFile, consent.getInitiation().getControlSum(), consent.getId());
     }
 

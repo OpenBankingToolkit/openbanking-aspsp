@@ -22,12 +22,16 @@ package com.forgerock.openbanking.aspsp.rs.simulator.scheduler;
 
 import com.forgerock.openbanking.aspsp.rs.simulator.service.MoneyService;
 import com.forgerock.openbanking.aspsp.rs.simulator.service.PaymentNotificationFacade;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRTransactionData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.FRFilePayment;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.tunyk.currencyconverter.api.CurrencyConverterException;
@@ -39,13 +43,6 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode1;
-import uk.org.openbanking.datamodel.account.OBEntryStatus1Code;
-import uk.org.openbanking.datamodel.account.OBTransaction6;
-import uk.org.openbanking.datamodel.account.OBTransactionCashBalance;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +50,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.simulator.constants.SimulatorConstants.RUN_SCHEDULED_TASK_PROPERTY;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 
 @Slf4j
@@ -79,15 +75,15 @@ public class AcceptFilePaymentTask {
     @SchedulerLock(name = "filePayment")
     public void autoAcceptPayment() {
         log.info("Auto-accept file payment task waking up. The time is now {}.", format.print(DateTime.now()));
-        final Collection<FRFileConsent5> allPaymentsInProcess = filePaymentService.getAllPaymentFilesInProcess();
+        final Collection<FRFileConsent> allPaymentsInProcess = filePaymentService.getAllPaymentFilesInProcess();
 
-        for (FRFileConsent5 consent: allPaymentsInProcess) {
+        for (FRFileConsent consent : allPaymentsInProcess) {
             log.info("Processing file consent {}", consent);
             try {
                 int paymentNo = 0;
                 int success = 0;
                 int reject = 0;
-                if (consent.getPayments()==null) {
+                if (consent.getPayments() == null) {
                     consent.setStatus(ConsentStatusCode.REJECTED);
                     continue;
                 }
@@ -95,13 +91,13 @@ public class AcceptFilePaymentTask {
                 for (FRFilePayment payment : consent.getPayments()) {
                     paymentNo++;
                     try {
-                        if (payment.getStatus()!= FRFilePayment.PaymentStatus.PENDING) {
+                        if (payment.getStatus() != FRFilePayment.PaymentStatus.PENDING) {
                             log.debug("Payment '{}' from consent '{}' is not pending", payment, consent.getId());
                             continue;
                         }
                         log.info("Processing pending file payment [{}] : {}", paymentNo, payment);
                         String identificationTo = moveDebitPayment(payment, consent.getAccountId());
-                        Optional<FRAccount> isAccountToFromOurs = accountStoreService.findAccountByIdentification(identificationTo);
+                        Optional<Account> isAccountToFromOurs = accountStoreService.findAccountByIdentification(identificationTo);
                         if (isAccountToFromOurs.isPresent()) {
                             moveCreditPayment(payment, identificationTo, isAccountToFromOurs.get());
                         } else {
@@ -135,51 +131,49 @@ public class AcceptFilePaymentTask {
     }
 
     private String moveDebitPayment(FRFilePayment payment, String accountId) throws CurrencyConverterException {
-        FRAccount accountFrom = accountStoreService.getAccount(accountId);
+        Account accountFrom = accountStoreService.getAccount(accountId);
         log.info("We are going to pay from this account: {}", accountFrom);
-        moneyService.moveMoney(accountFrom, payment.getInstructedAmount(),
-                OBCreditDebitCode.DEBIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountFrom, payment.getInstructedAmount(), FRCreditDebitIndicator.DEBIT, payment, this::createTransaction);
 
         String identificationFrom = payment.getCreditorAccountIdentification();
         log.debug("Find if the 'to' account '{}' is own by this ASPSP", identificationFrom);
         return identificationFrom;
     }
 
-    private void moveCreditPayment(FRFilePayment payment, String identificationTo, FRAccount accountFrom) throws CurrencyConverterException {
+    private void moveCreditPayment(FRFilePayment payment, String identificationTo, Account accountFrom) throws CurrencyConverterException {
         log.info("Account '{}' is ours: {}", identificationTo, accountFrom);
         log.info("Move the money to this account");
-        moneyService.moveMoney(accountFrom, payment.getInstructedAmount(),
-                OBCreditDebitCode.CREDIT, payment, this::createTransaction);
+        moneyService.moveMoney(accountFrom, payment.getInstructedAmount(), FRCreditDebitIndicator.CREDIT, payment, this::createTransaction);
     }
 
-    private FRTransaction6 createTransaction(FRAccount account, FRFilePayment payment, OBCreditDebitCode creditDebitCode, FRBalance balance, OBActiveOrHistoricCurrencyAndAmount amount) {
+    private FRTransaction createTransaction(Account account, FRFilePayment payment, FRCreditDebitIndicator creditDebitCode, Balance balance, FRAmount amount) {
         log.info("Create transaction");
         String transactionId = UUID.randomUUID().toString();
         DateTime bookingDate = new DateTime(payment.getCreated());
 
-        OBTransaction6 obTransaction = new OBTransaction6()
+        FRTransactionData transactionData = FRTransactionData.builder()
                 .transactionId(transactionId)
-                .status(OBEntryStatus1Code.BOOKED)
+                .status(FRTransactionData.FREntryStatus.BOOKED)
                 .valueDateTime(DateTime.now())
                 .accountId(account.getId())
-                .amount(toOBActiveOrHistoricCurrencyAndAmount9(amount))
-                .creditDebitIndicator(creditDebitCode == null ? null : OBCreditDebitCode1.valueOf(creditDebitCode.name()))
+                .amount(amount)
+                .creditDebitIndicator(creditDebitCode)
                 .bookingDateTime(bookingDate)
-                .statementReference(new ArrayList<>())
-                .balance(new OBTransactionCashBalance()
+                .statementReferences(new ArrayList<>())
+                .balance(FRTransactionData.FRTransactionCashBalance.builder()
                         .amount(balance.getCurrencyAndAmount())
                         .creditDebitIndicator(balance.getCreditDebitIndicator())
-                        .type(OBBalanceType1Code.INTERIMBOOKED)
-                );
-            obTransaction
-                    .transactionReference(payment.getRemittanceReference())
-                    .transactionInformation(payment.getRemittanceUnstructured());
+                        .type(FRBalanceType.INTERIMBOOKED)
+                        .build())
+                .build();
+        transactionData.setTransactionReference(payment.getRemittanceReference());
+        transactionData.setTransactionInformation(payment.getRemittanceUnstructured());
 
-        FRTransaction6 transaction = FRTransaction6.builder()
+        FRTransaction transaction = FRTransaction.builder()
                 .id(transactionId)
                 .bookingDateTime(bookingDate)
                 .accountId(account.getId())
-                .transaction(obTransaction)
+                .transaction(transactionData)
                 .build();
         log.info("Transaction created {}", transaction);
         return transaction;

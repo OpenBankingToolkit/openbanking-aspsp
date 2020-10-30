@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.singlepayments;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Before;
@@ -38,13 +38,13 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class SinglePaymentConsentDecisionDelegateTest extends AbstractDecisionDelegateTest {
     private SinglePaymentService paymentService;
-    private FRPaymentSetup1 consent;
+    private FRPaymentSetup consent;
     private SinglePaymentConsentDecisionDelegate decisionDelegate;
 
     @Before
     public void setup() {
         paymentService = mock(SinglePaymentService.class);
-        consent = FRPaymentSetup1.builder()
+        consent = FRPaymentSetup.builder()
                 .id(CONSENT_ID)
                 .pispId(PISP_ID)
                 .userId(USER_ID)

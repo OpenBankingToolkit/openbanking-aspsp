@@ -21,9 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_0.domesticpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDomesticConsentConverter;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -31,7 +30,6 @@ import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -47,8 +45,9 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBDomestic2;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -57,20 +56,21 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DomesticPaymentsApiController.class);
 
-    @Autowired
-    private DomesticPaymentService paymentsService;
-    @Autowired
-    private RSEndpointWrapperService rsEndpointWrapperService;
-    @Autowired
-    private RsStoreGateway rsStoreGateway;
-    @Autowired
-    private FRDomesticConsentConverter frDomesticConsentConverter;
+    private final DomesticPaymentService paymentsService;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
+
+    public DomesticPaymentsApiController(DomesticPaymentService paymentsService, RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway) {
+        this.paymentsService = paymentsService;
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+    }
 
     @Override
     public ResponseEntity<OBWriteDomesticResponse1> createDomesticPayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteDomestic1 obWriteDomestic1Param,
+            @RequestBody OBWriteDomestic1 obWriteDomestic1,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -101,19 +101,19 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteDomestic1Param.getData().getConsentId();
-        FRDomesticConsent5 payment = paymentsService.getPayment(consentId);
+        String consentId = obWriteDomestic1.getData().getConsentId();
+        FRDomesticConsent paymentConsent = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiFinancialId)
-                .payment(frDomesticConsentConverter.toFRDomesticConsent1(payment))
+                .payment(paymentConsent)
                 .principal(principal)
                 .filters(f -> {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(toOBDomestic2(obWriteDomestic1Param.getData().getInitiation()), obWriteDomestic1Param.getRisk());
+                    f.verifyRiskAndInitiation(toFRWriteDomesticDataInitiation(obWriteDomestic1.getData().getInitiation()), toFRRisk(obWriteDomestic1.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -121,14 +121,14 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                             //Modify the status of the payment
                             LOGGER.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
 
-                            payment.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
+                            paymentConsent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
                             LOGGER.info("Updating payment");
-                            paymentsService.updatePayment(payment);
+                            paymentsService.updatePayment(paymentConsent);
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
 
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticResponse1.class, obWriteDomestic1Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticResponse1.class, obWriteDomestic1);
                         }
                 );
     }

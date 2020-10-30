@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.domesticpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -46,8 +46,9 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBWriteDomestic2DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -76,7 +77,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     public ResponseEntity<OBWriteDomesticResponse2> createDomesticPayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteDomestic2 obWriteDomestic2Param,
+            @RequestBody OBWriteDomestic2 obWriteDomestic2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -107,8 +108,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteDomestic2Param.getData().getConsentId();
-        FRDomesticConsent5 payment = paymentsService.getPayment(consentId);
+        String consentId = obWriteDomestic2.getData().getConsentId();
+        FRDomesticConsent payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -119,9 +120,8 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(toOBWriteDomestic2DataInitiation(obWriteDomestic2Param.getData().getInitiation()), obWriteDomestic2Param.getRisk());
+                    f.verifyRiskAndInitiation(toFRWriteDomesticDataInitiation(obWriteDomestic2.getData().getInitiation()), toFRRisk(obWriteDomestic2.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
-                    f.verifyRisk(obWriteDomestic2Param.getRisk());
                 })
                 .execute(
                         (String tppId) -> {
@@ -134,7 +134,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticResponse2.class, obWriteDomestic2Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticResponse2.class, obWriteDomestic2);
                         }
                 );
     }

@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Before;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class AccountsApiEndpointWrapperTest {
     public void verifyAccountId_matches() throws Exception {
         // Given
         String accountId = "12345";
-        wrapper.accountRequest = new FRAccountRequest1();
+        wrapper.accountRequest = new FRAccountRequest();
         wrapper.accountRequest.setAccountIds(Collections.singletonList(accountId));
 
         // Then
@@ -63,7 +63,7 @@ public class AccountsApiEndpointWrapperTest {
     @Test
     public void verifyAccountId_noMatch() throws Exception {
         // Given
-        wrapper.accountRequest = new FRAccountRequest1();
+        wrapper.accountRequest = new FRAccountRequest();
         wrapper.accountRequest.setAccountIds(Collections.singletonList("differentAccount123"));
         wrapper.accountId("12345");
 
@@ -82,7 +82,7 @@ public class AccountsApiEndpointWrapperTest {
     @Test
     public void verifyAccountId_null_noException() throws Exception {
         // Given
-        wrapper.accountRequest = new FRAccountRequest1();
+        wrapper.accountRequest = new FRAccountRequest();
         wrapper.accountRequest.setAccountIds(Collections.singletonList("12345"));
 
         // Then

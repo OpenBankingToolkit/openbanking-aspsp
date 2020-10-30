@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.event.store;
 
-import com.forgerock.openbanking.common.model.openbanking.event.FREventSubscription1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -46,16 +46,16 @@ public class EventSubscriptionService {
         this.restTemplate = restTemplate;
     }
 
-    public Collection<FREventSubscription1> findByTppId(String tppId) {
+    public Collection<FREventSubscription> findByTppId(String tppId) {
         log.debug("Read all the event subscription for {}", tppId);
-        ParameterizedTypeReference<Collection<FREventSubscription1>> ptr =
-                new ParameterizedTypeReference<Collection<FREventSubscription1>>() {};
+        ParameterizedTypeReference<Collection<FREventSubscription>> ptr =
+                new ParameterizedTypeReference<Collection<FREventSubscription>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + BASE_RESOURCE_PATH + "search/findByTppId"
         );
         builder.queryParam("tppId", tppId);
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<Collection<FREventSubscription1>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<Collection<FREventSubscription>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
 
         return entity.getBody();
     }

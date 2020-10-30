@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 
 import java.util.Collections;
@@ -41,15 +41,15 @@ public abstract class AbstractDecisionDelegateTest {
     protected static final String PISP_ID = "456";
     protected static final String ACCOUNT_ID = "12345678";
     protected static final String USER_ID = "test1";
-    protected static final FRAccount2 USER_ACCOUNT = FRAccount2.builder()
+    protected static final FRAccount USER_ACCOUNT = FRAccount.builder()
             .id(ACCOUNT_ID)
             .userID(USER_ID)
             .build();
-    protected static final List<FRAccount2> USER_ACCOUNT_LIST = Collections.singletonList(USER_ACCOUNT);
+    protected static final List<FRAccount> USER_ACCOUNT_LIST = Collections.singletonList(USER_ACCOUNT);
     protected static final String WRONG_ACCOUNT_ID = "999999999999";
 
     protected static final String EXPECTED_MISSING_ACC_ID_MSG = "Missing account id";
-    protected static final String EXPECTED_WRONG_ACC_ID_MSG = "The PSU "+USER_ID+" is trying to share an account '"+WRONG_ACCOUNT_ID+"' he doesn't own. List of his accounts '[FRAccount2(id="+ACCOUNT_ID+", userID="+USER_ID+", account=null, latestStatementId=null, created=null, updated=null)]'";
+    protected static final String EXPECTED_WRONG_ACC_ID_MSG = "The PSU "+USER_ID+" is trying to share an account '"+WRONG_ACCOUNT_ID+"' he doesn't own. List of his accounts '[FRAccount(id="+ACCOUNT_ID+", userID="+USER_ID+", account=null, latestStatementId=null, created=null, updated=null)]'";
 
     protected static AccountStoreService getAccountStoreService() {
         AccountStoreService accountStoreService = mock(AccountStoreService.class);

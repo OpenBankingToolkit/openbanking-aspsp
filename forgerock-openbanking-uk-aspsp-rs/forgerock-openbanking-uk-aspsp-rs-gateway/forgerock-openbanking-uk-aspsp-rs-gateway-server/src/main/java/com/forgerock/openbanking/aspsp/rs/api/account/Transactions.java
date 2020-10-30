@@ -20,12 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.account;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.ServletServerHttpRequest;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -49,9 +49,9 @@ public class Transactions {
         return params;
     }
 
-    public static HttpHeaders defaultTransactionHttpHeaders(HttpServletRequest request, List<OBExternalPermissions1Code> permissions, DateTime transactionFrom, DateTime transactionTo) {
+    public static HttpHeaders defaultTransactionHttpHeaders(HttpServletRequest request, List<FRExternalPermissionsCode> permissions, DateTime transactionFrom, DateTime transactionTo) {
         HttpHeaders additionalHttpHeaders = new HttpHeaders();
-        additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+        additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
         if (transactionFrom != null) {
             additionalHttpHeaders.add("x-ob-first-available-date", ISODateTimeFormat.dateTimeNoMillis().print(transactionFrom));
         }

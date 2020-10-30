@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.event.v3_0;
 
-
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.version.OBVersion;

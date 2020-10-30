@@ -21,8 +21,11 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1.internationalscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData.FRScheduleType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.payment.InternationalScheduledPaymentService;
@@ -39,8 +42,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.org.openbanking.datamodel.account.OBExternalScheduleType1Code;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse2;
 
@@ -49,10 +50,9 @@ import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledDataInitiation;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBInternationalScheduledConverter.toOBWriteInternationalScheduled3DataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-10-10T14:05:22.993+01:00")
 
@@ -79,7 +79,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
     public ResponseEntity<OBWriteInternationalScheduledResponse2> createInternationalScheduledPayments(
             @ApiParam(value = "Default", required = true)
             @Valid
-            @RequestBody OBWriteInternationalScheduled2 obWriteInternationalScheduled2Param,
+            @RequestBody OBWriteInternationalScheduled2 obWriteInternationalScheduled2,
 
             @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
             @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
@@ -110,8 +110,8 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
             Principal principal
     ) throws OBErrorResponseException {
-        String consentId = obWriteInternationalScheduled2Param.getData().getConsentId();
-        FRInternationalScheduledConsent5 payment = paymentsService.getPayment(consentId);
+        String consentId = obWriteInternationalScheduled2.getData().getConsentId();
+        FRInternationalScheduledConsent payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -122,7 +122,9 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(toOBWriteInternationalScheduled3DataInitiation(obWriteInternationalScheduled2Param.getData().getInitiation()), obWriteInternationalScheduled2Param.getRisk());
+                    f.verifyRiskAndInitiation(
+                            toFRWriteInternationalScheduledDataInitiation(obWriteInternationalScheduled2.getData().getInitiation()),
+                            toFRRisk(obWriteInternationalScheduled2.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
@@ -130,15 +132,16 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                             //Modify the status of the payment
                             LOGGER.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
 
-                            OBScheduledPayment1 scheduledPayment = new OBScheduledPayment1()
+                            FRWriteInternationalScheduledDataInitiation initiation = payment.getInitiation();
+                            FRScheduledPaymentData scheduledPayment = FRScheduledPaymentData.builder()
                                     .accountId(payment.getAccountId())
-                                    .creditorAccount(toOBCashAccount3(payment.getInitiation().getCreditorAccount()))
-                                    .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()))
-                                    .reference(payment.getInitiation().getRemittanceInformation().getReference())
+                                    .creditorAccount(initiation.getCreditorAccount())
+                                    .instructedAmount(initiation.getInstructedAmount())
                                     // Set to EXECUTION because we are creating the creditor payment
-                                    .scheduledType(OBExternalScheduleType1Code.EXECUTION)
-                                    .scheduledPaymentDateTime(payment.getInitiation().getRequestedExecutionDateTime())
-                                    .scheduledPaymentId(payment.getId());
+                                    .scheduledType(FRScheduleType.EXECUTION)
+                                    .scheduledPaymentDateTime(initiation.getRequestedExecutionDateTime())
+                                    .scheduledPaymentId(payment.getId())
+                                    .build();
 
                             String pispId = tppStoreService.findByClientId(tppId)
                                     .map(tpp -> tpp.getId())
@@ -151,7 +154,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
 
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-payment-id", consentId);
-                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteInternationalScheduledResponse2.class, obWriteInternationalScheduled2Param);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteInternationalScheduledResponse2.class, obWriteInternationalScheduled2);
                         }
                 );
     }

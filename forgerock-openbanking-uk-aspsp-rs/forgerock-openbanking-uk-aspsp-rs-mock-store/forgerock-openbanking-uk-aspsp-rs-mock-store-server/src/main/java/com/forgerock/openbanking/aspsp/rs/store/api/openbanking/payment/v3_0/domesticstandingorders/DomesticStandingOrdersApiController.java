@@ -21,12 +21,13 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_0.domesticstandingorders;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.payments.DomesticStandingOrderPaymentSubmission3Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticStandingOrderConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.payment.FRDomesticStandingOrderPaymentSubmission3;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrder;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -44,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrderResponse1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse1;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,19 +53,19 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBDomesticStandingOrder1;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3;
 
 @Controller("DomesticStandingOrdersApiV3.0")
 @Slf4j
 public class DomesticStandingOrdersApiController implements DomesticStandingOrdersApi {
-    private DomesticStandingOrderConsent5Repository domesticStandingOrderConsentRepository;
-    private DomesticStandingOrderPaymentSubmission3Repository domesticStandingOrderPaymentSubmissionRepository;
+    private DomesticStandingOrderConsentRepository domesticStandingOrderConsentRepository;
+    private DomesticStandingOrderPaymentSubmissionRepository domesticStandingOrderPaymentSubmissionRepository;
     private ResourceLinkService resourceLinkService;
 
     @Autowired
-    public DomesticStandingOrdersApiController(DomesticStandingOrderConsent5Repository domesticStandingOrderConsentRepository, DomesticStandingOrderPaymentSubmission3Repository domesticStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+    public DomesticStandingOrdersApiController(DomesticStandingOrderConsentRepository domesticStandingOrderConsentRepository, DomesticStandingOrderPaymentSubmissionRepository domesticStandingOrderPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
         this.domesticStandingOrderConsentRepository = domesticStandingOrderConsentRepository;
         this.domesticStandingOrderPaymentSubmissionRepository = domesticStandingOrderPaymentSubmissionRepository;
         this.resourceLinkService = resourceLinkService;
@@ -106,12 +106,12 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
             Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received payment submission: {}", obWriteDomesticStandingOrder1);
-        OBWriteDomesticStandingOrder3 payment = toOBWriteDomesticStandingOrder3(obWriteDomesticStandingOrder1);
-        log.trace("Converted to OBWriteDomesticStandingOrder2: {}", payment);
+        log.debug("Received payment submission: '{}'", obWriteDomesticStandingOrder1);
+        FRWriteDomesticStandingOrder frStandingOrder = toFRWriteDomesticStandingOrder(obWriteDomesticStandingOrder1);
+        log.trace("Converted to: '{}'", frStandingOrder);
 
-        String paymentId = payment.getData().getConsentId();
-        FRDomesticStandingOrderConsent5 paymentConsent = domesticStandingOrderConsentRepository.findById(paymentId)
+        String paymentId = frStandingOrder.getData().getConsentId();
+        FRDomesticStandingOrderConsent paymentConsent = domesticStandingOrderConsentRepository.findById(paymentId)
                 .orElseThrow(() -> new OBErrorResponseException(
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
@@ -119,9 +119,9 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 );
         log.debug("Found consent '{}' to match this payment id: {} ", paymentConsent, paymentId);
 
-        FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission3.builder()
+        FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = FRDomesticStandingOrderPaymentSubmission.builder()
                 .id(paymentId)
-                .domesticStandingOrder(payment)
+                .domesticStandingOrder(frStandingOrder)
                 .created(new Date())
                 .updated(new Date())
                 .idempotencyKey(xIdempotencyKey)
@@ -160,22 +160,22 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
 
             Principal principal
     ) throws OBErrorResponseException {
-        Optional<FRDomesticStandingOrderPaymentSubmission3> isPaymentSubmission = domesticStandingOrderPaymentSubmissionRepository.findById(domesticStandingOrderId);
+        Optional<FRDomesticStandingOrderPaymentSubmission> isPaymentSubmission = domesticStandingOrderPaymentSubmissionRepository.findById(domesticStandingOrderId);
         if (!isPaymentSubmission.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + domesticStandingOrderId + "' can't be found");
         }
-        FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission = isPaymentSubmission.get();
+        FRDomesticStandingOrderPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
 
-        Optional<FRDomesticStandingOrderConsent5> isPaymentSetup = domesticStandingOrderConsentRepository.findById(domesticStandingOrderId);
+        Optional<FRDomesticStandingOrderConsent> isPaymentSetup = domesticStandingOrderConsentRepository.findById(domesticStandingOrderId);
         if (!isPaymentSetup.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + domesticStandingOrderId + "' can't be found");
         }
-        FRDomesticStandingOrderConsent5 frPaymentSetup = isPaymentSetup.get();
+        FRDomesticStandingOrderConsent frPaymentSetup = isPaymentSetup.get();
         return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteDomesticStandingOrderResponse1 packagePayment(FRDomesticStandingOrderPaymentSubmission3 frPaymentSubmission,
-                                                                 FRDomesticStandingOrderConsent5 frDomesticStandingOrderConsent1) {
+    private OBWriteDomesticStandingOrderResponse1 packagePayment(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission,
+                                                                 FRDomesticStandingOrderConsent frDomesticStandingOrderConsent1) {
         return new OBWriteDomesticStandingOrderResponse1().data(new OBWriteDataDomesticStandingOrderResponse1()
                 .domesticStandingOrderId(frPaymentSubmission.getId())
                 .initiation(toOBDomesticStandingOrder1(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))

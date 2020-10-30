@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.fund;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,15 +39,15 @@ public interface FundsConfirmationApi {
     @RequestMapping(value = "/search/findByStatus",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<Collection<FRFundsConfirmationConsent1>> findByStatus(
+    ResponseEntity<Collection<FRFundsConfirmationConsent>> findByStatus(
             @RequestParam("status") String status
     );
 
     @RequestMapping(value = "/",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.PUT)
-    ResponseEntity<FRFundsConfirmationConsent1> update(
-            @RequestBody FRFundsConfirmationConsent1 consent
+    ResponseEntity<FRFundsConfirmationConsent> update(
+            @RequestBody FRFundsConfirmationConsent consent
     );
 }
 

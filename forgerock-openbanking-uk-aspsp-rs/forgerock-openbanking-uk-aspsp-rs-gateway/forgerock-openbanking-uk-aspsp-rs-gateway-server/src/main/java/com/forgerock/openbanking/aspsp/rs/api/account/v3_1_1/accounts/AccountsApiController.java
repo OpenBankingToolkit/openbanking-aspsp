@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.account.v3_1_1.accounts;
 
 
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
@@ -35,7 +36,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadAccount3;
 
 import javax.servlet.http.HttpServletRequest;
@@ -85,11 +85,11 @@ public class AccountsApiController implements AccountsApi {
                 .xFapiFinancialId(xFapiFinancialId)
                 .accountId(accountId)
                 .principal(principal)
-                .minimumPermissions(OBExternalPermissions1Code.READACCOUNTSBASIC, OBExternalPermissions1Code.READACCOUNTSDETAIL)
+                .minimumPermissions(FRExternalPermissionsCode.READACCOUNTSBASIC, FRExternalPermissionsCode.READACCOUNTSDETAIL)
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadAccount3.class);
@@ -129,14 +129,14 @@ public class AccountsApiController implements AccountsApi {
                 .xFapiFinancialId(xFapiFinancialId)
                 .principal(principal)
                 .page(page)
-                .minimumPermissions(OBExternalPermissions1Code.READACCOUNTSBASIC, OBExternalPermissions1Code.READACCOUNTSDETAIL)
+                .minimumPermissions(FRExternalPermissionsCode.READACCOUNTSBASIC, FRExternalPermissionsCode.READACCOUNTSDETAIL)
                 .execute(
                         (accountRequest, permissions, pageNumber) -> {
                             log.info("Read all accounts behind account request {} with permissions {}", accountRequest,
                                     permissions);
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.addAll("x-ob-account-ids", accountRequest.getAccountIds());
-                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(OBExternalPermissions1Code::name).collect(Collectors.toList()));
+                            additionalHttpHeaders.addAll("x-ob-permissions", permissions.stream().map(FRExternalPermissionsCode::name).collect(Collectors.toList()));
                             additionalHttpHeaders.add("x-ob-url", new ServletServerHttpRequest(request).getURI().toString());
 
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBReadAccount3.class);

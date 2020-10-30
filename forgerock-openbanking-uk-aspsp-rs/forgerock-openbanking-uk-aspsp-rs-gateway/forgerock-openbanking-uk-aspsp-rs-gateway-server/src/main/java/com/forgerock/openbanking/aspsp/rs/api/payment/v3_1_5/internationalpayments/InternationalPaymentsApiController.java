@@ -26,8 +26,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_5.internationalpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -45,6 +45,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Collections;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalDataInitiation;
 import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 
 @Controller("InternationalPaymentsApiV3.1.5")
@@ -74,7 +76,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             Principal principal
     ) throws OBErrorResponseException {
         String consentId = obWriteInternational3.getData().getConsentId();
-        FRInternationalConsent5 payment = paymentsService.getPayment(consentId);
+        FRInternationalConsent payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -86,7 +88,9 @@ public class InternationalPaymentsApiController implements InternationalPayments
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(obWriteInternational3.getData().getInitiation(), obWriteInternational3.getRisk());
+                    f.verifyRiskAndInitiation(
+                            toFRWriteInternationalDataInitiation(obWriteInternational3.getData().getInitiation()),
+                            toFRRisk(obWriteInternational3.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(

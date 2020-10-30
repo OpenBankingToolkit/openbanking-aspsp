@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.fundconfirmatio
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.InternationalPaymentConsentDecision;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
@@ -42,9 +42,9 @@ class FundsConfirmationConsentDecisionDelegate implements ConsentDecisionDelegat
     private FundsConfirmationService fundsConfirmationService;
     private AccountStoreService accountStoreService;
     private ObjectMapper objectMapper;
-    private FRFundsConfirmationConsent1 consent;
+    private FRFundsConfirmationConsent consent;
 
-    FundsConfirmationConsentDecisionDelegate(FundsConfirmationService fundsConfirmationService, AccountStoreService accountStoreService, ObjectMapper objectMapper, FRFundsConfirmationConsent1 consent) {
+    FundsConfirmationConsentDecisionDelegate(FundsConfirmationService fundsConfirmationService, AccountStoreService accountStoreService, ObjectMapper objectMapper, FRFundsConfirmationConsent consent) {
         this.fundsConfirmationService = fundsConfirmationService;
         this.accountStoreService = accountStoreService;
         this.objectMapper = objectMapper;
@@ -66,17 +66,17 @@ class FundsConfirmationConsentDecisionDelegate implements ConsentDecisionDelegat
     }
 
     @Override
-    public void autoaccept(List<FRAccount2> accounts, String username) throws OBErrorException {
+    public void autoaccept(List<FRAccount> accounts, String username) throws OBErrorException {
         applyUpdate(username, accounts.get(0).getId(), true, consent);
     }
 
-    private void applyUpdate(String userId, String accountId, boolean decision, FRFundsConfirmationConsent1 consent) throws OBErrorException {
+    private void applyUpdate(String userId, String accountId, boolean decision, FRFundsConfirmationConsent consent) throws OBErrorException {
         if (decision) {
             if (StringUtils.isEmpty(accountId)) {
                 log.error("No account was selected by user {} for authorising consent: {}", userId, consent);
                 throw new IllegalArgumentException("Missing account id");
             }
-            final List<FRAccount2> accounts = accountStoreService.get(userId);
+            final List<FRAccount> accounts = accountStoreService.get(userId);
             boolean isAny = accounts.stream()
                     .anyMatch(account -> account.getId().equals(accountId));
             if (!isAny) {

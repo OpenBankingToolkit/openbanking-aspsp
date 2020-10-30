@@ -20,53 +20,86 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRParty1;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRParty2;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRPartyData;
+import uk.org.openbanking.datamodel.account.OBExternalPartyType1Code;
 import uk.org.openbanking.datamodel.account.OBParty1;
 import uk.org.openbanking.datamodel.account.OBParty2;
+import uk.org.openbanking.datamodel.account.OBPartyRelationships1;
+import uk.org.openbanking.datamodel.account.OBRelationship1;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountPostalAddressConverter.toFRPostalAddressList;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountPostalAddressConverter.toOBPostalAddress8List;
 
 public class FRPartyConverter {
 
-
-    public static OBParty1 toOBParty1(OBParty2 party) {
-        if (party==null) return null;
-        return new OBParty1()
+    // FR to OB
+    public static OBParty1 toOBParty1(FRPartyData party) {
+        return party == null ? null : new OBParty1()
                 .partyId(party.getPartyId())
-                .name(party.getName())
-                .phone(party.getPhone())
                 .partyNumber(party.getPartyNumber())
-                .partyType(party.getPartyType())
-                .address(party.getAddress())
+                .partyType(toOBExternalPartyType1Code(party.getPartyType()))
+                .name(party.getName())
                 .emailAddress(party.getEmailAddress())
-                .mobile(party.getMobile());
+                .phone(party.getPhone())
+                .mobile(party.getMobile())
+                .address(toOBPostalAddress8List(party.getAddresses()));
     }
 
-    public static FRParty2 toParty2(FRParty1 frParty1) {
-        if (frParty1==null) return null;
+    public static OBParty2 toOBParty2(FRPartyData party) {
+        return party == null ? null : new OBParty2()
+                .partyId(party.getPartyId())
+                .partyNumber(party.getPartyNumber())
+                .partyType(toOBExternalPartyType1Code(party.getPartyType()))
+                .name(party.getName())
+                .fullLegalName(party.getFullLegalName())
+                .legalStructure(party.getLegalStructure())
+                .beneficialOwnership(party.getBeneficialOwnership())
+                .accountRole(party.getAccountRole())
+                .emailAddress(party.getEmailAddress())
+                .phone(party.getPhone())
+                .mobile(party.getMobile())
+                .relationships(toOBPartyRelationships1(party.getRelationship()))
+                .address(toOBPostalAddress8List(party.getAddresses()));
+    }
 
-        FRParty2 frParty2 = FRParty2.builder()
-                .accountId(frParty1.getAccountId())
-                .id(frParty1.getId())
-                .created(frParty1.getCreated())
-                .updated(frParty1.getUpdated())
-                .userId(frParty1.getUserId())
+    public static OBExternalPartyType1Code toOBExternalPartyType1Code(FRPartyData.FRPartyType partyType) {
+        return partyType == null ? null : OBExternalPartyType1Code.valueOf(partyType.name());
+    }
+
+    public static OBPartyRelationships1 toOBPartyRelationships1(FRPartyData.FRRelationship relationship) {
+        return relationship == null ? null : new OBPartyRelationships1()
+                .account(new OBRelationship1()
+                        .related(relationship.getRelated())
+                        .id(relationship.getId()));
+    }
+
+    // OB to FR
+    public static FRPartyData toFRPartyData(OBParty2 party) {
+        return party == null ? null : FRPartyData.builder()
+                .partyId(party.getPartyId())
+                .partyNumber(party.getPartyNumber())
+                .partyType(toFRPartyType(party.getPartyType()))
+                .name(party.getName())
+                .fullLegalName(party.getFullLegalName())
+                .legalStructure(party.getLegalStructure())
+                .beneficialOwnership(party.isBeneficialOwnership())
+                .accountRole(party.getAccountRole())
+                .emailAddress(party.getEmailAddress())
+                .phone(party.getPhone())
+                .mobile(party.getMobile())
+                .relationship(toFRRelationship(party.getRelationships()))
+                .addresses(toFRPostalAddressList(party.getAddress()))
                 .build();
-
-        frParty2.setParty(toOBParty2(frParty1.getParty()));
-        return frParty2;
     }
 
-    public static OBParty2 toOBParty2(OBParty1 party) {
-        if (party==null) return null;
+    public static FRPartyData.FRPartyType toFRPartyType(OBExternalPartyType1Code partyType) {
+        return partyType == null ? null : FRPartyData.FRPartyType.valueOf(partyType.name());
+    }
 
-        return new OBParty2()
-                .partyId(party.getPartyId())
-                .name(party.getName())
-                .phone(party.getPhone())
-                .partyNumber(party.getPartyNumber())
-                .partyType(party.getPartyType())
-                .address(party.getAddress())
-                .emailAddress(party.getEmailAddress())
-                .mobile(party.getMobile());
+    public static FRPartyData.FRRelationship toFRRelationship(OBPartyRelationships1 relationship) {
+        return relationship == null || relationship.getAccount() == null ? null : FRPartyData.FRRelationship.builder()
+                .related(relationship.getAccount().getRelated())
+                .id(relationship.getAccount().getId())
+                .build();
     }
 }

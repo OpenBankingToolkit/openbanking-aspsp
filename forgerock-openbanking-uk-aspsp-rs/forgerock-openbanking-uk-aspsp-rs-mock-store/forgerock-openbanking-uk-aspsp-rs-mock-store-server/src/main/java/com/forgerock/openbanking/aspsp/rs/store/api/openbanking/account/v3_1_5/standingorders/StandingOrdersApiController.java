@@ -20,10 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_5.standingorders;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.standingorders.FRStandingOrder6Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRStandingOrderConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -39,18 +40,20 @@ import uk.org.openbanking.datamodel.account.OBReadStandingOrder6Data;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+
 @Controller("StandingOrdersApiV3.1.5")
 @Slf4j
 public class StandingOrdersApiController implements StandingOrdersApi {
 
     private final int pageLimitStandingOrders;
 
-    private final FRStandingOrder6Repository frStandingOrderRepository;
+    private final FRStandingOrderRepository frStandingOrderRepository;
 
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
     public StandingOrdersApiController(@Value("${rs.page.default.standing-order.size}") int pageLimitStandingOrders,
-                                       FRStandingOrder6Repository frStandingOrderRepository,
+                                       FRStandingOrderRepository frStandingOrderRepository,
                                        AccountDataInternalIdFilter accountDataInternalIdFilter) {
         this.pageLimitStandingOrders = pageLimitStandingOrders;
         this.frStandingOrderRepository = frStandingOrderRepository;
@@ -69,8 +72,8 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                                                                          String httpUrl) throws OBErrorResponseException {
         log.info("Read standing orders for account {} with minimumPermissions {}",
                 accountId, permissions);
-        Page<FRStandingOrder6> standingOrders =
-                frStandingOrderRepository.byAccountIdWithPermissions(accountId, permissions,
+        Page<FRStandingOrder> standingOrders =
+                frStandingOrderRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions),
                         PageRequest.of(page, pageLimitStandingOrders));
 
         int totalPages = standingOrders.getTotalPages();
@@ -78,7 +81,8 @@ public class StandingOrdersApiController implements StandingOrdersApi {
         return ResponseEntity.ok(new OBReadStandingOrder6()
                 .data(new OBReadStandingOrder6Data().standingOrder(standingOrders.getContent()
                         .stream()
-                        .map(FRStandingOrder6::getStandingOrder)
+                        .map(FRStandingOrder::getStandingOrder)
+                        .map(FRStandingOrderConverter::toOBStandingOrder6)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
@@ -96,13 +100,14 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                                                                   List<OBExternalPermissions1Code> permissions,
                                                                   String httpUrl) throws OBErrorResponseException {
         log.info("Reading standing orders from account ids {}", accountIds);
-        Page<FRStandingOrder6> standingOrders = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, permissions,
+        Page<FRStandingOrder> standingOrders = frStandingOrderRepository.byAccountIdInWithPermissions(accountIds, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, pageLimitStandingOrders));
         int totalPages = standingOrders.getTotalPages();
 
         return ResponseEntity.ok(new OBReadStandingOrder6()
                 .data(new OBReadStandingOrder6Data().standingOrder(standingOrders.getContent().stream()
-                        .map(FRStandingOrder6::getStandingOrder)
+                        .map(FRStandingOrder::getStandingOrder)
+                        .map(FRStandingOrderConverter::toOBStandingOrder6)
                         .map(so -> accountDataInternalIdFilter.apply(so))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

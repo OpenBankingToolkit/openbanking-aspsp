@@ -22,8 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.DomesticStandingOrderPaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.DomesticStandingOrderService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -34,16 +35,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.OBStandingOrder6;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3DataInitiation;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount51;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount4;
 
 @Service
 @Slf4j
@@ -62,17 +62,17 @@ public class RCSDomesticStandingOrderDetailsApi implements RCSDetailsApi {
     }
 
     @Override
-    public ResponseEntity consentDetails(String remoteConsentRequest, List<FRAccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
+    public ResponseEntity consentDetails(String remoteConsentRequest, List<AccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
         log.debug("Received a consent request with consent_request='{}'", remoteConsentRequest);
         log.debug("=> The payment id '{}'", consentId);
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRDomesticStandingOrderConsent5 domesticConsent = paymentService.getPayment(consentId);
+        FRDomesticStandingOrderConsent domesticConsent = paymentService.getPayment(consentId);
 
         // Only show the debtor account if specified in consent
         if (domesticConsent.getInitiation().getDebtorAccount() != null) {
-            Optional<FRAccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(domesticConsent.getInitiation().getDebtorAccount().getIdentification(), accounts);
+            Optional<AccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(domesticConsent.getInitiation().getDebtorAccount().getIdentification(), accounts);
             if (!matchingUserAccount.isPresent()) {
                 log.error("The PISP '{}' created the payment request '{}' but the debtor account: {} on the payment consent " +
                         " is not one of the user's accounts: {}.", domesticConsent.getPispId(), consentId, domesticConsent.getInitiation().getDebtorAccount(), accounts);
@@ -97,7 +97,7 @@ public class RCSDomesticStandingOrderDetailsApi implements RCSDetailsApi {
         domesticConsent.setUserId(username);
         paymentService.updatePayment(domesticConsent);
 
-        OBWriteDomesticStandingOrder3DataInitiation domesticStandingOrder = domesticConsent.getInitiation();
+        FRWriteDomesticStandingOrderDataInitiation domesticStandingOrder = domesticConsent.getInitiation();
         OBStandingOrder6 standingOrder = new OBStandingOrder6()
                 .accountId(domesticConsent.getAccountId())
                 .standingOrderId(domesticConsent.getId())
@@ -122,4 +122,5 @@ public class RCSDomesticStandingOrderDetailsApi implements RCSDetailsApi {
                         .orElse(""))
                 .build());
     }
+
 }

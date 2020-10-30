@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.fundconfirmations;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -45,13 +45,13 @@ public class FundsConfirmationConsentDecisionDelegateTest extends AbstractDecisi
     private FundsConfirmationConsentDecisionDelegate decisionDelegate;
     private FundsConfirmationService fundsConfirmationService;
     private AccountStoreService accountStoreService;
-    private FRFundsConfirmationConsent1 consent;
+    private FRFundsConfirmationConsent consent;
 
     @Before
     public void setup() {
         fundsConfirmationService = mock(FundsConfirmationService.class);
         accountStoreService = mock(AccountStoreService.class);
-        consent = FRFundsConfirmationConsent1.builder()
+        consent = FRFundsConfirmationConsent.builder()
                 .id(CONSENT_ID)
                 .pispId(PISP_ID)
                 .userId(USER_ID)

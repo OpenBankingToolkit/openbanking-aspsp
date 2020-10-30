@@ -20,14 +20,14 @@
  */
 package com.forgerock.openbanking.common.services.store.balance;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
 import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
 
 import java.util.Optional;
 
 public interface BalanceStoreService {
 
-    Optional<FRBalance> getBalance(String accountId, OBBalanceType1Code type);
+    Optional<Balance> getBalance(String accountId, OBBalanceType1Code type);
 
-    void updateBalance(FRBalance balance);
+    void updateBalance(Balance balance);
 }

@@ -22,12 +22,14 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderConsentRepository;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticStandingOrderConsent5Repository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1.payment.FRDomesticStandingOrderConsent2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticStandingOrderConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPermission;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -60,8 +62,12 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount2;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderDataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticStandingOrderConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController}.
@@ -75,7 +81,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     private int port;
 
     @Autowired
-    private DomesticStandingOrderConsent5Repository repository;
+    private DomesticStandingOrderConsentRepository repository;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -95,7 +101,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     public void testGetDomesticStandingOrderPaymentConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticStandingOrderConsent5 consent = JMockData.mock(FRDomesticStandingOrderConsent5.class);
+        FRDomesticStandingOrderConsent consent = JMockData.mock(FRDomesticStandingOrderConsent.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         setupTestConsentInitiation(consent.getInitiation());
         repository.save(consent);
@@ -113,7 +119,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
-        assertThat(toOBWriteDomesticStandingOrder3DataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
+        assertThat(toFRWriteDomesticStandingOrderDataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
         assertThat(response.getBody().getData().getStatus()).isEqualTo(consent.getStatus().toOBExternalConsentStatus1Code());
     }
 
@@ -121,7 +127,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
     public void testGetDomesticStandingOrderPaymentConsentReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRDomesticStandingOrderConsent2 consent = JMockData.mock(FRDomesticStandingOrderConsent2.class);
+        FRDomesticStandingOrderConsent consent = JMockData.mock(FRDomesticStandingOrderConsent.class);
         consent.setStatus(ConsentStatusCode.CONSUMED);
 
         // When
@@ -173,14 +179,14 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBWriteDomesticStandingOrderConsentResponse3 consentResponse = response.getBody();
-        FRDomesticStandingOrderConsent5 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRDomesticStandingOrderConsent consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getPispName()).isEqualTo(PaymentTestHelper.MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(PaymentTestHelper.MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());
-        assertThat(consent.getInitiation()).isEqualTo(toOBWriteDomesticStandingOrder3DataInitiation(consentResponse.getData().getInitiation()));
+        assertThat(consent.getInitiation()).isEqualTo(toFRWriteDomesticStandingOrderDataInitiation(consentResponse.getData().getInitiation()));
         assertThat(consent.getStatus().toOBExternalConsentStatus1Code()).isEqualTo(consentResponse.getData().getStatus());
-        assertThat(consent.getRisk()).isEqualTo(consentResponse.getRisk());
-        assertThat(consent.getDomesticStandingOrderConsent().getData().getPermission()).isEqualTo(PermissionEnum.valueOf(consentResponse.getData().getPermission().name()));
+        assertThat(consent.getRisk()).isEqualTo(toFRRisk(consentResponse.getRisk()));
+        assertThat(consent.getDomesticStandingOrderConsent().getData().getPermission()).isEqualTo(FRPermission.valueOf(consentResponse.getData().getPermission().name()));
         assertThat(consent.getObVersion()).isEqualTo(OBVersion.v3_1_1);
     }
 
@@ -244,6 +250,21 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         initiation.supplementaryData(new OBSupplementaryData1());
         initiation.setDebtorAccount(new OBWriteDomesticStandingOrder3DataInitiationDebtorAccount().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber"));
         initiation.setCreditorAccount(new OBWriteDomesticStandingOrder3DataInitiationCreditorAccount().identification("321").name("test2").schemeName("UK.OBIE.SortCodeAccountNumber"));
+    }
+
+    private static void setupTestConsentInitiation(FRWriteDomesticStandingOrderDataInitiation initiation) {
+        initiation.setRecurringPaymentAmount(aValidFRAmount());
+        initiation.setRecurringPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFirstPaymentAmount(aValidFRAmount());
+        initiation.setFirstPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFinalPaymentAmount(aValidFRAmount());
+        initiation.setFinalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
+        initiation.setFrequency("EvryDay");
+        initiation.setReference("123");
+        initiation.setNumberOfPayments("12");
+        initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
+        initiation.setDebtorAccount(aValidFRAccount());
+        initiation.setCreditorAccount(aValidFRAccount2());
     }
 
 }

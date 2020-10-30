@@ -27,7 +27,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_5.internationalsched
 
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.ExchangeRateVerifier;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.InternationalScheduledPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -138,7 +138,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
             HttpServletRequest request,
             Principal principal
     ) throws OBErrorResponseException {
-        FRInternationalScheduledConsent5 payment = paymentsService.getPayment(consentId);
+        FRInternationalScheduledConsent payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentEndpoint()
                 .authorization(authorization)

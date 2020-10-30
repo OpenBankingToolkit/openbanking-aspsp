@@ -21,10 +21,10 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.aggregatedpolling;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.FRPendingEventsRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.FRPendingEventsRepository;
 import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.event.FREventNotification;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventNotification;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
@@ -71,8 +71,6 @@ public class AggregatedPollingApiControllerIT {
     private RSConfiguration rsConfiguration;
     @Autowired
     private SpringSecForTest springSecForTest;
-
-
 
     @MockBean
     private TppRepository tppRepository;
@@ -321,7 +319,7 @@ public class AggregatedPollingApiControllerIT {
         assertThat(frPendingEventsRepository.findByTppIdAndJti(tpp.getId(), frEventNotification1.getJti()).isEmpty()).isTrue();
         assertThat(frPendingEventsRepository.findByTppIdAndJti(tpp.getId(), frEventNotification2.getJti())
                 .orElseThrow(AssertionError::new)
-                .getErrors().getErr()).isEqualTo("err1");
+                .getErrors().getError()).isEqualTo("err1");
     }
 
     @Test

@@ -20,15 +20,14 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.accounts;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -44,15 +43,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter.toOBAccount3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount3;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("AccountsApiV3.1.1")
 @Slf4j
 public class AccountsApiController implements AccountsApi {
 
-    @Autowired
-    private FRAccount4Repository frAccountRepository;
+    private final FRAccountRepository frAccountRepository;
+
+    public AccountsApiController(FRAccountRepository frAccountRepository) {
+        this.frAccountRepository = frAccountRepository;
+    }
 
     public ResponseEntity<OBReadAccount3> getAccount(
             @ApiParam(value = "A unique identifier used to identify the account resource.",required=true )
@@ -81,7 +84,7 @@ public class AccountsApiController implements AccountsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
     ) throws OBErrorResponseException {
         log.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount4 response = frAccountRepository.byAccountId(accountId, permissions);
+        FRAccount response = frAccountRepository.byAccountId(accountId, toFRExternalPermissionsCodeList(permissions));
         final List<OBAccount3> obAccounts = Collections.singletonList(toOBAccount3(response.getAccount()));
 
         return ResponseEntity.ok(new OBReadAccount3()
@@ -120,10 +123,10 @@ public class AccountsApiController implements AccountsApi {
     ) throws OBErrorResponseException {
         log.info("Accounts from account ids {}", accountIds);
 
-        List<OBAccount3> accounts = frAccountRepository.byAccountIds(accountIds, permissions)
+        List<OBAccount3> accounts = frAccountRepository.byAccountIds(accountIds, toFRExternalPermissionsCodeList(permissions))
                 .stream()
-                .map(FRAccount4::getAccount)
-                .map(FRAccountConverter::toOBAccount3)
+                .map(FRAccount::getAccount)
+                .map(FRFinancialAccountConverter::toOBAccount3)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new OBReadAccount3()

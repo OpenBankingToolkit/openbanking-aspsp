@@ -20,14 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.account;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccount1;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -41,19 +39,22 @@ import uk.org.openbanking.datamodel.account.OBReadDataAccount1;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static java.util.stream.Collectors.toList;
 
 @Controller("AccountsApiV1.1")
 public class AccountsApiController implements AccountsApi {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountsApiController.class);
 
-    @Autowired
-    private FRAccount4Repository frAccountRepository;
-    @Autowired
-    private FRAccountConverter accountConverter;
+    private final FRAccountRepository frAccountRepository;
+
+    public AccountsApiController(FRAccountRepository frAccountRepository) {
+        this.frAccountRepository = frAccountRepository;
+    }
 
     @Override
     public ResponseEntity<OBReadAccount1> getAccount(
@@ -63,7 +64,7 @@ public class AccountsApiController implements AccountsApi {
 
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -77,10 +78,10 @@ public class AccountsApiController implements AccountsApi {
             @RequestHeader(value = "x-ob-url", required = true) String httpUrl
 
     ) {
-        FRAccount1 account = accountConverter.toAccount1(frAccountRepository.byAccountId(accountId, permissions));
+        FRAccount account = frAccountRepository.byAccountId(accountId, toFRExternalPermissionsCodeList(permissions));
 
         return ResponseEntity.ok(new OBReadAccount1()
-                .data(new OBReadDataAccount1().account(Collections.singletonList(account.getAccount())))
+                .data(new OBReadDataAccount1().account(Collections.singletonList(toOBAccount1(account.getAccount()))))
                 .links(PaginationUtil.generateLinksOnePager(httpUrl))
                 .meta(PaginationUtil.generateMetaData(1)));
     }
@@ -93,7 +94,7 @@ public class AccountsApiController implements AccountsApi {
 
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
+            @RequestHeader(value = "x-fapi-customer-last-logged-time", required = false)
             @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
 
             @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
@@ -112,8 +113,10 @@ public class AccountsApiController implements AccountsApi {
         LOGGER.info("Read all accounts {} with minimumPermissions {}", accountIds,
                 permissions);
 
-        List<OBAccount1> accounts = frAccountRepository.byAccountIds(accountIds, permissions)
-                .stream().map(a -> accountConverter.toAccount1(a).getAccount()).collect(Collectors.toList());
+        List<FRAccount> frAccounts = frAccountRepository.byAccountIds(accountIds, toFRExternalPermissionsCodeList(permissions));
+        List<OBAccount1> accounts = frAccounts.stream()
+                .map(a -> toOBAccount1(a.getAccount()))
+                .collect(toList());
 
         return ResponseEntity.ok(new OBReadAccount1()
                 .data(new OBReadDataAccount1().account(accounts))

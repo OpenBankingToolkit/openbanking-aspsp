@@ -33,7 +33,7 @@ import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalsta
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.singlepayments.SinglePaymentConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details.*;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
@@ -133,7 +133,7 @@ public class IntentTypeService {
 
     public ResponseEntity consentDetails(String intentId,
                                          String consentRequestJwt,
-                                         List<FRAccountWithBalance> accounts,
+                                         List<AccountWithBalance> accounts,
                                          String username,
                                          String clientId) throws OBErrorException {
         switch (IntentType.identify(intentId)) {

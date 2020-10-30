@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.event.store;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
@@ -46,16 +46,16 @@ public class CallbackUrlsService {
         this.restTemplate = restTemplate;
     }
 
-    public Collection<FRCallbackUrl1> findByTppId(String tppId) {
+    public Collection<FRCallbackUrl> findByTppId(String tppId) {
         log.debug("Read all the callback URLs");
-        ParameterizedTypeReference<Collection<FRCallbackUrl1>> ptr =
-                new ParameterizedTypeReference<Collection<FRCallbackUrl1>>() {};
+        ParameterizedTypeReference<Collection<FRCallbackUrl>> ptr =
+                new ParameterizedTypeReference<Collection<FRCallbackUrl>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + BASE_RESOURCE_PATH + "search/findByTppId"
         );
         builder.queryParam("tppId", tppId);
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<Collection<FRCallbackUrl1>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<Collection<FRCallbackUrl>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
 
         return entity.getBody();
     }

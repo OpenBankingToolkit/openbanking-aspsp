@@ -44,7 +44,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
+import uk.org.openbanking.datamodel.account.OBReadConsent1;
+import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
+import uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data;
+import uk.org.openbanking.datamodel.account.OBReadData1;
+import uk.org.openbanking.datamodel.account.OBRisk2;
 
 import java.io.IOException;
 import java.text.ParseException;

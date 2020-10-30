@@ -44,7 +44,6 @@ import java.security.Principal;
 import java.text.ParseException;
 import java.util.Base64;
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -109,16 +108,8 @@ public class DetachedJwsVerifier {
         }
     }
 
-
-    /**
-     * Returns true if the b64 header is true. This indicates that the base 64 encoded payload is included in the jws.
-     * @param jwsDetachedSignature
-     * @return true if the jws b64 header is set to true or not set and returns false if set to false
-     * @throws OBErrorException
-     * @throws ParseException
-     */
-    private boolean isBase64Encoded(String jwsDetachedSignature) throws OBErrorException,
-            ParseException {
+    // Returns true if the base 64 encoded payload is included in the jws.
+    private boolean isBase64Encoded(String jwsDetachedSignature) throws ParseException {
         SignedJWT jws = (SignedJWT) JWTParser.parse(jwsDetachedSignature);
         return jws.getHeader().isBase64URLEncodePayload();
     }
@@ -128,16 +119,5 @@ public class DetachedJwsVerifier {
         Base64.Decoder b64Decoder = Base64.getDecoder();
         String headerString = new String(b64Decoder.decode(splitJws[0]), StandardCharset.UTF_8);
         return headerString.contains("\"b64\":");
-    }
-
-    private String rebuildJWS(String jwsDetachedSignature, String bodySerialised) throws OBErrorException {
-        String jwtPayloadEncoded = new String(java.util.Base64.getEncoder().encode(bodySerialised.getBytes()));
-        jwtPayloadEncoded = jwtPayloadEncoded.replace("=", "");
-        Matcher jwsDetachedSignatureMatcher = JWS_DETACHED_SIGNATURE_PATTERN.matcher(jwsDetachedSignature);
-        if (!jwsDetachedSignatureMatcher.find()) {
-            log.warn("{} is not a detached signature", jwsDetachedSignature);
-            throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, jwsDetachedSignature, "is not a detached signature");
-        }
-        return jwsDetachedSignatureMatcher.group(1) + jwtPayloadEncoded + jwsDetachedSignatureMatcher.group(2);
     }
 }

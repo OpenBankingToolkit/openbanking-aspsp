@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_3.accounts;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -37,14 +37,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount6;
+
 @Controller("AccountsApiV3.1.3")
 @Slf4j
 public class AccountsApiController implements AccountsApi {
 
-    private final FRAccount4Repository frAccount4Repository;
+    private final FRAccountRepository frAccountRepository;
 
-    public AccountsApiController(FRAccount4Repository frAccount4Repository) {
-        this.frAccount4Repository = frAccount4Repository;
+    public AccountsApiController(FRAccountRepository frAccountRepository) {
+        this.frAccountRepository = frAccountRepository;
     }
 
     @Override
@@ -57,9 +60,9 @@ public class AccountsApiController implements AccountsApi {
                                                      List<OBExternalPermissions1Code> permissions,
                                                      String httpUrl) throws OBErrorResponseException {
         log.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount4 response = frAccount4Repository.byAccountId(accountId, permissions);
+        FRAccount response = frAccountRepository.byAccountId(accountId, toFRExternalPermissionsCodeList(permissions));
 
-        List<OBAccount6> obAccounts = Collections.singletonList(response.getAccount());
+        List<OBAccount6> obAccounts = Collections.singletonList(toOBAccount6(response.getAccount()));
         return ResponseEntity.ok(new OBReadAccount5()
                 .data(new OBReadAccount5Data().account(obAccounts))
                 .links(PaginationUtil.generateLinksOnePager(httpUrl))
@@ -78,10 +81,10 @@ public class AccountsApiController implements AccountsApi {
                                                       String httpUrl) throws OBErrorResponseException {
         log.info("Accounts from account ids {}", accountIds);
 
-        List<FRAccount4> frAccounts = frAccount4Repository.byAccountIds(accountIds, permissions);
+        List<FRAccount> frAccounts = frAccountRepository.byAccountIds(accountIds, toFRExternalPermissionsCodeList(permissions));
         List<OBAccount6> obAccounts = frAccounts
                 .stream()
-                .map(frAccount -> frAccount.getAccount())
+                .map(frAccount -> toOBAccount6(frAccount.getAccount()))
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new OBReadAccount5()

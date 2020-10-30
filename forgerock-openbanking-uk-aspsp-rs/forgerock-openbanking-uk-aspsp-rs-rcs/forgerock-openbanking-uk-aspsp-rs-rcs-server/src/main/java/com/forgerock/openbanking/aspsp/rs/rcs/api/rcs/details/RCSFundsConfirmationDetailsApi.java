@@ -22,8 +22,8 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.FundsConfirmationConsentDetails;
 import com.forgerock.openbanking.common.services.store.funds.FundsConfirmationService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -55,16 +55,16 @@ public class RCSFundsConfirmationDetailsApi implements RCSDetailsApi {
     }
 
     @Override
-    public ResponseEntity consentDetails(String remoteConsentRequest, List<FRAccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
+    public ResponseEntity consentDetails(String remoteConsentRequest, List<AccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
         log.debug("Received a consent request with consent_request='{}'", remoteConsentRequest);
         log.debug("=> The payment id '{}'", consentId);
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRFundsConfirmationConsent1 consent = fundsConfirmationService.getConsent(consentId);
+        FRFundsConfirmationConsent consent = fundsConfirmationService.getConsent(consentId);
 
         // Verify that the 'DebtorAccount' matches one of the accounts of the user and define as the selected account.
-        Optional<FRAccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(consent.getDebtorAccount().getIdentification(), accounts);
+        Optional<AccountWithBalance> matchingUserAccount = accountService.findAccountByIdentification(consent.getDebtorAccount().getIdentification(), accounts);
         if (!matchingUserAccount.isPresent()) {
             log.error("The PISP '{}' created the funds confirmation request '{}' but the debtor account: {} on the consent " +
                     " is not one of the user's accounts: {}.", consent.getPispId(), consentId, consent.getDebtorAccount(), accounts);
@@ -88,7 +88,7 @@ public class RCSFundsConfirmationDetailsApi implements RCSDetailsApi {
         fundsConfirmationService.updateConsent(consent);
 
         return ResponseEntity.ok(FundsConfirmationConsentDetails.builder()
-                .expirationDateTime(consent.getFundsConfirmationConsent().getData().getExpirationDateTime())
+                .expirationDateTime(consent.getFundsConfirmationConsent().getExpirationDateTime())
                 .accounts(Collections.singletonList(matchingUserAccount.get()))
                 .username(username)
                 .logo(tpp.getLogo())

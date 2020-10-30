@@ -26,8 +26,10 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_5.domesticscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticScheduledConsent5;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.payment.DomesticScheduledPaymentService;
@@ -40,8 +42,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import uk.org.openbanking.datamodel.account.OBExternalScheduleType1Code;
-import uk.org.openbanking.datamodel.account.OBScheduledPayment1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse5;
 import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
@@ -51,9 +51,8 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAccountConverter.toOBCashAccount3;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticScheduledConverter.toOBWriteDomesticScheduled2DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledDataInitiation;
 
 @Controller("DomesticScheduledPaymentsApiV3.1.5")
 @Slf4j
@@ -86,7 +85,7 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             Principal principal
     ) throws OBErrorResponseException {
         String consentId = obWriteDomesticScheduled2.getData().getConsentId();
-        FRDomesticScheduledConsent5 payment = paymentsService.getPayment(consentId);
+        FRDomesticScheduledConsent payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -98,25 +97,29 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(toOBWriteDomesticScheduled2DataInitiation(obWriteDomesticScheduled2.getData().getInitiation()), obWriteDomesticScheduled2.getRisk());
+                    f.verifyRiskAndInitiation(
+                            toFRWriteDomesticScheduledDataInitiation(obWriteDomesticScheduled2.getData().getInitiation()),
+                            toFRRisk(obWriteDomesticScheduled2.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(
                         (String tppId) -> {
                             //Modify the status of the payment
                             log.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
-                            OBScheduledPayment1 scheduledPayment = new OBScheduledPayment1()
+                            FRWriteDomesticScheduledDataInitiation initiation = payment.getInitiation();
+                            FRScheduledPaymentData scheduledPayment = FRScheduledPaymentData.builder()
                                     .accountId(payment.getAccountId())
-                                    .creditorAccount(toOBCashAccount3(payment.getInitiation().getCreditorAccount()))
-                                    .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()))
+                                    .creditorAccount(initiation.getCreditorAccount())
+                                    .instructedAmount(initiation.getInstructedAmount())
                                     // Set to EXECUTION because we are creating the creditor payment
-                                    .scheduledType(OBExternalScheduleType1Code.EXECUTION)
-                                    .scheduledPaymentDateTime(payment.getInitiation().getRequestedExecutionDateTime())
-                                    .scheduledPaymentId(payment.getId());
+                                    .scheduledType(FRScheduledPaymentData.FRScheduleType.EXECUTION)
+                                    .scheduledPaymentDateTime(initiation.getRequestedExecutionDateTime())
+                                    .scheduledPaymentId(payment.getId())
+                                    .build();
                             // optionals
-                            if (payment.getInitiation().getRemittanceInformation() != null) {
-                                if (!StringUtils.isEmpty(payment.getInitiation().getRemittanceInformation().getReference())) {
-                                    scheduledPayment.reference(payment.getInitiation().getRemittanceInformation().getReference());
+                            if (initiation.getRemittanceInformation() != null) {
+                                if (!StringUtils.isEmpty(initiation.getRemittanceInformation().getReference())) {
+                                    scheduledPayment.setReference(initiation.getRemittanceInformation().getReference());
                                 }
                             }
                             String pispId = tppStoreService.findByClientId(tppId)

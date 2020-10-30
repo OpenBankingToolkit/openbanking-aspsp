@@ -21,7 +21,10 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.account.FRAccountAccessConsent1;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadConsentResponse;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadConsentResponseData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -29,32 +32,32 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data;
 
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDelegateTest {
     private AccountRequestStoreService accountRequestStoreService;
-    private FRAccountAccessConsent1 consent;
+    private FRAccountAccessConsent consent;
     private AccountAccessConsentDecisionDelegate decisionDelegate;
 
     @Before
     public void setup() {
         accountRequestStoreService = mock(AccountRequestStoreService.class);
-        consent = new FRAccountAccessConsent1();
+        consent = new FRAccountAccessConsent();
         consent.setId(CONSENT_ID);
         consent.setAispId(PISP_ID);
         consent.setUserId(USER_ID);
         consent.setObVersion(OBVersion.v3_1);
-        consent.setAccountAccessConsent(new OBReadConsentResponse1().data(new OBReadConsentResponse1Data()));
+        consent.setAccountAccessConsent(FRReadConsentResponse.builder().data(FRReadConsentResponseData.builder().build()).build());
 
         decisionDelegate = new AccountAccessConsentDecisionDelegate(
                 getAccountStoreService(),
@@ -80,7 +83,7 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
 
         // Then
         assertThat(consent.getAccountIds().get(0)).isEqualTo(ACCOUNT_ID);
-        assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AUTHORISED);
+        assertThat(consent.getStatus()).isEqualTo(FRExternalRequestStatusCode.AUTHORISED);
         verify(accountRequestStoreService, times(1)).save(any());
     }
     @Test
@@ -90,7 +93,7 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
 
         // Then
         assertThat(consent.getAccountIds()).isEmpty();
-        assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.REJECTED);
+        assertThat(consent.getStatus()).isEqualTo(FRExternalRequestStatusCode.REJECTED);
         verify(accountRequestStoreService, times(1)).save(any());
     }
 
@@ -137,7 +140,7 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
 
         // Then
         assertThat(consent.getAccountIds().get(0)).isEqualTo(ACCOUNT_ID);
-        assertThat(consent.getStatus()).isEqualTo(OBExternalRequestStatus1Code.AUTHORISED);
+        assertThat(consent.getStatus()).isEqualTo(FRExternalRequestStatusCode.AUTHORISED);
         verify(accountRequestStoreService, times(1)).save(any());
     }
 

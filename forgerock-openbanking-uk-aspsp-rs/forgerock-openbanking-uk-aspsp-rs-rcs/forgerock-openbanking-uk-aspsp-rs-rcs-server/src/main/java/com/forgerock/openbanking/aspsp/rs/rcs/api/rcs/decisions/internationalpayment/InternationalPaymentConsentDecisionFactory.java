@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalpa
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRInternationalConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class InternationalPaymentConsentDecisionFactory {
     }
 
     public ConsentDecisionDelegate create(final String intentId) {
-        FRInternationalConsent5 consent = paymentsService.getPayment(intentId);
+        FRInternationalConsent consent = paymentsService.getPayment(intentId);
         return new InternationalPaymentConsentDecisionDelegate(paymentConsentDecisionUpdater, paymentsService, objectMapper, consent);
     }
 

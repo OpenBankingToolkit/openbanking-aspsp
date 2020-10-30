@@ -20,11 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v1_1.transactions;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions.FRTransaction6Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
-import com.forgerock.openbanking.common.services.openbanking.converter.transaction.FRTransactionConverter;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -49,6 +48,8 @@ import uk.org.openbanking.datamodel.account.OBTransaction1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRTransactionConverter.toOBTransaction1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.AVAILABLE_DATE_FORMAT;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
@@ -62,7 +63,7 @@ public class TransactionsApiController implements TransactionsApi {
     @Value("${rs.page.default.transaction.size}")
     private int PAGE_LIMIT_TRANSACTIONS;
     @Autowired
-    private FRTransaction6Repository frTransactionRepository;
+    private FRTransactionRepository frTransactionRepository;
     @Autowired
     private AccountDataInternalIdFilter accountDataInternalIdFilter;
 
@@ -113,12 +114,16 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
-        Page<FRTransaction6> transactionsResponse = frTransactionRepository.byAccountIdAndBookingDateTimeBetweenWithPermissions(accountId,
-                fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime" ));
+        Page<FRTransaction> transactionsResponse = frTransactionRepository.byAccountIdAndBookingDateTimeBetweenWithPermissions(
+                accountId,
+                fromBookingDateTime,
+                toBookingDateTime,
+                toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime" ));
 
         List<OBTransaction1> transactions = transactionsResponse.getContent()
                 .stream()
-                .map(t -> FRTransactionConverter.toTransaction1(t).getTransaction())
+                .map(t -> toOBTransaction1(t.getTransaction()))
                 .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
 
@@ -189,12 +194,16 @@ public class TransactionsApiController implements TransactionsApi {
             fromBookingDateTime = toBookingDateTime.minusYears(100);
         }
 
-        Page<FRTransaction6> transactionsResponse = frTransactionRepository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(accountIds,
-                fromBookingDateTime, toBookingDateTime, permissions, PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime"));
+        Page<FRTransaction> transactionsResponse = frTransactionRepository.byAccountIdInAndBookingDateTimeBetweenWithPermissions(
+                accountIds,
+                fromBookingDateTime,
+                toBookingDateTime,
+                toFRExternalPermissionsCodeList(permissions),
+                PageRequest.of(page, PAGE_LIMIT_TRANSACTIONS, Sort.Direction.ASC, "bookingDateTime"));
 
         List<OBTransaction1> transactions = transactionsResponse.getContent()
                 .stream()
-                .map(t -> FRTransactionConverter.toTransaction1(t).getTransaction())
+                .map(t -> toOBTransaction1(t.getTransaction()))
                 .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
         int totalPages = transactionsResponse.getTotalPages();

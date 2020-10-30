@@ -26,8 +26,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.file;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -48,7 +48,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBFileConverter.toOBWriteFile2DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileDataInitiation;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2020-05-22T14:20:48.770Z")
 
@@ -79,7 +79,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             Principal principal
     ) throws OBErrorResponseException {
         String consentId = obWriteFile2.getData().getConsentId();
-        FRFileConsent5 payment = paymentsService.getPayment(consentId);
+        FRFileConsent payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -91,7 +91,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyInitiation(toOBWriteFile2DataInitiation(obWriteFile2.getData().getInitiation()));
+                    f.verifyInitiation(toFRWriteFileDataInitiation(obWriteFile2.getData().getInitiation()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(

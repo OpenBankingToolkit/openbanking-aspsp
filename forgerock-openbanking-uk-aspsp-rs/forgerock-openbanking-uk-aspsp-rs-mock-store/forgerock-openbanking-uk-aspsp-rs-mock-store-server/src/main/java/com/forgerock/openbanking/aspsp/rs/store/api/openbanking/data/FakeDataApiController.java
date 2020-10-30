@@ -21,31 +21,32 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.accounts.balances.FRBalance1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.offers.FROffer1Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v2_0.accounts.products.FRProduct2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_1.accounts.party.FRParty2Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.directdebits.FRDirectDebit4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.scheduledpayments.FRScheduledPayment4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements.FRStatement4Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.beneficiaries.FRBeneficiary5Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.standingorders.FRStandingOrder6Repository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.transactions.FRTransaction6Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.beneficiaries.FRBeneficiaryRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.directdebits.FRDirectDebitRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.offers.FROfferRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.party.FRPartyRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.products.FRProductRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpayments.FRScheduledPaymentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
 import com.forgerock.openbanking.common.conf.data.DataConfigurationProperties;
+import com.forgerock.openbanking.common.model.data.FRUserData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.*;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRDirectDebitData.FRDirectDebitStatus;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount.FRAccountStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount.FRAccountSubTypeCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount.FRAccountTypeCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRStandingOrderData.FRStandingOrderStatus;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRStatementData.FRStatementType;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.*;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRBalance1;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FROffer1;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRProduct2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRParty2;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRDirectDebit4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRScheduledPayment4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRBeneficiary5;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRStandingOrder6;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.data.FRUserData5;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import org.joda.time.DateTime;
@@ -61,8 +62,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestParam;
-import uk.org.openbanking.datamodel.account.*;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification4Code;
+import uk.org.openbanking.datamodel.account.OBExternalStatementAmountType1Code;
+import uk.org.openbanking.datamodel.account.OBReadProduct2DataProduct;
 import uk.org.openbanking.datamodel.payment.OBExternalAccountIdentification2Code;
 
 import java.io.BufferedReader;
@@ -101,36 +103,33 @@ public class FakeDataApiController implements FakeDataApi {
     private final static NumberFormat FORMAT_AMOUNT = new DecimalFormat("#0.00");
 
     @Autowired
-    private FRAccount4Repository accountsRepository;
+    private FRAccountRepository accountsRepository;
     @Autowired
-    private FRBalance1Repository balanceRepository;
+    private FRBalanceRepository balanceRepository;
     @Autowired
-    private FRBeneficiary5Repository beneficiaryRepository;
+    private FRBeneficiaryRepository beneficiaryRepository;
     @Autowired
-    private FRDirectDebit4Repository directDebitRepository;
+    private FRDirectDebitRepository directDebitRepository;
     @Autowired
-    private FRProduct2Repository productRepository;
+    private FRProductRepository productRepository;
     @Autowired
-    private FRStandingOrder6Repository standingOrderRepository;
+    private FRStandingOrderRepository standingOrderRepository;
     @Autowired
-    private FRTransaction6Repository transactionRepository;
+    private FRTransactionRepository transactionRepository;
     @Autowired
-    private FRStatement4Repository statement1Repository;
+    private FRStatementRepository statementRepository;
     @Autowired
-    private FRScheduledPayment4Repository scheduledPaymentRepository;
+    private FRScheduledPaymentRepository scheduledPaymentRepository;
     @Autowired
-    private FRParty2Repository partyRepository;
+    private FRPartyRepository partyRepository;
     @Autowired
-    private FROffer1Repository offer1Repository;
+    private FROfferRepository offerRepository;
     @Autowired
-    private DataApiController data2Controller;
+    private DataApiController dataController;
     @Autowired
     private ObjectMapper mapper;
     @Autowired
-    private DataApiController dataApiController;
-    @Autowired
     private DataConfigurationProperties dataConfig;
-
 
     private List<String> companies;
     private List<String> names;
@@ -157,24 +156,24 @@ public class FakeDataApiController implements FakeDataApi {
                 );
             }
             DataConfigurationProperties.DataTemplateProfile dataTemplateProfile = any.get();
-            FRUserData5 template = getTemplate(dataTemplateProfile.getTemplate(), username);
+            FRUserData template = getTemplate(dataTemplateProfile.getTemplate(), username);
             template.setUserName(username);
-            return dataApiController.importUserData(template);
+            return dataController.importUserData(template);
         }
     }
 
-    public FRUserData5 getTemplate(Resource template, String username) {
+    private FRUserData getTemplate(Resource template, String username) {
         try {
             String content = StreamUtils.copyToString(template.getInputStream(), Charset.defaultCharset());
             content = content.replaceAll("$username", username);
-            return mapper.readValue(content, FRUserData5.class);
+            return mapper.readValue(content, FRUserData.class);
         } catch (IOException e) {
             LOGGER.error("Can't read registration request resource", e);
             throw new RuntimeException(e);
         }
     }
 
-    public FRUserData5 generateRandomData(String userId, String username)
+    private FRUserData generateRandomData(String userId, String username)
      {
         LOGGER.debug("Generate data for user '{}'", userId);
 
@@ -186,25 +185,27 @@ public class FakeDataApiController implements FakeDataApi {
             Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
 
             String accountId = UUID.randomUUID().toString();
-            FRAccount4 accountPremierBank = new FRAccount4();
+            FRAccount accountPremierBank = new FRAccount();
             accountPremierBank.setCreated(new Date());
             accountPremierBank.setId(accountId);
             accountPremierBank.setUserID(userId);
-            accountPremierBank.setAccount(new OBAccount6()
+            accountPremierBank.setAccount(FRFinancialAccount.builder()
                     .accountId(accountId)
-                    .accountType(OBExternalAccountType1Code.PERSONAL)
-                    .accountSubType(OBExternalAccountSubType1Code.CURRENTACCOUNT)
+                    .accountType(FRAccountTypeCode.PERSONAL)
+                    .accountSubType(FRAccountSubTypeCode.CURRENTACCOUNT)
                     .currency(GBP)
                     .nickname("UK Bills")
-                    .status(OBAccountStatus1Code.ENABLED)
+                    .status(FRAccountStatusCode.ENABLED)
                     .statusUpdateDateTime(DateTime.now())
                     .openingDate(DateTime.now().minusDays(1))
                     .maturityDate(DateTime.now().plusDays(1))
-                    .account(Collections.singletonList(new OBAccount3Account()
+                    .accounts(Collections.singletonList(FRAccountIdentifier.builder()
                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                             .identification(sortCode.toString() + accountNumber.toString())
                             .name(username)
-                            .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")))
+                            .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
+                            .build()))
+                    .build()
             );
 
             LOGGER.debug("Account '{}' generated for user '{}'", accountPremierBank, userId);
@@ -219,25 +220,27 @@ public class FakeDataApiController implements FakeDataApi {
              Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
 
              String accountId = UUID.randomUUID().toString();
-             FRAccount4 accountPremierBank = new FRAccount4();
+             FRAccount accountPremierBank = new FRAccount();
              accountPremierBank.setId(accountId);
              accountPremierBank.setCreated(new Date());
              accountPremierBank.setUserID(userId);
-             accountPremierBank.setAccount(new OBAccount6()
+             accountPremierBank.setAccount(FRFinancialAccount.builder()
                      .accountId(accountId)
-                     .accountType(OBExternalAccountType1Code.PERSONAL)
-                     .accountSubType(OBExternalAccountSubType1Code.CURRENTACCOUNT)
+                     .accountType(FRAccountTypeCode.PERSONAL)
+                     .accountSubType(FRAccountSubTypeCode.CURRENTACCOUNT)
                      .currency(EUR)
                      .nickname("FR Bills")
-                     .status(OBAccountStatus1Code.ENABLED)
+                     .status(FRAccountStatusCode.ENABLED)
                      .statusUpdateDateTime(DateTime.now())
                      .openingDate(DateTime.now().minusDays(1))
                      .maturityDate(DateTime.now().plusDays(1))
-                     .account(Collections.singletonList(new OBAccount3Account()
+                     .accounts(Collections.singletonList(FRAccountIdentifier.builder()
                              .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                              .identification(sortCode.toString() + accountNumber.toString())
                              .name(username)
-                             .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")))
+                             .secondaryIdentification(ThreadLocalRandom.current().nextInt(0, 99999999) + "")
+                             .build()))
+                     .build()
              );
 
              LOGGER.debug("Account '{}' generated for user '{}'", accountPremierBank, userId);
@@ -252,25 +255,26 @@ public class FakeDataApiController implements FakeDataApi {
             Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
 
             String accountId = UUID.randomUUID().toString();
-            FRAccount4 accountPremierCard = new FRAccount4();
+            FRAccount accountPremierCard = new FRAccount();
             accountPremierCard.setCreated(new Date());
             accountPremierCard.setId(accountId);
             accountPremierCard.setUserID(userId);
-            accountPremierCard.setAccount(new OBAccount6()
+            accountPremierCard.setAccount(FRFinancialAccount.builder()
                     .accountId(accountId)
-                    .accountType(OBExternalAccountType1Code.PERSONAL)
-                    .accountSubType(OBExternalAccountSubType1Code.CURRENTACCOUNT)
+                    .accountType(FRAccountTypeCode.PERSONAL)
+                    .accountSubType(FRAccountSubTypeCode.CURRENTACCOUNT)
                     .currency(GBP)
                     .nickname("Household")
-                    .status(OBAccountStatus1Code.ENABLED)
+                    .status(FRAccountStatusCode.ENABLED)
                     .statusUpdateDateTime(DateTime.now())
                     .openingDate(DateTime.now().minusDays(1))
                     .maturityDate(DateTime.now().plusDays(1))
-                    .account(Collections.singletonList(new OBAccount3Account()
+                    .accounts(Collections.singletonList(FRAccountIdentifier.builder()
                             .schemeName(OBExternalAccountIdentification4Code.SORTCODEACCOUNTNUMBER.toString())
                             .identification(sortCode.toString() + accountNumber.toString())
-                            .name(username))
-                    )
+                            .name(username)
+                            .build()))
+                    .build()
             );
             LOGGER.debug("Account '{}' generated for user '{}'", accountPremierCard, userId);
             accountsRepository.save(accountPremierCard);
@@ -281,53 +285,53 @@ public class FakeDataApiController implements FakeDataApi {
 
         generateGlobalParty(userId, username);
 
-        return data2Controller.exportUserData(userId).getBody();
+        return dataController.exportUserData(userId).getBody();
      }
 
-    private void generateAccountData(FRAccount4 account) {
-        FRBalance1 balance = generateBalance(account, OBCreditDebitCode.DEBIT, null);
+    private void generateAccountData(FRAccount account) {
+        FRBalance balance = generateBalance(account, FRCreditDebitIndicator.DEBIT, null);
         int nbBeneficiaries = ThreadLocalRandom.current().nextInt(2,8);
         int nbDirectDebits = ThreadLocalRandom.current().nextInt(2,8);
         int nbStandingOrders = ThreadLocalRandom.current().nextInt(2,8);
         int nbScheduledPayment = ThreadLocalRandom.current().nextInt(2,8);
 
         LOGGER.debug("Generate {} beneficiaries", nbBeneficiaries);
-        List<FRBeneficiary5> beneficiarys = new ArrayList<>();
+        List<FRBeneficiary> beneficiarys = new ArrayList<>();
         for (int i = 0; i < nbBeneficiaries; i++) {
             beneficiarys.add(generateBeneficiary(account));
         }
 
         LOGGER.debug("Generate {} direct debits", nbDirectDebits);
-        List<FRDirectDebit4> directDebit1s = new ArrayList<>();
+        List<FRDirectDebit> directDebit1s = new ArrayList<>();
         for (int i = 0; i < nbDirectDebits; i++) {
             directDebit1s.add(generateDirectDebit(account));
         }
-        FRProduct2 product2 = generateProduct(account);
+        FRProduct product2 = generateProduct(account);
 
         LOGGER.debug("Generate {} standing orders", nbStandingOrders);
-        List<FRStandingOrder6> standingOrder3s = new ArrayList<>();
+        List<FRStandingOrder> standingOrder3s = new ArrayList<>();
         for (int i = 0; i < nbStandingOrders; i++) {
             standingOrder3s.add(generateStandingOrder(account));
         }
 
         LOGGER.debug("Generate statements");
-        List<FRStatement4> statements = new ArrayList<>();
-        List<FRTransaction6> transactions = new ArrayList<>();
+        List<FRStatement> statements = new ArrayList<>();
+        List<FRTransaction> transactions = new ArrayList<>();
         DateTime currentMonth = DateTime.now().dayOfMonth().withMinimumValue().minusMonths(12);
         for (int i = 12; i > 0; i-- ) {
             LOGGER.debug("Month: {}", FORMATTER.print(currentMonth));
-            FRStatement4 statement1 = generateStatements(account, balance, currentMonth);
+            FRStatement statement1 = generateStatements(account, balance, currentMonth);
             statements.add(statement1);
             currentMonth = currentMonth.plusMonths(1);
             transactions.addAll(generateTransactions(account, statement1, balance));
             updateStatement(statement1, balance);
         }
         LOGGER.debug("Month: {}", FORMATTER.print(currentMonth));
-        FRStatement4 statement1 = generateStatements(account, balance, currentMonth);
+        FRStatement statement1 = generateStatements(account, balance, currentMonth);
         account.setLatestStatementId(statement1.getId());
 
         LOGGER.debug("Generate {} standing orders", nbScheduledPayment);
-        List<FRScheduledPayment4> scheduledPayments = new ArrayList<>();
+        List<FRScheduledPayment> scheduledPayments = new ArrayList<>();
         for (int i = 0; i < nbScheduledPayment; i++) {
             scheduledPayments.add(generateScheduledPayment(account));
         }
@@ -336,7 +340,7 @@ public class FakeDataApiController implements FakeDataApi {
         directDebitRepository.saveAll(directDebit1s);
         scheduledPaymentRepository.saveAll(scheduledPayments);
         standingOrderRepository.saveAll(standingOrder3s);
-        statement1Repository.saveAll(statements);
+        statementRepository.saveAll(statements);
         transactionRepository.saveAll(transactions);
         productRepository.save(product2);
         balanceRepository.save(balance);
@@ -344,60 +348,65 @@ public class FakeDataApiController implements FakeDataApi {
         accountsRepository.save(account);
     }
 
-    private FRBalance1 generateBalance(FRAccount4 account, OBCreditDebitCode obCreditDebitCode, List<OBCreditLine1> creditLine) {
+    private FRBalance generateBalance(FRAccount account, FRCreditDebitIndicator creditDebitCode, List<FRCreditLine> creditLine) {
         Double amount = generateAmount(1000.0d, 10000.0d);
-        FRBalance1 balance = new FRBalance1();
+        FRBalance balance = new FRBalance();
         balance.setAccountId(account.getId());
-        balance.setBalance(new OBCashBalance1()
+        balance.setBalance(FRCashBalance.builder()
                 .accountId(account.getId())
-                .amount(new OBActiveOrHistoricCurrencyAndAmount().amount(FORMAT_AMOUNT.format(amount)).currency(account.getAccount().getCurrency()))
-                .creditDebitIndicator(obCreditDebitCode)
-                .type(OBBalanceType1Code.INTERIMAVAILABLE)
+                .amount(FRAmount.builder().amount(FORMAT_AMOUNT.format(amount)).currency(account.getAccount().getCurrency()).build())
+                .creditDebitIndicator(creditDebitCode)
+                .type(FRBalanceType.INTERIMAVAILABLE)
                 .dateTime(DateTime.now())
-                .creditLine(creditLine)
+                .creditLines(creditLine)
+                .build()
         );
         LOGGER.debug("FRBalance1 '{}' generated", balance);
         return balance;
     }
 
-    private FRBeneficiary5 generateBeneficiary(FRAccount4 account) {
-        FRBeneficiary5 beneficiary = new FRBeneficiary5();
+    private FRBeneficiary generateBeneficiary(FRAccount account) {
+        FRBeneficiary beneficiary = new FRBeneficiary();
         beneficiary.setAccountId(account.getId());
         Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
         Integer accountNumber = ThreadLocalRandom.current().nextInt(0, 99999999);
         String company = companies.get(ThreadLocalRandom.current().nextInt(companies.size()));
         String name = names.get(ThreadLocalRandom.current().nextInt(names.size()));
 
-        beneficiary.setBeneficiary(new OBBeneficiary5()
+        beneficiary.setBeneficiary(FRAccountBeneficiary.builder()
                 .accountId(account.getId())
                 .beneficiaryId(UUID.randomUUID().toString())
                 .reference(company)
-                .creditorAccount(new OBCashAccount50()
+                .creditorAccount(FRAccountIdentifier.builder()
                         .schemeName(OBExternalAccountIdentification2Code.SortCodeAccountNumber.getReference())
                         .identification(sortCode.toString() + accountNumber.toString())
                         .name(name)
-                )
+                        .build())
+                .build()
         );
         beneficiary.setId(beneficiary.getBeneficiary().getBeneficiaryId());
         LOGGER.debug("FRBeneficiary1 '{}' generated", beneficiary);
         return beneficiary;
     }
 
-    private FRDirectDebit4 generateDirectDebit(FRAccount4 account) {
+    private FRDirectDebit generateDirectDebit(FRAccount account) {
         String company = companies.get(ThreadLocalRandom.current().nextInt(companies.size()));
 
         Double amount = generateAmount(10.0d, 500.0d);
-        FRDirectDebit4 directDebit = new FRDirectDebit4();
+        FRDirectDebit directDebit = new FRDirectDebit();
         directDebit.setAccountId(account.getId());
-        directDebit.setDirectDebit(new OBReadDirectDebit2DataDirectDebit()
+        directDebit.setDirectDebit(FRDirectDebitData.builder()
                 .accountId(account.getId())
                 .directDebitId(UUID.randomUUID().toString())
                 .mandateIdentification(company.trim())
-                .directDebitStatusCode(OBExternalDirectDebitStatus1Code.ACTIVE)
+                .directDebitStatusCode(FRDirectDebitStatus.ACTIVE)
                 .name(company)
                 .previousPaymentDateTime(DateTime.now().minusMonths(1))
-                .previousPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount0().amount(FORMAT_AMOUNT.format(amount))
-                        .currency(account.getAccount().getCurrency()))
+                .previousPaymentAmount(FRAmount.builder()
+                        .amount(FORMAT_AMOUNT.format(amount))
+                        .currency(account.getAccount().getCurrency())
+                        .build())
+                .build()
         );
         directDebit.setId(directDebit.getDirectDebit().getDirectDebitId());
 
@@ -405,8 +414,8 @@ public class FakeDataApiController implements FakeDataApi {
         return directDebit;
     }
 
-    private FRProduct2 generateProduct(FRAccount4 account) {
-        FRProduct2 product = new FRProduct2();
+    private FRProduct generateProduct(FRAccount account) {
+        FRProduct product = new FRProduct();
         product.setAccountId(account.getId());
         product.setProduct(new OBReadProduct2DataProduct()
                 .accountId(account.getId())
@@ -420,7 +429,7 @@ public class FakeDataApiController implements FakeDataApi {
         return product;
     }
 
-    private FRStandingOrder6 generateStandingOrder(FRAccount4 account) {
+    private FRStandingOrder generateStandingOrder(FRAccount account) {
         Double amount = generateAmount(10.0d, 500.0d);
 
         Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
@@ -429,30 +438,31 @@ public class FakeDataApiController implements FakeDataApi {
         String company = companies.get(ThreadLocalRandom.current().nextInt(companies.size()));
         String name = names.get(ThreadLocalRandom.current().nextInt(names.size()));
 
-        FRStandingOrder6 standingOrder = new FRStandingOrder6();
+        FRStandingOrder standingOrder = new FRStandingOrder();
         standingOrder.setAccountId(account.getId());
-        standingOrder.setStandingOrder(new OBStandingOrder6()
+        standingOrder.setStandingOrder(FRStandingOrderData.builder()
                 .accountId(account.getId())
                 .standingOrderId(UUID.randomUUID().toString())
-                .standingOrderStatusCode(OBExternalStandingOrderStatus1Code.ACTIVE)
+                .standingOrderStatusCode(FRStandingOrderStatus.ACTIVE)
                 .frequency("EvryWorkgDay")
                 .reference(company)
                 .firstPaymentDateTime(DateTime.now().minusYears(1))
-                .firstPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount2()
+                .firstPaymentAmount(FRAmount.builder()
                         .amount(FORMAT_AMOUNT.format(amount))
-                        .currency(account.getAccount().getCurrency()))
+                        .currency(account.getAccount().getCurrency()).build())
                 .nextPaymentDateTime(DateTime.now().plusMonths(2))
-                .nextPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount3().amount(FORMAT_AMOUNT.format(amount))
-                        .currency(account.getAccount().getCurrency()))
+                .nextPaymentAmount(FRAmount.builder().amount(FORMAT_AMOUNT.format(amount))
+                        .currency(account.getAccount().getCurrency()).build())
                 .finalPaymentDateTime(DateTime.now().plusYears(10))
-                .firstPaymentAmount(new OBActiveOrHistoricCurrencyAndAmount2().amount(FORMAT_AMOUNT.format(amount))
-                        .currency(account.getAccount().getCurrency()))
-                .standingOrderStatusCode(OBExternalStandingOrderStatus1Code.ACTIVE)
-                .creditorAccount(new OBCashAccount51()
+                .firstPaymentAmount(FRAmount.builder().amount(FORMAT_AMOUNT.format(amount))
+                        .currency(account.getAccount().getCurrency()).build())
+                .standingOrderStatusCode(FRStandingOrderStatus.ACTIVE)
+                .creditorAccount(FRAccountIdentifier.builder()
                         .schemeName(OBExternalAccountIdentification2Code.SortCodeAccountNumber.getReference())
                         .identification(sortCode.toString() + accountNumber.toString())
                         .name(name)
-                )
+                        .build())
+                .build()
         );
         standingOrder.setId(standingOrder.getStandingOrder().getStandingOrderId());
 
@@ -460,46 +470,49 @@ public class FakeDataApiController implements FakeDataApi {
         return standingOrder;
     }
 
-    public FRStatement4 generateStatements(FRAccount4 account, FRBalance1 balance, DateTime startDate) {
+    private FRStatement generateStatements(FRAccount account, FRBalance balance, DateTime startDate) {
         String statementId = UUID.randomUUID().toString();
-        FRStatement4 statement = new FRStatement4();
+        FRStatement statement = new FRStatement();
         statement.setAccountId(account.getId());
         statement.setId(statementId);
-        statement.setStatement(new OBStatement2()
+        statement.setStatement(FRStatementData.builder()
                 .accountId(account.getId())
                 .statementId(statementId)
                 .statementReference(FORMATTER.print(startDate))
-                .type(OBExternalStatementType1Code.REGULARPERIODIC)
+                .type(FRStatementType.REGULARPERIODIC)
                 .startDateTime(startDate)
                 .endDateTime(startDate.plusMonths(1).minusDays(1))
-                .statementDescription(Arrays.asList(FORMATTER_HUMAN.print(startDate)))
-                .addStatementAmountItem(new OBStatementAmount1()
-                        .amount(new OBActiveOrHistoricCurrencyAndAmount()
-                                        .amount(balance.getBalance().getAmount().getAmount())
-                                        .currency(balance.getBalance().getAmount().getCurrency())
-                                )
+                .statementDescriptions(Arrays.asList(FORMATTER_HUMAN.print(startDate)))
+                .statementAmounts(Collections.singletonList(FRStatementData.FRStatementAmount.builder()
+                        .amount(FRAmount.builder()
+                                .amount(balance.getBalance().getAmount().getAmount())
+                                .currency(balance.getBalance().getAmount().getCurrency())
+                                .build())
                         .creditDebitIndicator(balance.getBalance().getCreditDebitIndicator())
                         .type(OBExternalStatementAmountType1Code.PREVIOUSCLOSINGBALANCE.toString())
-                )
+                        .build()))
+                .build()
         );
 
         return statement;
     }
 
-    private void updateStatement(FRStatement4 statement, FRBalance1 balance) {
-        statement.getStatement().addStatementAmountItem(new OBStatementAmount1()
-                .amount(new OBActiveOrHistoricCurrencyAndAmount()
+    private void updateStatement(FRStatement statement, FRBalance balance) {
+        statement.getStatement().addStatementAmount(FRStatementData.FRStatementAmount.builder()
+                .amount(FRAmount.builder()
                         .amount(balance.getBalance().getAmount().getAmount())
                         .currency(balance.getBalance().getAmount().getCurrency())
+                        .build()
                 )
                 .creditDebitIndicator(balance.getBalance().getCreditDebitIndicator())
                 .type(OBExternalStatementAmountType1Code.CLOSINGBALANCE.toString())
+                .build()
         );
     }
 
-    private List<FRTransaction6> generateTransactions(FRAccount4 account, FRStatement4 statement, FRBalance1 balance) {
+    private List<FRTransaction> generateTransactions(FRAccount account, FRStatement statement, FRBalance balance) {
         int nbTransactions = ThreadLocalRandom.current().nextInt(7,30);
-        List<FRTransaction6> transactions = new ArrayList<>();
+        List<FRTransaction> transactions = new ArrayList<>();
         LOGGER.debug("Generate {} transactions", nbTransactions);
         for (int i = 0; i < nbTransactions; i++) {
             transactions.add(generateTransaction(account, statement, balance));
@@ -507,21 +520,21 @@ public class FakeDataApiController implements FakeDataApi {
         return transactions;
     }
 
-    private FRTransaction6 generateTransaction(FRAccount4 account, FRStatement4 statement, FRBalance1 balance) {
+    private FRTransaction generateTransaction(FRAccount account, FRStatement statement, FRBalance balance) {
         String name = names.get(ThreadLocalRandom.current().nextInt(names.size()));
 
         long deltaTime = (statement.getStatement().getEndDateTime().getMillis() - statement.getStatement().getStartDateTime().getMillis()) / 1000;
         DateTime bookingDate = new DateTime(statement.getStatement().getStartDateTime()).plusSeconds(ThreadLocalRandom.current().nextInt(0, Math.toIntExact(deltaTime)));
         DateTime valueDate =  new DateTime(bookingDate).plusSeconds(ThreadLocalRandom.current().nextInt(60, 5*60));
 
-        OBCreditDebitCode1 obCreditDebitCode = OBCreditDebitCode1.values() [
-                ThreadLocalRandom.current().nextInt(0, OBCreditDebitCode.values().length)];
+        FRCreditDebitIndicator creditDebitIndicator = FRCreditDebitIndicator.values() [
+                ThreadLocalRandom.current().nextInt(0, FRCreditDebitIndicator.values().length)];
 
         Double transactionAmount = generateAmount(10.0d, 500.0d);
         Double balanceAmount = Double.valueOf(balance.getBalance().getAmount().getAmount());
         Double finalAmount;
         String transactionInformation;
-        switch (obCreditDebitCode) {
+        switch (creditDebitIndicator) {
         case DEBIT:
             finalAmount = balanceAmount - transactionAmount;
             transactionInformation = "Cash to " + name;
@@ -534,41 +547,46 @@ public class FakeDataApiController implements FakeDataApi {
         finalAmount = round(finalAmount, 2);
         if (finalAmount <= 0) {
             balance.getBalance().getAmount().setAmount(FORMAT_AMOUNT.format(-1 * finalAmount));
-            balance.getBalance().setCreditDebitIndicator(OBCreditDebitCode.CREDIT);
+            balance.getBalance().setCreditDebitIndicator(FRCreditDebitIndicator.CREDIT);
         } else {
             balance.getBalance().getAmount().setAmount(FORMAT_AMOUNT.format(finalAmount));
-            balance.getBalance().setCreditDebitIndicator(OBCreditDebitCode.DEBIT);
+            balance.getBalance().setCreditDebitIndicator(FRCreditDebitIndicator.DEBIT);
         }
 
-        FRTransaction6 transaction = new FRTransaction6();
+        FRTransaction transaction = new FRTransaction();
         transaction.addStatementId(statement.getId());
         transaction.setAccountId(account.getId());
         transaction.setBookingDateTime(bookingDate);
-        transaction.setTransaction(new OBTransaction6()
+        transaction.setTransaction(FRTransactionData.builder()
                 .accountId(account.getId())
                 .transactionId(UUID.randomUUID().toString())
                 .transactionReference("Ref " + ThreadLocalRandom.current().nextInt(10000))
-                .amount(new OBActiveOrHistoricCurrencyAndAmount9().amount(FORMAT_AMOUNT.format(transactionAmount))
-                        .currency(account.getAccount().getCurrency()))
-                .creditDebitIndicator(obCreditDebitCode)
-                .status(OBEntryStatus1Code.BOOKED)
+                .amount(FRAmount.builder()
+                        .amount(FORMAT_AMOUNT.format(transactionAmount))
+                        .currency(account.getAccount().getCurrency())
+                        .build())
+                .creditDebitIndicator(creditDebitIndicator)
+                .status(FRTransactionData.FREntryStatus.BOOKED)
                 .bookingDateTime(bookingDate)
                 .valueDateTime(valueDate)
                 .transactionInformation(transactionInformation)
-                .bankTransactionCode(new OBBankTransactionCodeStructure1()
+                .bankTransactionCode(FRTransactionData.FRBankTransactionCodeStructure.builder()
                         .code("ReceivedCreditTransfer")
                         .subCode("DomesticCreditTransfer")
+                        .build()
                 )
-                .proprietaryBankTransactionCode(
-                        new ProprietaryBankTransactionCodeStructure1()
+                .proprietaryBankTransactionCode(FRTransactionData.FRProprietaryBankTransactionCodeStructure.builder()
                         .code("Transfer")
                         .issuer("AlphaBank")
+                        .build()
                 )
-                .balance(new OBTransactionCashBalance()
+                .balance(FRTransactionData.FRTransactionCashBalance.builder()
                         .amount(balance.getBalance().getAmount())
                         .creditDebitIndicator(balance.getBalance().getCreditDebitIndicator())
-                        .type(OBBalanceType1Code.INTERIMBOOKED)
+                        .type(FRBalanceType.INTERIMBOOKED)
+                        .build()
                 )
+                .build()
         );
         transaction.setId(transaction.getTransaction().getTransactionId());
 
@@ -576,7 +594,7 @@ public class FakeDataApiController implements FakeDataApi {
         return transaction;
     }
 
-    public FRScheduledPayment4 generateScheduledPayment(FRAccount4 account) {
+    private FRScheduledPayment generateScheduledPayment(FRAccount account) {
         String scheduledPaymentId = UUID.randomUUID().toString();
 
         Double amount = generateAmount(10.0d, 500.0d);
@@ -585,94 +603,106 @@ public class FakeDataApiController implements FakeDataApi {
         String name = names.get(ThreadLocalRandom.current().nextInt(names.size()));
         Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
 
-        FRScheduledPayment4 scheduledPayment = new FRScheduledPayment4();
+        FRScheduledPayment scheduledPayment = new FRScheduledPayment();
         scheduledPayment.setId(scheduledPaymentId);
         scheduledPayment.setAccountId(account.getId());
         scheduledPayment.setStatus(ScheduledPaymentStatus.PENDING);
-        scheduledPayment.setScheduledPayment(new OBScheduledPayment3()
+        scheduledPayment.setScheduledPayment(FRScheduledPaymentData.builder()
                 .scheduledPaymentId(scheduledPaymentId)
                 .scheduledPaymentDateTime(DateTime.now().plusDays(ThreadLocalRandom.current().nextInt(15, 200)))
-                .scheduledType(OBExternalScheduleType1Code.EXECUTION)
+                .scheduledType(FRScheduledPaymentData.FRScheduleType.EXECUTION)
                 .reference(company)
-                .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount1()
-                        .amount(FORMAT_AMOUNT.format(amount)).currency(account.getAccount().getCurrency()))
-                .creditorAccount(new OBCashAccount51()
+                .instructedAmount(FRAmount.builder()
+                        .amount(FORMAT_AMOUNT.format(amount))
+                        .currency(account.getAccount().getCurrency())
+                        .build())
+                .creditorAccount(FRAccountIdentifier.builder()
                         .schemeName(OBExternalAccountIdentification2Code.SortCodeAccountNumber.getReference())
                         .identification(sortCode.toString() + accountNumber.toString())
                         .name(name)
+                        .build()
                 )
+                .build()
         );
         return scheduledPayment;
     }
 
-    public FRParty2 generateParty(FRAccount4 account2, String username) {
-        FRParty2 party = partyRepository.findByAccountId(account2.getId());
+    private FRParty generateParty(FRAccount account2, String username) {
+        FRParty party = partyRepository.findByAccountId(account2.getId());
         String partyId = (party == null) ? UUID.randomUUID().toString() : party.getId();
-        party = new FRParty2();
+        party = new FRParty();
         party.setAccountId(account2.getId());
         party.setId(partyId);
-        party.setParty(new OBParty2()
+        party.setParty(FRPartyData.builder()
                 .partyId(partyId)
                 .name(username)
+                .build()
         );
         partyRepository.save(party);
         return party;
     }
 
-    public FRParty2 generateGlobalParty(String userId, String username) {
-        FRParty2 existing = partyRepository.findByUserId(username);
+    private FRParty generateGlobalParty(String userId, String username) {
+        FRParty existing = partyRepository.findByUserId(username);
 
         String partyId = (existing ==null) ? UUID.randomUUID().toString() : existing.getId();
-        FRParty2 party = new FRParty2();
+        FRParty party = new FRParty();
         party.setId(partyId);
         party.setUserId(userId);
-        party.setParty(new OBParty2()
+        party.setParty(FRPartyData.builder()
                 .partyId(partyId)
                 .name(username)
+                .build()
         );
         partyRepository.save(party);
         return party;
     }
 
-    public FROffer1 generateOfferLimitIncrease(FRAccount4 account2) {
+    private FROffer generateOfferLimitIncrease(FRAccount account2) {
 
         Double amount = generateAmount(1000.0d, 15000.0d);
         amount = amount - (amount % 100);
 
         String offerId = UUID.randomUUID().toString();
-        FROffer1 offer1 = new FROffer1();
+        FROffer offer1 = new FROffer();
         offer1.setAccountId(account2.getId());
         offer1.setId(offerId);
-        offer1.setOffer(new OBOffer1()
+        offer1.setOffer(FROfferData.builder()
                 .offerId(offerId)
-                .offerType(OBExternalOfferType1Code.LIMITINCREASE)
+                .offerType(FROfferData.FROfferType.LIMITINCREASE)
                 .description("Credit limit increase for the account up to £" + FORMAT_AMOUNT.format(amount))
-                .amount(new OBActiveOrHistoricCurrencyAndAmount().amount(FORMAT_AMOUNT.format(amount))
-                        .currency(account2.getAccount().getCurrency()))
+                .amount(FRAmount.builder()
+                        .amount(FORMAT_AMOUNT.format(amount))
+                        .currency(account2.getAccount().getCurrency())
+                        .build())
+                .build()
         );
 
-        offer1Repository.save(offer1);
+        offerRepository.save(offer1);
         return offer1;
     }
 
-    public FROffer1 generateOfferBalanceTransfer(FRAccount4 account2) {
+    private FROffer generateOfferBalanceTransfer(FRAccount account2) {
 
         Double amount = generateAmount(1000.0d, 5000.0d);
         amount = round(amount - (amount % 100), 2);
 
         String offerId = UUID.randomUUID().toString();
-        FROffer1 offer1 = new FROffer1();
+        FROffer offer1 = new FROffer();
         offer1.setAccountId(account2.getId());
         offer1.setId(offerId);
-        offer1.setOffer(new OBOffer1()
+        offer1.setOffer(FROfferData.builder()
                 .offerId(offerId)
-                .offerType(OBExternalOfferType1Code.BALANCETRANSFER)
+                .offerType(FROfferData.FROfferType.BALANCETRANSFER)
                 .description("Balance transfer offer up to £" + FORMAT_AMOUNT.format(amount))
-                .amount(new OBActiveOrHistoricCurrencyAndAmount().amount(FORMAT_AMOUNT.format(amount))
-                        .currency(account2.getAccount().getCurrency()))
+                .amount(FRAmount.builder()
+                        .amount(FORMAT_AMOUNT.format(amount))
+                        .currency(account2.getAccount().getCurrency())
+                        .build())
+                .build()
         );
 
-        offer1Repository.save(offer1);
+        offerRepository.save(offer1);
         return offer1;
     }
 
@@ -681,7 +711,7 @@ public class FakeDataApiController implements FakeDataApi {
         return round(amount, 2);
     }
 
-    public static double round(double value, int places) {
+    private static double round(double value, int places) {
         if (places < 0) throw new IllegalArgumentException();
 
         BigDecimal bd = new BigDecimal(value);

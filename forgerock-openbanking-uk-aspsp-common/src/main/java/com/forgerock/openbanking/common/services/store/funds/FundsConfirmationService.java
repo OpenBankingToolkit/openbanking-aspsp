@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store.funds;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,14 +42,14 @@ public class FundsConfirmationService {
         this.rsStoreRoot = rsStoreRoot;
     }
 
-    public void updateConsent(FRFundsConfirmationConsent1 consent) {
+    public void updateConsent(FRFundsConfirmationConsent consent) {
         log.debug("Update the consent in the store. {}", consent);
         restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH, consent);
     }
 
-    public FRFundsConfirmationConsent1 getConsent(String consentId) {
+    public FRFundsConfirmationConsent getConsent(String consentId) {
         log.debug("Getting consent for {}", consentId);
         return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId,
-                FRFundsConfirmationConsent1.class);
+                FRFundsConfirmationConsent.class);
     }
 }

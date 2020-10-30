@@ -20,11 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_3.statements;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.statements.FRStatement4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.service.statement.StatementPDFService;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRStatement4;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStatement;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -47,6 +47,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRStatementConverter.toOBStatement2;
+
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2018-06-25T23:06:46.214+01:00")
 
 @Controller("StatementsApiV3.1.3")
@@ -55,18 +58,18 @@ public class StatementsApiController implements StatementsApi {
 
     private final int pageLimitStatements;
 
-    private final FRStatement4Repository frStatement4Repository;
+    private final FRStatementRepository frStatementRepository;
 
     private final AccountDataInternalIdFilter accountDataInternalIdFilter;
 
     private final StatementPDFService statementPDFService;
 
     public StatementsApiController(@Value("${rs.page.default.statement.size}") int pageLimitStatements,
-                                   FRStatement4Repository frStatement4Repository,
+                                   FRStatementRepository frStatementRepository,
                                    AccountDataInternalIdFilter accountDataInternalIdFilter,
                                    StatementPDFService statementPDFService) {
         this.pageLimitStatements = pageLimitStatements;
-        this.frStatement4Repository = frStatement4Repository;
+        this.frStatementRepository = frStatementRepository;
         this.accountDataInternalIdFilter = accountDataInternalIdFilter;
         this.statementPDFService = statementPDFService;
     }
@@ -84,7 +87,7 @@ public class StatementsApiController implements StatementsApi {
                                                                 String httpUrl) throws OBErrorResponseException {
         log.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
 
-        List<FRStatement4> statements = frStatement4Repository.byAccountIdAndStatementIdWithPermissions(accountId, statementId, permissions);
+        List<FRStatement> statements = frStatementRepository.byAccountIdAndStatementIdWithPermissions(accountId, statementId, toFRExternalPermissionsCodeList(permissions));
         int totalPages = 1;
         return packageResponse(page, httpUrl, statements, totalPages);
     }
@@ -129,8 +132,8 @@ public class StatementsApiController implements StatementsApi {
                                                                  String httpUrl) throws OBErrorResponseException {
         log.info("Read statements for account {} with minimumPermissions {}", accountId, permissions);
 
-        Page<FRStatement4> statements = frStatement4Repository.byAccountIdWithPermissions(accountId,
-                fromStatementDateTime, toStatementDateTime, permissions,
+        Page<FRStatement> statements = frStatementRepository.byAccountIdWithPermissions(accountId,
+                fromStatementDateTime, toStatementDateTime, toFRExternalPermissionsCodeList(permissions),
                 PageRequest.of(page, pageLimitStatements, Sort.Direction.ASC, "startDateTime"));
 
         int totalPages = statements.getTotalPages();
@@ -151,7 +154,7 @@ public class StatementsApiController implements StatementsApi {
                                                           String httpUrl) throws OBErrorResponseException {
         log.info("Reading statements from account ids {}", accountIds);
 
-        Page<FRStatement4> statements = frStatement4Repository.findByAccountIdIn(accountIds, PageRequest.of(page, pageLimitStatements, Sort.Direction.ASC, "startDateTime"));
+        Page<FRStatement> statements = frStatementRepository.findByAccountIdIn(accountIds, PageRequest.of(page, pageLimitStatements, Sort.Direction.ASC, "startDateTime"));
         int totalPages = statements.getTotalPages();
         return packageResponse(page, httpUrl, statements.getContent(), totalPages);
     }
@@ -167,11 +170,11 @@ public class StatementsApiController implements StatementsApi {
         }
     }
 
-    private ResponseEntity<OBReadStatement2> packageResponse(int page, String httpUrl, List<FRStatement4> statements, int totalPages) {
+    private ResponseEntity<OBReadStatement2> packageResponse(int page, String httpUrl, List<FRStatement> statements, int totalPages) {
         return ResponseEntity.ok(new OBReadStatement2().data(new OBReadStatement2Data().statement(
                 statements
                         .stream()
-                        .map(FRStatement4::getStatement)
+                        .map(st -> toOBStatement2(st.getStatement()))
                         .map(st -> accountDataInternalIdFilter.apply(st))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

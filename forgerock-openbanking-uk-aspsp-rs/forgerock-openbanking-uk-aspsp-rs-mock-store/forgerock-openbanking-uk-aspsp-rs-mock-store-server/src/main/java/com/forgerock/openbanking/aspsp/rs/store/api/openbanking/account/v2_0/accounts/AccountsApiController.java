@@ -20,10 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.accounts;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_3.accounts.accounts.FRAccount4Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_3.account.FRAccount4;
-import com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountConverter;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import org.joda.time.DateTime;
@@ -37,20 +37,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.org.openbanking.datamodel.account.OBAccount2;
-import uk.org.openbanking.datamodel.account.OBAccount3Account;
-import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification3Code;
-import uk.org.openbanking.datamodel.account.OBExternalAccountIdentification4Code;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadAccount2;
 import uk.org.openbanking.datamodel.account.OBReadAccount2Data;
-import uk.org.openbanking.datamodel.service.converter.account.OBExternalAccountIdentificationConverter;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRFinancialAccountConverter.toOBAccount2;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static java.util.Collections.singletonList;
 
 @Controller("AccountsApiV2.0")
 public class AccountsApiController implements AccountsApi {
@@ -58,7 +55,7 @@ public class AccountsApiController implements AccountsApi {
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountsApiController.class);
 
     @Autowired
-    private FRAccount4Repository frAccountRepository;
+    private FRAccountRepository frAccountRepository;
 
     public ResponseEntity<OBReadAccount2> getAccount(
             @ApiParam(value = "A unique identifier used to identify the account resource.",required=true )
@@ -88,12 +85,8 @@ public class AccountsApiController implements AccountsApi {
     ) throws OBErrorResponseException {
 
         LOGGER.info("Read account {} with permission {}", accountId, permissions);
-        FRAccount4 response = frAccountRepository.byAccountId(accountId, permissions);
-        convertAccounts(response);
-
-        final List<OBAccount2> obAccount2s = Collections.singletonList(
-                FRAccountConverter.toOBAccount2(response.getAccount())
-        );
+        FRAccount response = frAccountRepository.byAccountId(accountId, toFRExternalPermissionsCodeList(permissions));
+        List<OBAccount2> obAccount2s = singletonList(toOBAccount2(response.getAccount()));
 
         return ResponseEntity.ok(new OBReadAccount2()
                 .data(new OBReadAccount2Data().account(obAccount2s))
@@ -132,11 +125,10 @@ public class AccountsApiController implements AccountsApi {
 
         LOGGER.info("Accounts from account ids {}", accountIds);
 
-        List<OBAccount2> accounts = frAccountRepository.byAccountIds(accountIds, permissions)
+        List<OBAccount2> accounts = frAccountRepository.byAccountIds(accountIds, toFRExternalPermissionsCodeList(permissions))
                 .stream()
-                .map(this::convertAccounts)
-                .map(FRAccount4::getAccount)
-                .map(FRAccountConverter::toOBAccount2)
+                .map(FRAccount::getAccount)
+                .map(FRFinancialAccountConverter::toOBAccount2)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(new OBReadAccount2()
@@ -144,28 +136,4 @@ public class AccountsApiController implements AccountsApi {
                 .links(PaginationUtil.generateLinksOnePager(httpUrl))
                 .meta(PaginationUtil.generateMetaData(1)));
     }
-
-    /**
-     * Because we always use latest model in persistent store, older API controller may need to do conversions on some of values e.g. the Account identifier codes.
-     * This can be overidden is later versions of controller.
-     */
-    protected FRAccount4 convertAccounts(FRAccount4 account) {
-        if (account.getAccount().getAccount() != null) {
-            account.getAccount().getAccount()
-                    .forEach(this::checkAndConvertV3SchemeNameToV2);
-        }
-        return account;
-    }
-
-    // This is a special case because V2.0 used enum and V3.x uses String so we cannot do simple type conversion - we need to map the V3.x strings into a corresponding V2 type if possible
-    private void checkAndConvertV3SchemeNameToV2(OBAccount3Account obAccount3Account) {
-        OBExternalAccountIdentification4Code code4 = OBExternalAccountIdentification4Code.fromValue(obAccount3Account.getSchemeName());
-        if (code4 == null) {
-            // Not a V3.x OBExternalAccountIdentification4Code scheme name so no action required
-            return;
-        }
-        Optional<OBExternalAccountIdentification3Code> code3 = Optional.ofNullable(OBExternalAccountIdentificationConverter.toOBExternalAccountIdentification3(code4));
-        obAccount3Account.setSchemeName(code3.map(OBExternalAccountIdentification3Code::toString).orElse(""));
-    }
-
 }

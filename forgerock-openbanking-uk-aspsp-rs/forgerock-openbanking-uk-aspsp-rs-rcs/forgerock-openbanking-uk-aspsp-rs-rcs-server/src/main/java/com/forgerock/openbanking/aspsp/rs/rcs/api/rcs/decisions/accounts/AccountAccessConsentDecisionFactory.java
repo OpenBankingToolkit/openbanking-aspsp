@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -49,12 +49,12 @@ public class AccountAccessConsentDecisionFactory {
     }
 
     public ConsentDecisionDelegate create(final String intentId) throws OBErrorException {
-        FRAccountRequest accountRequest = getAccountRequest(intentId);
+        AccountRequest accountRequest = getAccountRequest(intentId);
         return new AccountAccessConsentDecisionDelegate(accountsService, objectMapper, accountRequestStoreService, accountRequest);
     }
 
-    private FRAccountRequest getAccountRequest(String intentId) throws OBErrorException {
-        Optional<FRAccountRequest> isAccountRequest = accountRequestStoreService.get(intentId);
+    private AccountRequest getAccountRequest(String intentId) throws OBErrorException {
+        Optional<AccountRequest> isAccountRequest = accountRequestStoreService.get(intentId);
         if (!isAccountRequest.isPresent()) {
             log.error("The AISP is referencing an account request {} that doesn't exist", intentId);
             throw new OBErrorException(OBRIErrorType.RCS_CONSENT_REQUEST_UNKNOWN_ACCOUNT_REQUEST, intentId);

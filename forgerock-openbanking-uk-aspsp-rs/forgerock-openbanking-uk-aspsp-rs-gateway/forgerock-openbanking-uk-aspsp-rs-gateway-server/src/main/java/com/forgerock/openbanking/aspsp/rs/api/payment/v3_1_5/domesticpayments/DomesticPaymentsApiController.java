@@ -26,8 +26,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_5.domesticpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -46,7 +46,8 @@ import java.security.Principal;
 import java.util.Collections;
 
 import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
-import static uk.org.openbanking.datamodel.service.converter.payment.OBDomesticConverter.toOBWriteDomestic2DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation;
 
 @Controller("DomesticPaymentsApiV3.1.5")
 @Slf4j
@@ -75,7 +76,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             Principal principal
     ) throws OBErrorResponseException {
         String consentId = obWriteDomestic2.getData().getConsentId();
-        FRDomesticConsent5 payment = paymentsService.getPayment(consentId);
+        FRDomesticConsent payment = paymentsService.getPayment(consentId);
 
         return rsEndpointWrapperService.paymentSubmissionEndpoint()
                 .authorization(authorization)
@@ -87,7 +88,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                     f.verifyPaymentIdWithAccessToken();
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyPaymentStatus();
-                    f.verifyRiskAndInitiation(toOBWriteDomestic2DataInitiation(obWriteDomestic2.getData().getInitiation()), obWriteDomestic2.getRisk());
+                    f.verifyRiskAndInitiation(toFRWriteDomesticDataInitiation(obWriteDomestic2.getData().getInitiation()), toFRRisk(obWriteDomestic2.getRisk()));
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
                 .execute(

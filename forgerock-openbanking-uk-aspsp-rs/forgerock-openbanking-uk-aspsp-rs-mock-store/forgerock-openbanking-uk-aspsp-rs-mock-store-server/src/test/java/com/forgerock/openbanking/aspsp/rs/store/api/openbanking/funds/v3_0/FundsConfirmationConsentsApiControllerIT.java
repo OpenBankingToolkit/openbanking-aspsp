@@ -22,10 +22,10 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.funds.v3_0;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfirmationConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationConsentRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.github.jsonzou.jmockdata.JMockData;
@@ -79,7 +79,7 @@ public class FundsConfirmationConsentsApiControllerIT {
     public void testGetConsent() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFundsConfirmationConsent1 consent = JMockData.mock(FRFundsConfirmationConsent1.class);
+        FRFundsConfirmationConsent consent = JMockData.mock(FRFundsConfirmationConsent.class);
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         repository.save(consent);
 
@@ -135,7 +135,7 @@ public class FundsConfirmationConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBFundsConfirmationConsentResponse1 consentResponse = response.getBody();
-        FRFundsConfirmationConsent1 consent = repository.findById(consentResponse.getData().getConsentId()).get();
+        FRFundsConfirmationConsent consent = repository.findById(consentResponse.getData().getConsentId()).get();
         assertThat(consent.getPispName()).isEqualTo(MOCK_PISP_NAME);
         assertThat(consent.getPispId()).isEqualTo(MOCK_PISP_ID);
         assertThat(consent.getId()).isEqualTo(consentResponse.getData().getConsentId());

@@ -20,9 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.rs.simulator.service;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRBalance;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Balance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import com.forgerock.openbanking.common.services.store.balance.BalanceStoreService;
 import com.forgerock.openbanking.common.services.store.transaction.TransactionStoreService;
 import com.tunyk.currencyconverter.BankUaCom;
@@ -35,8 +37,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.org.openbanking.datamodel.account.OBBalanceType1Code;
-import uk.org.openbanking.datamodel.account.OBCreditDebitCode;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -50,20 +50,20 @@ public class MoneyService {
     @Autowired
     private TransactionStoreService transactionStoreService;
 
-    public <T> void moveMoney(FRAccount account, OBActiveOrHistoricCurrencyAndAmount amount, OBCreditDebitCode creditDebitCode, T payment, CreateTransaction<T> createTransaction) throws CurrencyConverterException {
-        Optional<FRBalance> balanceIf = balanceStoreService.getBalance(account.getId(), OBBalanceType1Code.INTERIMAVAILABLE);
+    public <T> void moveMoney(Account account, FRAmount amount, FRCreditDebitIndicator creditDebitCode, T payment, CreateTransaction<T> createTransaction) throws CurrencyConverterException {
+        Optional<Balance> balanceIf = balanceStoreService.getBalance(account.getId(), OBBalanceType1Code.INTERIMAVAILABLE);
         //Verify account for a balance
         if (!balanceIf.isPresent()) {
             throw new IllegalStateException("No balance found of type '"
                     + OBBalanceType1Code.INTERIMAVAILABLE + "' for account id '" + account.getId() + "'");
         }
-        FRBalance balance = balanceIf.get();
+        Balance balance = balanceIf.get();
 
         BigDecimal finalAmount = computeAmount(amount, creditDebitCode, balance);
 
         updateBalance(balance, finalAmount);
 
-        FRTransaction6 transaction = createTransaction.createTransaction(account, payment, creditDebitCode, balance, amount);
+        FRTransaction transaction = createTransaction.createTransaction(account, payment, creditDebitCode, balance, amount);
 
         addTransactionToLatestStatement(account, transaction);
 
@@ -73,7 +73,7 @@ public class MoneyService {
         log.info("Balance updated {}", balance);
     }
 
-    private void addTransactionToLatestStatement(FRAccount account, FRTransaction6 transaction) {
+    private void addTransactionToLatestStatement(Account account, FRTransaction transaction) {
         if (account.getLatestStatementId() != null) {
             log.info("Add the new transaction id '{}' to the latest statement id '{}'",
                     transaction.getId(), account.getLatestStatementId());
@@ -91,19 +91,19 @@ public class MoneyService {
         }
     }
 
-    private void updateBalance(FRBalance balance, BigDecimal finalAmount) {
+    private void updateBalance(Balance balance, BigDecimal finalAmount) {
         log.debug("Update balance amount");
         if (finalAmount.compareTo(BigDecimal.ZERO) < 0) {
             balance.setAmount(finalAmount.negate());
-            balance.setCreditDebitIndicator(OBCreditDebitCode.CREDIT);
+            balance.setCreditDebitIndicator(FRCreditDebitIndicator.CREDIT);
         } else {
             balance.setAmount(finalAmount);
-            balance.setCreditDebitIndicator(OBCreditDebitCode.DEBIT);
+            balance.setCreditDebitIndicator(FRCreditDebitIndicator.DEBIT);
         }
         log.info("New balance {}", balance);
     }
 
-    private BigDecimal computeAmount(OBActiveOrHistoricCurrencyAndAmount amount, OBCreditDebitCode creditDebitCode, FRBalance balance)
+    private BigDecimal computeAmount(FRAmount amount, FRCreditDebitIndicator creditDebitCode, Balance balance)
             throws CurrencyConverterException {
         BigDecimal currentAmount = balance.getAmount();
         BigDecimal paymentAmount = new BigDecimal(amount.getAmount());

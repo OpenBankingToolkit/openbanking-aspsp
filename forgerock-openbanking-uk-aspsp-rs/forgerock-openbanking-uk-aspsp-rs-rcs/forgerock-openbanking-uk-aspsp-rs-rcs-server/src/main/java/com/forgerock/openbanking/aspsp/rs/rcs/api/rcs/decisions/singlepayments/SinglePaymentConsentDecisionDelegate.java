@@ -22,9 +22,9 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.singlepayments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.SinglePaymentConsentDecision;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
@@ -42,9 +42,9 @@ class SinglePaymentConsentDecisionDelegate implements ConsentDecisionDelegate {
     private AccountStoreService accountsService;
     private SinglePaymentService paymentsService;
     private ObjectMapper objectMapper;
-    private FRPaymentSetup1 payment;
+    private FRPaymentSetup payment;
 
-    SinglePaymentConsentDecisionDelegate(AccountStoreService accountsService, SinglePaymentService paymentsService, ObjectMapper objectMapper, FRPaymentSetup1 payment) {
+    SinglePaymentConsentDecisionDelegate(AccountStoreService accountsService, SinglePaymentService paymentsService, ObjectMapper objectMapper, FRPaymentSetup payment) {
         this.accountsService = accountsService;
         this.paymentsService = paymentsService;
         this.objectMapper = objectMapper;
@@ -66,8 +66,8 @@ class SinglePaymentConsentDecisionDelegate implements ConsentDecisionDelegate {
         SinglePaymentConsentDecision singlePaymentConsentDecision = objectMapper.readValue(consentDecisionSerialised, SinglePaymentConsentDecision.class);
 
         if (decision) {
-            List<FRAccount2> accounts = accountsService.get(getUserIDBehindConsent());
-            Optional<FRAccount2> isAny = accounts.stream().filter(account -> account.getId().equals(singlePaymentConsentDecision
+            List<FRAccount> accounts = accountsService.get(getUserIDBehindConsent());
+            Optional<FRAccount> isAny = accounts.stream().filter(account -> account.getId().equals(singlePaymentConsentDecision
                     .getAccountId())).findAny();
             if (!isAny.isPresent()) {
                 log.error("The account selected {} is not own by this user {}. List accounts {}", singlePaymentConsentDecision
@@ -87,7 +87,7 @@ class SinglePaymentConsentDecisionDelegate implements ConsentDecisionDelegate {
     }
 
     @Override
-    public void autoaccept(List<FRAccount2> accounts, String username) throws OBErrorException {
+    public void autoaccept(List<FRAccount> accounts, String username) throws OBErrorException {
         payment.setStatus(ConsentStatusCode.ACCEPTEDCUSTOMERPROFILE);
         payment.setAccountId(accounts.get(0).getId());
         paymentsService.updatePayment(payment);

@@ -21,7 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRPaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -29,7 +30,6 @@ import com.forgerock.openbanking.model.error.OBRIErrorType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.payment.OBRisk1;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -38,17 +38,17 @@ import java.util.Arrays;
 public class PaymentsSubmissionsEndpointWrapper extends RSEndpointWrapper<PaymentsSubmissionsEndpointWrapper, PaymentsSubmissionsEndpointWrapper.PaymentRestEndpointContent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PaymentsSubmissionsEndpointWrapper.class);
 
-    private FRPaymentConsent payment;
+    private PaymentConsent payment;
 
     public PaymentsSubmissionsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
         super(RSEndpointWrapperService);
     }
 
-    public FRPaymentConsent getPayment() {
+    public PaymentConsent getPayment() {
         return payment;
     }
 
-    public PaymentsSubmissionsEndpointWrapper payment(FRPaymentConsent payment) {
+    public PaymentsSubmissionsEndpointWrapper payment(PaymentConsent payment) {
         this.payment = payment;
         return this;
     }
@@ -117,17 +117,17 @@ public class PaymentsSubmissionsEndpointWrapper extends RSEndpointWrapper<Paymen
         }
     }
 
-    public void verifyRiskAndInitiation(Object initiation, OBRisk1 risk1) throws OBErrorException {
+    public void verifyRiskAndInitiation(Object initiation, FRPaymentRisk risk) throws OBErrorException {
         //Verify risk and initiation are equals to initial request
         verifyInitiation(initiation);
-        verifyRisk(risk1);
+        verifyRisk(risk);
     }
 
-    public void verifyRisk(OBRisk1 risk1) throws OBErrorException {
+    public void verifyRisk(FRPaymentRisk risk) throws OBErrorException {
         //Verify risk are equals to initial request
-        if (!payment.getRisk().equals(risk1)) {
+        if (!payment.getRisk().equals(risk)) {
             LOGGER.debug("Risk received doesn't match payment setup request. Received:'{}' , expected:'{}'",
-                    risk1, payment.getRisk());
+                    risk, payment.getRisk());
             throw new OBErrorException(OBRIErrorType.PAYMENT_INVALID_RISK);
         }
     }

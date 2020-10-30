@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.internal.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,14 +40,14 @@ public interface PaymentApi {
     @RequestMapping(value = "/search/findByStatus",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.GET)
-    ResponseEntity<Collection<FRPaymentSetup1>> findByStatus(
+    ResponseEntity<Collection<FRPaymentSetup>> findByStatus(
             @RequestParam("status") ConsentStatusCode status
     );
 
     @RequestMapping(value = "/",
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.PUT)
-    ResponseEntity<FRPaymentSetup1> update(
-            @RequestBody FRPaymentSetup1 payment1
+    ResponseEntity<FRPaymentSetup> update(
+            @RequestBody FRPaymentSetup payment1
     );
 }

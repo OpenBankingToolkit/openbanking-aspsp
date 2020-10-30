@@ -23,7 +23,11 @@ package com.forgerock.openbanking.aspsp.rs.api.account.v1_1.transactions;
 
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.account.FRAccountRequest1;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadDataResponse;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadResponse;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
@@ -50,7 +54,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.account.OBReadTransaction1;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -108,9 +112,9 @@ public class TransactionsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
-                OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
-                OBExternalPermissions1Code.READTRANSACTIONSCREDITS,
-                OBExternalPermissions1Code.READTRANSACTIONSDEBITS));
+                FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
+                FRExternalPermissionsCode.READTRANSACTIONSCREDITS,
+                FRExternalPermissionsCode.READTRANSACTIONSDEBITS));
         OBReadTransaction1 transaction = new OBReadTransaction1();
         given(rsStoreGateway.toRsStore(any(), any(), any(), any())).willReturn(ResponseEntity.ok(transaction));
 
@@ -131,9 +135,9 @@ public class TransactionsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
-                OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
-                OBExternalPermissions1Code.READTRANSACTIONSCREDITS,
-                OBExternalPermissions1Code.READTRANSACTIONSDEBITS));
+                FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
+                FRExternalPermissionsCode.READTRANSACTIONSCREDITS,
+                FRExternalPermissionsCode.READTRANSACTIONSDEBITS));
         OBReadTransaction1 transaction = new OBReadTransaction1();
         given(rsStoreGateway.toRsStore(any(), any(), any(), any())).willReturn(ResponseEntity.ok(transaction));
         DateTime older = DateTime.now().minusDays(5);
@@ -164,9 +168,9 @@ public class TransactionsApiControllerIT {
 
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
-                OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
-                OBExternalPermissions1Code.READTRANSACTIONSCREDITS,
-                OBExternalPermissions1Code.READTRANSACTIONSDEBITS));
+                FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
+                FRExternalPermissionsCode.READTRANSACTIONSCREDITS,
+                FRExternalPermissionsCode.READTRANSACTIONSDEBITS));
         OBReadTransaction1 transaction = new OBReadTransaction1();
         given(rsStoreGateway.toRsStore(any(), any(), any(), any())).willReturn(ResponseEntity.ok(transaction));
 
@@ -187,9 +191,9 @@ public class TransactionsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
-                OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
-                OBExternalPermissions1Code.READTRANSACTIONSCREDITS,
-                OBExternalPermissions1Code.READTRANSACTIONSDEBITS));
+                FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
+                FRExternalPermissionsCode.READTRANSACTIONSCREDITS,
+                FRExternalPermissionsCode.READTRANSACTIONSDEBITS));
         OBReadTransaction1 transaction = new OBReadTransaction1();
         given(rsStoreGateway.toRsStore(any(), any(), any(), any())).willReturn(ResponseEntity.ok(transaction));
         DateTime older = DateTime.now().minusDays(5);
@@ -214,18 +218,20 @@ public class TransactionsApiControllerIT {
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
     }
 
-    private void mockAccountPermissions(List<OBExternalPermissions1Code> permissions) {
-        FRAccountRequest1 value = new FRAccountRequest1();
+    private void mockAccountPermissions(List<FRExternalPermissionsCode> permissions) {
+        FRAccountRequest value = new FRAccountRequest();
         Tpp tpp = new Tpp();
         tpp.setClientId("test-tpp");
         value.setAisp(tpp);
         value.setAccountIds(Collections.singletonList("100000123"));
-        value.setAccountRequest(new OBReadResponse1()
-                .data(new OBReadDataResponse1()
+        value.setAccountRequest(FRReadResponse.builder()
+                .data(FRReadDataResponse.builder()
                         .permissions(permissions)
                         .transactionFromDateTime(CONSENT_FROM)
                         .transactionToDateTime(CONSENT_TO)
-                        .status(OBExternalRequestStatus1Code.AUTHORISED)));
+                        .status(FRExternalRequestStatusCode.AUTHORISED)
+                        .build())
+                .build());
         given(accountRequestStore.get(any())).willReturn(Optional.of(value));
     }
 

@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions;
 
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 
 import java.io.IOException;
@@ -33,5 +33,5 @@ public interface ConsentDecisionDelegate {
 
     void consentDecision(String consentDecisionSerialised, boolean decision) throws IOException, OBErrorException;
 
-    void autoaccept(List<FRAccount2> accounts, String username) throws OBErrorException;
+    void autoaccept(List<FRAccount> accounts, String username) throws OBErrorException;
 }

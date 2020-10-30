@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.model.rcs.consentdetails;
 
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -44,7 +44,7 @@ public class DomesticPaymentConsentDetails extends ConsentDetails {
 
     protected String decisionApiUri;
 
-    protected List<FRAccountWithBalance> accounts;
+    protected List<AccountWithBalance> accounts;
     protected String username;
     protected String logo;
     protected String clientId;

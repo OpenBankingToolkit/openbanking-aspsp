@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.domesticpayment
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.PaymentConsentDecisionUpdater;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRDomesticConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.services.store.payment.DomesticPaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -44,7 +44,7 @@ public class DomesticPaymentConsentDecisionFactory {
     }
 
     public ConsentDecisionDelegate create(final String intentId) {
-        FRDomesticConsent5 consent = paymentsService.getPayment(intentId);
+        FRDomesticConsent consent = paymentsService.getPayment(intentId);
         return new DomesticPaymentConsentDecisionDelegate(paymentConsentDecisionUpdater, paymentsService, objectMapper, consent);
     }
 

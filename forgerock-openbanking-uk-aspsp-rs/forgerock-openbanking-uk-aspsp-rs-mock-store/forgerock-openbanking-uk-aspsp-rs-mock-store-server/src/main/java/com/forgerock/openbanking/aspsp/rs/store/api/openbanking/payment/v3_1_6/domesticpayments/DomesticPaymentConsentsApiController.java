@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_6.
 
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.payments.DomesticConsent5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
@@ -32,7 +32,7 @@ import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 @Controller("DomesticPaymentConsentsApiV3.1.6")
 public class DomesticPaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.domesticpayments.DomesticPaymentConsentsApiController implements DomesticPaymentConsentsApi {
 
-    public DomesticPaymentConsentsApiController(DomesticConsent5Repository domesticConsentRepository,
+    public DomesticPaymentConsentsApiController(DomesticConsentRepository domesticConsentRepository,
                                                 TppRepository tppRepository,
                                                 FundsAvailabilityService fundsAvailabilityService,
                                                 ResourceLinkService resourceLinkService,

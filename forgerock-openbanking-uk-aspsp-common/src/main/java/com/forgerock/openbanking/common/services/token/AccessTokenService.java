@@ -23,12 +23,12 @@ package com.forgerock.openbanking.common.services.token;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.common.error.exception.PermissionDenyException;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -49,11 +49,11 @@ public class AccessTokenService {
         return intentClaims.path("value").asText();
     }
 
-    public List<OBExternalPermissions1Code> isAllowed(FRAccountRequest accountRequest,
-                                                      List<OBExternalPermissions1Code> permissions) throws PermissionDenyException {
+    public List<FRExternalPermissionsCode> isAllowed(AccountRequest accountRequest,
+                                                     List<FRExternalPermissionsCode> permissions) throws PermissionDenyException {
 
-        List<OBExternalPermissions1Code> allowedPermissions = new ArrayList<>();
-        for (OBExternalPermissions1Code permission : permissions) {
+        List<FRExternalPermissionsCode> allowedPermissions = new ArrayList<>();
+        for (FRExternalPermissionsCode permission : permissions) {
             if (accountRequest.getPermissions().contains(permission)) {
                 allowedPermissions.add(permission);
             }

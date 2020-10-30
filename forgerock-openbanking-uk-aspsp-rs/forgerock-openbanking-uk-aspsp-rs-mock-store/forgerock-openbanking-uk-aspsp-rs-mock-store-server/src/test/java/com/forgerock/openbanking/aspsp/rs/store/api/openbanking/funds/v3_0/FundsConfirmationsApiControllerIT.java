@@ -21,13 +21,15 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.funds.v3_0;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfirmationConsentRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_0.funds.FundsConfirmationRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmation1;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.funds.FRFundsConfirmationConsent1;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.funds.FRFundsConfirmationData;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
@@ -53,6 +55,7 @@ import uk.org.openbanking.datamodel.fund.OBFundsConfirmationData1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -90,8 +93,8 @@ public class FundsConfirmationsApiControllerIT {
     public void testGetFundsConfirmation() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFundsConfirmationConsent1 consent = saveConsent();
-        FRFundsConfirmation1 fundsConfirmation = saveFundsConfirmation(consent);
+        FRFundsConfirmationConsent consent = saveConsent();
+        FRFundsConfirmation fundsConfirmation = saveFundsConfirmation(consent);
 
         // When
         HttpResponse<OBFundsConfirmationResponse1> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.0/cbpii/funds-confirmations/" + fundsConfirmation.getId())
@@ -127,10 +130,10 @@ public class FundsConfirmationsApiControllerIT {
     public void testGetFundsConfirmationWithMissingConsent_ReturnNotFound() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFundsConfirmationConsent1 consent = JMockData.mock(FRFundsConfirmationConsent1.class);
+        FRFundsConfirmationConsent consent = JMockData.mock(FRFundsConfirmationConsent.class);
         consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
         // Consent not saved in repo
-        FRFundsConfirmation1 submission = saveFundsConfirmation(consent);
+        FRFundsConfirmation submission = saveFundsConfirmation(consent);
 
         // When
         HttpResponse<String> response = Unirest.get("https://rs-store:" + port + "/open-banking/v3.0/cbpii/funds-confirmations/" + submission.getId())
@@ -146,7 +149,7 @@ public class FundsConfirmationsApiControllerIT {
     public void testCreateFundsConfirmation() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFundsConfirmationConsent1 consent = saveConsent();
+        FRFundsConfirmationConsent consent = saveConsent();
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
                 .data(new OBFundsConfirmationData1()
                         .consentId(consent.getId())
@@ -168,10 +171,10 @@ public class FundsConfirmationsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(201);
         OBFundsConfirmationResponse1 responseBody = response.getBody();
-        FRFundsConfirmation1 submission = fundsConfirmationRepository.findById(response.getBody().getData().getFundsConfirmationId()).get();
+        FRFundsConfirmation submission = fundsConfirmationRepository.findById(response.getBody().getData().getFundsConfirmationId()).get();
         assertThat(submission.getId()).isEqualTo(responseBody.getData().getFundsConfirmationId());
-        assertThat(submission.getFundsConfirmation().getData().getInstructedAmount()).isEqualTo(request.getData().getInstructedAmount());
-        assertThat(submission.getFundsConfirmation().getData().getReference()).isEqualTo(request.getData().getReference());
+        assertThat(toOBActiveOrHistoricCurrencyAndAmount(submission.getFundsConfirmation().getInstructedAmount())).isEqualTo(request.getData().getInstructedAmount());
+        assertThat(submission.getFundsConfirmation().getReference()).isEqualTo(request.getData().getReference());
         assertThat(submission.isFundsAvailable()).isEqualTo(true);
     }
 
@@ -179,8 +182,8 @@ public class FundsConfirmationsApiControllerIT {
     public void testDuplicateCreation_UpdateAndReturn() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        FRFundsConfirmationConsent1 consent = saveConsent();
-        FRFundsConfirmation1 frFundsConfirmation = saveFundsConfirmation(consent);
+        FRFundsConfirmationConsent consent = saveConsent();
+        FRFundsConfirmation frFundsConfirmation = saveFundsConfirmation(consent);
 
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
                 .data(new OBFundsConfirmationData1()
@@ -229,15 +232,15 @@ public class FundsConfirmationsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(404);
     }
 
-    private FRFundsConfirmation1 saveFundsConfirmation(FRFundsConfirmationConsent1 consent) {
-        OBFundsConfirmation1 fundsConfirmation = JMockData.mock(OBFundsConfirmation1.class);
-        fundsConfirmation.getData()
-                .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("100.0"))
+    private FRFundsConfirmation saveFundsConfirmation(FRFundsConfirmationConsent consent) {
+        FRFundsConfirmationData fundsConfirmationData = FRFundsConfirmationData.builder()
+                .instructedAmount(FRAmount.builder().amount("100.0").build())
                 .consentId(consent.getId())
-                .reference("test1");
-        FRFundsConfirmation1 frFundsConfirmation = FRFundsConfirmation1.builder()
+                .reference("test1")
+                .build();
+        FRFundsConfirmation frFundsConfirmation = FRFundsConfirmation.builder()
                 .id(consent.getId())
-                .fundsConfirmation(fundsConfirmation)
+                .fundsConfirmation(fundsConfirmationData)
                 .created(DateTime.now())
                 .build();
         frFundsConfirmation.setFundsAvailable(true);
@@ -245,12 +248,12 @@ public class FundsConfirmationsApiControllerIT {
         return frFundsConfirmation;
     }
 
-    private FRFundsConfirmationConsent1 saveConsent() {
-        FRFundsConfirmationConsent1 consent = JMockData.mock(FRFundsConfirmationConsent1.class);
+    private FRFundsConfirmationConsent saveConsent() {
+        FRFundsConfirmationConsent consent = JMockData.mock(FRFundsConfirmationConsent.class);
         consent.setId(IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId());
         consent.setStatusUpdate(DateTime.now());
         consent.setStatus(ConsentStatusCode.AUTHORISED);
-        consent.getFundsConfirmationConsent().getData().expirationDateTime(DateTime.parse("2018-11-21T10:43:12.000Z"));
+        consent.getFundsConfirmationConsent().setExpirationDateTime(DateTime.parse("2018-11-21T10:43:12.000Z"));
         fundsConfirmationConsentRepository.save(consent);
         return consent;
     }

@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_6.beneficiaries;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_5.accounts.beneficiaries.FRBeneficiary5Repository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.beneficiaries.FRBeneficiaryRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Controller;
 public class BeneficiariesApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_5.beneficiaries.BeneficiariesApiController implements BeneficiariesApi {
 
     public BeneficiariesApiController(@Value("${rs.page.default.beneficiaries.size}") int pageLimitBeneficiaries,
-                                      FRBeneficiary5Repository frBeneficiaryRepository,
+                                      FRBeneficiaryRepository frBeneficiaryRepository,
                                       AccountDataInternalIdFilter accountDataInternalIdFilter) {
         super(pageLimitBeneficiaries, frBeneficiaryRepository, accountDataInternalIdFilter);
     }

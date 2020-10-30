@@ -21,8 +21,9 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountWithBalance;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.common.model.rcs.consentdetails.SinglePaymentConsentDetails;
 import com.forgerock.openbanking.common.services.store.payment.SinglePaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -33,10 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.org.openbanking.datamodel.payment.OBRemittanceInformation1;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 
 @Service
 @Slf4j
@@ -50,13 +52,13 @@ public class RCSSinglePaymentDetailsApi implements RCSDetailsApi {
     private TppStoreService tppStoreService;
 
     @Override
-    public ResponseEntity consentDetails(String remoteConsentRequest, List<FRAccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
+    public ResponseEntity consentDetails(String remoteConsentRequest, List<AccountWithBalance> accounts, String username, String consentId, String clientId) throws OBErrorException {
         log.debug("Received a consent request with consent_request='{}'", remoteConsentRequest);
         log.debug("=> The payment id '{}'", consentId);
 
         log.debug("Populate the model with the payment and consent data");
 
-        FRPaymentSetup1 payment = singlePaymentService.getPayment(consentId);
+        FRPaymentSetup payment = singlePaymentService.getPayment(consentId);
         Optional<Tpp> isTpp = tppStoreService.findById(payment.getPispId());
         if (!isTpp.isPresent()) {
             log.error("The TPP '{}' (Client ID {}) that created this consent id '{}' doesn't exist anymore.", payment.getPispId(), clientId, consentId);
@@ -73,7 +75,7 @@ public class RCSSinglePaymentDetailsApi implements RCSDetailsApi {
         singlePaymentService.updatePayment(payment);
 
         return ResponseEntity.ok(SinglePaymentConsentDetails.builder()
-                .instructedAmount(payment.getInitiation().getInstructedAmount())
+                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(payment.getInitiation().getInstructedAmount()))
                 .accounts(accounts)
                 .username(username)
                 .logo(tpp.getLogo())
@@ -82,7 +84,7 @@ public class RCSSinglePaymentDetailsApi implements RCSDetailsApi {
                 .pispName(payment.getPispName())
                 .paymentReference(Optional.ofNullable(
                         payment.getInitiation().getRemittanceInformation())
-                        .map(OBRemittanceInformation1::getReference)
+                        .map(FRRemittanceInformation::getReference)
                         .orElse(""))
                 .build());
     }

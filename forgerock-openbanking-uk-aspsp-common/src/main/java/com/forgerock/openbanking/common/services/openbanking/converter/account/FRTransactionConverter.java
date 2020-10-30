@@ -20,61 +20,367 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
-import com.forgerock.openbanking.common.model.openbanking.v3_1_1.account.FRTransaction5;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.account.FRTransaction6;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRTransactionData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRTransactionData.FRBankTransactionCodeStructure;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRTransactionData.FRProprietaryBankTransactionCodeStructure;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRTransactionData.FRTransactionCashBalance;
 import uk.org.openbanking.datamodel.account.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount10;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification61;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBBranchAndFinancialInstitutionIdentificationConverter.toOBBranchAndFinancialInstitutionIdentification62;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount60;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.OBCashAccountConverter.toOBCashAccount61;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification6;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification61;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification62;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountSupplementaryDataConverter.toFRSupplementaryData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCashBalanceConverter.toFRBalanceType;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCashBalanceConverter.toOBBalanceType1Code;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toFRCreditDebitIndicator;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toOBCreditDebitCode;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toOBCreditDebitCode1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toOBTransaction5CreditDebitIndicatorEnum;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCurrencyExchangeConverter.toFRCurrencyExchange;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCurrencyExchangeConverter.toOBCurrencyExchange5;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount10;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toFRFinancialAgent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toOBBranchAndFinancialInstitutionIdentification2;
 
 public class FRTransactionConverter {
 
-    public static FRTransaction6 toFRTransaction6(FRTransaction5 frTransaction5) {
-        return frTransaction5 == null ? null : FRTransaction6.builder()
-                .id(frTransaction5.getId())
-                .accountId(frTransaction5.getAccountId())
-                .statementIds(frTransaction5.getStatementIds())
-                .transaction(toOBTransaction6(frTransaction5.getTransaction()))
-                .created(frTransaction5.getCreated())
-                .updated(frTransaction5.getUpdated())
+    // FR to OB
+    public static OBTransaction1 toOBTransaction1(FRTransactionData transaction) {
+        return transaction == null ? null : new OBTransaction1()
+                .accountId(transaction.getAccountId())
+                .transactionId(transaction.getTransactionId())
+                .transactionReference(transaction.getTransactionReference())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(transaction.getAmount()))
+                .creditDebitIndicator(toOBCreditDebitCode(transaction.getCreditDebitIndicator()))
+                .status(toOBEntryStatus1Code(transaction.getStatus()))
+                .bookingDateTime(transaction.getBookingDateTime())
+                .valueDateTime(transaction.getValueDateTime())
+                .transactionInformation(transaction.getTransactionInformation())
+                .addressLine(transaction.getAddressLine())
+                .bankTransactionCode(toOBBankTransactionCodeStructure1(transaction.getBankTransactionCode()))
+                .proprietaryBankTransactionCode(toProprietaryBankTransactionCodeStructure1(transaction.getProprietaryBankTransactionCode()))
+                .balance(toOBTransactionCashBalance(transaction.getBalance()))
+                .merchantDetails(toOBMerchantDetails1(transaction.getMerchantDetails()));
+    }
+
+    public static OBTransaction2 toOBTransaction2(FRTransactionData transaction) {
+        return transaction == null ? null : new OBTransaction2()
+                .accountId(transaction.getAccountId())
+                .transactionId(transaction.getTransactionId())
+                .transactionReference(transaction.getTransactionReference())
+                .statementReference(transaction.getStatementReferences())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(transaction.getAmount()))
+                .creditDebitIndicator(toOBCreditDebitCode(transaction.getCreditDebitIndicator()))
+                .status(toOBEntryStatus1Code(transaction.getStatus()))
+                .bookingDateTime(transaction.getBookingDateTime())
+                .valueDateTime(transaction.getValueDateTime())
+                .addressLine(transaction.getAddressLine())
+                .bankTransactionCode(toOBBankTransactionCodeStructure1(transaction.getBankTransactionCode()))
+                .proprietaryBankTransactionCode(toProprietaryBankTransactionCodeStructure1(transaction.getProprietaryBankTransactionCode()))
+                .equivalentAmount(null)
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification2(transaction.getCreditorAgent()))
+                .debtorAgent(toOBBranchAndFinancialInstitutionIdentification2(transaction.getDebtorAgent()))
+                .cardInstrument(toOBTransactionCardInstrument1(transaction.getCardInstrument()))
+                .transactionInformation(transaction.getTransactionInformation())
+                .balance(toOBTransactionCashBalance(transaction.getBalance()))
+                .merchantDetails(toOBMerchantDetails1(transaction.getMerchantDetails()))
+                .creditorAccount(toOBCashAccount2(transaction.getCreditorAccount()))
+                .debtorAccount(FRAccountServicerConverter.toOBBranchAndFinancialInstitutionIdentification2(transaction.getDebtorAccount()));
+    }
+
+    public static OBTransaction3 toOBTransaction3(FRTransactionData transaction) {
+        return transaction == null ? null : new OBTransaction3()
+                .accountId(transaction.getAccountId())
+                .transactionId(transaction.getTransactionId())
+                .transactionReference(transaction.getTransactionReference())
+                .statementReference(transaction.getStatementReferences())
+                .creditDebitIndicator(toOBCreditDebitCode(transaction.getCreditDebitIndicator()))
+                .status(toOBEntryStatus1Code(transaction.getStatus()))
+                .bookingDateTime(transaction.getBookingDateTime())
+                .valueDateTime(transaction.getValueDateTime())
+                .addressLine(transaction.getAddressLine())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(transaction.getAmount()))
+                .chargeAmount(toOBActiveOrHistoricCurrencyAndAmount(transaction.getChargeAmount()))
+                .currencyExchange(toOBCurrencyExchange5(transaction.getCurrencyExchange()))
+                .bankTransactionCode(toOBBankTransactionCodeStructure1(transaction.getBankTransactionCode()))
+                .proprietaryBankTransactionCode(toOBTransaction3ProprietaryBankTransactionCode(transaction.getProprietaryBankTransactionCode()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification3(transaction.getCreditorAgent()))
+                .debtorAgent(toOBBranchAndFinancialInstitutionIdentification3(transaction.getDebtorAgent()))
+                .debtorAccount(toOBCashAccount3(transaction.getDebtorAccount()))
+                .cardInstrument(toOBTransactionCardInstrument1(transaction.getCardInstrument()))
+                .transactionInformation(transaction.getTransactionInformation())
+                .balance(toOBTransactionCashBalance(transaction.getBalance()))
+                .merchantDetails(toOBMerchantDetails1(transaction.getMerchantDetails()))
+                .creditorAccount(toOBCashAccount3(transaction.getCreditorAccount()));
+    }
+
+    public static OBTransaction4 toOBTransaction4(FRTransactionData transaction) {
+        return transaction == null ? null : new OBTransaction4()
+                .accountId(transaction.getAccountId())
+                .transactionId(transaction.getTransactionId())
+                .transactionReference(transaction.getTransactionReference())
+                .statementReference(transaction.getStatementReferences())
+                .creditDebitIndicator(toOBCreditDebitCode(transaction.getCreditDebitIndicator()))
+                .status(toOBEntryStatus1Code(transaction.getStatus()))
+                .bookingDateTime(transaction.getBookingDateTime())
+                .valueDateTime(transaction.getValueDateTime())
+                .addressLine(transaction.getAddressLine())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(transaction.getAmount()))
+                .chargeAmount(toOBActiveOrHistoricCurrencyAndAmount(transaction.getChargeAmount()))
+                .currencyExchange(toOBCurrencyExchange5(transaction.getCurrencyExchange()))
+                .bankTransactionCode(toOBBankTransactionCodeStructure1(transaction.getBankTransactionCode()))
+                .proprietaryBankTransactionCode(toOBTransaction3ProprietaryBankTransactionCode(transaction.getProprietaryBankTransactionCode()))
+                .cardInstrument(toOBTransactionCardInstrument1(transaction.getCardInstrument()))
+                .supplementaryData(toOBSupplementaryData1(transaction.getSupplementaryData()))
+                .transactionInformation(transaction.getTransactionInformation())
+                .balance(toOBTransactionCashBalance(transaction.getBalance()))
+                .merchantDetails(toOBMerchantDetails1(transaction.getMerchantDetails()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification3(transaction.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount3(transaction.getCreditorAccount()))
+                .debtorAgent(toOBBranchAndFinancialInstitutionIdentification3(transaction.getDebtorAgent()))
+                .debtorAccount(toOBCashAccount3(transaction.getDebtorAccount()));
+    }
+
+    public static OBTransaction5 toOBTransaction5(FRTransactionData transaction) {
+        return transaction == null ? null : new OBTransaction5()
+                .accountId(transaction.getAccountId())
+                .transactionId(transaction.getTransactionId())
+                .transactionReference(transaction.getTransactionReference())
+                .statementReference(transaction.getStatementReferences())
+                .creditDebitIndicator(toOBTransaction5CreditDebitIndicatorEnum(transaction.getCreditDebitIndicator()))
+                .status(toOBEntryStatus1Code(transaction.getStatus()))
+                .bookingDateTime(transaction.getBookingDateTime())
+                .valueDateTime(transaction.getValueDateTime())
+                .addressLine(transaction.getAddressLine())
+                .amount(toAccountOBActiveOrHistoricCurrencyAndAmount(transaction.getAmount()))
+                .chargeAmount(toAccountOBActiveOrHistoricCurrencyAndAmount(transaction.getChargeAmount()))
+                .currencyExchange(toOBCurrencyExchange5(transaction.getCurrencyExchange()))
+                .bankTransactionCode(toOBBankTransactionCodeStructure1(transaction.getBankTransactionCode()))
+                .proprietaryBankTransactionCode(toOBTransaction5ProprietaryBankTransactionCode(transaction.getProprietaryBankTransactionCode()))
+                .cardInstrument(toOBTransactionCardInstrument1(transaction.getCardInstrument()))
+                .supplementaryData(toOBSupplementaryData1(transaction.getSupplementaryData()))
+                .transactionInformation(transaction.getTransactionInformation())
+                .balance(toOBTransactionCashBalance(transaction.getBalance()))
+                .merchantDetails(toOBMerchantDetails1(transaction.getMerchantDetails()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(transaction.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount6(transaction.getCreditorAccount()))
+                .debtorAgent(toOBBranchAndFinancialInstitutionIdentification6(transaction.getDebtorAgent()))
+                .debtorAccount(toOBCashAccount6(transaction.getDebtorAccount()));
+    }
+
+    public static OBTransaction6 toOBTransaction6(FRTransactionData transaction) {
+        return transaction == null ? null : new OBTransaction6()
+                .accountId(transaction.getAccountId())
+                .transactionId(transaction.getTransactionId())
+                .transactionReference(transaction.getTransactionReference())
+                .statementReference(transaction.getStatementReferences())
+                .creditDebitIndicator(toOBCreditDebitCode1(transaction.getCreditDebitIndicator()))
+                .status(toOBEntryStatus1Code(transaction.getStatus()))
+                .transactionMutability(toOBTransactionMutability1Code(transaction.getTransactionMutability()))
+                .bookingDateTime(transaction.getBookingDateTime())
+                .valueDateTime(transaction.getValueDateTime())
+                .transactionInformation(transaction.getTransactionInformation())
+                .addressLine(transaction.getAddressLine())
+                .amount(toOBActiveOrHistoricCurrencyAndAmount9(transaction.getAmount()))
+                .chargeAmount(toOBActiveOrHistoricCurrencyAndAmount10(transaction.getChargeAmount()))
+                .currencyExchange(toOBCurrencyExchange5(transaction.getCurrencyExchange()))
+                .bankTransactionCode(toOBBankTransactionCodeStructure1(transaction.getBankTransactionCode()))
+                .proprietaryBankTransactionCode(toProprietaryBankTransactionCodeStructure1(transaction.getProprietaryBankTransactionCode()))
+                .balance(toOBTransactionCashBalance(transaction.getBalance()))
+                .merchantDetails(toOBMerchantDetails1(transaction.getMerchantDetails()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification61(transaction.getCreditorAgent()))
+                .creditorAccount(toOBCashAccount60(transaction.getCreditorAccount()))
+                .debtorAgent(toOBBranchAndFinancialInstitutionIdentification62(transaction.getDebtorAgent()))
+                .debtorAccount(toOBCashAccount61(transaction.getDebtorAccount()))
+                .cardInstrument(toOBTransactionCardInstrument1(transaction.getCardInstrument()))
+                .supplementaryData(toOBSupplementaryData1(transaction.getSupplementaryData()));
+    }
+
+    public static OBEntryStatus1Code toOBEntryStatus1Code(FRTransactionData.FREntryStatus status) {
+        return status == null ? null : OBEntryStatus1Code.valueOf(status.name());
+    }
+
+    public static OBTransactionMutability1Code toOBTransactionMutability1Code(FRTransactionData.FRTransactionMutability transactionMutability) {
+        return transactionMutability == null ? null : OBTransactionMutability1Code.valueOf(transactionMutability.name());
+    }
+
+    public static OBBankTransactionCodeStructure1 toOBBankTransactionCodeStructure1(FRBankTransactionCodeStructure transactionCode) {
+        return transactionCode == null ? null : new OBBankTransactionCodeStructure1()
+                .code(transactionCode.getCode())
+                .subCode(transactionCode.getSubCode());
+    }
+
+    public static ProprietaryBankTransactionCodeStructure1 toProprietaryBankTransactionCodeStructure1(FRProprietaryBankTransactionCodeStructure proprietaryTransactionCode) {
+        return proprietaryTransactionCode == null ? null : new ProprietaryBankTransactionCodeStructure1()
+                .code(proprietaryTransactionCode.getCode())
+                .issuer(proprietaryTransactionCode.getIssuer());
+    }
+
+    public static OBTransaction3ProprietaryBankTransactionCode toOBTransaction3ProprietaryBankTransactionCode(FRProprietaryBankTransactionCodeStructure proprietaryTransactionCode) {
+        return proprietaryTransactionCode == null ? null : new OBTransaction3ProprietaryBankTransactionCode()
+                .code(proprietaryTransactionCode.getCode())
+                .issuer(proprietaryTransactionCode.getIssuer());
+    }
+
+    public static OBTransaction5ProprietaryBankTransactionCode toOBTransaction5ProprietaryBankTransactionCode(FRProprietaryBankTransactionCodeStructure proprietaryTransactionCode) {
+        return proprietaryTransactionCode == null ? null : new OBTransaction5ProprietaryBankTransactionCode()
+                .code(proprietaryTransactionCode.getCode())
+                .issuer(proprietaryTransactionCode.getIssuer());
+    }
+
+    public static OBTransactionCardInstrument1 toOBTransactionCardInstrument1(FRTransactionData.FRTransactionCardInstrument cardInstrument) {
+        return cardInstrument == null ? null : new OBTransactionCardInstrument1()
+                .cardSchemeName(toOBExternalCardSchemeType1Code(cardInstrument.getCardSchemeName()))
+                .authorisationType(toOBExternalCardAuthorisationType1Code(cardInstrument.getAuthorisationType()))
+                .name(cardInstrument.getName())
+                .identification(cardInstrument.getIdentification());
+    }
+
+    public static OBTransactionCashBalance toOBTransactionCashBalance(FRTransactionCashBalance balance) {
+        return balance == null ? null : new OBTransactionCashBalance()
+                .amount(toOBActiveOrHistoricCurrencyAndAmount(balance.getAmount()))
+                .creditDebitIndicator(toOBCreditDebitCode(balance.getCreditDebitIndicator()))
+                .type(toOBBalanceType1Code(balance.getType()));
+    }
+
+    public static OBMerchantDetails1 toOBMerchantDetails1(FRTransactionData.FRMerchantDetails merchantDetails) {
+        return merchantDetails == null ? null : new OBMerchantDetails1()
+                .merchantName(merchantDetails.getMerchantName())
+                .merchantCategoryCode(merchantDetails.getMerchantCategoryCode());
+    }
+
+    public static OBExternalCardSchemeType1Code toOBExternalCardSchemeType1Code(FRTransactionData.FRCardScheme cardSchemeName) {
+        return cardSchemeName == null ? null : OBExternalCardSchemeType1Code.valueOf(cardSchemeName.name());
+    }
+
+    public static OBExternalCardAuthorisationType1Code toOBExternalCardAuthorisationType1Code(FRTransactionData.FRCardAuthorisationType authorisationType) {
+        return authorisationType == null ? null : OBExternalCardAuthorisationType1Code.valueOf(authorisationType.name());
+    }
+
+    // OB to FR
+    public static FRTransactionData toFRTransactionData(OBTransaction5 transaction) {
+        return transaction == null ? null : FRTransactionData.builder()
+                .accountId(transaction.getAccountId())
+                .transactionId(transaction.getTransactionId())
+                .transactionReference(transaction.getTransactionReference())
+                .statementReferences(transaction.getStatementReference())
+                .creditDebitIndicator(toFRCreditDebitIndicator(transaction.getCreditDebitIndicator()))
+                .status(toFREntryStatus(transaction.getStatus()))
+                .bookingDateTime(transaction.getBookingDateTime())
+                .valueDateTime(transaction.getValueDateTime())
+                .addressLine(transaction.getAddressLine())
+                .amount(toFRAmount(transaction.getAmount()))
+                .chargeAmount(toFRAmount(transaction.getChargeAmount()))
+                .currencyExchange(toFRCurrencyExchange(transaction.getCurrencyExchange()))
+                .bankTransactionCode(toFRBankTransactionCodeStructure(transaction.getBankTransactionCode()))
+                .proprietaryBankTransactionCode(toFRProprietaryBankTransactionCodeStructure(transaction.getProprietaryBankTransactionCode()))
+                .cardInstrument(toFRTransactionCardInstrument(transaction.getCardInstrument()))
+                .supplementaryData(toFRSupplementaryData(transaction.getSupplementaryData()))
+                .transactionInformation(transaction.getTransactionInformation())
+                .balance(toFRTransactionCashBalance(transaction.getBalance()))
+                .merchantDetails(toFRMerchantDetails(transaction.getMerchantDetails()))
+                .creditorAgent(toFRFinancialAgent(transaction.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(transaction.getCreditorAccount()))
+                .debtorAgent(toFRFinancialAgent(transaction.getDebtorAgent()))
+                .debtorAccount(toFRAccountIdentifier(transaction.getDebtorAccount()))
                 .build();
     }
 
-    public static OBTransaction6 toOBTransaction6(OBTransaction5 obTransaction5) {
-        return obTransaction5 == null ? null : (new OBTransaction6())
-                .accountId(obTransaction5.getAccountId())
-                .transactionId(obTransaction5.getTransactionId())
-                .transactionReference(obTransaction5.getTransactionReference())
-                .statementReference(obTransaction5.getStatementReference())
-                .creditDebitIndicator(OBCreditDebitCode1.valueOf(obTransaction5.getCreditDebitIndicator().name()))
-                .status(obTransaction5.getStatus())
-                .transactionMutability(OBTransactionMutability1Code.IMMUTABLE) // TODO #279 - is this right?
-                .bookingDateTime(obTransaction5.getBookingDateTime())
-                .valueDateTime(obTransaction5.getValueDateTime())
-                .transactionInformation(obTransaction5.getTransactionInformation())
-                .addressLine(obTransaction5.getAddressLine())
-                .amount(toOBActiveOrHistoricCurrencyAndAmount9(obTransaction5.getAmount()))
-                .chargeAmount(toOBActiveOrHistoricCurrencyAndAmount10(obTransaction5.getChargeAmount()))
-                .currencyExchange(obTransaction5.getCurrencyExchange())
-                .bankTransactionCode(obTransaction5.getBankTransactionCode())
-                .proprietaryBankTransactionCode(toOBTransaction5ProprietaryBankTransactionCode(obTransaction5.getProprietaryBankTransactionCode()))
-                .balance(obTransaction5.getBalance())
-                .merchantDetails(obTransaction5.getMerchantDetails())
-                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification61(obTransaction5.getCreditorAgent()))
-                .creditorAccount(toOBCashAccount60(obTransaction5.getCreditorAccount()))
-                .debtorAgent(toOBBranchAndFinancialInstitutionIdentification62(obTransaction5.getDebtorAgent()))
-                .debtorAccount(toOBCashAccount61(obTransaction5.getDebtorAccount()))
-                .cardInstrument(obTransaction5.getCardInstrument())
-                .supplementaryData(obTransaction5.getSupplementaryData());
+    public static FRTransactionData toFRTransactionData(OBTransaction6 transaction) {
+        return transaction == null ? null : FRTransactionData.builder()
+                .accountId(transaction.getAccountId())
+                .transactionId(transaction.getTransactionId())
+                .transactionReference(transaction.getTransactionReference())
+                .statementReferences(transaction.getStatementReference())
+                .creditDebitIndicator(toFRCreditDebitIndicator(transaction.getCreditDebitIndicator()))
+                .status(toFREntryStatus(transaction.getStatus()))
+                .transactionMutability(toFRTransactionMutability(transaction.getTransactionMutability()))
+                .bookingDateTime(transaction.getBookingDateTime())
+                .valueDateTime(transaction.getValueDateTime())
+                .transactionInformation(transaction.getTransactionInformation())
+                .addressLine(transaction.getAddressLine())
+                .amount(toFRAmount(transaction.getAmount()))
+                .chargeAmount(toFRAmount(transaction.getChargeAmount()))
+                .currencyExchange(toFRCurrencyExchange(transaction.getCurrencyExchange()))
+                .bankTransactionCode(toFRBankTransactionCodeStructure(transaction.getBankTransactionCode()))
+                .proprietaryBankTransactionCode(toFRProprietaryBankTransactionCodeStructure(transaction.getProprietaryBankTransactionCode()))
+                .balance(toFRTransactionCashBalance(transaction.getBalance()))
+                .merchantDetails(toFRMerchantDetails(transaction.getMerchantDetails()))
+                .creditorAgent(toFRFinancialAgent(transaction.getCreditorAgent()))
+                .creditorAccount(toFRAccountIdentifier(transaction.getCreditorAccount()))
+                .debtorAgent(toFRFinancialAgent(transaction.getDebtorAgent()))
+                .debtorAccount(toFRAccountIdentifier(transaction.getDebtorAccount()))
+                .cardInstrument(toFRTransactionCardInstrument(transaction.getCardInstrument()))
+                .supplementaryData(toFRSupplementaryData(transaction.getSupplementaryData()))
+                .build();
     }
 
-    public static ProprietaryBankTransactionCodeStructure1 toOBTransaction5ProprietaryBankTransactionCode(OBTransaction5ProprietaryBankTransactionCode proprietaryBankTransactionCode) {
-        return proprietaryBankTransactionCode == null ? null : (new ProprietaryBankTransactionCodeStructure1())
-                .code(proprietaryBankTransactionCode.getCode())
-                .issuer(proprietaryBankTransactionCode.getIssuer());
+    public static FRTransactionData.FREntryStatus toFREntryStatus(OBEntryStatus1Code status) {
+        return status == null ? null : FRTransactionData.FREntryStatus.valueOf(status.name());
+    }
+
+    public static FRTransactionData.FRTransactionMutability toFRTransactionMutability(OBTransactionMutability1Code transactionMutability) {
+        return transactionMutability == null ? null : FRTransactionData.FRTransactionMutability.valueOf(transactionMutability.name());
+    }
+
+    public static FRBankTransactionCodeStructure toFRBankTransactionCodeStructure(OBBankTransactionCodeStructure1 transactionCode) {
+        return transactionCode == null ? null : FRBankTransactionCodeStructure.builder()
+                .code(transactionCode.getCode())
+                .subCode(transactionCode.getSubCode())
+                .build();
+    }
+
+    private static FRProprietaryBankTransactionCodeStructure toFRProprietaryBankTransactionCodeStructure(OBTransaction5ProprietaryBankTransactionCode proprietaryTransactionCode) {
+        return proprietaryTransactionCode == null ? null : FRProprietaryBankTransactionCodeStructure.builder()
+                .code(proprietaryTransactionCode.getCode())
+                .issuer(proprietaryTransactionCode.getIssuer())
+                .build();
+    }
+
+    public static FRProprietaryBankTransactionCodeStructure toFRProprietaryBankTransactionCodeStructure(ProprietaryBankTransactionCodeStructure1 proprietaryTransactionCode) {
+        return proprietaryTransactionCode == null ? null : FRProprietaryBankTransactionCodeStructure.builder()
+                .code(proprietaryTransactionCode.getCode())
+                .issuer(proprietaryTransactionCode.getIssuer())
+                .build();
+    }
+
+    public static FRTransactionCashBalance toFRTransactionCashBalance(OBTransactionCashBalance balance) {
+        return balance == null ? null : FRTransactionCashBalance.builder()
+                .amount(toFRAmount(balance.getAmount()))
+                .creditDebitIndicator(toFRCreditDebitIndicator(balance.getCreditDebitIndicator()))
+                .type(toFRBalanceType(balance.getType()))
+                .build();
+    }
+
+    public static FRTransactionData.FRMerchantDetails toFRMerchantDetails(OBMerchantDetails1 merchantDetails) {
+        return merchantDetails == null ? null : FRTransactionData.FRMerchantDetails.builder()
+                .merchantName(merchantDetails.getMerchantName())
+                .merchantCategoryCode(merchantDetails.getMerchantCategoryCode())
+                .build();
+    }
+
+
+    public static FRTransactionData.FRTransactionCardInstrument toFRTransactionCardInstrument(OBTransactionCardInstrument1 cardInstrument) {
+        return cardInstrument == null ? null : FRTransactionData.FRTransactionCardInstrument.builder()
+                .cardSchemeName(toFRCardScheme(cardInstrument.getCardSchemeName()))
+                .authorisationType(toFRCardAuthorisationType(cardInstrument.getAuthorisationType()))
+                .name(cardInstrument.getName())
+                .identification(cardInstrument.getIdentification())
+                .build();
+    }
+
+    public static FRTransactionData.FRCardScheme toFRCardScheme(OBExternalCardSchemeType1Code cardSchemeName) {
+        return cardSchemeName == null ? null : FRTransactionData.FRCardScheme.valueOf(cardSchemeName.name());
+    }
+
+    public static FRTransactionData.FRCardAuthorisationType toFRCardAuthorisationType(OBExternalCardAuthorisationType1Code authorisationType) {
+        return authorisationType == null ? null : FRTransactionData.FRCardAuthorisationType.valueOf(authorisationType.name());
     }
 }

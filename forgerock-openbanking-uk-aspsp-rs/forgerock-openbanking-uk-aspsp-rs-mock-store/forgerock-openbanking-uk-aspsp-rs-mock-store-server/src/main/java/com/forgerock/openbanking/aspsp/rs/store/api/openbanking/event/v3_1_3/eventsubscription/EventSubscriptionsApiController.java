@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_3.eventsubscription;
 
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v3_1_2.events.EventSubscriptionsRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.EventSubscriptionsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtil;

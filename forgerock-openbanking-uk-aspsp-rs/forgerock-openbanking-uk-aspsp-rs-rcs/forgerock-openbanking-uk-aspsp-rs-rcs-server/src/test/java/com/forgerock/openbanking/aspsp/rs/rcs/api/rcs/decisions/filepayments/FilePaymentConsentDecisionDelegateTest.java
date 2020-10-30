@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.filepayments;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.AbstractDecisionDelegateTest;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.services.store.payment.FilePaymentService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Before;
@@ -41,13 +41,13 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class FilePaymentConsentDecisionDelegateTest extends AbstractDecisionDelegateTest {
     private FilePaymentService paymentService;
-    private FRFileConsent5 consent;
+    private FRFileConsent consent;
     private FilePaymentConsentDecisionDelegate decisionDelegate;
 
     @Before
     public void setup() {
         paymentService = mock(FilePaymentService.class);
-        consent = FRFileConsent5.builder()
+        consent = FRFileConsent.builder()
                 .id(CONSENT_ID)
                 .pispId(PISP_ID)
                 .userId(USER_ID)

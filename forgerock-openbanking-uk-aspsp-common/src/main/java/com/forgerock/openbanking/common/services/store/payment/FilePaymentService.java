@@ -20,8 +20,8 @@
  */
 package com.forgerock.openbanking.common.services.store.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v3_1_5.payment.FRFileConsent5;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +38,7 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class FilePaymentService implements PaymentService<FRFileConsent5> {
+public class FilePaymentService implements PaymentService<FRFileConsent> {
     private static final String BASE_RESOURCE_PATH = "/api/file-payments/";
 
     private String rsStoreRoot;
@@ -52,25 +52,25 @@ public class FilePaymentService implements PaymentService<FRFileConsent5> {
     }
 
     @Override
-    public FRFileConsent5 getPayment(String consentId) {
+    public FRFileConsent getPayment(String consentId) {
         log.debug("Getting consent for {}", consentId);
         return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId,
-                FRFileConsent5.class);
+                FRFileConsent.class);
     }
 
     @Override
-    public void updatePayment(FRFileConsent5 consent) {
+    public void updatePayment(FRFileConsent consent) {
         log.debug("Update the consent in the store. {}", consent);
         restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH, consent);
     }
 
-    public Collection<FRFileConsent5> getAllPaymentFilesInProcess() {
+    public Collection<FRFileConsent> getAllPaymentFilesInProcess() {
         log.debug("Read all the file payments");
-        ParameterizedTypeReference<List<FRFileConsent5>> ptr = new ParameterizedTypeReference<List<FRFileConsent5>>() {};
+        ParameterizedTypeReference<List<FRFileConsent>> ptr = new ParameterizedTypeReference<List<FRFileConsent>>() {};
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + BASE_RESOURCE_PATH + "search/findByStatus");
         builder.queryParam("status", ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
         URI uri = builder.build().encode().toUri();
-        ResponseEntity<List<FRFileConsent5>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
+        ResponseEntity<List<FRFileConsent>> entity = restTemplate.exchange(uri, HttpMethod.GET, null, ptr);
         return entity.getBody();
     }
 }

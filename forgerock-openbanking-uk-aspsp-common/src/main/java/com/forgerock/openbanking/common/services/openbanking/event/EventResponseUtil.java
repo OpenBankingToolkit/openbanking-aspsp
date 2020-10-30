@@ -21,12 +21,16 @@
 package com.forgerock.openbanking.common.services.openbanking.event;
 
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
-import com.forgerock.openbanking.common.model.openbanking.v3_0.event.FRCallbackUrl1;
+import com.forgerock.openbanking.common.model.openbanking.domain.event.FRCallbackUrlData;
+import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.account.Links;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.event.*;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlResponse1;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlResponseData1;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
+import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponseData1;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
@@ -49,17 +53,17 @@ public class EventResponseUtil {
 
     /**
      * Provides the response collection object {@link OBCallbackUrlsResponse1} filtered by version instanced
-     * @param frCallbackUrls collection {@link FRCallbackUrl1}
+     * @param frCallbackUrls collection {@link FRCallbackUrl}
      * @return response collection object {@link OBCallbackUrlsResponse1}
      */
-    public OBCallbackUrlsResponse1 packageResponse(final Collection<FRCallbackUrl1> frCallbackUrls) {
+    public OBCallbackUrlsResponse1 packageResponse(final Collection<FRCallbackUrl> frCallbackUrls) {
         return new OBCallbackUrlsResponse1()
                 .data(new OBCallbackUrlsResponseData1()
                         .callbackUrl(
                                 frCallbackUrls.stream()
                                         // The resource can be accessed from an equal or newer api version instanced
                                         // filtering the resource can be accessed (resource version <= api version instanced)
-                                        .filter(it -> isAccessToResourceAllowedFromApiVersion(it.obCallbackUrl.getData().getVersion()))
+                                        .filter(it -> isAccessToResourceAllowedFromApiVersion(it.callbackUrl.getVersion()))
                                         .map(this::toOBCallbackUrlResponseData1)
                                         .collect(Collectors.toList())
                         )
@@ -73,10 +77,10 @@ public class EventResponseUtil {
      * Create and provide the response object {@link OBCallbackUrlResponse1} for the callback API<br />
      * If the version doesn't exist the 'meta' section will be null or empty
      * @param frCallbackUrl
-     *         {@link FRCallbackUrl1}
+     *         {@link FRCallbackUrl}
      * @return the callback object response
      */
-    public OBCallbackUrlResponse1 packageResponse(FRCallbackUrl1 frCallbackUrl) {
+    public OBCallbackUrlResponse1 packageResponse(FRCallbackUrl frCallbackUrl) {
         return new OBCallbackUrlResponse1()
                 .data(toOBCallbackUrlResponseData1(frCallbackUrl))
                 .meta(shouldHaveMetaSection() ? new Meta() : null)
@@ -96,18 +100,18 @@ public class EventResponseUtil {
 
     /**
      * Provides response Object mapping
-     * @param frCallbackUrl {@link FRCallbackUrl1}
+     * @param frCallbackUrl {@link FRCallbackUrl}
      * @return object response {@link OBCallbackUrlResponseData1} mapped
      */
-    private OBCallbackUrlResponseData1 toOBCallbackUrlResponseData1(FRCallbackUrl1 frCallbackUrl) {
-        final OBCallbackUrlData1 data = frCallbackUrl.getObCallbackUrl().getData();
+    private OBCallbackUrlResponseData1 toOBCallbackUrlResponseData1(FRCallbackUrl frCallbackUrl) {
+        final FRCallbackUrlData data = frCallbackUrl.getCallbackUrl();
         return new OBCallbackUrlResponseData1()
                 .callbackUrlId(frCallbackUrl.getId())
                 .url(data.getUrl())
                 .version(data.getVersion());
     }
 
-    private Links toSelfLink(FRCallbackUrl1 frCallbackUrl) {
+    private Links toSelfLink(FRCallbackUrl frCallbackUrl) {
         return this.resourceLinkService.toSelfLink(frCallbackUrl, discovery -> discovery.getVersion(version).getGetCallbackUrls());
     }
 

@@ -20,12 +20,12 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 /**
  * Represents an individual single payment in a payment file.
@@ -47,7 +47,7 @@ public class FRFilePayment {
 
     private String remittanceUnstructured;
 
-    private OBActiveOrHistoricCurrencyAndAmount instructedAmount;
+    private FRAmount instructedAmount;
 
     private String creditorAccountIdentification;
 

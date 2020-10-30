@@ -22,13 +22,13 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v1_1.pa
 
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FRPaymentSetupRepository;
 import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.v1_1.payments.paymentsetup.FRPaymentSetup1Repository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.v1_1.payment.FRPaymentSetup1;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRPaymentSetup;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import io.swagger.annotations.ApiParam;
@@ -52,6 +52,9 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBInitiation1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("PaymentsApiV1.1")
@@ -59,7 +62,7 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE
 public class PaymentsApiController implements PaymentsApi {
 
     @Autowired
-    private FRPaymentSetup1Repository frPaymentSetup1Repository;
+    private FRPaymentSetupRepository frPaymentSetupRepository;
     @Autowired
     private TppRepository tppRepository;
     @Autowired
@@ -109,7 +112,7 @@ public class PaymentsApiController implements PaymentsApi {
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
 
-        Optional<FRPaymentSetup1> consentByIdempotencyKey = frPaymentSetup1Repository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        Optional<FRPaymentSetup> consentByIdempotencyKey = frPaymentSetupRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, paymentSetupPOSTRequest, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getPaymentSetupRequest());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
@@ -117,17 +120,17 @@ public class PaymentsApiController implements PaymentsApi {
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
-        FRPaymentSetup1 frPaymentSetup = new FRPaymentSetup1();
+        FRPaymentSetup frPaymentSetup = new FRPaymentSetup();
         frPaymentSetup.setId(IntentType.PAYMENT_SINGLE_REQUEST.generateIntentId());
 
         frPaymentSetup.setStatus(ConsentStatusCode.ACCEPTEDTECHNICALVALIDATION);
-        frPaymentSetup.setPaymentSetupRequest(paymentSetupPOSTRequest);
+        frPaymentSetup.setPaymentSetupRequest(toFRWriteDomesticConsent(paymentSetupPOSTRequest));
         frPaymentSetup.setPisp(tpp);
         frPaymentSetup.setIdempotencyKey(xIdempotencyKey);
         frPaymentSetup.setObVersion(VersionPathExtractor.getVersionFromPath(httpServletRequest));
 
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(frPaymentSetup.getId(), frPaymentSetup.getStatus().name()));
-        frPaymentSetup = frPaymentSetup1Repository.save(frPaymentSetup);
+        frPaymentSetup = frPaymentSetupRepository.save(frPaymentSetup);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(packageIntoPaymentSetupResponse(frPaymentSetup));
     }
@@ -157,26 +160,30 @@ public class PaymentsApiController implements PaymentsApi {
             @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId
     ) throws OBErrorResponseException {
 
-        Optional<FRPaymentSetup1> isPaymentSetup = frPaymentSetup1Repository.findById(paymentId);
+        Optional<FRPaymentSetup> isPaymentSetup = frPaymentSetupRepository.findById(paymentId);
         if (isPaymentSetup.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup '" + paymentId + "' can't be found");
         }
-        FRPaymentSetup1 frPaymentSetup = isPaymentSetup.get();
+        FRPaymentSetup frPaymentSetup = isPaymentSetup.get();
 
         return ResponseEntity.ok(packageIntoPaymentSetupResponse(frPaymentSetup));
     }
 
-    private OBPaymentSetupResponse1 packageIntoPaymentSetupResponse(FRPaymentSetup1 frPaymentSetup) {
+    private OBPaymentSetupResponse1 packageIntoPaymentSetupResponse(FRPaymentSetup frPaymentSetup) {
         OBPaymentDataSetupResponse1 data = new OBPaymentDataSetupResponse1()
                 .paymentId(frPaymentSetup.getId())
                 .status(frPaymentSetup.getStatus().toOBTransactionIndividualStatus1Code())
                 .creationDateTime(frPaymentSetup.getCreated())
-                .initiation(frPaymentSetup.getPaymentSetupRequest().getData().getInitiation());
+                .initiation(toOBInitiation1(frPaymentSetup.getPaymentSetupRequest().getData().getInitiation()));
         return new OBPaymentSetupResponse1()
                 .data(data)
-                .risk(frPaymentSetup.getPaymentSetupRequest().getRisk())
+                .risk(toOBRisk1(frPaymentSetup.getPaymentSetupRequest().getRisk()))
                 .links(resourceLinkService.toSelfLink(frPaymentSetup, discovery -> discovery.getV_1_1().getGetSingleImmediatePayment()))
                 .meta(new Meta());
     }
+
+
+
+
 
 }

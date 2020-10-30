@@ -21,7 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
 import com.forgerock.openbanking.common.utils.DateTimeUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
@@ -31,7 +32,6 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 
 import javax.validation.constraints.NotNull;
 import java.util.Arrays;
@@ -95,24 +95,23 @@ public class TransactionsEndpointWrapper extends AccountsApiEndpointWrapper<Tran
     }
 
     public void verifyTransactionsPermissions() throws OBErrorException {
-        @NotNull List<OBExternalPermissions1Code> permissions = getAccountRequest().getPermissions();
-        if (permissions.contains(OBExternalPermissions1Code.READTRANSACTIONSDETAIL)
-                && permissions.contains(OBExternalPermissions1Code.READTRANSACTIONSBASIC)) {
+        @NotNull List<FRExternalPermissionsCode> permissions = getAccountRequest().getPermissions();
+        if (permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSDETAIL)
+                && permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSBASIC)) {
             throw new OBErrorException(OBRIErrorType.PERMISSIONS_TRANSACTIONS_INVALID,
                     "We can't allow basic and detail at the same time"
             );
         }
-        if (!permissions.contains(OBExternalPermissions1Code.READTRANSACTIONSDETAIL)
-                && !permissions.contains(OBExternalPermissions1Code.READTRANSACTIONSBASIC)) {
+        if (!permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSDETAIL)
+                && !permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSBASIC)) {
             LOGGER.error("We need the permission to get transactions information");
             throw new OBErrorException(OBRIErrorType.PERMISSIONS_TRANSACTIONS_INVALID,
                     "Need permission to get transaction information"
             );
         }
 
-        if (!permissions.contains(OBExternalPermissions1Code.READTRANSACTIONSCREDITS)
-                && !permissions.contains(OBExternalPermissions1Code
-                .READTRANSACTIONSDEBITS)) {
+        if (!permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSCREDITS)
+                && !permissions.contains(FRExternalPermissionsCode.READTRANSACTIONSDEBITS)) {
             LOGGER.error("We need the permission to debit or credit transactions");
             throw new OBErrorException(OBRIErrorType.PERMISSIONS_TRANSACTIONS_INVALID,
                     "Need permission for reading debit or credit transactions"
@@ -122,8 +121,8 @@ public class TransactionsEndpointWrapper extends AccountsApiEndpointWrapper<Tran
 
     public interface Main {
         ResponseEntity run(
-                FRAccountRequest accountRequest,
-                List<OBExternalPermissions1Code> permissions,
+                AccountRequest accountRequest,
+                List<FRExternalPermissionsCode> permissions,
                 DateTime transactionFrom,
                 DateTime transactionTo,
                 DateTime fromBookingDateTimeUPD,

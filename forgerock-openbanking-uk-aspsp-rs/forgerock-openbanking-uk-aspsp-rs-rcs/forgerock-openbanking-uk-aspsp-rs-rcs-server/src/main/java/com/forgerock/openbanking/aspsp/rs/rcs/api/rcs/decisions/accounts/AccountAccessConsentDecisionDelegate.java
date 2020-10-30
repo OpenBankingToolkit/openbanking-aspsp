@@ -22,16 +22,16 @@ package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccount;
-import com.forgerock.openbanking.common.model.openbanking.forgerock.FRAccountRequest;
-import com.forgerock.openbanking.common.model.openbanking.v2_0.account.FRAccount2;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.Account;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.AccountConsentDecision;
 import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 @Slf4j
 class AccountAccessConsentDecisionDelegate implements ConsentDecisionDelegate {
 
-    private FRAccountRequest accountRequest;
+    private AccountRequest accountRequest;
     private AccountStoreService accountsService;
     private ObjectMapper objectMapper;
     private AccountRequestStoreService accountRequestStoreService;
@@ -48,7 +48,7 @@ class AccountAccessConsentDecisionDelegate implements ConsentDecisionDelegate {
     AccountAccessConsentDecisionDelegate(AccountStoreService accountsService,
                                          ObjectMapper objectMapper,
                                          AccountRequestStoreService accountRequestStoreService,
-                                         FRAccountRequest accountRequest) {
+                                         AccountRequest accountRequest) {
         this.accountsService = accountsService;
         this.objectMapper = objectMapper;
         this.accountRequestStoreService = accountRequestStoreService;
@@ -70,8 +70,8 @@ class AccountAccessConsentDecisionDelegate implements ConsentDecisionDelegate {
         AccountConsentDecision accountConsentDecision = objectMapper.readValue(consentDecisionSerialised, AccountConsentDecision.class);
 
         if (decision) {
-            List<FRAccount2> accounts = accountsService.get(accountRequest.getUserId());
-            List<String> accountsId = accounts.stream().map(FRAccount::getId).collect(Collectors.toList());
+            List<FRAccount> accounts = accountsService.get(accountRequest.getUserId());
+            List<String> accountsId = accounts.stream().map(Account::getId).collect(Collectors.toList());
             if (!accountsId.containsAll(accountConsentDecision.getSharedAccounts())) {
                 log.error("The PSU {} is trying to share an account '{}' he doesn't own. List of his accounts '{}'",
                         accountRequest.getUserId(),
@@ -81,20 +81,20 @@ class AccountAccessConsentDecisionDelegate implements ConsentDecisionDelegate {
                         accountsId, accountConsentDecision.getSharedAccounts());
             }
             accountRequest.setAccountIds(accountConsentDecision.getSharedAccounts());
-            accountRequest.setStatus(OBExternalRequestStatus1Code.AUTHORISED);
+            accountRequest.setStatus(FRExternalRequestStatusCode.AUTHORISED);
             accountRequestStoreService.save(accountRequest);
         } else {
             log.debug("The account request {} has been deny", accountRequest.getId());
-            accountRequest.setStatus(OBExternalRequestStatus1Code.REJECTED);
+            accountRequest.setStatus(FRExternalRequestStatusCode.REJECTED);
             accountRequestStoreService.save(accountRequest);
         }
     }
 
     @Override
-    public void autoaccept(List<FRAccount2> accounts, String username) {
+    public void autoaccept(List<FRAccount> accounts, String username) {
         accountRequest.setUserId(username);
-        accountRequest.setAccountIds(accounts.stream().map(FRAccount2::getId).collect(Collectors.toList()));
-        accountRequest.setStatus(OBExternalRequestStatus1Code.AUTHORISED);
+        accountRequest.setAccountIds(accounts.stream().map(FRAccount::getId).collect(Collectors.toList()));
+        accountRequest.setStatus(FRExternalRequestStatusCode.AUTHORISED);
         accountRequestStoreService.save(accountRequest);
     }
 }
