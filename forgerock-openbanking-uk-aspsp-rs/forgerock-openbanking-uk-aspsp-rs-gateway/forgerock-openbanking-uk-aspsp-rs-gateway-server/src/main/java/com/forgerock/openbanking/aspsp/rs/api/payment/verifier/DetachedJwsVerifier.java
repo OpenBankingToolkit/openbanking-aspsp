@@ -87,7 +87,7 @@ public class DetachedJwsVerifier {
             Tpp tpp = tppStoreService.findByClientId(currentUser.getUsername()).get();
             String softwareStatement = tpp.getSsa();
             Map<String, Object> softwareStatmentObjects = JSONObjectUtils.parse(softwareStatement);
-            Object orgId = (String) softwareStatmentObjects.get("org_id");
+            String orgId = (String) softwareStatmentObjects.get("org_id");
             String softwareId = (String) softwareStatmentObjects.get("software_id");
             String expectedIssuer = orgId + "/" + softwareId;
 
