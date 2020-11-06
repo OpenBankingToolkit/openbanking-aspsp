@@ -29,7 +29,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled2;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder3;
 
 import java.util.Date;
 
@@ -49,12 +49,12 @@ import java.util.Date;
 @Data
 @Document
 @Deprecated
-public class InternationalScheduledPaymentSubmission2 implements PaymentSubmission {
+public class FRInternationalStandingOrderPaymentSubmission3 implements PaymentSubmission {
     @Id
     @Indexed
     public String id;
 
-    public OBWriteInternationalScheduled2 internationalScheduledPayment;
+    public OBWriteInternationalStandingOrder3 internationalStandingOrder;
 
     @CreatedDate
     public Date created;

@@ -20,14 +20,14 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.v3_1_6.payments;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.payments.InternationalStandingOrderPaymentSubmission3;
+import com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.payments.FRInternationalStandingOrderPaymentSubmission3;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderPaymentSubmission;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 
 public class FRInternationalStandingOrderPaymentSubmissionMigrator {
 
-    public static FRInternationalStandingOrderPaymentSubmission toFRInternationalStandingOrderPaymentSubmission(InternationalStandingOrderPaymentSubmission3 frInternationalStandingOrderPaymentSubmission3) {
+    public static FRInternationalStandingOrderPaymentSubmission toFRInternationalStandingOrderPaymentSubmission(FRInternationalStandingOrderPaymentSubmission3 frInternationalStandingOrderPaymentSubmission3) {
         return frInternationalStandingOrderPaymentSubmission3 == null ? null : FRInternationalStandingOrderPaymentSubmission.builder()
                 .id(frInternationalStandingOrderPaymentSubmission3.getId())
                 .internationalStandingOrder(toFRWriteInternationalStandingOrder(frInternationalStandingOrderPaymentSubmission3.getInternationalStandingOrder()))

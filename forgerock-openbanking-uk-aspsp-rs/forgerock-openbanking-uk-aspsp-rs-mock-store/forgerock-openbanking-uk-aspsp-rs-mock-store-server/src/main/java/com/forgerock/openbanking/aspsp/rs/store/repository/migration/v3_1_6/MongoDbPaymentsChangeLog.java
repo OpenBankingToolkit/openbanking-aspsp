@@ -88,19 +88,19 @@ public class MongoDbPaymentsChangeLog {
         CloseableIterator<FRInternationalConsent2> frInternationalConsents = getLegacyDocuments(mongoTemplate, FRInternationalConsent2.class);
         frInternationalConsents.forEachRemaining(d -> migrate(mongoTemplate, d, toFRInternationalConsent(d)));
 
-        CloseableIterator<InternationalPaymentSubmission2> frInternationalPaymentSubmissions = getLegacyDocuments(mongoTemplate, InternationalPaymentSubmission2.class);
+        CloseableIterator<FRInternationalPaymentSubmission2> frInternationalPaymentSubmissions = getLegacyDocuments(mongoTemplate, FRInternationalPaymentSubmission2.class);
         frInternationalPaymentSubmissions.forEachRemaining(d -> migrate(mongoTemplate, d, toFRInternationalPaymentSubmission(d)));
 
         CloseableIterator<FRInternationalScheduledConsent2> frInternationalScheduledConsents = getLegacyDocuments(mongoTemplate, FRInternationalScheduledConsent2.class);
         frInternationalScheduledConsents.forEachRemaining(d -> migrate(mongoTemplate, d, toFRInternationalScheduledConsent(d)));
 
-        CloseableIterator<InternationalScheduledPaymentSubmission2> frInternationalScheduledPaymentSubmissions = getLegacyDocuments(mongoTemplate, InternationalScheduledPaymentSubmission2.class);
+        CloseableIterator<FRInternationalScheduledPaymentSubmission2> frInternationalScheduledPaymentSubmissions = getLegacyDocuments(mongoTemplate, FRInternationalScheduledPaymentSubmission2.class);
         frInternationalScheduledPaymentSubmissions.forEachRemaining(d -> migrate(mongoTemplate, d, toFRInternationalScheduledPaymentSubmission(d)));
 
         CloseableIterator<FRInternationalStandingOrderConsent3> frInternationalStandingOrderConsents = getLegacyDocuments(mongoTemplate, FRInternationalStandingOrderConsent3.class);
         frInternationalStandingOrderConsents.forEachRemaining(d -> migrate(mongoTemplate, d, toFRInternationalStandingOrderConsent(d)));
 
-        CloseableIterator<InternationalStandingOrderPaymentSubmission3> frInternationalStandingOrderPaymentSubmissions = getLegacyDocuments(mongoTemplate, InternationalStandingOrderPaymentSubmission3.class);
+        CloseableIterator<FRInternationalStandingOrderPaymentSubmission3> frInternationalStandingOrderPaymentSubmissions = getLegacyDocuments(mongoTemplate, FRInternationalStandingOrderPaymentSubmission3.class);
         frInternationalStandingOrderPaymentSubmissions.forEachRemaining(d -> migrate(mongoTemplate, d, toFRInternationalStandingOrderPaymentSubmission(d)));
     }
 }
