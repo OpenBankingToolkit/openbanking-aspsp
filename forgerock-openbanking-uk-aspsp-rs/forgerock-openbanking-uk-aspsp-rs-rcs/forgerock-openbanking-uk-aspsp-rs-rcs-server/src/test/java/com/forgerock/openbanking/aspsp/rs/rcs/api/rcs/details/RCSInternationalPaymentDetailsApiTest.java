@@ -98,4 +98,93 @@ public class RCSInternationalPaymentDetailsApiTest {
         assertThat(body.getAccounts().size()).isEqualTo(1);
         assertThat(body.getAccounts()).containsExactly(accounts.get(0));
     }
+
+    @Test
+    public void shouldReturnRequestedAccountWithNoExchangeRate() throws OBErrorException {
+        // Given
+        List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
+        FRInternationalConsent consent = JMockData.mock(FRInternationalConsent.class);
+        FRAccountIdentifier firstAccount = accounts.get(0).getAccount().getAccounts().get(0);
+        consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
+        consent.getInitiation().setExchangeRateInformation(null);
+        given(paymentService.getPayment(any())).willReturn(consent);
+        given(tppStoreService.findById(consent.getPispId())).willReturn(Optional.of(Tpp.builder().clientId(CLIENT_ID).build()));
+
+        // When
+        ResponseEntity responseEntity = api.consentDetails("abcd", accounts, "user1", "c123", CLIENT_ID);
+
+        // Then
+        InternationalPaymentConsentDetails body = (InternationalPaymentConsentDetails) Objects.requireNonNull(responseEntity.getBody());
+        assertThat(body.getRate()).isNull();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(body.getAccounts().size()).isEqualTo(1);
+        assertThat(body.getAccounts()).containsExactly(accounts.get(0));
+    }
+
+    @Test
+    public void shouldReturnRequestedAccountWithNoCreditor() throws OBErrorException {
+        // Given
+        List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
+        FRInternationalConsent consent = JMockData.mock(FRInternationalConsent.class);
+        FRAccountIdentifier firstAccount = accounts.get(0).getAccount().getAccounts().get(0);
+        consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
+        consent.getInitiation().setCreditor(null);
+        given(paymentService.getPayment(any())).willReturn(consent);
+        given(tppStoreService.findById(consent.getPispId())).willReturn(Optional.of(Tpp.builder().clientId(CLIENT_ID).build()));
+
+        // When
+        ResponseEntity responseEntity = api.consentDetails("abcd", accounts, "user1", "c123", CLIENT_ID);
+
+        // Then
+        InternationalPaymentConsentDetails body = (InternationalPaymentConsentDetails) Objects.requireNonNull(responseEntity.getBody());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(body.getAccounts().size()).isEqualTo(1);
+        assertThat(body.getAccounts()).containsExactly(accounts.get(0));
+    }
+
+    @Test
+    public void shouldReturnRequestedAccountWithNoCreditorAgent() throws OBErrorException {
+        // Given
+        List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
+        FRInternationalConsent consent = JMockData.mock(FRInternationalConsent.class);
+        FRAccountIdentifier firstAccount = accounts.get(0).getAccount().getAccounts().get(0);
+        consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
+        consent.getInitiation().setCreditorAgent(null);
+        given(paymentService.getPayment(any())).willReturn(consent);
+        given(tppStoreService.findById(consent.getPispId())).willReturn(Optional.of(Tpp.builder().clientId(CLIENT_ID).build()));
+
+        // When
+        ResponseEntity responseEntity = api.consentDetails("abcd", accounts, "user1", "c123", CLIENT_ID);
+
+        // Then
+        InternationalPaymentConsentDetails body = (InternationalPaymentConsentDetails) Objects.requireNonNull(responseEntity.getBody());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(body.getAccounts().size()).isEqualTo(1);
+        assertThat(body.getAccounts()).containsExactly(accounts.get(0));
+    }
+
+    @Test
+    public void shouldReturnRequestedAccountWithOnlyMandatoryFields() throws OBErrorException {
+        // Given
+        List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
+        FRInternationalConsent consent = JMockData.mock(FRInternationalConsent.class);
+        FRAccountIdentifier firstAccount = accounts.get(0).getAccount().getAccounts().get(0);
+        consent.getInitiation().getDebtorAccount().setIdentification(firstAccount.getIdentification());
+        consent.getInitiation().setExchangeRateInformation(null);
+        consent.getInitiation().setCreditor(null);
+        consent.getInitiation().setCreditorAgent(null);
+        consent.getInitiation().setRemittanceInformation(null);
+        consent.getInitiation().setSupplementaryData(null);
+        given(paymentService.getPayment(any())).willReturn(consent);
+        given(tppStoreService.findById(consent.getPispId())).willReturn(Optional.of(Tpp.builder().clientId(CLIENT_ID).build()));
+
+        // When
+        ResponseEntity responseEntity = api.consentDetails("abcd", accounts, "user1", "c123", CLIENT_ID);
+
+        // Then
+        InternationalPaymentConsentDetails body = (InternationalPaymentConsentDetails) Objects.requireNonNull(responseEntity.getBody());
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(body.getAccounts().size()).isEqualTo(1);
+        assertThat(body.getAccounts()).containsExactly(accounts.get(0));
+    }
 }
