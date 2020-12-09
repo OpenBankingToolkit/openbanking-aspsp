@@ -99,13 +99,9 @@ public class RCSInternationalPaymentDetailsApi implements RCSDetailsApi {
 
         FRWriteInternationalDataInitiation initiation = payment.getInitiation();
         FRExchangeRateInformation exchangeRateInformation = payment.getCalculatedExchangeRate();
-        return ResponseEntity.ok(InternationalPaymentConsentDetails.builder()
+
+        InternationalPaymentConsentDetails internationalPaymentConsentDetails = InternationalPaymentConsentDetails.builder()
                 .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
-                .rate(new OBExchangeRate2()
-                        .exchangeRate(exchangeRateInformation.getExchangeRate())
-                        .rateType(toOBExchangeRateType2Code(exchangeRateInformation.getRateType()))
-                        .contractIdentification(exchangeRateInformation.getContractIdentification())
-                        .unitCurrency(exchangeRateInformation.getUnitCurrency()))
                 .accounts(accounts)
                 .username(username)
                 .logo(tpp.getLogo())
@@ -116,7 +112,17 @@ public class RCSInternationalPaymentDetailsApi implements RCSDetailsApi {
                         initiation.getRemittanceInformation())
                         .map(FRRemittanceInformation::getReference)
                         .orElse(""))
-                .build());
+                .build();
+        // fix issue https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/13
+        if (exchangeRateInformation != null) {
+            internationalPaymentConsentDetails.setRate(new OBExchangeRate2()
+                    .exchangeRate(exchangeRateInformation.getExchangeRate())
+                    .rateType(toOBExchangeRateType2Code(exchangeRateInformation.getRateType()))
+                    .contractIdentification(exchangeRateInformation.getContractIdentification())
+                    .unitCurrency(exchangeRateInformation.getUnitCurrency()));
+        }
+        // issue fix
+        return ResponseEntity.ok(internationalPaymentConsentDetails);
     }
 
 }

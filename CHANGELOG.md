@@ -1,18 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
-### GitHub [#296](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/296) Release/1.0.106
-[8e943d76bd519d9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8e943d76bd519d9) Matt Wills *2020-11-06 12:33:43*
-Fixed class names of legacy international "submission" documents (#296)
-[eba9782c348f4bb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eba9782c348f4bb) Matt Wills *2020-11-02 16:00:41*
-Updated version in package.json to 3.1.6-smiths-rc2 (#620)
-[f39c936a3cab808](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f39c936a3cab808) JamieB *2020-11-02 15:31:53*
-Addresses a PR comment
-
-From this PR https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/300
-[7e69af229f1e71e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7e69af229f1e71e) Matt Wills *2020-10-30 10:56:07*
+[671c9af01b1a3d2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/671c9af01b1a3d2) Matt Wills *2020-11-06 14:24:30*
 Release candidate: prepare for next development iteration
-## 1.0.108
+## 1.0.109
 ### GitHub [#288](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/288) Feature 238 - Events
 [0d0f71bf542d439](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0d0f71bf542d439) Jorge Sanchez Perez *2020-10-12 14:52:04*
 Feature 238 - Events (#288)
@@ -60,8 +51,8 @@ Feature 238 - Event Notifications API (#295)
 * Make Safe thread Event response util
 * Generic Event Notifications api enhancements
 ### GitHub [#296](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/296) Release/1.0.106
-[7646f626054255c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7646f626054255c) Matt Wills *2020-10-30 10:44:44*
-CHANGELOG.md update #296
+[8e943d76bd519d9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8e943d76bd519d9) Matt Wills *2020-11-06 12:33:43*
+Fixed class names of legacy international "submission" documents (#296)
 [bc8b0505430a540](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bc8b0505430a540) Matt Wills *2020-10-30 09:11:13*
 Test commit on new machine (minor change) #296
 [4c04b6c64543efb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4c04b6c64543efb) Jorge Sanchez Perez *2020-10-23 10:18:20*
@@ -132,8 +123,16 @@ Feature/238 3 event notifications (#298)
 * New integration test implemented for callbackurl 3.1.2
 
 * update method name
-[3fd6fa3250047a2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3fd6fa3250047a2) Matt Wills *2020-10-30 10:55:57*
-Release candidate: prepare release 1.0.108
+[eba9782c348f4bb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eba9782c348f4bb) Matt Wills *2020-11-02 16:00:41*
+Updated version in package.json to 3.1.6-smiths-rc2 (#620)
+[1d1dfda0670a225](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1d1dfda0670a225) Matt Wills *2020-11-06 14:23:16*
+Release candidate: prepare release 1.0.109
+[f39c936a3cab808](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f39c936a3cab808) JamieB *2020-11-02 15:31:53*
+Addresses a PR comment
+
+From this PR https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/300
+[7e69af229f1e71e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7e69af229f1e71e) Matt Wills *2020-10-30 10:56:07*
+Release candidate: prepare for next development iteration
 [03aa1764ad272fd](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/03aa1764ad272fd) JamieB *2020-10-28 15:31:53*
 Release candidate: prepare for next development iteration
 [dc9ee81b8f4aef9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/dc9ee81b8f4aef9) Matt Wills *2020-10-13 13:48:35*
@@ -156,6 +155,12 @@ Release candidate: prepare for next development iteration
 
 This reverts commit b198ec1ab8b95a1c75ebef72bfdf52c7c43b1ffe, reversing
 changes made to 006af5906e56448d8e15b7c3f6043d35bf5ddf1e.
+## 1.0.108
+### GitHub [#296](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/296) Release/1.0.106
+[7646f626054255c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7646f626054255c) Matt Wills *2020-10-30 10:44:44*
+CHANGELOG.md update #296
+[3fd6fa3250047a2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3fd6fa3250047a2) Matt Wills *2020-10-30 10:55:57*
+Release candidate: prepare release 1.0.108
 ## 1.0.107
 [d38b02082439ac4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d38b02082439ac4) JamieB *2020-10-28 15:31:44*
 Release candidate: prepare release 1.0.107
