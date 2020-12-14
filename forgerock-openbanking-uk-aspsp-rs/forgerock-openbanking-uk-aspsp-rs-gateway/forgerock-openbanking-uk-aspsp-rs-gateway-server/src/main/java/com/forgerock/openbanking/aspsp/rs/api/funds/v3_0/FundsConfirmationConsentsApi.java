@@ -68,7 +68,7 @@ public interface FundsConfirmationConsentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
     @PreAuthorize("hasAuthority('ROLE_CBPII')")
     @OpenBankingAPI(
-            obReference = OBReference.GET_FUNDS_CONFIRMATION_CONSENT
+            obReference = OBReference.CREATE_FUNDS_CONFIRMATION_CONSENT
     )
     @RequestMapping(value = FUNDS_CONFIRMATION_CONSENTS_PATH,
             produces = {"application/json; charset=utf-8"},
