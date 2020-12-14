@@ -1,6 +1,15 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#310](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/310) 13: International Payments flow error
+[73af6a81dce87c1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/73af6a81dce87c1) Jorge Sanchez Perez *2020-12-09 09:52:37*
+13: International Payments flow error (#310)
+
+* 13: International Payments flow error
+- ZD: 55780
+- Add conditional control to manage null calculating exchange rates
+- Added tests for optional fields
+* Fix license
 [671c9af01b1a3d2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/671c9af01b1a3d2) Matt Wills *2020-11-06 14:24:30*
 Release candidate: prepare for next development iteration
 ## 1.0.109
