@@ -21,7 +21,6 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.transactions;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
-import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -50,9 +49,7 @@ import java.util.stream.Collectors;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRTransactionConverter.toOBTransaction2;
-import static com.forgerock.openbanking.constants.OpenBankingConstants.AVAILABLE_DATE_FORMAT;
-import static com.forgerock.openbanking.constants.OpenBankingConstants.BOOKED_TIME_DATE_FORMAT;
-import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+import static com.forgerock.openbanking.constants.OpenBankingConstants.*;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.FROM_BOOKING_DATE_TIME;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.ParametersFieldName.TO_BOOKING_DATE_TIME;
 
@@ -65,8 +62,6 @@ public class TransactionsApiController implements TransactionsApi {
 
     @Autowired
     private FRTransactionRepository frTransactionRepository;
-    @Autowired
-    private AccountDataInternalIdFilter accountDataInternalIdFilter;
 
     @Override
     public ResponseEntity<OBReadTransaction2> getAccountTransactions(
@@ -135,7 +130,6 @@ public class TransactionsApiController implements TransactionsApi {
         List<OBTransaction2> transactions = response.getContent()
                 .stream()
                 .map(t -> toOBTransaction2(t.getTransaction()))
-                .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
 
         //Package the answer
@@ -216,7 +210,6 @@ public class TransactionsApiController implements TransactionsApi {
         List<OBTransaction2> transactions = response.getContent()
                 .stream()
                 .map(t -> toOBTransaction2(t.getTransaction()))
-                .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
 
         //Package the answer
@@ -301,7 +294,6 @@ public class TransactionsApiController implements TransactionsApi {
         List<OBTransaction2> transactions = response.getContent()
                 .stream()
                 .map(t -> toOBTransaction2(t.getTransaction()))
-                .map(t -> accountDataInternalIdFilter.apply(t))
                 .collect(Collectors.toList());
 
         //Package the answer
