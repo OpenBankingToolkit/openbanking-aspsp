@@ -58,6 +58,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticConsentResponse5DataReadRefundAccount;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticConsentResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
@@ -195,6 +196,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     private OBWriteDomesticConsentResponse5 packageResponse(FRDomesticConsent domesticConsent) {
         return new OBWriteDomesticConsentResponse5()
                 .data(new OBWriteDomesticConsentResponse5Data()
+                        .readRefundAccount(toOBWriteDomesticConsentResponse5DataReadRefundAccount(domesticConsent.getDomesticConsent().getData().getReadRefundAccount()))
                         .initiation(toOBWriteDomestic2DataInitiation(domesticConsent.getInitiation()))
                         .status(toOBWriteDomesticConsentResponse5DataStatus(domesticConsent.getStatus()))
                         .creationDateTime(domesticConsent.getCreated())

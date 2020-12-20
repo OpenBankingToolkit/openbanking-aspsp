@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import uk.org.openbanking.datamodel.payment.*;
 
@@ -245,6 +246,15 @@ public class ConsentStatusCodeToResponseDataStatusConverter {
                 return OBWriteInternationalStandingOrderResponse7Data.StatusEnum.CANCELLED;
             default:
                 return OBWriteInternationalStandingOrderResponse7Data.StatusEnum.INITIATIONFAILED;
+        }
+    }
+
+    public static OBWriteDomesticConsentResponse5Data.ReadRefundAccountEnum toOBWriteDomesticConsentResponse5DataReadRefundAccount(FRReadRefundAccount frReadRefundAccount){
+        switch (frReadRefundAccount) {
+            case YES:
+                return OBWriteDomesticConsentResponse5Data.ReadRefundAccountEnum.YES;
+            default:
+                return OBWriteDomesticConsentResponse5Data.ReadRefundAccountEnum.NO;
         }
     }
 

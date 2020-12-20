@@ -32,6 +32,7 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomestic;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -44,10 +45,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse5Data;
-import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -151,8 +149,26 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
     }
 
     private OBWriteDomesticResponse5 packagePayment(FRDomesticPaymentSubmission frPaymentSubmission, FRDomesticConsent frDomesticConsent) {
+        // flag set on the consent by the PISP if PSU requests a refund for the transaction.
+        // https://forgerock.zendesk.com/agent/tickets/55834
+        // https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
+        boolean refund = frDomesticConsent.getDomesticConsent().getData().getReadRefundAccount().equals(FRReadRefundAccount.YES);
+
+        OBWriteDomestic2DataInitiation initiation = toOBWriteDomestic2DataInitiation(frDomesticConsent.getDomesticConsent().getData().getInitiation());
+
         return new OBWriteDomesticResponse5()
                 .data(new OBWriteDomesticResponse5Data()
+                        .refund((refund && initiation.getDebtorAccount()!=null) ?
+                                new OBWriteDomesticResponse5DataRefund()
+                                        .account(
+                                                new OBWriteDomesticResponse5DataRefundAccount()
+                                                        .schemeName(initiation.getDebtorAccount().getSchemeName())
+                                                        .identification(initiation.getDebtorAccount().getIdentification())
+                                                        .name(initiation.getDebtorAccount().getName())
+                                                        .secondaryIdentification(initiation.getDebtorAccount().getSecondaryIdentification())
+                                        )
+                                : null
+                        )
                         .domesticPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteDomestic2DataInitiation(frDomesticConsent.getDomesticConsent().getData().getInitiation()))
                         .creationDateTime(frDomesticConsent.getCreated())
