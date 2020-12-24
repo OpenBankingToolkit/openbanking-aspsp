@@ -164,6 +164,37 @@ public class DomesticPaymentsApiControllerIT {
     }
 
     @Test
+    public void testCreateDomesticPaymentSubmission_refundNull() throws UnirestException {
+        // Given
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        FRDomesticConsent consent = saveConsent(null);
+        OBWriteDomestic2 submissionRequest = new OBWriteDomestic2()
+                .risk(toOBRisk1(consent.getRisk()))
+                .data(new OBWriteDataDomestic2()
+                        .consentId(consent.getId())
+                        .initiation(toOBDomestic2(consent.getInitiation())));
+
+        // When
+        HttpResponse<OBWriteDomesticResponse4> response = Unirest.post(RS_STORE_URL + port + CONTEXT_PATH)
+                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                .header(OBHeaders.AUTHORIZATION, "token")
+                .header(OBHeaders.X_IDEMPOTENCY_KEY, "x-idempotency-key")
+                .header(OBHeaders.X_JWS_SIGNATURE, "x-jws-signature")
+                .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
+                .body(submissionRequest)
+                .asObject(OBWriteDomesticResponse4.class);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(201);
+        OBWriteDomesticResponse4 consentResponse = response.getBody();
+        FRDomesticPaymentSubmission submission = submissionRepository.findById(response.getBody().getData().getDomesticPaymentId()).get();
+        assertThat(submission.getId()).isEqualTo(consentResponse.getData().getConsentId());
+        assertThat(consentResponse.getData().getRefund()).isNull();
+        assertThat(toOBWriteDomestic2(submission.getDomesticPayment())).isEqualTo(submissionRequest);
+        assertThat(submission.getObVersion()).isEqualTo(OBVersion.v3_1_4);
+    }
+
+    @Test
     public void testCreateDomesticPaymentSubmission_expectRefundAccount() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);

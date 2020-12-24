@@ -145,6 +145,31 @@ public class DomesticPaymentConsentsApiControllerIT {
     }
 
     @Test
+    public void testGetDomesticPaymentConsent_RefundNull() throws UnirestException {
+        // Given
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        FRDomesticConsent consent = saveFRConsent(null, ConsentStatusCode.CONSUMED);
+
+        // When
+        HttpResponse<OBWriteDomesticConsentResponse5> response = Unirest.get(RS_STORE_URL + port + CONTEXT_PATH + consent.getId())
+                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                .header(OBHeaders.AUTHORIZATION, "token")
+                .asObject(OBWriteDomesticConsentResponse5.class);
+
+        log.debug("Response {}:{}  {}", response.getStatus(), response.getStatusText(), response.getBody());
+        if (response.getParsingError().isPresent()) {
+            log.error("Parsing error", response.getParsingError().get());
+        }
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
+        assertThat(toFRWriteDomesticDataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
+        assertThat(response.getBody().getData().getStatus().getValue()).isEqualTo(consent.getStatus().toOBExternalConsentStatus2Code().toString());
+
+    }
+
+    @Test
     public void testGetDomesticPaymentConsentFunds() throws UnirestException {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);

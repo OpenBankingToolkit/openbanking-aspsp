@@ -53,7 +53,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalStandingOrderConsentResponse7DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseConverter.ReadRefundAccountConverter.toOBWriteInternationalStandingOrderConsentResponse7DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseConverter.StatusCodeConverter.toOBWriteInternationalStandingOrderConsentResponse7DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
@@ -101,7 +102,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, frStandingOrderConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalStandingOrderConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
-            return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(entityInstance(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
@@ -119,7 +120,7 @@ public class InternationalStandingOrderConsentsApiController implements Internat
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(internationalStandingOrderConsent.getId(), internationalStandingOrderConsent.getStatus().name()));
         internationalStandingOrderConsent = internationalStandingOrderConsentRepository.save(internationalStandingOrderConsent);
         log.info("Created consent id: '{}'", internationalStandingOrderConsent.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(internationalStandingOrderConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(entityInstance(internationalStandingOrderConsent));
     }
 
     public ResponseEntity getInternationalStandingOrderConsentsConsentId(
@@ -138,12 +139,13 @@ public class InternationalStandingOrderConsentsApiController implements Internat
         }
         FRInternationalStandingOrderConsent internationalStandingOrderConsent = isInternationalStandingOrderConsent.get();
 
-        return ResponseEntity.ok(packageResponse(internationalStandingOrderConsent));
+        return ResponseEntity.ok(entityInstance(internationalStandingOrderConsent));
     }
 
-    private OBWriteInternationalStandingOrderConsentResponse7 packageResponse(FRInternationalStandingOrderConsent internationalStandingOrderConsent) {
+    private OBWriteInternationalStandingOrderConsentResponse7 entityInstance(FRInternationalStandingOrderConsent internationalStandingOrderConsent) {
         return new OBWriteInternationalStandingOrderConsentResponse7()
                 .data(new OBWriteInternationalStandingOrderConsentResponse7Data()
+                        .readRefundAccount(toOBWriteInternationalStandingOrderConsentResponse7DataReadRefundAccount(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getReadRefundAccount()))
                         .initiation(toOBWriteInternationalStandingOrder4DataInitiation(internationalStandingOrderConsent.getInitiation()))
                         .status(toOBWriteInternationalStandingOrderConsentResponse7DataStatus(internationalStandingOrderConsent.getStatus()))
                         .creationDateTime(internationalStandingOrderConsent.getCreated())
