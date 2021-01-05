@@ -9,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -298,7 +298,7 @@ public class DomesticScheduledPaymentsApiControllerIT {
     private FRDomesticScheduledConsent saveConsent(FRReadRefundAccount frReadRefundAccount) {
         FRDomesticScheduledConsent consent = JMockData.mock(FRDomesticScheduledConsent.class);
         consent.getDomesticScheduledConsent().getData().setReadRefundAccount(frReadRefundAccount);
-        consent.setId(IntentType.PAYMENT_DOMESTIC_CONSENT.generateIntentId());
+        consent.setId(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT.generateIntentId());
         consent.getInitiation().setInstructedAmount(aValidFRAmount());
         consent.getInitiation().setCreditorPostalAddress(aValidFRPostalAddress());
         consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());

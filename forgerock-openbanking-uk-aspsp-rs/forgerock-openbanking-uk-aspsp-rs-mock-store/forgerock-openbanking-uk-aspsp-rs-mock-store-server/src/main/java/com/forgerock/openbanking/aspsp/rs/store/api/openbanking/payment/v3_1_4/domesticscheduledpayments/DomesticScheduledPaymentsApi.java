@@ -43,11 +43,6 @@ import java.security.Principal;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.v3.generators.java.SpringCodegen", date = "2020-12-19T16:47:08.987291Z[Europe/London]")
 @Api(value = "domestic-scheduled-payments", description = "the domestic-scheduled-payments API")
-@OpenBankingAPI(
-        obVersion = "3.1.4",
-        obGroupName = OBGroupName.PISP,
-        obReference = OBReference.DOMESTIC_SCHEDULED_PAYMENTS
-)
 @RequestMapping(value = "/open-banking/v3.1.4/pisp")
 public interface DomesticScheduledPaymentsApi {
 

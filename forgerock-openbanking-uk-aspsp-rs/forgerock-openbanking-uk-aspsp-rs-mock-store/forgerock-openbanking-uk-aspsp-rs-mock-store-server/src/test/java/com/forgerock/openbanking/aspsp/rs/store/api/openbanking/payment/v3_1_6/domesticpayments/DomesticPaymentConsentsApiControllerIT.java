@@ -9,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -53,8 +53,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.*;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.*;
@@ -67,6 +65,7 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.pa
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_6.domesticpayments.DomesticPaymentConsentsApiController}.
@@ -196,15 +195,6 @@ public class DomesticPaymentConsentsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         setupMockTpp(tppRepository);
-        OBWriteDomesticConsent4 consentRequest = JMockData.mock(OBWriteDomesticConsent4.class);
-        consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
-        consentRequest.getData().getInitiation().getCreditorPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
-        consentRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
-        consentRequest.getRisk().merchantCategoryCode("ABCD")
-                .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
-                .addressLine(Collections.singletonList("3 Queens Square"))
-                .country("GP");
 
         // When
         HttpResponse<OBWriteDomesticConsentResponse5> response = Unirest.post(RS_STORE_URL + port + CONTEXT_PATH)
@@ -214,7 +204,7 @@ public class DomesticPaymentConsentsApiControllerIT {
                 .header(OBHeaders.X_JWS_SIGNATURE, "x-jws-signature")
                 .header("x-ob-client-id", MOCK_CLIENT_ID)
                 .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
-                .body(consentRequest)
+                .body(aValidOBWriteDomesticConsent4())
                 .asObject(OBWriteDomesticConsentResponse5.class);
 
         // Then

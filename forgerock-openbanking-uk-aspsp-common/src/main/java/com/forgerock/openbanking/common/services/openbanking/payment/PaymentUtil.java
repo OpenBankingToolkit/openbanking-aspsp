@@ -9,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -294,8 +294,6 @@ public class PaymentUtil {
         return getObWriteInternationalResponse4DataRefund(
                 frReadRefundAccount,
                 creditor,
-                creditor.getName(),
-                creditor.getPostalAddress(),
                 debtorAccount.getSchemeName(),
                 debtorAccount.getIdentification(),
                 debtorAccount.getName(),
@@ -315,8 +313,6 @@ public class PaymentUtil {
         return getObWriteInternationalResponse4DataRefund(
                 frReadRefundAccount,
                 creditor,
-                creditor.getName(),
-                creditor.getPostalAddress(),
                 debtorAccount.getSchemeName(),
                 debtorAccount.getIdentification(),
                 debtorAccount.getName(),
@@ -336,8 +332,6 @@ public class PaymentUtil {
         return getOBWriteInternationalResponse5DataRefund(
                 frReadRefundAccount,
                 creditor,
-                creditor.getName(),
-                creditor.getPostalAddress(),
                 debtorAccount.getSchemeName(),
                 debtorAccount.getIdentification(),
                 debtorAccount.getName(),
@@ -357,8 +351,6 @@ public class PaymentUtil {
         return getOBWriteInternationalResponse5DataRefund(
                 frReadRefundAccount,
                 creditor,
-                creditor.getName(),
-                creditor.getPostalAddress(),
                 debtorAccount.getSchemeName(),
                 debtorAccount.getIdentification(),
                 debtorAccount.getName(),
@@ -372,9 +364,7 @@ public class PaymentUtil {
 
     private static Optional<OBWriteInternationalResponse4DataRefund> getObWriteInternationalResponse4DataRefund(
             FRReadRefundAccount frReadRefundAccount,
-            Object creditor,
-            String creditorName,
-            OBPostalAddress6 creditorPostalAddress,
+            OBWriteInternational3DataInitiationCreditor creditor,
             String debtorAccountSchemeName,
             String debtorAccountIdentification,
             String debtorAccountName,
@@ -398,8 +388,8 @@ public class PaymentUtil {
             if (creditor != null) {
                 obWriteInternationalResponse4DataRefund
                         .creditor(new OBWriteInternationalResponse4DataRefundCreditor()
-                                .name(creditorName)
-                                .postalAddress(creditorPostalAddress)
+                                .name(creditor.getName())
+                                .postalAddress(creditor.getPostalAddress())
                         );
             }
             // refund agent optional
@@ -420,9 +410,7 @@ public class PaymentUtil {
 
     private static Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefund(
             FRReadRefundAccount frReadRefundAccount,
-            Object creditor,
-            String creditorName,
-            OBPostalAddress6 creditorPostalAddress,
+            OBWriteInternational3DataInitiationCreditor creditor,
             String debtorAccountSchemeName,
             String debtorAccountIdentification,
             String debtorAccountName,
@@ -446,8 +434,8 @@ public class PaymentUtil {
             if (creditor != null) {
                 obWriteInternationalResponse5DataRefund
                         .creditor(new OBWriteInternationalResponse5DataRefundCreditor()
-                                .name(creditorName)
-                                .postalAddress(creditorPostalAddress)
+                                .name(creditor.getName())
+                                .postalAddress(creditor.getPostalAddress())
                         );
             }
             // refund agent optional

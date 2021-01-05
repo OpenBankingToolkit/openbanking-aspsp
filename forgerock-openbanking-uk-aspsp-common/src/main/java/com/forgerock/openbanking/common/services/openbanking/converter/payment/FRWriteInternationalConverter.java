@@ -31,8 +31,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternational3Data;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalDataInitiation;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBInternational2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.*;
 
 public class FRWriteInternationalConverter {
 
@@ -90,5 +89,17 @@ public class FRWriteInternationalConverter {
         return data == null ? null : new OBWriteDataInternational2()
                 .consentId(data.getConsentId())
                 .initiation(toOBInternational2(data.getInitiation()));
+    }
+
+    public static OBWriteInternational3 toOBWriteInternational3(FRWriteInternational internationalPayment) {
+        return internationalPayment == null ? null : new OBWriteInternational3()
+                .data(toOBWriteInternational3Data(internationalPayment.getData()))
+                .risk(toOBRisk1(internationalPayment.getRisk()));
+    }
+
+    public static OBWriteInternational3Data toOBWriteInternational3Data(FRWriteInternationalData data) {
+        return data == null ? null : new OBWriteInternational3Data()
+                .consentId(data.getConsentId())
+                .initiation(toOBWriteInternational3DataInitiation(data.getInitiation()));
     }
 }

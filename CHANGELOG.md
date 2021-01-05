@@ -10,6 +10,10 @@ Changelog of Git Changelog Maven plugin.
 - Add conditional control to manage null calculating exchange rates
 - Added tests for optional fields
 * Fix license
+[713410ab33f16e4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/713410ab33f16e4) Matt Wills *2020-12-14 15:54:35*
+Fix to enable "CreateFundsConfirmationConsent" to appear in Discovery endpoint
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/15
 [671c9af01b1a3d2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/671c9af01b1a3d2) Matt Wills *2020-11-06 14:24:30*
 Release candidate: prepare for next development iteration
 ## 1.0.109

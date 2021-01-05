@@ -31,8 +31,7 @@ import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3Data;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledDataInitiation;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBInternationalScheduled2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.*;
 
 public class FRWriteInternationalScheduledConverter {
 
@@ -90,5 +89,17 @@ public class FRWriteInternationalScheduledConverter {
         return data == null ? null : new OBWriteDataInternationalScheduled2()
                 .consentId(data.getConsentId())
                 .initiation(toOBInternationalScheduled2(data.getInitiation()));
+    }
+
+    public static OBWriteInternationalScheduled3 toOBWriteInternationalScheduled3(FRWriteInternationalScheduled internationalScheduledPayment) {
+        return internationalScheduledPayment == null ? null : new OBWriteInternationalScheduled3()
+                .data(toOBWriteDataInternationalScheduled3(internationalScheduledPayment.getData()))
+                .risk(toOBRisk1(internationalScheduledPayment.getRisk()));
+    }
+
+    public static OBWriteInternationalScheduled3Data toOBWriteDataInternationalScheduled3(FRWriteInternationalScheduledData data) {
+        return data == null ? null : new OBWriteInternationalScheduled3Data()
+                .consentId(data.getConsentId())
+                .initiation(toOBWriteInternationalScheduled3DataInitiation(data.getInitiation()));
     }
 }
