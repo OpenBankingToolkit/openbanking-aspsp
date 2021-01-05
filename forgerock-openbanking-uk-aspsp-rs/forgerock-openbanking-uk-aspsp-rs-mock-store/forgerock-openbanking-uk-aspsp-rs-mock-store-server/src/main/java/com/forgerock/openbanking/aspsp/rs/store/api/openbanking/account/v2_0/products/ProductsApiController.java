@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.products;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.products.FRProductRepository;
+import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRProduct;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -56,6 +57,8 @@ public class ProductsApiController implements ProductsApi {
     private int PAGE_LIMIT_PRODUCTS;
     @Autowired
     private FRProductRepository frProductRepository;
+    @Autowired
+    private AccountDataInternalIdFilter accountDataInternalIdFilter;
 
     @Override
     public ResponseEntity<OBReadProduct2> getAccountProduct(
@@ -95,7 +98,8 @@ public class ProductsApiController implements ProductsApi {
 
         return ResponseEntity.ok(new OBReadProduct2()
                 .data(new OBReadProduct2Data().product(products.getContent().stream()
-                        .map(p -> p.getProduct()).collect(Collectors.toList())))
+                        .map(p -> accountDataInternalIdFilter.apply(p.getProduct()))
+                        .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }
@@ -143,7 +147,8 @@ public class ProductsApiController implements ProductsApi {
 
         return ResponseEntity.ok(new OBReadProduct2()
                 .data(new OBReadProduct2Data().product(products.getContent().stream()
-                        .map(p -> p.getProduct()).collect(Collectors.toList())))
+                        .map(p -> accountDataInternalIdFilter.apply(p.getProduct()))
+                        .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPage))
                 .meta(PaginationUtil.generateMetaData(totalPage)));
     }

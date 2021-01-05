@@ -21,7 +21,6 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.standingorders;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
-import com.forgerock.openbanking.aspsp.rs.store.utils.AccountDataInternalIdFilter;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -59,8 +58,6 @@ public class StandingOrdersApiController implements StandingOrdersApi {
     private int PAGE_LIMIT_STANDING_ORDERS;
     @Autowired
     private FRStandingOrderRepository frStandingOrderRepository;
-    @Autowired
-    private AccountDataInternalIdFilter accountDataInternalIdFilter;
 
     @Override
     public ResponseEntity<OBReadStandingOrder2> getAccountStandingOrders(
@@ -99,7 +96,6 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                 frStandingOrderRepository.byAccountIdWithPermissions(accountId, toFRExternalPermissionsCodeList(permissions), PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
         List<OBStandingOrder2> standingOrders = standingOrdersResponse.stream()
                 .map(so -> toOBStandingOrder2(so.getStandingOrder()))
-                .map(so -> accountDataInternalIdFilter.apply(so))
                 .collect(Collectors.toList());
         int totalPages = standingOrdersResponse.getTotalPages();
 
@@ -146,7 +142,6 @@ public class StandingOrdersApiController implements StandingOrdersApi {
                 PageRequest.of(page, PAGE_LIMIT_STANDING_ORDERS));
         List<OBStandingOrder2> standingOrders = standingOrdersResponse.stream()
                 .map(so -> toOBStandingOrder2(so.getStandingOrder()))
-                .map(so -> accountDataInternalIdFilter.apply(so))
                 .collect(Collectors.toList());
         int totalPages = standingOrdersResponse.getTotalPages();
 
