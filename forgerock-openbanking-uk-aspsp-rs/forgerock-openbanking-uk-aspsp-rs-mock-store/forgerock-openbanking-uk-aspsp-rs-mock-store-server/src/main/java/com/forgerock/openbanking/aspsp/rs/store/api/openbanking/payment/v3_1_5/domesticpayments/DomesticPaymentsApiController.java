@@ -54,11 +54,11 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseConverter.StatusCodeConverter.toOBWriteDomesticResponse5DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteDomesticResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConverter.toFRWriteDomestic;
-import static com.forgerock.openbanking.common.services.openbanking.payment.PaymentUtil.getOBWriteDomesticResponse5DataRefundInstance;
+import static com.forgerock.openbanking.common.services.openbanking.payment.ResponseRefundPaymentsFactory.getOBWriteDomesticResponse5DataRefundInstance;
 
 @Controller("DomesticPaymentsApiV3.1.5")
 @Slf4j
@@ -109,7 +109,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                 .build();
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(domesticPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entityInstance(frPaymentSubmission, paymentConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, paymentConsent));
     }
 
     public ResponseEntity getDomesticPaymentsDomesticPaymentId(
@@ -134,7 +134,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + domesticPaymentId + "' can't be found");
         }
         FRDomesticConsent frPaymentSetup = isPaymentSetup.get();
-        return ResponseEntity.ok(entityInstance(frPaymentSubmission, frPaymentSetup));
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frPaymentSetup));
     }
 
     public ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticPaymentsDomesticPaymentIdPaymentDetails(
@@ -151,7 +151,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
         return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    private OBWriteDomesticResponse5 entityInstance(FRDomesticPaymentSubmission frPaymentSubmission, FRDomesticConsent frDomesticConsent) {
+    private OBWriteDomesticResponse5 responseEntity(FRDomesticPaymentSubmission frPaymentSubmission, FRDomesticConsent frDomesticConsent) {
 
         OBWriteDomesticResponse5 obWriteDomesticResponse5 = new OBWriteDomesticResponse5()
                 .data(new OBWriteDomesticResponse5Data()

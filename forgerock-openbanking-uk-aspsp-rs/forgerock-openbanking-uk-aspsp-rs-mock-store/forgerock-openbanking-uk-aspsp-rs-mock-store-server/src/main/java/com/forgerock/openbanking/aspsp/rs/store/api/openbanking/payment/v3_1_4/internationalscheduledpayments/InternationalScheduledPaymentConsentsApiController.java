@@ -53,8 +53,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseConverter.ReadRefundAccountConverter.toOBWriteInternationalScheduledConsentResponse5DataReadRefundAccount;
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseConverter.StatusCodeConverter.toOBWriteInternationalScheduledConsentResponse5DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseReadRefundAccountConverter.toOBWriteInternationalScheduledConsentResponse5DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseStatusCodeConverter.toOBWriteInternationalScheduledConsentResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse5DataExchangeRateInformation;
@@ -105,7 +105,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, frScheduledConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalScheduledConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
-            return ResponseEntity.status(HttpStatus.CREATED).body(entityInstance(consentByIdempotencyKey.get()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
@@ -123,7 +123,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(internationalScheduledConsent.getId(), internationalScheduledConsent.getStatus().name()));
         internationalScheduledConsent = internationalScheduledConsentRepository.save(internationalScheduledConsent);
         log.info("Created consent id: '{}'", internationalScheduledConsent.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(entityInstance(internationalScheduledConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(internationalScheduledConsent));
     }
 
     @Override
@@ -143,7 +143,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         }
         FRInternationalScheduledConsent internationalScheduledConsent = isScheduledConsent.get();
 
-        return ResponseEntity.ok(entityInstance(internationalScheduledConsent));
+        return ResponseEntity.ok(responseEntity(internationalScheduledConsent));
     }
 
     @Override
@@ -183,7 +183,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                 );
     }
 
-    private OBWriteInternationalScheduledConsentResponse5 entityInstance(FRInternationalScheduledConsent internationalScheduledConsent) {
+    private OBWriteInternationalScheduledConsentResponse5 responseEntity(FRInternationalScheduledConsent internationalScheduledConsent) {
         OBWriteInternationalScheduled3DataInitiation initiation = toOBWriteInternationalScheduled3DataInitiation(internationalScheduledConsent.getInitiation());
         return new OBWriteInternationalScheduledConsentResponse5()
                 .data(new OBWriteInternationalScheduledConsentResponse5Data()

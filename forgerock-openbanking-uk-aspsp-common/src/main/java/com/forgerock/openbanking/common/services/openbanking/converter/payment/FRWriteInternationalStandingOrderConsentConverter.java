@@ -279,11 +279,4 @@ public class FRWriteInternationalStandingOrderConsentConverter {
                 .supplementaryData(toOBSupplementaryData1(initiation.getSupplementaryData()));
     }
 
-    public static OBWriteInternationalStandingOrder4 toOBWriteInternationalStandingOrder4(FRWriteInternationalStandingOrder frWriteInternationalStandingOrder) {
-        return frWriteInternationalStandingOrder == null ? null : new OBWriteInternationalStandingOrder4()
-                .data(
-                        new OBWriteInternationalStandingOrder4Data().initiation(toOBWriteInternationalStandingOrder4DataInitiation(frWriteInternationalStandingOrder.getData().getInitiation()))
-                                .consentId(frWriteInternationalStandingOrder.getData().getConsentId())
-                ).risk(FRPaymentRiskConverter.toOBRisk1(frWriteInternationalStandingOrder.getRisk()));
-    }
 }

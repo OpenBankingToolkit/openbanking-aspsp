@@ -54,11 +54,11 @@ import java.security.Principal;
 import java.util.Date;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseConverter.StatusCodeConverter.toOBWriteInternationalScheduledResponse5DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseStatusCodeConverter.toOBWriteInternationalScheduledResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse5DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
-import static com.forgerock.openbanking.common.services.openbanking.payment.PaymentUtil.getOBWriteInternationalResponse4DataRefundInstance;
+import static com.forgerock.openbanking.common.services.openbanking.payment.ResponseRefundPaymentsFactory.getOBWriteInternationalResponse4DataRefundInstance;
 
 @Controller("InternationalScheduledPaymentsApiV3.1.4")
 @Slf4j
@@ -110,7 +110,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 .build();
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(internationalScheduledPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(entityInstance(frPaymentSubmission, paymentConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, paymentConsent));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + internationalScheduledPaymentId + "' can't be found");
         }
         FRInternationalScheduledConsent frPaymentSetup = isPaymentSetup.get();
-        return ResponseEntity.ok(entityInstance(frPaymentSubmission, frPaymentSetup));
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frPaymentSetup));
     }
 
     @Override
@@ -153,7 +153,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
         return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    private OBWriteInternationalScheduledResponse5 entityInstance(FRInternationalScheduledPaymentSubmission frPaymentSubmission, FRInternationalScheduledConsent frInternationalScheduledConsent) {
+    private OBWriteInternationalScheduledResponse5 responseEntity(FRInternationalScheduledPaymentSubmission frPaymentSubmission, FRInternationalScheduledConsent frInternationalScheduledConsent) {
 
         OBWriteInternationalScheduledResponse5 obWriteInternationalScheduledResponse5 = new OBWriteInternationalScheduledResponse5()
                 .data(new OBWriteInternationalScheduledResponse5Data()

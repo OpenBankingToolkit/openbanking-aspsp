@@ -52,8 +52,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseConverter.ReadRefundAccountConverter.toOBWriteDomesticScheduledConsentResponse4DataReadRefundAccount;
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseConverter.StatusCodeConverter.toOBWriteDomesticScheduledConsentResponse4DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseReadRefundAccountConverter.toOBWriteDomesticScheduledConsentResponse4DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseStatusCodeConverter.toOBWriteDomesticScheduledConsentResponse4DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toOBWriteDomesticConsent4DataSCASupportData;
@@ -103,7 +103,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, frWriteDomesticScheduledConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticScheduledConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
-            return ResponseEntity.status(HttpStatus.CREATED).body(entityInstance(consentByIdempotencyKey.get()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent...");
 
@@ -121,7 +121,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(domesticScheduledConsent.getId(), domesticScheduledConsent.getStatus().name()));
         domesticScheduledConsent = domesticScheduledConsentRepository.save(domesticScheduledConsent);
         log.info("Created consent id: '{}'", domesticScheduledConsent.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(entityInstance(domesticScheduledConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(domesticScheduledConsent));
     }
 
     @Override
@@ -141,10 +141,10 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
         }
         FRDomesticScheduledConsent domesticScheduledConsent = isDomesticScheduledConsent.get();
 
-        return ResponseEntity.ok(entityInstance(domesticScheduledConsent));
+        return ResponseEntity.ok(responseEntity(domesticScheduledConsent));
     }
 
-    private OBWriteDomesticScheduledConsentResponse4 entityInstance(FRDomesticScheduledConsent domesticScheduledConsent) {
+    private OBWriteDomesticScheduledConsentResponse4 responseEntity(FRDomesticScheduledConsent domesticScheduledConsent) {
         return new OBWriteDomesticScheduledConsentResponse4()
                 .data(new OBWriteDomesticScheduledConsentResponse4Data()
                         .readRefundAccount(toOBWriteDomesticScheduledConsentResponse4DataReadRefundAccount(domesticScheduledConsent.getDomesticScheduledConsent().getData().getReadRefundAccount()))

@@ -239,26 +239,4 @@ public class FRWriteInternationalConsentConverter {
                 .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()))
                 .supplementaryData(toOBSupplementaryData1(initiation.getSupplementaryData()));
     }
-
-    /*
-    public static OBWriteInternational3DataInitiation toOBInternational3(FRWriteInternationalDataInitiation initiation) {
-        return initiation == null ? null : new OBWriteInternational3DataInitiation()
-                .instructionIdentification(initiation.getInstructionIdentification())
-                .endToEndIdentification(initiation.getEndToEndIdentification())
-                .localInstrument(initiation.getLocalInstrument())
-                .instructionPriority(toOBPriority2Code(initiation.getInstructionPriority()))
-                .purpose(initiation.getPurpose())
-                .chargeBearer(toOBChargeBearerType1Code(initiation.getChargeBearer()))
-                .currencyOfTransfer(initiation.getCurrencyOfTransfer())
-                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(initiation.getInstructedAmount()))
-                .exchangeRateInformation(toOBExchangeRate1(initiation.getExchangeRateInformation()))
-                .debtorAccount(toOBCashAccount3(initiation.getDebtorAccount()))
-                .creditor(toOBPartyIdentification43(initiation.getCreditor()))
-                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification3(initiation.getCreditorAgent()))
-                .creditorAccount(toOBCashAccount3(initiation.getCreditorAccount()))
-                .remittanceInformation(toOBRemittanceInformation1(initiation.getRemittanceInformation()))
-                .supplementaryData(toOBSupplementaryData1(initiation.getSupplementaryData()));
-    }
-
-     */
 }
