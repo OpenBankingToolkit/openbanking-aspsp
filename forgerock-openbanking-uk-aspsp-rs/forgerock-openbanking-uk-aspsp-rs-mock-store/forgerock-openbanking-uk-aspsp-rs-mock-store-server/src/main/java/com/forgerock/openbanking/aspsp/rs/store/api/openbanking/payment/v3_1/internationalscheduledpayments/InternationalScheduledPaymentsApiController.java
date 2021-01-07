@@ -130,7 +130,7 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                 .build();
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(internationalScheduledPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(packagePayment(frPaymentSubmission, paymentConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, paymentConsent));
     }
 
     @Override
@@ -172,10 +172,10 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + internationalScheduledPaymentId + "' can't be found");
         }
         FRInternationalScheduledConsent frPaymentSetup = isPaymentSetup.get();
-        return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteInternationalScheduledResponse2 packagePayment(FRInternationalScheduledPaymentSubmission frPaymentSubmission, FRInternationalScheduledConsent frInternationalScheduledConsent) {
+    private OBWriteInternationalScheduledResponse2 responseEntity(FRInternationalScheduledPaymentSubmission frPaymentSubmission, FRInternationalScheduledConsent frInternationalScheduledConsent) {
         return new OBWriteInternationalScheduledResponse2()
                 .data((new OBWriteDataInternationalScheduledResponse2())
                         .internationalScheduledPaymentId(frPaymentSubmission.getId())

@@ -39,7 +39,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteDomestic2DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteDomesticResponse4DataRefund> getOBWriteDomesticResponse4DataRefundInstance(
+    public static Optional<OBWriteDomesticResponse4DataRefund> getOBWriteDomesticResponse4DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount,
             OBWriteDomestic2DataInitiation initiation) {
         if (initiation.getDebtorAccount() != null) {
@@ -61,7 +61,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteDomesticScheduled2DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteDomesticResponse4DataRefund> getOBWriteDomesticResponse4DataRefundInstance(
+    public static Optional<OBWriteDomesticResponse4DataRefund> getOBWriteDomesticResponse4DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount,
             OBWriteDomesticScheduled2DataInitiation initiation) {
         if (initiation.getDebtorAccount() != null) {
@@ -83,7 +83,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteDomesticStandingOrder3DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteDomesticResponse4DataRefund> getOBWriteDomesticResponse4DataRefundInstance(
+    public static Optional<OBWriteDomesticResponse4DataRefund> getOBWriteDomesticResponse4DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount,
             OBWriteDomesticStandingOrder3DataInitiation initiation) {
         if (initiation.getDebtorAccount() != null) {
@@ -105,7 +105,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteDomestic2DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteDomesticResponse5DataRefund> getOBWriteDomesticResponse5DataRefundInstance(
+    public static Optional<OBWriteDomesticResponse5DataRefund> getOBWriteDomesticResponse5DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount,
             OBWriteDomestic2DataInitiation initiation) {
         if (initiation.getDebtorAccount() != null) {
@@ -127,7 +127,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteDomesticScheduled2DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteDomesticResponse5DataRefund> getOBWriteDomesticResponse5DataRefundInstance(
+    public static Optional<OBWriteDomesticResponse5DataRefund> getOBWriteDomesticResponse5DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount,
             OBWriteDomesticScheduled2DataInitiation initiation) {
         if (initiation.getDebtorAccount() != null) {
@@ -149,7 +149,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteDomesticStandingOrder3DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteDomesticResponse5DataRefund> getOBWriteDomesticResponse5DataRefundInstance(
+    public static Optional<OBWriteDomesticResponse5DataRefund> getOBWriteDomesticResponse5DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount, OBWriteDomesticStandingOrder3DataInitiation initiation) {
         if (initiation.getDebtorAccount() != null) {
             return getOBWriteDomesticResponse5DataRefund(
@@ -170,7 +170,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteInternational3DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteInternationalResponse4DataRefund> getOBWriteInternationalResponse4DataRefundInstance(
+    public static Optional<OBWriteInternationalResponse4DataRefund> getOBWriteInternationalResponse4DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount, OBWriteInternational3DataInitiation initiation) {
         return getObWriteInternationalResponse4DataRefund(
                 frReadRefundAccount,
@@ -188,7 +188,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteInternationalScheduled3DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteInternationalResponse4DataRefund> getOBWriteInternationalResponse4DataRefundInstance(
+    public static Optional<OBWriteInternationalResponse4DataRefund> getOBWriteInternationalResponse4DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount, OBWriteInternationalScheduled3DataInitiation initiation) {
         return getObWriteInternationalResponse4DataRefund(
                 frReadRefundAccount,
@@ -206,7 +206,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteInternationalStandingOrder4DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteInternationalResponse4DataRefund> getOBWriteInternationalResponse4DataRefundInstance(
+    public static Optional<OBWriteInternationalResponse4DataRefund> getOBWriteInternationalResponse4DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount, OBWriteInternationalStandingOrder4DataInitiation initiation) {
         return getObWriteInternationalResponse4DataRefund(
                 frReadRefundAccount,
@@ -224,7 +224,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteInternational3DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefundInstance(
+    public static Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount, OBWriteInternational3DataInitiation initiation) {
         return getOBWriteInternationalResponse5DataRefund(
                 frReadRefundAccount,
@@ -242,7 +242,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteInternationalScheduled3DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefundInstance(
+    public static Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount, OBWriteInternationalScheduled3DataInitiation initiation) {
         return getOBWriteInternationalResponse5DataRefund(
                 frReadRefundAccount,
@@ -260,7 +260,7 @@ public class ResponseRefundPaymentsFactory {
      *         {@link OBWriteInternationalStandingOrder4DataInitiation}
      * @return optional refund data instance {@link OBWriteDomesticResponse4DataRefund}
      */
-    public static final Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefundInstance(
+    public static Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefundInstance(
             FRReadRefundAccount frReadRefundAccount, OBWriteInternationalStandingOrder4DataInitiation initiation) {
         return getOBWriteInternationalResponse5DataRefund(
                 frReadRefundAccount,
@@ -273,11 +273,11 @@ public class ResponseRefundPaymentsFactory {
     /*
     Private methods
      */
-    private static final boolean hasRefund(FRReadRefundAccount frReadRefundAccount) {
+    private static boolean hasRefund(FRReadRefundAccount frReadRefundAccount) {
         return frReadRefundAccount != null && frReadRefundAccount.equals(FRReadRefundAccount.YES);
     }
 
-    private static final Optional<OBWriteDomesticResponse4DataRefund> getOBWriteDomesticResponse4DataRefund(
+    private static Optional<OBWriteDomesticResponse4DataRefund> getOBWriteDomesticResponse4DataRefund(
             FRReadRefundAccount frReadRefundAccount,
             String debtorAccountSchemeName,
             String debtorAccountIdentification,
@@ -298,7 +298,7 @@ public class ResponseRefundPaymentsFactory {
         return Optional.empty();
     }
 
-    private static final Optional<OBWriteInternationalResponse4DataRefund> getOBWriteInternationalResponse4DataRefund(
+    private static Optional<OBWriteInternationalResponse4DataRefund> getOBWriteInternationalResponse4DataRefund(
             FRReadRefundAccount frReadRefundAccount,
             String debtorAccountSchemeName,
             String debtorAccountIdentification,
@@ -318,7 +318,7 @@ public class ResponseRefundPaymentsFactory {
         return Optional.empty();
     }
 
-    private static final Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefund(
+    private static Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefund(
             FRReadRefundAccount frReadRefundAccount,
             String debtorAccountSchemeName,
             String debtorAccountIdentification,
@@ -338,7 +338,7 @@ public class ResponseRefundPaymentsFactory {
         return Optional.empty();
     }
 
-    private static final Optional<OBWriteDomesticResponse5DataRefund> getOBWriteDomesticResponse5DataRefund(
+    private static Optional<OBWriteDomesticResponse5DataRefund> getOBWriteDomesticResponse5DataRefund(
             FRReadRefundAccount frReadRefundAccount,
             String debtorAccountSchemeName,
             String debtorAccountIdentification,
@@ -359,7 +359,7 @@ public class ResponseRefundPaymentsFactory {
         return Optional.empty();
     }
 
-    private static final Optional<OBWriteInternationalResponse4DataRefund> getObWriteInternationalResponse4DataRefund(
+    private static Optional<OBWriteInternationalResponse4DataRefund> getObWriteInternationalResponse4DataRefund(
             FRReadRefundAccount frReadRefundAccount,
             OBWriteDomestic2DataInitiationDebtorAccount debtorAccount,
             OBWriteInternational3DataInitiationCreditor creditor,
@@ -393,7 +393,7 @@ public class ResponseRefundPaymentsFactory {
         return Optional.empty();
     }
 
-    private static final Optional<OBWriteInternationalResponse4DataRefund> getObWriteInternationalResponse4DataRefund(
+    private static Optional<OBWriteInternationalResponse4DataRefund> getObWriteInternationalResponse4DataRefund(
             FRReadRefundAccount frReadRefundAccount,
             OBWriteDomesticStandingOrder3DataInitiationDebtorAccount debtorAccount,
             OBWriteInternational3DataInitiationCreditor creditor,
@@ -426,7 +426,7 @@ public class ResponseRefundPaymentsFactory {
         return Optional.empty();
     }
 
-    private static final Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefund(
+    private static Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefund(
             FRReadRefundAccount frReadRefundAccount,
             OBWriteDomestic2DataInitiationDebtorAccount debtorAccount,
             OBWriteInternational3DataInitiationCreditor creditor,
@@ -460,7 +460,7 @@ public class ResponseRefundPaymentsFactory {
         return Optional.empty();
     }
 
-    private static final Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefund(
+    private static Optional<OBWriteInternationalResponse5DataRefund> getOBWriteInternationalResponse5DataRefund(
             FRReadRefundAccount frReadRefundAccount,
             OBWriteDomesticStandingOrder3DataInitiationDebtorAccount debtorAccount,
             OBWriteInternational3DataInitiationCreditor creditor,

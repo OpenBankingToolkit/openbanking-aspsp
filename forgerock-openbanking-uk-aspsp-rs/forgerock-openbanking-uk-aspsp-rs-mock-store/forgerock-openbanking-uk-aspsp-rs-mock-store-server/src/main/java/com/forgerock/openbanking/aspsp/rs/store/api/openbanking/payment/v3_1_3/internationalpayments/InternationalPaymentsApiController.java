@@ -110,7 +110,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
                 .build();
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(internationalPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(packagePayment(frPaymentSubmission, paymentConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, paymentConsent));
     }
 
     public ResponseEntity getInternationalPaymentsInternationalPaymentId(
@@ -134,7 +134,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + internationalPaymentId + "' can't be found");
         }
         FRInternationalConsent frPaymentSetup = isPaymentSetup.get();
-        return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frPaymentSetup));
     }
 
     public ResponseEntity<OBWritePaymentDetailsResponse1> getInternationalPaymentsInternationalPaymentIdPaymentDetails(
@@ -152,7 +152,7 @@ public class InternationalPaymentsApiController implements InternationalPayments
         return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    private OBWriteInternationalResponse4 packagePayment(FRInternationalPaymentSubmission frPaymentSubmission, FRInternationalConsent frInternationalConsent) {
+    private OBWriteInternationalResponse4 responseEntity(FRInternationalPaymentSubmission frPaymentSubmission, FRInternationalConsent frInternationalConsent) {
         return new OBWriteInternationalResponse4()
                 .data(new OBWriteInternationalResponse4Data()
                         .internationalPaymentId(frPaymentSubmission.getId())

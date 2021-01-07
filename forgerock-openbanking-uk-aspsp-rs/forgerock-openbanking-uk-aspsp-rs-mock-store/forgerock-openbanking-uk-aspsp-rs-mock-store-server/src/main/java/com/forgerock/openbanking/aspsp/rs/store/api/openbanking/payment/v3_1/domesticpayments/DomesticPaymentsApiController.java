@@ -127,7 +127,7 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
                 .build();
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(domesticPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(packagePayment(frPaymentSubmission, paymentConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, paymentConsent));
     }
 
     @Override
@@ -169,10 +169,10 @@ public class DomesticPaymentsApiController implements DomesticPaymentsApi {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + domesticPaymentId + "' can't be found");
         }
         FRDomesticConsent frPaymentSetup = isPaymentSetup.get();
-        return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteDomesticResponse2 packagePayment(FRDomesticPaymentSubmission frPaymentSubmission, FRDomesticConsent frDomesticConsent2) {
+    private OBWriteDomesticResponse2 responseEntity(FRDomesticPaymentSubmission frPaymentSubmission, FRDomesticConsent frDomesticConsent2) {
         return new OBWriteDomesticResponse2().data(new OBWriteDataDomesticResponse2()
                 .domesticPaymentId(frPaymentSubmission.getId())
                 .initiation(toOBDomestic2(frPaymentSubmission.getDomesticPayment().getData().getInitiation()))

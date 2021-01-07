@@ -111,7 +111,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                 .build();
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(filePaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(packagePayment(frPaymentSubmission, paymentConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, paymentConsent));
     }
 
     public ResponseEntity<OBWriteFileResponse3> getFilePaymentsFilePaymentId(
@@ -145,7 +145,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         }
         FRFileConsent frPaymentSetup = isPaymentSetup.get();
 
-        return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frPaymentSetup));
     }
 
     public ResponseEntity<OBWritePaymentDetailsResponse1> getFilePaymentsFilePaymentIdPaymentDetails(
@@ -186,7 +186,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
         return ResponseEntity.ok(reportFile);
     }
 
-    private OBWriteFileResponse3 packagePayment(FRFilePaymentSubmission frPaymentSubmission, FRFileConsent frFileConsent) {
+    private OBWriteFileResponse3 responseEntity(FRFilePaymentSubmission frPaymentSubmission, FRFileConsent frFileConsent) {
         return new OBWriteFileResponse3()
                 .data(new OBWriteFileResponse3Data()
                         .filePaymentId(frPaymentSubmission.getId())

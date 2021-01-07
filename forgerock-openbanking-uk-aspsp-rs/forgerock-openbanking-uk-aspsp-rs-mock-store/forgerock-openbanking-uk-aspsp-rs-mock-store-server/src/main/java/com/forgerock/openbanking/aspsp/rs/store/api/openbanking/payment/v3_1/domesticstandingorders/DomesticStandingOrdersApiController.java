@@ -127,7 +127,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .build();
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(domesticStandingOrderPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(packagePayment(frPaymentSubmission, paymentConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, paymentConsent));
     }
 
     @Override
@@ -169,10 +169,10 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + domesticStandingOrderId + "' can't be found");
         }
         FRDomesticStandingOrderConsent frPaymentSetup = isPaymentSetup.get();
-        return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteDomesticStandingOrderResponse2 packagePayment(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission, FRDomesticStandingOrderConsent frDomesticStandingOrderConsent2) {
+    private OBWriteDomesticStandingOrderResponse2 responseEntity(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission, FRDomesticStandingOrderConsent frDomesticStandingOrderConsent2) {
         return new OBWriteDomesticStandingOrderResponse2().data(new OBWriteDataDomesticStandingOrderResponse2()
                 .domesticStandingOrderId(frPaymentSubmission.getId())
                 .initiation(toOBDomesticStandingOrder2(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))

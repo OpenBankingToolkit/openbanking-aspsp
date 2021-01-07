@@ -106,7 +106,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
                 .build();
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(domesticStandingOrderPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(packagePayment(frPaymentSubmission, paymentConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, paymentConsent));
     }
 
     public ResponseEntity getDomesticStandingOrdersDomesticStandingOrderId(
@@ -131,7 +131,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + domesticStandingOrderId + "' can't be found");
         }
         FRDomesticStandingOrderConsent frPaymentSetup = isPaymentSetup.get();
-        return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frPaymentSetup));
     }
 
     public ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticStandingOrdersDomesticStandingOrderIdPaymentDetails(
@@ -148,7 +148,7 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
         return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
     }
 
-    private OBWriteDomesticStandingOrderResponse4 packagePayment(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission, FRDomesticStandingOrderConsent frDomesticStandingOrderConsent3) {
+    private OBWriteDomesticStandingOrderResponse4 responseEntity(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission, FRDomesticStandingOrderConsent frDomesticStandingOrderConsent3) {
         return new OBWriteDomesticStandingOrderResponse4().data(new OBWriteDomesticStandingOrderResponse4Data()
                 .domesticStandingOrderId(frPaymentSubmission.getId())
                 .initiation(toOBWriteDomesticStandingOrder3DataInitiation(frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation()))
