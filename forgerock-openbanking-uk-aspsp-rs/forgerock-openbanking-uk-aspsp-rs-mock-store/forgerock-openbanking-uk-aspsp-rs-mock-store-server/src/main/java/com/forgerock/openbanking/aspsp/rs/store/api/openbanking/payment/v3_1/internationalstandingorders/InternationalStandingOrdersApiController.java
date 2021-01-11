@@ -127,7 +127,7 @@ public class InternationalStandingOrdersApiController implements InternationalSt
                 .build();
         frPaymentSubmission = new IdempotentRepositoryAdapter<>(internationalStandingOrderPaymentSubmissionRepository)
                 .idempotentSave(frPaymentSubmission);
-        return ResponseEntity.status(HttpStatus.CREATED).body(packagePayment(frPaymentSubmission, paymentConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, paymentConsent));
     }
 
     @Override
@@ -168,10 +168,10 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + internationalStandingOrderPaymentId + "' can't be found");
         }
         FRInternationalStandingOrderConsent frPaymentSetup = isPaymentSetup.get();
-        return ResponseEntity.ok(packagePayment(frPaymentSubmission, frPaymentSetup));
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frPaymentSetup));
     }
 
-    private OBWriteInternationalStandingOrderResponse2 packagePayment(FRInternationalStandingOrderPaymentSubmission frPaymentSubmission, FRInternationalStandingOrderConsent frInternationalStandingOrderConsent) {
+    private OBWriteInternationalStandingOrderResponse2 responseEntity(FRInternationalStandingOrderPaymentSubmission frPaymentSubmission, FRInternationalStandingOrderConsent frInternationalStandingOrderConsent) {
         return new OBWriteInternationalStandingOrderResponse2()
                 .data(new OBWriteDataInternationalStandingOrderResponse2()
                     .internationalStandingOrderId(frPaymentSubmission.getId())

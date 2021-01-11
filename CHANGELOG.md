@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[92f3cb2843318b8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92f3cb2843318b8) Matt Wills *2020-12-21 11:34:30*
+Release candidate: prepare for next development iteration
+## 1.0.110
 ### GitHub [#310](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/310) 13: International Payments flow error
 [73af6a81dce87c1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/73af6a81dce87c1) Jorge Sanchez Perez *2020-12-09 09:52:37*
 13: International Payments flow error (#310)
@@ -10,6 +13,15 @@ Changelog of Git Changelog Maven plugin.
 - Add conditional control to manage null calculating exchange rates
 - Added tests for optional fields
 * Fix license
+[0f311bc979e970d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0f311bc979e970d) Matt Wills *2020-12-21 11:34:21*
+Release candidate: prepare release 1.0.110
+[cab542300a690b8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/cab542300a690b8) Matt Wills *2020-12-21 08:58:33*
+344: Extend internal ID filtering
+
+ - Extend AccountDataInternalIdFilter to filter at an object level, rather than at the API level
+   Add filtering for product IDs
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-reference-implementation/issues/344
 [713410ab33f16e4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/713410ab33f16e4) Matt Wills *2020-12-14 15:54:35*
 Fix to enable "CreateFundsConfirmationConsent" to appear in Discovery endpoint
 

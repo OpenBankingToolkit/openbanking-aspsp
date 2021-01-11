@@ -27,12 +27,86 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_4.domesticscheduledp
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import org.joda.time.DateTime;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse4;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.Collections;
+
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 
 @Controller("DomesticScheduledPaymentConsentsApiV3.1.4")
-public class DomesticScheduledPaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.domesticscheduledpayments.DomesticScheduledPaymentConsentsApiController implements DomesticScheduledPaymentConsentsApi {
+public class DomesticScheduledPaymentConsentsApiController implements DomesticScheduledPaymentConsentsApi {
+
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
 
     public DomesticScheduledPaymentConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway) {
-        super(rsEndpointWrapperService, rsStoreGateway);
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+    }
+
+    @Override
+    public ResponseEntity<OBWriteDomesticScheduledConsentResponse4> createDomesticScheduledPaymentConsents(
+            OBWriteDomesticScheduledConsent4 obWriteDomesticScheduledConsent4,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal) throws OBErrorResponseException {
+        return rsEndpointWrapperService.paymentEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
+                .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
+                .filters(f -> {
+                            f.verifyIdempotencyKeyLength(xIdempotencyKey);
+                            f.verifyJwsDetachedSignature(xJwsSignature, request);
+                            f.validateRisk(obWriteDomesticScheduledConsent4.getRisk());
+                        }
+                )
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            additionalHttpHeaders.add("x-ob-client-id", tppId);
+
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticScheduledConsentResponse4.class, obWriteDomesticScheduledConsent4);
+                        }
+                );
+    }
+
+    @Override
+    public ResponseEntity<OBWriteDomesticScheduledConsentResponse4> getDomesticScheduledPaymentConsentsConsentId(
+            String consentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal) throws OBErrorResponseException {
+        return rsEndpointWrapperService.paymentEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
+                .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            additionalHttpHeaders.add("x-ob-client-id", tppId);
+
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticScheduledConsentResponse4.class);
+                        }
+                );
     }
 }

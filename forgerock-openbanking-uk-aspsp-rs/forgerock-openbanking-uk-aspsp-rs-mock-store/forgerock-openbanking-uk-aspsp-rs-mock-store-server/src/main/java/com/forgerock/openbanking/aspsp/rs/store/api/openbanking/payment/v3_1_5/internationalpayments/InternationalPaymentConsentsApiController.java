@@ -58,7 +58,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalConsentResponse6DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseReadRefundAccountConverter.toOBWriteInternationalConsentResponse6DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteInternationalConsentResponse6DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
@@ -108,7 +109,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, frWriteInternationalConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
-            return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
@@ -126,7 +127,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(internationalConsent.getId(), internationalConsent.getStatus().name()));
         internationalConsent = internationalConsentRepository.save(internationalConsent);
         log.info("Created consent id: '{}'", internationalConsent.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(internationalConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(internationalConsent));
     }
 
     public ResponseEntity getInternationalPaymentConsentsConsentId(
@@ -145,7 +146,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
         }
         FRInternationalConsent internationalConsent = isInternationalConsent.get();
 
-        return ResponseEntity.ok(packageResponse(internationalConsent));
+        return ResponseEntity.ok(responseEntity(internationalConsent));
     }
 
     public ResponseEntity getInternationalPaymentConsentsConsentIdFundsConfirmation(
@@ -183,9 +184,10 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 );
     }
 
-    private OBWriteInternationalConsentResponse6 packageResponse(FRInternationalConsent internationalConsent) {
+    private OBWriteInternationalConsentResponse6 responseEntity(FRInternationalConsent internationalConsent) {
         return new OBWriteInternationalConsentResponse6()
                 .data(new OBWriteInternationalConsentResponse6Data()
+                        .readRefundAccount(toOBWriteInternationalConsentResponse6DataReadRefundAccount(internationalConsent.getInternationalConsent().getData().getReadRefundAccount()))
                         .initiation(toOBWriteInternational3DataInitiation(internationalConsent.getInitiation()))
                         .status(toOBWriteInternationalConsentResponse6DataStatus(internationalConsent.getStatus()))
                         .creationDateTime(internationalConsent.getCreated())

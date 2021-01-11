@@ -20,17 +20,16 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDataDomesticScheduled;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDataDomesticStandingOrder;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduled;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrder;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder2;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
+import uk.org.openbanking.datamodel.payment.*;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderDataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBDomesticScheduled2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.*;
 
 public class FRWriteDomesticStandingOrderConverter {
 
@@ -74,5 +73,32 @@ public class FRWriteDomesticStandingOrderConverter {
                 .consentId(data.getConsentId())
                 .initiation(toFRWriteDomesticStandingOrderDataInitiation(data.getInitiation()))
                 .build();
+    }
+
+    public static FRWriteDataDomesticStandingOrder toFRWriteDataDomesticStandingOrder(OBWriteDomesticStandingOrder3Data data) {
+        return data == null ? null : FRWriteDataDomesticStandingOrder.builder()
+                .consentId(data.getConsentId())
+                .initiation(toFRWriteDomesticStandingOrderDataInitiation(data.getInitiation()))
+                .build();
+    }
+
+    public static FRWriteDataDomesticStandingOrder toFRWriteDomesticStandingOrder(OBWriteDataDomesticStandingOrder3 data) {
+        return data == null ? null : FRWriteDataDomesticStandingOrder.builder()
+                .consentId(data.getConsentId())
+                .initiation(toFRWriteDomesticStandingOrderDataInitiation(data.getInitiation()))
+                .build();
+    }
+
+    //FR to OB
+    public static OBWriteDomesticStandingOrder3 toOBWriteDomesticDomesticStandingOrder3(FRWriteDomesticStandingOrder domesticStandingOrderPayment) {
+        return domesticStandingOrderPayment == null ? null : new OBWriteDomesticStandingOrder3()
+                .data(toOBWriteDataDomesticDomesticStandingOrder3(domesticStandingOrderPayment.getData()))
+                .risk(toOBRisk1(domesticStandingOrderPayment.getRisk()));
+    }
+
+    public static OBWriteDomesticStandingOrder3Data toOBWriteDataDomesticDomesticStandingOrder3(FRWriteDataDomesticStandingOrder data) {
+        return data == null ? null : new OBWriteDomesticStandingOrder3Data()
+                .consentId(data.getConsentId())
+                .initiation(toOBWriteDomesticStandingOrder3DataInitiation(data.getInitiation()));
     }
 }

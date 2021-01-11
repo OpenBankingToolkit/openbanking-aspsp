@@ -59,7 +59,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteInternationalScheduledConsentResponse6DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseReadRefundAccountConverter.toOBWriteInternationalScheduledConsentResponse6DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteInternationalScheduledConsentResponse6DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
@@ -110,7 +111,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, frScheduledConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalScheduledConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
-            return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent.");
 
@@ -128,7 +129,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(internationalScheduledConsent.getId(), internationalScheduledConsent.getStatus().name()));
         internationalScheduledConsent = internationalScheduledConsentRepository.save(internationalScheduledConsent);
         log.info("Created consent id: '{}'", internationalScheduledConsent.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(internationalScheduledConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(internationalScheduledConsent));
     }
 
     public ResponseEntity getInternationalScheduledPaymentConsentsConsentId(
@@ -147,7 +148,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         }
         FRInternationalScheduledConsent internationalScheduledConsent = isScheduledConsent.get();
 
-        return ResponseEntity.ok(packageResponse(internationalScheduledConsent));
+        return ResponseEntity.ok(responseEntity(internationalScheduledConsent));
     }
 
     public ResponseEntity getInternationalScheduledPaymentConsentsConsentIdFundsConfirmation(
@@ -186,10 +187,11 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                 );
     }
 
-    private OBWriteInternationalScheduledConsentResponse6 packageResponse(FRInternationalScheduledConsent internationalScheduledConsent) {
+    private OBWriteInternationalScheduledConsentResponse6 responseEntity(FRInternationalScheduledConsent internationalScheduledConsent) {
         OBWriteInternationalScheduled3DataInitiation initiation = toOBWriteInternationalScheduled3DataInitiation(internationalScheduledConsent.getInitiation());
         return new OBWriteInternationalScheduledConsentResponse6()
                 .data(new OBWriteInternationalScheduledConsentResponse6Data()
+                        .readRefundAccount(toOBWriteInternationalScheduledConsentResponse6DataReadRefundAccount(internationalScheduledConsent.getInternationalScheduledConsent().getData().getReadRefundAccount()))
                         .initiation(initiation)
                         .status(toOBWriteInternationalScheduledConsentResponse6DataStatus(internationalScheduledConsent.getStatus()))
                         .creationDateTime(internationalScheduledConsent.getCreated())

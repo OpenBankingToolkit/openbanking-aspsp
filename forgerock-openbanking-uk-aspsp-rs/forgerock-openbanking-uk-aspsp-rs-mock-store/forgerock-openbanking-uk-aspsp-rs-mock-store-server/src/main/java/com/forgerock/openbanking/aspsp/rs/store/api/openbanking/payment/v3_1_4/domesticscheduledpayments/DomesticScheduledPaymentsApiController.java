@@ -25,23 +25,154 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_4.domesticscheduledpayments;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledPaymentSubmissionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduled;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledPaymentSubmission;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
+import com.forgerock.openbanking.model.error.OBRIErrorType;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
+import uk.org.openbanking.datamodel.payment.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.Date;
+import java.util.Optional;
+
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseStatusCodeConverter.toOBWriteDomesticScheduledResponse4DataStatus;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduled2DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConverter.toFRWriteDomesticScheduled;
+import static com.forgerock.openbanking.common.services.openbanking.payment.ResponseRefundPaymentsFactory.getOBWriteDomesticResponse4DataRefundInstance;
 
 @Controller("DomesticScheduledPaymentsApiV3.1.4")
-public class DomesticScheduledPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticscheduledpayments.DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
+@Slf4j
+public class DomesticScheduledPaymentsApiController implements DomesticScheduledPaymentsApi {
 
-    public DomesticScheduledPaymentsApiController(DomesticScheduledConsentRepository domesticScheduledConsentRepository,
-                                                  DomesticScheduledPaymentSubmissionRepository domesticScheduledPaymentSubmissionRepository,
-                                                  ResourceLinkService resourceLinkService) {
-        super(domesticScheduledConsentRepository, domesticScheduledPaymentSubmissionRepository, resourceLinkService);
+    private final DomesticScheduledConsentRepository domesticScheduledConsentRepository;
+    private final DomesticScheduledPaymentSubmissionRepository domesticScheduledPaymentSubmissionRepository;
+    private final ResourceLinkService resourceLinkService;
+
+    @Autowired
+    public DomesticScheduledPaymentsApiController(DomesticScheduledConsentRepository domesticScheduledConsentRepository, DomesticScheduledPaymentSubmissionRepository domesticScheduledPaymentSubmissionRepository, ResourceLinkService resourceLinkService) {
+        this.domesticScheduledConsentRepository = domesticScheduledConsentRepository;
+        this.domesticScheduledPaymentSubmissionRepository = domesticScheduledPaymentSubmissionRepository;
+        this.resourceLinkService = resourceLinkService;
     }
 
     @Override
+    public ResponseEntity<OBWriteDomesticScheduledResponse4> createDomesticScheduledPayments(
+            OBWriteDomesticScheduled2 obWriteDomesticScheduled2,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            String xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        log.debug("Received payment submission: '{}'", obWriteDomesticScheduled2);
+        FRWriteDomesticScheduled frWriteDomesticScheduled = toFRWriteDomesticScheduled(obWriteDomesticScheduled2);
+        log.trace("Converted to: '{}'", frWriteDomesticScheduled);
+
+        String paymentId = obWriteDomesticScheduled2.getData().getConsentId();
+        FRDomesticScheduledConsent paymentConsent = domesticScheduledConsentRepository.findById(paymentId)
+                .orElseThrow(() -> new OBErrorResponseException(
+                        HttpStatus.BAD_REQUEST,
+                        OBRIErrorResponseCategory.REQUEST_INVALID,
+                        OBRIErrorType.PAYMENT_CONSENT_BEHIND_SUBMISSION_NOT_FOUND.toOBError1(paymentId))
+                );
+        log.debug("Found consent '{}' to match this payment id: {} ", paymentConsent, paymentId);
+
+        // Save Payment
+        FRDomesticScheduledPaymentSubmission frPaymentSubmission = FRDomesticScheduledPaymentSubmission.builder()
+                .id(paymentId)
+                .domesticScheduledPayment(frWriteDomesticScheduled)
+                .created(new Date())
+                .updated(new Date())
+                .idempotencyKey(xIdempotencyKey)
+                .obVersion(VersionPathExtractor.getVersionFromPath(request))
+                .build();
+        frPaymentSubmission = new IdempotentRepositoryAdapter<>(domesticScheduledPaymentSubmissionRepository)
+                .idempotentSave(frPaymentSubmission);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(frPaymentSubmission, paymentConsent));
+    }
+
+    @Override
+    public ResponseEntity getDomesticScheduledPaymentsDomesticScheduledPaymentId(
+            String domesticScheduledPaymentId,
+            String authorization,
+            String xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        Optional<FRDomesticScheduledPaymentSubmission> isPaymentSubmission = domesticScheduledPaymentSubmissionRepository.findById(domesticScheduledPaymentId);
+        if (!isPaymentSubmission.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment submission '" + domesticScheduledPaymentId + "' can't be found");
+        }
+        FRDomesticScheduledPaymentSubmission frPaymentSubmission = isPaymentSubmission.get();
+
+        Optional<FRDomesticScheduledConsent> isPaymentSetup = domesticScheduledConsentRepository.findById(domesticScheduledPaymentId);
+        if (!isPaymentSetup.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + domesticScheduledPaymentId + "' can't be found");
+        }
+        FRDomesticScheduledConsent frPaymentSetup = isPaymentSetup.get();
+        return ResponseEntity.ok(responseEntity(frPaymentSubmission, frPaymentSetup));
+    }
+
+    @Override
+    public ResponseEntity<OBWritePaymentDetailsResponse1> getDomesticScheduledPaymentsDomesticScheduledPaymentIdPaymentDetails(
+            String domesticScheduledPaymentId,
+            String authorization,
+            String xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        // Optional endpoint - not implemented
+        return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    private OBWriteDomesticScheduledResponse4 responseEntity(FRDomesticScheduledPaymentSubmission frPaymentSubmission, FRDomesticScheduledConsent frDomesticScheduledConsent) {
+
+        OBWriteDomesticScheduledResponse4 obWriteDomesticScheduledResponse4 = new OBWriteDomesticScheduledResponse4()
+                .data(new OBWriteDomesticScheduledResponse4Data()
+                        .domesticScheduledPaymentId(frPaymentSubmission.getId())
+                        .initiation(toOBWriteDomesticScheduled2DataInitiation(frDomesticScheduledConsent.getInitiation()))
+                        .creationDateTime(frDomesticScheduledConsent.getCreated())
+                        .statusUpdateDateTime(frDomesticScheduledConsent.getStatusUpdate())
+                        .status(toOBWriteDomesticScheduledResponse4DataStatus(frDomesticScheduledConsent.getStatus()))
+                        .consentId(frDomesticScheduledConsent.getId()))
+                .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetDomesticScheduledPayment()))
+                .meta(new Meta());
+
+        // ZD: 55834 - https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
+        getOBWriteDomesticResponse4DataRefundInstance(
+                frDomesticScheduledConsent.getDomesticScheduledConsent().getData().getReadRefundAccount(),
+                toOBWriteDomesticScheduled2DataInitiation(frDomesticScheduledConsent.getInitiation())
+        ).ifPresent(dataRefund -> obWriteDomesticScheduledResponse4.getData().setRefund(dataRefund));
+
+        return obWriteDomesticScheduledResponse4;
+    }
+
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
         return discovery.getV_3_1_4();
     }

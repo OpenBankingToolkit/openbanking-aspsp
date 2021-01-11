@@ -54,7 +54,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ConsentStatusCodeToResponseDataStatusConverter.toOBWriteDomesticStandingOrderConsentResponse6DataStatus;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseReadRefundAccountConverter.toOBWriteDomesticStandingOrderConsentResponse6DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteDomesticStandingOrderConsentResponse6DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
@@ -103,7 +104,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
         if (consentByIdempotencyKey.isPresent()) {
             validateIdempotencyRequest(xIdempotencyKey, frStandingOrderConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticStandingOrderConsent());
             log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
-            return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(consentByIdempotencyKey.get()));
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(consentByIdempotencyKey.get()));
         }
         log.debug("No consent with matching idempotency key has been found. Creating new consent...");
 
@@ -120,7 +121,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(domesticStandingOrderConsent.getId(), domesticStandingOrderConsent.getStatus().name()));
         domesticStandingOrderConsent = domesticStandingOrderConsentRepository.save(domesticStandingOrderConsent);
         log.info("Created consent id: '{}'", domesticStandingOrderConsent.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(domesticStandingOrderConsent));
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(domesticStandingOrderConsent));
     }
 
     public ResponseEntity getDomesticStandingOrderConsentsConsentId(
@@ -139,12 +140,13 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
         }
         FRDomesticStandingOrderConsent domesticStandingOrderConsent = isDomesticStandingOrderConsent.get();
 
-        return ResponseEntity.ok(packageResponse(domesticStandingOrderConsent));
+        return ResponseEntity.ok(responseEntity(domesticStandingOrderConsent));
     }
 
-    private OBWriteDomesticStandingOrderConsentResponse6 packageResponse(FRDomesticStandingOrderConsent domesticStandingOrderConsent) {
+    private OBWriteDomesticStandingOrderConsentResponse6 responseEntity(FRDomesticStandingOrderConsent domesticStandingOrderConsent) {
         return new OBWriteDomesticStandingOrderConsentResponse6()
                 .data(new OBWriteDomesticStandingOrderConsentResponse6Data()
+                        .readRefundAccount(toOBWriteDomesticStandingOrderConsentResponse6DataReadRefundAccount(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getReadRefundAccount()))
                         .initiation(toOBWriteDomesticStandingOrder3DataInitiation(domesticStandingOrderConsent.getInitiation()))
                         .status(toOBWriteDomesticStandingOrderConsentResponse6DataStatus(domesticStandingOrderConsent.getStatus()))
                         .creationDateTime(domesticStandingOrderConsent.getCreated())

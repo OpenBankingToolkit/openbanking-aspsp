@@ -25,27 +25,179 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_4.internationalpayments;
 
+import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalConsentRepository;
-import com.forgerock.openbanking.repositories.TppRepository;
+import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
+import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.model.Tpp;
+import com.forgerock.openbanking.repositories.TppRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
+import uk.org.openbanking.datamodel.payment.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.Optional;
+
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseReadRefundAccountConverter.toOBWriteInternationalConsentResponse5DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseStatusCodeConverter.toOBWriteInternationalConsentResponse5DataStatus;
+import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse5DataExchangeRateInformation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 
 @Controller("InternationalPaymentConsentsApiV3.1.4")
-public class InternationalPaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.internationalpayments.InternationalPaymentConsentsApiController implements InternationalPaymentConsentsApi {
+@Slf4j
+public class InternationalPaymentConsentsApiController implements InternationalPaymentConsentsApi {
 
-    public InternationalPaymentConsentsApiController(ConsentMetricService consentMetricService,
-                                                     InternationalConsentRepository internationalConsentRepository,
-                                                     TppRepository tppRepository,
-                                                     FundsAvailabilityService fundsAvailabilityService,
-                                                     ResourceLinkService resourceLinkService) {
-        super(consentMetricService, internationalConsentRepository, tppRepository, fundsAvailabilityService, resourceLinkService);
+    private final InternationalConsentRepository internationalConsentRepository;
+    private final TppRepository tppRepository;
+    private final FundsAvailabilityService fundsAvailabilityService;
+    private final ResourceLinkService resourceLinkService;
+    private final ConsentMetricService consentMetricService;
+
+    public InternationalPaymentConsentsApiController(ConsentMetricService consentMetricService, InternationalConsentRepository internationalConsentRepository, TppRepository tppRepository, FundsAvailabilityService fundsAvailabilityService, ResourceLinkService resourceLinkService) {
+        this.internationalConsentRepository = internationalConsentRepository;
+        this.tppRepository = tppRepository;
+        this.fundsAvailabilityService = fundsAvailabilityService;
+        this.resourceLinkService = resourceLinkService;
+        this.consentMetricService = consentMetricService;
     }
 
     @Override
+    public ResponseEntity<OBWriteInternationalConsentResponse5> createInternationalPaymentConsents(
+            OBWriteInternationalConsent5 obWriteInternationalConsent5,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String clientId,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        log.debug("Received: '{}'", obWriteInternationalConsent5);
+        FRWriteInternationalConsent frWriteInternationalConsent = toFRWriteInternationalConsent(obWriteInternationalConsent5);
+        log.trace("Converted to: '{}'", frWriteInternationalConsent);
+
+        final Tpp tpp = tppRepository.findByClientId(clientId);
+        log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
+        Optional<FRInternationalConsent> consentByIdempotencyKey = internationalConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        if (consentByIdempotencyKey.isPresent()) {
+            validateIdempotencyRequest(xIdempotencyKey, frWriteInternationalConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getInternationalConsent());
+            log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(consentByIdempotencyKey.get()));
+        }
+        log.debug("No consent with matching idempotency key has been found. Creating new consent.");
+
+        log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
+        FRInternationalConsent internationalConsent = FRInternationalConsent.builder()
+                .id(IntentType.PAYMENT_INTERNATIONAL_CONSENT.generateIntentId())
+                .status(ConsentStatusCode.AWAITINGAUTHORISATION)
+                .internationalConsent(frWriteInternationalConsent)
+                .pispId(tpp.getId())
+                .pispName(tpp.getOfficialName())
+                .statusUpdate(DateTime.now())
+                .obVersion(VersionPathExtractor.getVersionFromPath(request))
+                .build();
+        log.debug("Saving consent: '{}'", internationalConsent);
+        consentMetricService.sendConsentActivity(new ConsentStatusEntry(internationalConsent.getId(), internationalConsent.getStatus().name()));
+        internationalConsent = internationalConsentRepository.save(internationalConsent);
+        log.info("Created consent id: '{}'", internationalConsent.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(internationalConsent));
+    }
+
+    @Override
+    public ResponseEntity getInternationalPaymentConsentsConsentId(
+            String consentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        Optional<FRInternationalConsent> isInternationalConsent = internationalConsentRepository.findById(consentId);
+        if (!isInternationalConsent.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("International consent '" + consentId + "' can't be found");
+        }
+        FRInternationalConsent internationalConsent = isInternationalConsent.get();
+
+        return ResponseEntity.ok(responseEntity(internationalConsent));
+    }
+
+    @Override
+    public ResponseEntity getInternationalPaymentConsentsConsentIdFundsConfirmation(
+            String consentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String httpUrl,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        Optional<FRInternationalConsent> isInternationalConsent = internationalConsentRepository.findById(consentId);
+        if (!isInternationalConsent.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("International consent '" + consentId + "' can't be found");
+        }
+        FRInternationalConsent internationalConsent = isInternationalConsent.get();
+
+        // Check if funds are available on the account selected in consent
+        boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(
+                internationalConsent.getAccountId(),
+                internationalConsent.getInitiation().getInstructedAmount().getAmount());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new OBWriteFundsConfirmationResponse1()
+                        .data(new OBWriteDataFundsConfirmationResponse1()
+                                .fundsAvailableResult(new OBFundsAvailableResult1()
+                                        .fundsAvailable(areFundsAvailable)
+                                        .fundsAvailableDateTime(DateTime.now())
+                                ))
+                        .links(PaginationUtil.generateLinksOnePager(httpUrl))
+                        .meta(new Meta())
+                );
+    }
+
+    private OBWriteInternationalConsentResponse5 responseEntity(FRInternationalConsent internationalConsent) {
+        return new OBWriteInternationalConsentResponse5()
+                .data(new OBWriteInternationalConsentResponse5Data()
+                        .readRefundAccount(toOBWriteInternationalConsentResponse5DataReadRefundAccount(internationalConsent.getInternationalConsent().getData().getReadRefundAccount()))
+                        .initiation(toOBWriteInternational3DataInitiation(internationalConsent.getInitiation()))
+                        .status(toOBWriteInternationalConsentResponse5DataStatus(internationalConsent.getStatus()))
+                        .creationDateTime(internationalConsent.getCreated())
+                        .statusUpdateDateTime(internationalConsent.getStatusUpdate())
+                        .exchangeRateInformation(toOBWriteInternationalConsentResponse5DataExchangeRateInformation(internationalConsent.getCalculatedExchangeRate()))
+                        .consentId(internationalConsent.getId())
+                        .authorisation(toOBWriteDomesticConsent4DataAuthorisation(internationalConsent.getInternationalConsent().getData().getAuthorisation()))
+                )
+                .risk(toOBRisk1(internationalConsent.getRisk()))
+                .links(resourceLinkService.toSelfLink(internationalConsent, discovery -> getVersion(discovery).getGetInternationalPaymentConsent()))
+                .meta(new Meta());
+    }
+
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
         return discovery.getV_3_1_4();
     }

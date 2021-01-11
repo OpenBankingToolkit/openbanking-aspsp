@@ -25,25 +25,143 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_4.domesticscheduledpayments;
 
+import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
+import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
+import uk.org.openbanking.datamodel.payment.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.Optional;
+
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseReadRefundAccountConverter.toOBWriteDomesticScheduledConsentResponse4DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseStatusCodeConverter.toOBWriteDomesticScheduledConsentResponse4DataStatus;
+import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toOBWriteDomesticConsent4DataSCASupportData;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBWriteDomesticScheduledConsentResponse4DataPermission;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduled2DataInitiation;
 
 @Controller("DomesticScheduledPaymentConsentsApiV3.1.4")
-public class DomesticScheduledPaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.domesticscheduledpayments.DomesticScheduledPaymentConsentsApiController implements DomesticScheduledPaymentConsentsApi {
+@Slf4j
+public class DomesticScheduledPaymentConsentsApiController implements DomesticScheduledPaymentConsentsApi {
 
-    public DomesticScheduledPaymentConsentsApiController(ConsentMetricService consentMetricService,
-                                                         DomesticScheduledConsentRepository domesticScheduledConsentRepository,
-                                                         TppRepository tppRepository,
-                                                         ResourceLinkService resourceLinkService) {
-        super(consentMetricService, domesticScheduledConsentRepository, tppRepository, resourceLinkService);
+    private final DomesticScheduledConsentRepository domesticScheduledConsentRepository;
+    private final TppRepository tppRepository;
+    private final ResourceLinkService resourceLinkService;
+    private final ConsentMetricService consentMetricService;
+
+    @Autowired
+    public DomesticScheduledPaymentConsentsApiController(ConsentMetricService consentMetricService, DomesticScheduledConsentRepository domesticScheduledConsentRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
+        this.domesticScheduledConsentRepository = domesticScheduledConsentRepository;
+        this.tppRepository = tppRepository;
+        this.resourceLinkService = resourceLinkService;
+        this.consentMetricService = consentMetricService;
     }
 
     @Override
+    public ResponseEntity<OBWriteDomesticScheduledConsentResponse4> createDomesticScheduledPaymentConsents(
+            OBWriteDomesticScheduledConsent4 obWriteDomesticScheduledConsent4,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String clientId,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        log.debug("Received: '{}'", obWriteDomesticScheduledConsent4);
+        FRWriteDomesticScheduledConsent frWriteDomesticScheduledConsent = toFRWriteDomesticScheduledConsent(obWriteDomesticScheduledConsent4);
+        log.trace("Converted to: '{}'", frWriteDomesticScheduledConsent);
+
+        Tpp tpp = tppRepository.findByClientId(clientId);
+        log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
+        Optional<FRDomesticScheduledConsent> consentByIdempotencyKey = domesticScheduledConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        if (consentByIdempotencyKey.isPresent()) {
+            validateIdempotencyRequest(xIdempotencyKey, frWriteDomesticScheduledConsent, consentByIdempotencyKey.get(), () -> consentByIdempotencyKey.get().getDomesticScheduledConsent());
+            log.info("Idempotent request is valid. Returning [201 CREATED] but take no further action.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(consentByIdempotencyKey.get()));
+        }
+        log.debug("No consent with matching idempotency key has been found. Creating new consent...");
+
+        FRDomesticScheduledConsent domesticScheduledConsent = FRDomesticScheduledConsent.builder()
+                .id(IntentType.PAYMENT_DOMESTIC_SCHEDULED_CONSENT.generateIntentId())
+                .status(ConsentStatusCode.AWAITINGAUTHORISATION)
+                .domesticScheduledConsent(frWriteDomesticScheduledConsent)
+                .pispId(tpp.getId())
+                .pispName(tpp.getOfficialName())
+                .statusUpdate(DateTime.now())
+                .idempotencyKey(xIdempotencyKey)
+                .obVersion(VersionPathExtractor.getVersionFromPath(request))
+                .build();
+        log.debug("Saving consent: '{}'", domesticScheduledConsent);
+        consentMetricService.sendConsentActivity(new ConsentStatusEntry(domesticScheduledConsent.getId(), domesticScheduledConsent.getStatus().name()));
+        domesticScheduledConsent = domesticScheduledConsentRepository.save(domesticScheduledConsent);
+        log.info("Created consent id: '{}'", domesticScheduledConsent.getId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(domesticScheduledConsent));
+    }
+
+    @Override
+    public ResponseEntity getDomesticScheduledPaymentConsentsConsentId(
+            String consentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        Optional<FRDomesticScheduledConsent> isDomesticScheduledConsent = domesticScheduledConsentRepository.findById(consentId);
+        if (!isDomesticScheduledConsent.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic scheduled consent '" + consentId + "' can't be found");
+        }
+        FRDomesticScheduledConsent domesticScheduledConsent = isDomesticScheduledConsent.get();
+
+        return ResponseEntity.ok(responseEntity(domesticScheduledConsent));
+    }
+
+    private OBWriteDomesticScheduledConsentResponse4 responseEntity(FRDomesticScheduledConsent domesticScheduledConsent) {
+        return new OBWriteDomesticScheduledConsentResponse4()
+                .data(new OBWriteDomesticScheduledConsentResponse4Data()
+                        .readRefundAccount(toOBWriteDomesticScheduledConsentResponse4DataReadRefundAccount(domesticScheduledConsent.getDomesticScheduledConsent().getData().getReadRefundAccount()))
+                        .initiation(toOBWriteDomesticScheduled2DataInitiation(domesticScheduledConsent.getInitiation()))
+                        .status(toOBWriteDomesticScheduledConsentResponse4DataStatus(domesticScheduledConsent.getStatus()))
+                        .creationDateTime(domesticScheduledConsent.getCreated())
+                        .statusUpdateDateTime(domesticScheduledConsent.getStatusUpdate())
+                        .consentId(domesticScheduledConsent.getId())
+                        .permission(toOBWriteDomesticScheduledConsentResponse4DataPermission(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission()))
+                        .authorisation(toOBWriteDomesticConsent4DataAuthorisation(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation()))
+                        .scASupportData(toOBWriteDomesticConsent4DataSCASupportData(domesticScheduledConsent.getDomesticScheduledConsent().getData().getScASupportData()))
+                )
+                .links(resourceLinkService.toSelfLink(domesticScheduledConsent, discovery -> getVersion(discovery).getGetDomesticScheduledPaymentConsent()))
+                .risk(toOBRisk1(domesticScheduledConsent.getRisk()))
+                .meta(new Meta());
+    }
+
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
         return discovery.getV_3_1_4();
     }

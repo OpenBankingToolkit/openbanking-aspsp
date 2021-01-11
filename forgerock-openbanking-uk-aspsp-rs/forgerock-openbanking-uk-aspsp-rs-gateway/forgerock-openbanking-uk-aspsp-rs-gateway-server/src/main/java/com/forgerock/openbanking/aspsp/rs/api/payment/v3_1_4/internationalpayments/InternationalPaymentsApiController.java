@@ -26,16 +26,126 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_4.internationalpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.InternationalPaymentService;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse4;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.Collections;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toFRWriteInternationalDataInitiation;
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 
 @Controller("InternationalPaymentsApiV3.1.4")
-public class InternationalPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.internationalpayments.InternationalPaymentsApiController implements InternationalPaymentsApi {
+@Slf4j
+public class InternationalPaymentsApiController implements InternationalPaymentsApi {
 
-    public InternationalPaymentsApiController(InternationalPaymentService paymentsService,
-                                              RSEndpointWrapperService rsEndpointWrapperService,
-                                              RsStoreGateway rsStoreGateway) {
-        super(paymentsService, rsEndpointWrapperService, rsStoreGateway);
+    private final InternationalPaymentService paymentsService;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
+
+    public InternationalPaymentsApiController(InternationalPaymentService paymentsService, RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway) {
+        this.paymentsService = paymentsService;
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+    }
+
+    @Override
+    public ResponseEntity<OBWriteInternationalResponse4> createInternationalPayments(
+            OBWriteInternational3 obWriteInternational3,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        String consentId = obWriteInternational3.getData().getConsentId();
+        FRInternationalConsent payment = paymentsService.getPayment(consentId);
+
+        return rsEndpointWrapperService.paymentSubmissionEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
+                .payment(payment)
+                .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
+                .filters(f -> {
+                    f.verifyPaymentIdWithAccessToken();
+                    f.verifyIdempotencyKeyLength(xIdempotencyKey);
+                    f.verifyPaymentStatus();
+                    f.verifyRiskAndInitiation(
+                            toFRWriteInternationalDataInitiation(obWriteInternational3.getData().getInitiation()),
+                            toFRRisk(obWriteInternational3.getRisk()));
+                    f.verifyJwsDetachedSignature(xJwsSignature, request);
+                })
+                .execute(
+                        (String tppId) -> {
+                            //Modify the status of the payment
+                            log.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
+
+                            payment.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTINPROCESS);
+                            log.info("Updating payment");
+                            paymentsService.updatePayment(payment);
+
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            additionalHttpHeaders.add("x-ob-payment-id", consentId);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteInternationalResponse4.class, obWriteInternational3);
+                        }
+                );
+    }
+
+    @Override
+    public ResponseEntity<OBWriteInternationalResponse4> getInternationalPaymentsInternationalPaymentId(
+            String internationalPaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
+                .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            return rsStoreGateway.toRsStore(request, new HttpHeaders(), OBWriteInternationalResponse4.class);
+                        }
+                );
+    }
+
+    @Override
+    public ResponseEntity<OBWritePaymentDetailsResponse1> getInternationalPaymentsInternationalPaymentIdPaymentDetails(
+            String internationalPaymentId,
+            String authorization,
+            String xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        // Optional endpoint - not implemented
+        return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

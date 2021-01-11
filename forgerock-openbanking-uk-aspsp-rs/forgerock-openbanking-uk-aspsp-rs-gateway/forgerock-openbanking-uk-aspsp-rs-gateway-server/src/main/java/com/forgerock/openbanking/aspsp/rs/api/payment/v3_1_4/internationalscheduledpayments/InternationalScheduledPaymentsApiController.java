@@ -26,20 +26,153 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_4.internationalscheduledpayments;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRScheduledPaymentData;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.account.scheduledpayment.ScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.payment.InternationalScheduledPaymentService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledResponse5;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.Collections;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledDataInitiation;
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 
 @Controller("InternationalScheduledPaymentsApiV3.1.4")
-public class InternationalScheduledPaymentsApiController extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.internationalscheduledpayments.InternationalScheduledPaymentsApiController implements InternationalScheduledPaymentsApi {
+@Slf4j
+public class InternationalScheduledPaymentsApiController implements InternationalScheduledPaymentsApi {
+
+    private final InternationalScheduledPaymentService paymentsService;
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
+    private final ScheduledPaymentService scheduledPaymentService;
+    private final TppStoreService tppStoreService;
 
     public InternationalScheduledPaymentsApiController(InternationalScheduledPaymentService paymentsService,
                                                        RSEndpointWrapperService rsEndpointWrapperService,
                                                        RsStoreGateway rsStoreGateway,
                                                        ScheduledPaymentService scheduledPaymentService,
                                                        TppStoreService tppStoreService) {
-        super(paymentsService, rsEndpointWrapperService, rsStoreGateway, scheduledPaymentService, tppStoreService);
+        this.paymentsService = paymentsService;
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+        this.scheduledPaymentService = scheduledPaymentService;
+        this.tppStoreService = tppStoreService;
+    }
+
+    @Override
+    public ResponseEntity<OBWriteInternationalScheduledResponse5> createInternationalScheduledPayments(
+            OBWriteInternationalScheduled3 obWriteInternationalScheduled3,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        String consentId = obWriteInternationalScheduled3.getData().getConsentId();
+        FRInternationalScheduledConsent payment = paymentsService.getPayment(consentId);
+
+        return rsEndpointWrapperService.paymentSubmissionEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
+                .payment(payment)
+                .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
+                .filters(f -> {
+                    f.verifyPaymentIdWithAccessToken();
+                    f.verifyIdempotencyKeyLength(xIdempotencyKey);
+                    f.verifyPaymentStatus();
+                    f.verifyRiskAndInitiation(
+                            toFRWriteInternationalScheduledDataInitiation(obWriteInternationalScheduled3.getData().getInitiation()),
+                            toFRRisk(obWriteInternationalScheduled3.getRisk()));
+                    f.verifyJwsDetachedSignature(xJwsSignature, request);
+                })
+                .execute(
+                        (String tppId) -> {
+                            //Modify the status of the payment
+                            log.info("Switch status of payment {} to 'accepted settlement in process'.", consentId);
+
+                            FRWriteInternationalScheduledDataInitiation initiation = payment.getInitiation();
+                            FRScheduledPaymentData scheduledPayment = FRScheduledPaymentData.builder()
+                                    .accountId(payment.getAccountId())
+                                    .creditorAccount(initiation.getCreditorAccount())
+                                    .instructedAmount(initiation.getInstructedAmount())
+                                    // Set to EXECUTION because we are creating the creditor payment
+                                    .scheduledType(FRScheduledPaymentData.FRScheduleType.EXECUTION)
+                                    .scheduledPaymentDateTime(initiation.getRequestedExecutionDateTime())
+                                    .scheduledPaymentId(payment.getId())
+                                    .build();
+
+                            String pispId = tppStoreService.findByClientId(tppId)
+                                    .map(tpp -> tpp.getId())
+                                    .orElse(null);
+                            scheduledPaymentService.createSchedulePayment(scheduledPayment, pispId);
+
+                            payment.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
+                            log.info("Updating payment");
+                            paymentsService.updatePayment(payment);
+
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            additionalHttpHeaders.add("x-ob-payment-id", consentId);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteInternationalScheduledResponse5.class, obWriteInternationalScheduled3);
+                        }
+                );
+    }
+
+    @Override
+    public ResponseEntity<OBWriteInternationalScheduledResponse5> getInternationalScheduledPaymentsInternationalScheduledPaymentId(
+            String internationalScheduledPaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        return rsEndpointWrapperService.paymentsRequestPaymentIdEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
+                .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
+                .execute(
+                        (String tppId) -> {
+                            return rsStoreGateway.toRsStore(request, new HttpHeaders(), OBWriteInternationalScheduledResponse5.class);
+                        }
+                );
+    }
+
+    @Override
+    public ResponseEntity<OBWritePaymentDetailsResponse1> getInternationalScheduledPaymentsInternationalScheduledPaymentIdPaymentDetails(
+            String internationalScheduledPaymentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ) throws OBErrorResponseException {
+        // Optional endpoint - not implemented
+        return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
     }
 }

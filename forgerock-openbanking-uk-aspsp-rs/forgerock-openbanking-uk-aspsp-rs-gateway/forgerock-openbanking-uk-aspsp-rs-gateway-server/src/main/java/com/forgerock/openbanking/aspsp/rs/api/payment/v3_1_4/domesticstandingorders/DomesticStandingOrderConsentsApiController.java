@@ -27,13 +27,87 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_4.domesticstandingor
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import org.joda.time.DateTime;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse5;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.Collections;
+
+import static com.forgerock.openbanking.common.utils.ApiVersionUtils.getOBVersion;
 
 @Controller("DomesticStandingOrderConsentsApiV3.1.4")
-public class DomesticStandingOrderConsentsApiController extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_3.domesticstandingorders.DomesticStandingOrderConsentsApiController implements DomesticStandingOrderConsentsApi {
+public class DomesticStandingOrderConsentsApiController implements DomesticStandingOrderConsentsApi {
+
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
 
     public DomesticStandingOrderConsentsApiController(RSEndpointWrapperService rsEndpointWrapperService,
                                                       RsStoreGateway rsStoreGateway) {
-        super(rsEndpointWrapperService, rsStoreGateway);
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
+    }
+
+    @Override
+    public ResponseEntity<OBWriteDomesticStandingOrderConsentResponse5> createDomesticStandingOrderConsents(
+            OBWriteDomesticStandingOrderConsent5 obWriteDomesticStandingOrderConsent5,
+            String authorization,
+            String xIdempotencyKey,
+            String xJwsSignature,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal) throws OBErrorResponseException {
+        return rsEndpointWrapperService.paymentEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
+                .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
+                .filters(f -> {
+                            f.verifyIdempotencyKeyLength(xIdempotencyKey);
+                            f.verifyJwsDetachedSignature(xJwsSignature, request);
+                            f.validateRisk(obWriteDomesticStandingOrderConsent5.getRisk());
+                        }
+                )
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            additionalHttpHeaders.add("x-ob-client-id", tppId);
+
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBWriteDomesticStandingOrderConsentResponse5.class, obWriteDomesticStandingOrderConsent5);
+                        }
+                );
+    }
+
+    @Override
+    public ResponseEntity<OBWriteDomesticStandingOrderConsentResponse5> getDomesticStandingOrderConsentsConsentId(
+            String consentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal) throws OBErrorResponseException {
+        return rsEndpointWrapperService.paymentEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
+                .principal(principal)
+                .obVersion(getOBVersion(request.getRequestURI()))
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            additionalHttpHeaders.add("x-ob-client-id", tppId);
+
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBWriteDomesticStandingOrderConsentResponse5.class);
+                        }
+                );
     }
 }

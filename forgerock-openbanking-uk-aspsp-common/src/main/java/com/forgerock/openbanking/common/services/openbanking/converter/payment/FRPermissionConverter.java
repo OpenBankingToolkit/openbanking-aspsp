@@ -63,16 +63,32 @@ public class FRPermissionConverter {
     }
 
     // FR to OB
+    public static OBWriteDomesticScheduledConsentResponse4Data.PermissionEnum toOBWriteDomesticScheduledConsentResponse4DataPermission(FRPermission permission) {
+        return permission == null ? null : OBWriteDomesticScheduledConsentResponse4Data.PermissionEnum.valueOf(permission.name());
+    }
+
     public static OBWriteDomesticScheduledConsentResponse5Data.PermissionEnum toOBWriteDomesticScheduledConsentResponse5DataPermission(FRPermission permission) {
         return permission == null ? null : OBWriteDomesticScheduledConsentResponse5Data.PermissionEnum.valueOf(permission.name());
+    }
+
+    public static OBWriteDomesticStandingOrderConsentResponse5Data.PermissionEnum toOBWriteDomesticStandingOrderConsentResponse5DataPermission(FRPermission permission) {
+        return permission == null ? null : OBWriteDomesticStandingOrderConsentResponse5Data.PermissionEnum.valueOf(permission.name());
     }
 
     public static OBWriteDomesticStandingOrderConsentResponse6Data.PermissionEnum toOBWriteDomesticStandingOrderConsentResponse6DataPermission(FRPermission permission) {
         return permission == null ? null : OBWriteDomesticStandingOrderConsentResponse6Data.PermissionEnum.valueOf(permission.name());
     }
 
+    public static OBWriteInternationalScheduledConsentResponse5Data.PermissionEnum toOBWriteInternationalScheduledConsentResponse5DataPermission(FRPermission permission) {
+        return permission == null ? null : OBWriteInternationalScheduledConsentResponse5Data.PermissionEnum.valueOf(permission.name());
+    }
+
     public static OBWriteInternationalScheduledConsentResponse6Data.PermissionEnum toOBWriteInternationalScheduledConsentResponse6DataPermission(FRPermission permission) {
         return permission == null ? null : OBWriteInternationalScheduledConsentResponse6Data.PermissionEnum.valueOf(permission.name());
+    }
+
+    public static OBWriteInternationalStandingOrderConsentResponse6Data.PermissionEnum toOBWriteInternationalStandingOrderConsentResponse6DataPermission(FRPermission permission) {
+        return permission == null ? null : OBWriteInternationalStandingOrderConsentResponse6Data.PermissionEnum.valueOf(permission.name());
     }
 
     public static OBWriteInternationalStandingOrderConsentResponse7Data.PermissionEnum toOBWriteInternationalStandingOrderConsentResponse7DataPermission(FRPermission permission) {

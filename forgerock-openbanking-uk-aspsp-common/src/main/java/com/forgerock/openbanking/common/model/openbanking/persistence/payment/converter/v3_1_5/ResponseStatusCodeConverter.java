@@ -18,13 +18,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import uk.org.openbanking.datamodel.payment.*;
 
-public class ConsentStatusCodeToResponseDataStatusConverter {
-
+public class ResponseStatusCodeConverter {
     public static OBWriteDomesticConsentResponse5Data.StatusEnum toOBWriteDomesticConsentResponse5DataStatus(ConsentStatusCode consentStatusCode) {
         switch (consentStatusCode) {
             case ACCEPTEDSETTLEMENTCOMPLETED:
@@ -59,7 +59,7 @@ public class ConsentStatusCodeToResponseDataStatusConverter {
         }
     }
 
-    public static  OBWriteDomesticScheduledConsentResponse5Data.StatusEnum toOBWriteDomesticScheduledConsentResponse5DataStatus(ConsentStatusCode consentStatusCode) {
+    public static OBWriteDomesticScheduledConsentResponse5Data.StatusEnum toOBWriteDomesticScheduledConsentResponse5DataStatus(ConsentStatusCode consentStatusCode) {
         switch (consentStatusCode) {
             case ACCEPTEDSETTLEMENTCOMPLETED:
             case ACCEPTEDSETTLEMENTINPROCESS:
@@ -247,5 +247,4 @@ public class ConsentStatusCodeToResponseDataStatusConverter {
                 return OBWriteInternationalStandingOrderResponse7Data.StatusEnum.INITIATIONFAILED;
         }
     }
-
 }

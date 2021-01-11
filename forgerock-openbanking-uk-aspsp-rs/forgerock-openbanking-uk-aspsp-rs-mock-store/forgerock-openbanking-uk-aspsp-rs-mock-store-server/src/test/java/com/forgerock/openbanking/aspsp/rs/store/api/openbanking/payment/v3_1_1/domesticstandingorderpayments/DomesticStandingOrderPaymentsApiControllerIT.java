@@ -53,15 +53,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBRisk1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrder3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsentResponse3;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderResponse2;
+import uk.org.openbanking.datamodel.payment.*;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder3;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -159,7 +156,7 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
                 .risk(toOBRisk1(consent.getRisk()));
         submissionRequest.getData()
                 .consentId(consent.getId())
-                .initiation(toOBDomesticStandingOrder3(consent.getInitiation()));
+                .initiation(toOBWriteDomesticStandingOrder3DataInitiation(consent.getInitiation()));
 
         // When
         HttpResponse<OBWriteDomesticStandingOrderResponse2> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1.1/pisp/domestic-standing-orders")
@@ -188,9 +185,9 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
 
         OBWriteDomesticStandingOrder3 obWriteDomestic = JMockData.mock(OBWriteDomesticStandingOrder3.class);
         obWriteDomestic.risk(toOBRisk1(consent.getRisk()));
-        obWriteDomestic.data(new OBWriteDataDomesticStandingOrder3()
+        obWriteDomestic.data(new OBWriteDomesticStandingOrder3Data()
                 .consentId(submission.getId())
-                .initiation(toOBDomesticStandingOrder3(consent.getInitiation())));
+                .initiation(toOBWriteDomesticStandingOrder3DataInitiation(consent.getInitiation())));
 
         // When
         HttpResponse<String> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1/pisp/domestic-standing-orders")
@@ -218,9 +215,9 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
 
         OBWriteDomesticStandingOrder3 submissionRequest = new OBWriteDomesticStandingOrder3()
                 .risk(toOBRisk1(consent.getRisk()))
-                .data(new OBWriteDataDomesticStandingOrder3()
+                .data(new OBWriteDomesticStandingOrder3Data()
                         .consentId(consent.getId())
-                        .initiation(toOBDomesticStandingOrder3(consent.getInitiation())));
+                        .initiation(toOBWriteDomesticStandingOrder3DataInitiation(consent.getInitiation())));
 
         // When
         HttpResponse<String> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1/pisp/domestic-standing-orders")
@@ -251,7 +248,7 @@ public class DomesticStandingOrderPaymentsApiControllerIT {
 
     private OBWriteDomesticStandingOrder3 getOBWriteDomesticStandingOrder3() {
         return new OBWriteDomesticStandingOrder3()
-                .data(new OBWriteDataDomesticStandingOrder3())
+                .data(new OBWriteDomesticStandingOrder3Data())
                 .risk(new OBRisk1());
     }
 
