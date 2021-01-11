@@ -25,6 +25,7 @@
  */
 package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
 
+import com.forgerock.openbanking.aspsp.as.service.OIDCException;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
@@ -117,7 +118,7 @@ public interface DynamicRegistrationApi {
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorResponseException, OBErrorException;
+    ) throws OBErrorResponseException, OBErrorException, OIDCException;
 
     @PreAuthorize("hasAnyAuthority('ROLE_PISP', 'ROLE_AISP', 'ROLE_CBPII', 'ROLE_EIDAS')")
     @ApiOperation(value = "Delete a client by way of Client ID", nickname = "registerClientIdDelete", notes = "", authorizations = {
@@ -186,7 +187,7 @@ public interface DynamicRegistrationApi {
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorResponseException, OBErrorException;
+    ) throws OBErrorResponseException, OBErrorException, OIDCException;
 
 
     @PreAuthorize("hasAnyAuthority('UNREGISTERED_TPP', 'ROLE_PISP', 'ROLE_AISP', 'ROLE_CBPII', 'ROLE_EIDAS')")
@@ -205,5 +206,5 @@ public interface DynamicRegistrationApi {
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorResponseException;
+    ) throws OBErrorResponseException, OIDCException;
 }
