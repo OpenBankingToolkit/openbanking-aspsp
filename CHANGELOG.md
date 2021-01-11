@@ -1,6 +1,23 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#314](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/314) 14: payment refunds - Domestic payments
+[7990cc32fc3f982](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7990cc32fc3f982) Jorge Sanchez Perez *2021-01-11 10:09:45*
+14: payment refunds - Domestic payments (#314)
+
+* 14: payment refunds - Domestic payments
+- Generated API version 3.1.4 and delete extended version 3.1.3
+  - modules: aspsp-rs-gateway, aspsp-rs-mock-store
+- Create converter for version 3.1.4
+- Fix converter 3.1.5 to handler `Read refund account` enumeration values in consent
+- Introduced in the payment response the `refund` object account when `read refund account` is set to `YES`
+- Created Integration tests for versions 3.1.4 and 3.1.6(extends 3.1.5)
+- Domestic payments
+- International payments
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
+* Update starter parent to the latest version
+* suggested changes and improvements
+* fix packagePayment method name to responseEntity on all versions, delete final modifier on RefundPaymentsFactory
 [92f3cb2843318b8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92f3cb2843318b8) Matt Wills *2020-12-21 11:34:30*
 Release candidate: prepare for next development iteration
 ## 1.0.110
