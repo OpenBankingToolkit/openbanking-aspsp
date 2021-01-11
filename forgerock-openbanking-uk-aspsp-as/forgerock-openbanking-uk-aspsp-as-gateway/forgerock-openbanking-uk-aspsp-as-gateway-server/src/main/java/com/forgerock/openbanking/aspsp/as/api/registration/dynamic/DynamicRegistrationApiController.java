@@ -27,6 +27,7 @@ import com.forgerock.cert.exception.InvalidEidasCertType;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
 import com.forgerock.cert.exception.NoSuchRDNInField;
 import com.forgerock.cert.utils.CertificateUtils;
+import com.forgerock.openbanking.aspsp.as.service.OIDCException;
 import com.forgerock.openbanking.aspsp.as.service.SSAService;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -43,9 +44,9 @@ import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jose.util.Base64;
 import com.nimbusds.jose.util.JSONObjectUtils;
-import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import dev.openbanking4.spring.security.multiauth.model.authentication.X509Authentication;
@@ -83,18 +84,28 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.SSAClaims
 public class DynamicRegistrationApiController implements DynamicRegistrationApi {
 
     public static final String ORIGIN_ID_EIDAS = "EIDAS";
+    private final TppStoreService tppStoreService;
+    private final ObjectMapper objectMapper;
+    private final TokenExtractor tokenExtractor;
+    private final TppRegistrationService tppRegistrationService;
+    private final List<String> supportedAuthMethod;
+    private final SSAService ssaService;
+
     @Autowired
-    private TppStoreService tppStoreService;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private TokenExtractor tokenExtractor;
-    @Autowired
-    private TppRegistrationService tppRegistrationService;
-    @Value("${dynamic-registration.supported-token-endpoint-auth-method}")
-    private List<String> supportedAuthMethod;
-    @Autowired
-    private SSAService ssaService;
+    public DynamicRegistrationApiController(TppStoreService tppStoreService,
+                                            ObjectMapper objectMapper,
+                                            TokenExtractor tokenExtractor,
+                                            TppRegistrationService tppRegistrationService,
+                                            @Value("${dynamic-registration.supported-token-endpoint-auth-method}")
+                                            List<String> supportedAuthMethod,
+                                            SSAService ssaService){
+        this.tppStoreService = tppStoreService;
+        this.objectMapper = objectMapper;
+        this.tokenExtractor = tokenExtractor;
+        this.tppRegistrationService = tppRegistrationService;
+        this.supportedAuthMethod = supportedAuthMethod;
+        this.ssaService = ssaService;
+    }
 
     @Override
     public ResponseEntity<Void> unregister(
@@ -157,7 +168,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorResponseException, OBErrorException {
+    ) throws OBErrorResponseException, OBErrorException, OIDCException {
         return updateClient(null, authorization, registrationRequestJwtSerialised, principal);
     }
 
@@ -174,7 +185,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorResponseException, OBErrorException {
+    ) throws OBErrorResponseException, OBErrorException, OIDCException {
         X509Authentication currentUser = (X509Authentication) principal;
 
         Tpp tpp = getTpp(principal);
@@ -184,6 +195,11 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             SignedJWT registrationRequestJws = SignedJWT.parse(registrationRequestJwtSerialised);
             String ssaSerialised = registrationRequestJws.getJWTClaimsSet()
                     .getStringClaim(RegistrationTppRequestClaims.SOFTWARE_STATEMENT);
+
+            if(ssaSerialised == null){
+                log.debug("No SSA provided in registationJWT");
+                throw  new OBErrorException(OBRIErrorType.TPP_REGISTRATION_SSA_INVALID);
+            }
 
             //Convert in json for convenience
             String registrationRequestJson =
@@ -197,25 +213,21 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
 
             log.debug("TPP request json payload {}", registrationRequestJson);
 
-            String directoryId;
-            if (ssaSerialised == null && currentUser.getAuthorities().contains(OBRIRole.ROLE_EIDAS)) {
-                ssaSerialised = generateSSAForEIDAS(currentUser, registrationRequestJws, oidcRegistrationRequest);
-                directoryId = ORIGIN_ID_EIDAS;
-            } else {
-                directoryId = tppRegistrationService.verifySSA(ssaSerialised);
-                if (directoryId == null) {
-                    log.debug("None of the directories signed this SSA {}", ssaSerialised);
-                    throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_SSA_INVALID);
-                }
+            String directoryId = tppRegistrationService.verifySSA(ssaSerialised);
+            if (directoryId == null) {
+                log.debug("None of the directories signed this SSA {}", ssaSerialised);
+                throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_SSA_INVALID);
             }
+
             SignedJWT ssaJws = SignedJWT.parse(ssaSerialised);
             JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
             JSONObject ssaJwsJson = new JSONObject(ssaClaims.toJSONObject());
-
+            boolean isEidasCert = currentUser.getAuthorities().contains(OBRIRole.ROLE_EIDAS);
+            log.debug("isEidasCert {}", isEidasCert);
             log.debug("SSA {}", ssaSerialised);
             log.debug("SSA json payload {}", ssaJwsJson.toJSONString());
 
-            verifyRegistrationRequest(registrationRequestJwtSerialised,
+            verifyRegistrationRequest(isEidasCert, registrationRequestJwtSerialised,
                     ssaClaims, oidcRegistrationRequest, tpp.getCertificateCn());
 
             Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims, oidcRegistrationRequest, currentUser);
@@ -230,9 +242,6 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         } catch (ParseException | IOException e) {
             log.error("Couldn't parse registration request", e);
             throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_INVALID_FORMAT);
-        } catch (CertificateEncodingException | NoSuchRDNInField e) {
-            log.error("Error obtaining information from the certificate", e);
-            throw new OBErrorException(OBRIErrorType.PRINCIPAL_MISSING_PSD2_INFORMATION, e);
         }
     }
 
@@ -244,7 +253,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorResponseException {
+    ) throws OBErrorResponseException, OIDCException {
         log.debug("register TPP: request {}", registrationRequestJwtSerialised);
 
         try {
@@ -271,34 +280,37 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                     String ssaSerialised = registrationRequestJws.getJWTClaimsSet()
                             .getStringClaim(RegistrationTppRequestClaims.SOFTWARE_STATEMENT);
 
+                    if(ssaSerialised == null){
+                        log.debug("No SSA provided in registationJWT");
+                        throw  new OBErrorException(OBRIErrorType.TPP_REGISTRATION_SSA_INVALID);
+                    }
+
                     //Convert in json for convenience
                     String registrationRequestJson =
                             JSONObjectUtils.toJSONString(registrationRequestJws.getJWTClaimsSet().toJSONObject());
                     OIDCRegistrationRequest oidcRegistrationRequest = objectMapper.readValue(
                             registrationRequestJson, OIDCRegistrationRequest.class);
 
-                    String directoryId;
-                    if (ssaSerialised == null && currentUser.getAuthorities().contains(OBRIRole.ROLE_EIDAS)) {
-                        ssaSerialised = generateSSAForEIDAS(authentication, registrationRequestJws, oidcRegistrationRequest);
-                        directoryId = ORIGIN_ID_EIDAS;
+                    String directoryId = tppRegistrationService.verifySSA(ssaSerialised);
+                    if (directoryId == null) {
+                        log.debug("None of the directories signed this SSA {}", ssaSerialised);
+                        throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_SSA_INVALID);
                     } else {
-                        directoryId = tppRegistrationService.verifySSA(ssaSerialised);
-                        if (directoryId == null) {
-                            log.debug("None of the directories signed this SSA {}", ssaSerialised);
-                            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_SSA_INVALID);
-                        }
+                        log.debug("SSA is valid and issued by {}", directoryId);
                     }
+
                     SignedJWT ssaJws = SignedJWT.parse(ssaSerialised);
                     JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
                     JSONObject ssaJwsJson = new JSONObject(ssaClaims.toJSONObject());
                     //delete client ID
                     oidcRegistrationRequest.setClientId(null);
-
+                    boolean isEidasCert = currentUser.getAuthorities().contains(OBRIRole.ROLE_EIDAS);
+                    log.debug("isEidasCert {}", isEidasCert);
                     log.debug("TPP request json payload {}", registrationRequestJson);
                     log.debug("SSA {}", ssaSerialised);
                     log.debug("SSA json payload {}", ssaJwsJson.toJSONString());
 
-                    verifyRegistrationRequest(registrationRequestJwtSerialised,
+                    verifyRegistrationRequest(isEidasCert, registrationRequestJwtSerialised,
                             ssaClaims, oidcRegistrationRequest, getCn(authentication.getCertificateChain()[0]));
 
                     Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims, oidcRegistrationRequest, authentication);
@@ -312,9 +324,6 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                 } catch (ParseException | IOException e) {
                     log.error("Couldn't parse registration request", e);
                     throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_INVALID_FORMAT);
-                }  catch (CertificateEncodingException | NoSuchRDNInField e) {
-                    log.error("Error obtaining information from the certificate", e);
-                    throw new OBErrorException(OBRIErrorType.PRINCIPAL_MISSING_PSD2_INFORMATION, e);
                 }
             }
             throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_UNKNOWN_TRANSPORT_CERTIFICATE,
@@ -328,6 +337,26 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         }
     }
 
+    /**
+     * generateSSAForEIDAS This was a guess at to how OBIE were going to use eIDAS certs as part of the OB ecosystem.
+     *
+     * The assumption wasthat a QWac would somehow be associated with a specific software statement. However, this was
+     * unrealistic because QWacs are issued to an organisation.
+     *
+     * Open Banking Implementation Entity now issue OBWac certificates and these identify the Organisation and not
+     * the software statement. This means that when a TPP uses an OBWac or a full QWac certificate, they must have
+     * registered with the Open Banking (test) Directory and MUST provide and SSA as apart of the registration flow.
+     *
+     * So, this method is depricated and should no longer be used.
+     * @deprecated
+     * @param currentUser
+     * @param registrationRequestJws
+     * @param oidcRegistrationRequest
+     * @return
+     * @throws OBErrorException
+     * @throws NoSuchRDNInField
+     * @throws CertificateEncodingException
+     */
     private String generateSSAForEIDAS(X509Authentication currentUser, SignedJWT registrationRequestJws, OIDCRegistrationRequest oidcRegistrationRequest) throws OBErrorException, NoSuchRDNInField, CertificateEncodingException {
         try {
             JWK jwk;
@@ -373,20 +402,28 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
     }
 
     private void verifyRegistrationRequest(
+            boolean isEidasCert,
             String registrationRequestJwtSerialised,
             JWTClaimsSet ssaClaims,
             OIDCRegistrationRequest oidcRegistrationRequest,
             String cn
-    ) throws OBErrorException, ParseException {
+    ) throws OBErrorException, ParseException, OIDCException {
+        log.trace("{}:verifyRegistrationRequest()", this.getClass().getSimpleName());
         //Verify request
         String softwareId = ssaClaims.getStringClaim(SSAClaims.SOFTWARE_ID);
 
-        tppRegistrationService.verifySSASoftwareIDAgainstTransportCert(softwareId, cn);
+        // eIDAS certificates only identify the TPP, NOT the Software Statement. So if we have an eIDAS certificate we
+        // won't find the softwareId anywhere in the certificate DN.
+        if(!isEidasCert) {
+            tppRegistrationService.verifySSASoftwareIDAgainstTransportCert(softwareId, cn);
+        }
 
         String softwareClientId = ssaClaims.getStringClaim(SSAClaims.SOFTWARE_CLIENT_ID);
-        tppRegistrationService.verifyTPPRegistrationRequestSignature(registrationRequestJwtSerialised, softwareClientId, ssaClaims);
+        tppRegistrationService.verifyTPPRegistrationRequestSignature(registrationRequestJwtSerialised, softwareClientId,
+                ssaClaims);
         tppRegistrationService.verifyTPPRegistrationRequestAgainstSSA(oidcRegistrationRequest, ssaClaims);
         verifyAuthenticationMethodSupported(oidcRegistrationRequest);
+        log.trace("{}:verifyRegistrationRequest() registration request is valid", this.getClass().getSimpleName());
     }
 
     private void verifyClientIDMatchTPP(Tpp tpp, String oidcClient) throws OBErrorResponseException {

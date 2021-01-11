@@ -18,6 +18,14 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
 * Update starter parent to the latest version
 * suggested changes and improvements
 * fix packagePayment method name to responseEntity on all versions, delete final modifier on RefundPaymentsFactory
+### GitHub [#319](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/319) Release/1.0.111
+[bdb56329e6a2f02](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bdb56329e6a2f02) Jorge Sanchez Perez *2021-01-11 15:15:30*
+Release/1.0.111 (#319)
+
+* Release 1.0.111
+- Refund fixes
+- starter parent updated to the lastest version
+- prepare for next development iteration
 [92f3cb2843318b8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92f3cb2843318b8) Matt Wills *2020-12-21 11:34:30*
 Release candidate: prepare for next development iteration
 ## 1.0.110

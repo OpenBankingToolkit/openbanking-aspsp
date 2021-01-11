@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.as.service;
 import com.forgerock.openbanking.am.services.AMOIDCRegistrationService;
 import com.forgerock.openbanking.analytics.model.entries.TppEntry;
 import com.forgerock.openbanking.analytics.services.TppEntriesKPIService;
+import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.dto.RegistrationError;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -37,16 +38,18 @@ import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
+import com.nimbusds.jose.shaded.json.JSONArray;
+import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import dev.openbanking4.spring.security.multiauth.model.authentication.X509Authentication;
 import lombok.extern.slf4j.Slf4j;
-import com.nimbusds.jose.shaded.json.JSONArray;
-import com.nimbusds.jose.shaded.json.JSONObject;
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
@@ -59,19 +62,27 @@ import static com.forgerock.openbanking.constants.OIDCConstants.TokenEndpointAut
 @Slf4j
 public class TppRegistrationService {
 
-    @Autowired
-    private CryptoApiClient cryptoApiClient;
-    @Autowired
-    private OpenBankingDirectoryConfiguration openBankingDirectoryConfiguration;
-    @Autowired
-    private ForgeRockDirectoryConfiguration forgeRockDirectoryConfiguration;
-    @Autowired
-    private TppStoreService tppStoreService;
-    @Autowired
-    private AMOIDCRegistrationService amoidcRegistrationService;
-    @Autowired
-    private TppEntriesKPIService tppEntriesKPIService;
+    private final CryptoApiClient cryptoApiClient;
+    private final OpenBankingDirectoryConfiguration openBankingDirectoryConfiguration;
+    private final ForgeRockDirectoryConfiguration forgeRockDirectoryConfiguration;
+    private final TppStoreService tppStoreService;
+    private final AMOIDCRegistrationService amoidcRegistrationService;
+    private final TppEntriesKPIService tppEntriesKPIService;
 
+    @Autowired
+    public TppRegistrationService(CryptoApiClient cryptoApiClient,
+                                  OpenBankingDirectoryConfiguration openBankingDirectoryConfiguration,
+                                  ForgeRockDirectoryConfiguration forgeRockDirectoryConfiguration,
+                                  TppStoreService tppStoreService,
+                                  AMOIDCRegistrationService amoidcRegistrationService,
+                                  TppEntriesKPIService tppEntriesKPIService) {
+        this.cryptoApiClient = cryptoApiClient;
+        this.openBankingDirectoryConfiguration = openBankingDirectoryConfiguration;
+        this.forgeRockDirectoryConfiguration = forgeRockDirectoryConfiguration;
+        this.tppStoreService = tppStoreService;
+        this.amoidcRegistrationService = amoidcRegistrationService;
+        this.tppEntriesKPIService = tppEntriesKPIService;
+    }
 
     public String verifySSA(String ssaSerialised) {
         if (ssaSerialised == null) {
@@ -102,15 +113,19 @@ public class TppRegistrationService {
     }
 
     public void verifySSASoftwareIDAgainstTransportCert(String softwareIdFromSSA, String softwareIdFromMatls) throws OBErrorException {
+        log.trace("{}:verifySSASoftwareIdAgainstTransportCert()", this.getClass().getSimpleName());
         log.debug("Verify the MTLS certificate matches the SSA. Software ID from the certificate {} " +
                 "and from the SSA {}", softwareIdFromMatls, softwareIdFromSSA);
         if (!softwareIdFromMatls.equals(softwareIdFromSSA)) {
             log.error("SSA software ID '{}' doesn't match the Certificate CN '{}'", softwareIdFromSSA, softwareIdFromMatls);
+            log.trace("{}:verifySSASoftwareIdAgainstTransportCert() verification failed", this.getClass().getSimpleName());
             throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_TRANSPORT_CERTIFICATE_NOT_MATCHING_SSA,
                     softwareIdFromSSA,
                     softwareIdFromMatls
             );
         }
+        log.trace("{}:verifySSASoftwareIdAgainstTransportCert() verification successful",
+                this.getClass().getSimpleName());
     }
 
     public void verifyTPPRegistrationRequestSignature(String registrationRequestJwtSerialised, String softwareClientId, JWTClaimsSet ssaClaims) throws OBErrorException, ParseException {
@@ -136,31 +151,87 @@ public class TppRegistrationService {
         }
     }
 
-    public void verifyTPPRegistrationRequestAgainstSSA(OIDCRegistrationRequest oidcRegistrationRequest, JWTClaimsSet ssaClaims) throws OBErrorException, ParseException {
+    public void verifyTPPRegistrationRequestAgainstSSA(OIDCRegistrationRequest oidcRegistrationRequest,
+                                                       JWTClaimsSet ssaClaims) throws OBErrorException, OIDCException {
         log.debug("Verify TPP registration request matches the SSA request");
         log.debug("- Verify the software id");
-        if (oidcRegistrationRequest.getSoftwareId() != null
-                && !"".equals(oidcRegistrationRequest.getSoftwareId())
-                && !oidcRegistrationRequest.getSoftwareId().equals(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_ID))
-        ) {
-            log.debug("Software ID doesn't match the SSA");
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_NOT_MATCHING_SSA,
-                    OpenBankingConstants.SSAClaims.SOFTWARE_ID
-            );
+
+        // The OB Dynamic Client Registration spec says that;
+        // If specified, the software_id in the request MUST match the software_id specified in the SSA. ASPSPs can
+        // choose to allow multiple registrations for a given software statement. The Software ID must be represented
+        // as a Base62 UUID.
+        // The cardinality of software_id in the registration request spec os 0..1 meaning this can be null and that's
+        // OK.
+        String registrationRequestSoftwareId = oidcRegistrationRequest.getSoftwareId();
+
+        String noSoftwareIdErrorDescription = "Failed to obtain redirect URIs from the software statement";
+        // Throws if no claims available. ssaClaimSetSoftwareId will not be null or empty if it returns
+        String ssaClaimSetSoftwareId = getSsaStringClaim(ssaClaims, OpenBankingConstants.SSAClaims.SOFTWARE_ID,
+                noSoftwareIdErrorDescription);
+
+        if (StringUtils.isNotBlank(registrationRequestSoftwareId)){
+            if(!registrationRequestSoftwareId.equals(ssaClaimSetSoftwareId)){
+                String errorDescription = "The software_id in the registration request differs from that in the " +
+                        "Software Statement";
+                log.debug(errorDescription + ". ssaClaimSetSoftwareId: '{}', registrationRequestSoftwareId: '{}'",
+                        ssaClaimSetSoftwareId, registrationRequestSoftwareId);
+
+                RegistrationError registrationError = new RegistrationError()
+                        .error(RegistrationError.ErrorEnum.INVALID_CLIENT_METADATA)
+                        .errorDescription(errorDescription);
+                throw new OIDCException(registrationError);
+            }
         }
 
+        // ToDo: Address issue https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/17
+        // It would seem that when the SSA's used by the api-tests in the functional test suite are turned into a
+        // registration request JWT, and passed to the AS via the registration API, and is then decoded the SSA no
+        // longer seems to contain valid entries for the SSA's registration URIs. This means that we can't perform
+        // the required checks on the redirect URIs. See the following issue. This issue has existed for a long time
+        // I would guess and was hinted at in the previous version of this method, where there was a comment stating
+        // that 'we did not check the redirect uri for now 'due to a directory bug'. It's unlikely that this is due
+        // to a directory bug however, as SSAs from both FR and OB Directory seem to result in parsed SSAs with no
+        // valid redirect URIs in.
+        //
+        // So when the following issue is fixed we can re-instate the redirect uri checks below and remove the @Ignore
+        // from the TppRegistrationServiceTests.
+        //
+        // Also getSsaStringListClaim need to be fixed to throw if the SSA redirect URI list is empty.
+        boolean workaroundForOBDirectoryIssue = true;
         log.debug("- Verify the redirect uri");
-        if (oidcRegistrationRequest.getRedirectUris() == null || oidcRegistrationRequest.getRedirectUris().isEmpty()) {
-            log.debug("The redirect uri was not set, we override it with the SSA redirect uris");
-            oidcRegistrationRequest.setRedirectUris(ssaClaims.getStringListClaim(OpenBankingConstants.SSAClaims.SOFTWARE_REDIRECT_URIS));
+        List<String> registrationRequestRedirectUris = oidcRegistrationRequest.getRedirectUris();
+        String noRedirectUriErrorDescription = "Failed to obtain redirect URIs from the software statement";
+
+        // Throws if no claims available. ssaClaimRedirectUris will not be null or empty if it returns
+        List<String> ssaClaimRedirectUris = getSsaStringListClaim(ssaClaims,
+                OpenBankingConstants.SSAClaims.SOFTWARE_REDIRECT_URIS, noRedirectUriErrorDescription);
+
+
+        if (registrationRequestRedirectUris == null || registrationRequestRedirectUris.isEmpty() ) {
+            if(!workaroundForOBDirectoryIssue){
+                throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_JWT_INVALID,
+                        "At least one redirect_uri must be specified");
+            } else {
+                log.debug("The redirect uris were not set in the registration request. Setting them to be the " +
+                        "same as those set in the ssa.");
+                oidcRegistrationRequest.setRedirectUris(ssaClaimRedirectUris);
+            }
         }
 
-        if (!ssaClaims.getStringListClaim(OpenBankingConstants.SSAClaims.SOFTWARE_REDIRECT_URIS).containsAll(oidcRegistrationRequest.getRedirectUris())) {
-            log.warn("Redirect Uris doesn't match the SSA");
+        if (!ssaClaimRedirectUris.containsAll(registrationRequestRedirectUris)) {
+            log.warn("Redirect Uri in the request doesn't match the redirect URI in the SSA");
             //TODO due to OB directory bug, we won't check redirect uri for now
-            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Redirect Uris doesn't match the SSA");
+            if(!workaroundForOBDirectoryIssue) {
+                String errorDescription = "The redirect URI's in the registration request must be a subset of the " +
+                        "URI's in the Software Statement";
+
+                throw new OIDCException(new RegistrationError()
+                        .error(RegistrationError.ErrorEnum.INVALID_REDIRECT_URI)
+                        .errorDescription(errorDescription));
+            }
         }
     }
+
 
     public List<String> parseContacts(JWTClaimsSet ssaClaims) {
         List<String> contacts = new ArrayList<>();
@@ -178,7 +249,7 @@ public class TppRegistrationService {
         }
         return contacts;
     }
-    
+
     public Tpp registerTpp(String cn, String registrationRequestJson,
                            JWTClaimsSet ssaClaims, JSONObject ssaJwsJson,
                            OIDCRegistrationRequest oidcRegistrationRequest,
@@ -211,9 +282,9 @@ public class TppRegistrationService {
     }
 
     public Tpp updateTpp(Tpp tpp, String token, String registrationRequestJson,
-                           JWTClaimsSet ssaClaims, JSONObject ssaJwsJson,
-                           OIDCRegistrationRequest oidcRegistrationRequest,
-                           String directoryId, Set<SoftwareStatementRole> types) {
+                         JWTClaimsSet ssaClaims, JSONObject ssaJwsJson,
+                         OIDCRegistrationRequest oidcRegistrationRequest,
+                         String directoryId, Set<SoftwareStatementRole> types) {
         log.debug("Send the OAuth2 dynamic registration request to the AS");
         OIDCRegistrationResponse oidcRegistrationResponse = amoidcRegistrationService.updateOIDCClient(token, oidcRegistrationRequest, tpp.getClientId());
         log.debug("Response from the AS: {}", oidcRegistrationResponse);
@@ -239,6 +310,73 @@ public class TppRegistrationService {
         pushTppEntry(tpp, false);
 
         return tppStoreService.save(updatedTpp);
+    }
+
+    /**
+     * getSsaStringClaim Obtains a string containing the value for a specific claim. Catches the
+     * ParseExceptions thrown by nimbusds and instead throw an OIDCException.
+     *
+     * @param ssaClaims        @JWTClaimSet containing the claim to be retrieved
+     * @param claimName        @String the name of the SSA claim to obtain from the ssaClaims
+     * @param errorDescription @String an error description that will be part of the exception if it is not possible
+     *                         to obtain the requested ssaClaim.
+     * @return A non null or empty @String containing the ssa claim value
+     * @throws OIDCException when the claim specified by the claimName does not exist, or is empty.
+     */
+    private String getSsaStringClaim(@NotNull JWTClaimsSet ssaClaims,
+                                     @NotNull String claimName,
+                                     @NotNull String errorDescription)
+            throws OIDCException {
+
+        RegistrationError registrationError = new RegistrationError()
+                .error(RegistrationError.ErrorEnum.INVALID_SOFTWARE_STATEMENT)
+                .errorDescription(errorDescription);
+        try{
+            String claimValue = ssaClaims.getStringClaim(claimName);
+            if(StringUtils.isBlank(claimValue)){
+                log.debug(errorDescription);
+                throw new OIDCException(registrationError);
+            }
+            return claimValue;
+        } catch (ParseException e){
+            log.debug(errorDescription);
+            throw new OIDCException(registrationError);
+        }
+    }
+
+    /**
+     * getSsaStringListClaim Obtains a list of string values containing the values for a specific claim. Catch the
+     * ParseExceptions thrown by nimbusds and instead throw an OIDCException.
+     *
+     * @param ssaClaims        @JWTClaimSet containing the claim to be retrieved
+     * @param claimName        @String the name of the SSA claim to obtain from the ssaClaims
+     * @param errorDescription @String an error description that will be part of the exception if it is not possible
+     *                         to obtain the requested ssaClaim.
+     * @return A non null but potentially empty @List<String> containing the ssa claim values
+     * @throws OIDCException when the claim specified by the claimName does not exist, or is empty.
+     */
+    public List<String> getSsaStringListClaim(@NotNull JWTClaimsSet ssaClaims,
+                                               @NotNull String claimName,
+                                               @NotNull String errorDescription)
+            throws OIDCException {
+
+        RegistrationError registrationError = new RegistrationError()
+                .error(RegistrationError.ErrorEnum.INVALID_REDIRECT_URI)
+                .errorDescription(errorDescription);
+        try{
+            List<String> claimValue = ssaClaims.getStringListClaim(claimName);
+            // ToDo: we should throw when the claimValue is empty here. see issue;
+            //  https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/17
+            //  Remember to fix the javadoc above when adding back the empty check ;-)
+            if(claimValue == null /* || claimValue.isEmpty() */){
+                log.debug(errorDescription);
+                throw new OIDCException(registrationError);
+            }
+            return claimValue;
+        } catch (ParseException e){
+            log.debug(errorDescription);
+            throw new OIDCException(registrationError);
+        }
     }
 
     private void pushTppEntry(Tpp tpp, boolean isDeleted) {
@@ -302,7 +440,7 @@ public class TppRegistrationService {
         oidcRegistrationRequest.setJwks_uri(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_JWKS_ENDPOINT));
         oidcRegistrationRequest.setClientName(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_CLIENT_NAME));
         oidcRegistrationRequest.setLogoUri(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_LOGO_URI));
-        oidcRegistrationRequest.setContacts( parseContacts(ssaClaims));
+        oidcRegistrationRequest.setContacts(parseContacts(ssaClaims));
         oidcRegistrationRequest.setTosUri(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_TOS_URI));
         oidcRegistrationRequest.setPolicyUri(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_POLICY_URI));
 
@@ -337,7 +475,7 @@ public class TppRegistrationService {
 
         return types;
     }
-    
+
     public void unregisterTpp(String token, Tpp tpp) {
         log.debug("Unregister TPP {}", tpp);
 
