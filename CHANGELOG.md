@@ -26,6 +26,19 @@ Release/1.0.111 (#319)
 - Refund fixes
 - starter parent updated to the lastest version
 - prepare for next development iteration
+### GitHub [#322](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/322) Release/1.0.112
+[c60c3c987af6225](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c60c3c987af6225) Jorge Sanchez Perez *2021-01-12 11:17:40*
+Release/1.0.112 (#322)
+
+* Release candidate: prepare release 1.0.112
+* Release candidate: prepare for next development iteration
+[c1ddc763b46e6c9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c1ddc763b46e6c9) JamieB *2021-01-11 15:46:34*
+635: Support OBWac and OBSeal Open Banking certs
+
+This code allows registration with Open Banking Test Directory issued
+OBWac and OBSeal certificates.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/635
 [92f3cb2843318b8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92f3cb2843318b8) Matt Wills *2020-12-21 11:34:30*
 Release candidate: prepare for next development iteration
 ## 1.0.110

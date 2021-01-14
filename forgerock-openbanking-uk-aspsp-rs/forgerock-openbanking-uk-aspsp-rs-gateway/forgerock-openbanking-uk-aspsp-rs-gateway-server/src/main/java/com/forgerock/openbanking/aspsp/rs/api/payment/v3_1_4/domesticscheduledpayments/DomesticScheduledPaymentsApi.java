@@ -122,7 +122,7 @@ public interface DomesticScheduledPaymentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
     @PreAuthorize("hasAuthority('ROLE_PISP')")
     @OpenBankingAPI(
-            obReference = OBReference.CREATE_DOMESTIC_SCHEDULED_PAYMENT
+            obReference = OBReference.GET_DOMESTIC_SCHEDULED_PAYMENT
     )
     @RequestMapping(value = "/domestic-scheduled-payments/{DomesticScheduledPaymentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
@@ -168,7 +168,7 @@ public interface DomesticScheduledPaymentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
     @PreAuthorize("hasAuthority('ROLE_PISP')")
     @OpenBankingAPI(
-            obReference = OBReference.CREATE_DOMESTIC_SCHEDULED_PAYMENT
+            obReference = OBReference.GET_DOMESTIC_SCHEDULED_PAYMENTS_DOMESTIC_SCHEDULED_PAYMENT_ID_PAYMENT_DETAILS
     )
     @RequestMapping(value = "/domestic-scheduled-payments/{DomesticScheduledPaymentId}/payment-details",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},

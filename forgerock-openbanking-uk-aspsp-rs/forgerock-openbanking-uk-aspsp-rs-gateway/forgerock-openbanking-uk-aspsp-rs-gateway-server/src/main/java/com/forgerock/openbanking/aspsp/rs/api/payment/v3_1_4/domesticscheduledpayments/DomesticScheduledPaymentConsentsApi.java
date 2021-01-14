@@ -127,7 +127,7 @@ public interface DomesticScheduledPaymentConsentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
     @PreAuthorize("hasAuthority('ROLE_PISP')")
     @OpenBankingAPI(
-            obReference = OBReference.CREATE_DOMESTIC_SCHEDULED_PAYMENT_CONSENT
+            obReference = OBReference.GET_DOMESTIC_SCHEDULED_PAYMENT_CONSENT
     )
     @RequestMapping(value = "/domestic-scheduled-payment-consents/{ConsentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},

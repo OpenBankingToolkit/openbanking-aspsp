@@ -129,7 +129,7 @@ public interface InternationalStandingOrderConsentsApi {
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
     @PreAuthorize("hasAuthority('ROLE_PISP')")
     @OpenBankingAPI(
-            obReference = OBReference.CREATE_INTERNATIONAL_STANDING_ORDER_CONSENT
+            obReference = OBReference.GET_INTERNATIONAL_STANDING_ORDER_CONSENT
     )
     @RequestMapping(value = "/international-standing-order-consents/{ConsentId}",
             produces = {"application/json; charset=utf-8", "application/jose+jwe"},
