@@ -44,8 +44,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldMatchPattern_everyDay() {
         // Given
-        // DateTime.now().toString(ISODateTimeFormat.dateTimeNoMillis())
-        DateTime firstDateTime = DateTime.now(); //parse("2021-08-30T00:00:00Z");
+        DateTime firstDateTime = DateTime.now();
         String frequency = FrequencyType.EVERYDAY.getFrequencyStr();
 
         // When
@@ -69,8 +68,7 @@ public class FrequencyServiceTest {
     @Test
     public void shouldMatchPattern_everyWorkingDay() {
         // Given
-        // DateTime.now().toString(ISODateTimeFormat.dateTimeNoMillis())
-        DateTime firstDateTime = DateTime.now(); //parse("2021-08-30T00:00:00Z");
+        DateTime firstDateTime = DateTime.now();
         String frequency = FrequencyType.EVERYWORKINGDAY.getFrequencyStr();
 
         // When
