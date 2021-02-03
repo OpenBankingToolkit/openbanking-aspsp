@@ -27,7 +27,7 @@ public enum FrequencyType {
     EVERYWORKINGDAY("EvryWorkgDay"),
     INTERVALWEEKDAY("IntrvlWkDay", "0?([1-9]):0?([1-7])$"),
     WEEKINMONTHDAY("WkInMnthDay", "0?([1-5]):0?([1-7])$"),
-    INTERVALMONTHDAY("IntrvlMnthDay", "(0?[1-6]|12|24):(-0?[1-5]|0?[1-9]|[12][0-9]|3[01])$"),
+            INTERVALMONTHDAY("IntrvlMnthDay", "(0?[1-6]|12|24):(-0?[1-5]|0?[1-9]|[12][0-9]|3[01])$"),
     //"(0?[1-6]|12|24):(-0?[1-5]|[1][0-9]|2[0-8]|0?[1-9])$"),
     QUARTERDAY("QtrDay", "(ENGLISH|SCOTTISH|RECEIVED)$"),
     INTERVALDAY("IntrvlDay", "(0?[2-9]|[1-2][0-9]|3[0-1])$");
