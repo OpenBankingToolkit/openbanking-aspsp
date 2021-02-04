@@ -63,7 +63,7 @@ public class FrequencyServiceTest {
                 frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency type value not found: EvryDayx");
+        assertThat(e.getMessage()).isEqualTo("Frequency type value not found: " + frequency);
     }
 
     // EVERYWORKINGDAY("EvryWorkgDay"),
@@ -92,7 +92,7 @@ public class FrequencyServiceTest {
                 frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency type value not found: EvryWorkgDayx");
+        assertThat(e.getMessage()).isEqualTo("Frequency type value not found: " + frequency);
     }
 
     // INTERVALWEEKDAY("IntrvlWkDay", "0?([1-9]):0?([1-7])$")
@@ -114,14 +114,15 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_weekday() {
         // Given
-        String frequency = FrequencyType.INTERVALWEEKDAY.getFrequencyStr() + ":00:07";
+        FrequencyType frequencyType = FrequencyType.INTERVALWEEKDAY;
+        String frequency = frequencyType.getFrequencyStr() + ":00:07";
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
                 frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency 'IntrvlWkDay:00:07' doesn't match regex 'IntrvlWkDay:0?([1-9]):0?([1-7])$'");
+        assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
     }
 
     // WEEKINMONTHDAY("WkInMnthDay", "0?([1-5]):0?([1-7])$")
@@ -143,14 +144,15 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_weekInMonthDay() {
         // Given
-        String frequency = FrequencyType.WEEKINMONTHDAY.getFrequencyStr() + ":00:03";
+        FrequencyType frequencyType = FrequencyType.WEEKINMONTHDAY;
+        String frequency = frequencyType.getFrequencyStr() + ":00:03";
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
                 frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency 'WkInMnthDay:00:03' doesn't match regex 'WkInMnthDay:0?([1-5]):0?([1-7])$'");
+        assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
     }
 
     // INTERVALMONTHDAY("IntrvlMnthDay", "(0?[1-6]|12|24):(-0?[1-5]|0?[1-9]|[12][0-9]|3[01])$")
@@ -172,14 +174,15 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_intervalMonthDay() {
         // Given
-        String frequency = FrequencyType.INTERVALMONTHDAY.getFrequencyStr() + ":01:-8";
+        FrequencyType frequencyType = FrequencyType.INTERVALMONTHDAY;
+        String frequency = frequencyType.getFrequencyStr() + ":01:-8";
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
                 frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency 'IntrvlMnthDay:01:-8' doesn't match regex 'IntrvlMnthDay:(0?[1-6]|12|24):(-0?[1-5]|0?[1-9]|[12][0-9]|3[01])$'");
+        assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
     }
 
     // QUARTERDAY("QtrDay", "(ENGLISH|SCOTTISH|RECEIVED)$")
@@ -201,14 +204,15 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_quarterDay() {
         // Given
-        String frequency = FrequencyType.QUARTERDAY.getFrequencyStr() + ":SENT";
+        FrequencyType frequencyType = FrequencyType.QUARTERDAY;
+        String frequency = frequencyType.getFrequencyStr() + ":SENT";
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
                 frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency 'QtrDay:SENT' doesn't match regex 'QtrDay:(ENGLISH|SCOTTISH|RECEIVED)$'");
+        assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
     }
 
     // INTERVALDAY("IntrvlDay", "(0?[2-9]|[1-2][0-9]|3[0-1])$");
@@ -230,14 +234,15 @@ public class FrequencyServiceTest {
     @Test
     public void shouldRaiseException_intervalDay() {
         // Given
-        String frequency = FrequencyType.INTERVALDAY.getFrequencyStr() + ":1";
+        FrequencyType frequencyType = FrequencyType.INTERVALDAY;
+        String frequency = frequencyType.getFrequencyStr() + ":1";
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
                 frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        assertThat(e.getMessage()).isEqualTo("Frequency 'IntrvlDay:1' doesn't match regex 'IntrvlDay:(0?[2-9]|[1-2][0-9]|3[0-1])$'");
+        assertThat(e.getMessage()).isEqualTo("Frequency '"+frequency+"' doesn't match regex '"+frequencyType.getPattern()+"'");
     }
 
 }
