@@ -18,109 +18,226 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package com.forgerock.openbanking.common.services.frequency;
 
 import com.forgerock.openbanking.common.model.openbanking.frequency.FrequencyType;
 import com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService;
 import org.joda.time.DateTime;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.catchThrowableOfType;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 
 /**
- * Unit test for {@link FrequencyService}.
+ * Unit test for {@link com.forgerock.openbanking.common.services.openbanking.frequency.FrequencyService}.
  */
-@RunWith(Parameterized.class)
 public class FrequencyServiceTest {
+    // (Saturday 6th Feb 2021)
+    private static final DateTime PREVIOUS_DATE_TIME = new DateTime(2021, 2, 6, 11, 0);
 
-    private final String frequencyInterval;
-    private final String wrongFrequencyInterval;
-    private final DateTime firstDateTime;
-    private final FrequencyService frequencyService;
-    private static final String WRONG = "WRONG";
+    private final FrequencyService frequencyService = new FrequencyService();
 
-    public FrequencyServiceTest(String frequencyInterval, String wrongFrequencyInterval, DateTime firstDateTime) {
-        this.frequencyInterval = frequencyInterval;
-        this.wrongFrequencyInterval = wrongFrequencyInterval;
-        this.firstDateTime = firstDateTime;
-        this.frequencyService = new FrequencyService();
-    }
-
-    @Parameterized.Parameters(
-            name = "{index}: frequencyInterval ({0}), firstDateTime ({2}), wrongFrequencyInterval ({1})"
-    )
-    public static Collection<Object[]> frequencies() {
-
-        List<Object[]> args = new ArrayList<>();
-        args.add(new Object[]{FrequencyType.EVERYDAY.getFrequencyStr(),
-                FrequencyType.EVERYDAY.getFrequencyStr() + WRONG
-                ,DateTime.now()});
-
-        args.add(new Object[]{FrequencyType.EVERYWORKINGDAY.getFrequencyStr(),
-                FrequencyType.EVERYWORKINGDAY.getFrequencyStr() + WRONG
-                ,DateTime.now()});
-
-        args.add(new Object[]{FrequencyType.INTERVALWEEKDAY.getFrequencyStr() + ":01:07",
-                FrequencyType.INTERVALWEEKDAY.getFrequencyStr() + ":01:08",
-                DateTime.now()});
-
-        args.add(new Object[]{FrequencyType.WEEKINMONTHDAY.getFrequencyStr() + ":02:03",
-                FrequencyType.WEEKINMONTHDAY.getFrequencyStr() + ":00:03",
-                DateTime.now()});
-
-        args.add(new Object[]{FrequencyType.INTERVALMONTHDAY.getFrequencyStr() + ":01:30",
-                FrequencyType.INTERVALMONTHDAY.getFrequencyStr() + ":1:-8",
-                DateTime.now()});
-
-        args.add(new Object[]{FrequencyType.QUARTERDAY.getFrequencyStr() + ":ENGLISH",
-                FrequencyType.QUARTERDAY.getFrequencyStr() + ":SENT",
-                DateTime.now()});
-
-        args.add(new Object[]{FrequencyType.INTERVALDAY.getFrequencyStr() + ":02",
-                FrequencyType.INTERVALDAY.getFrequencyStr() + ":01",
-                DateTime.now()});
-
-        return args;
-    }
-
+    // EVERYDAY("EvryDay")
     @Test
-    public void shouldMatchPattern_frequencyInterval() {
+    public void shouldMatchPattern_everyDay() {
         // Given
-        // this.firsDateTime
-        // this.frequencyInterval
+        String frequency = FrequencyType.EVERYDAY.getFrequencyStr();
 
         // When
-        DateTime dateTime = frequencyService.getNextDateTime(firstDateTime, frequencyInterval);
+        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
 
         // Then
         assertThat(dateTime).isNotNull();
+        assertThat(dateTime.getYear()).isEqualTo(PREVIOUS_DATE_TIME.getYear());
+        assertThat(dateTime.getMonthOfYear()).isEqualTo(PREVIOUS_DATE_TIME.getMonthOfYear());
+        assertThat(dateTime.getDayOfMonth()).isEqualTo(PREVIOUS_DATE_TIME.getDayOfMonth() + 1);
     }
 
     @Test
-    public void wrongFrequencyInterval() {
+    public void shouldRaiseException_everyDay() {
         // Given
-        // this.firsDateTime
-        // this.wrongFrequencyInterval
+        String frequency = FrequencyType.EVERYDAY.getFrequencyStr() + "x";
 
         // When
         IllegalArgumentException e = catchThrowableOfType(() ->
-                frequencyService.getNextDateTime(firstDateTime, wrongFrequencyInterval), IllegalArgumentException.class);
+                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
 
         // Then
-        String[] parts = wrongFrequencyInterval.split(":", 2);
-        if (wrongFrequencyInterval.endsWith(WRONG)) {
-            assertThat(e.getMessage()).isEqualTo("Frequency type value not found: " + wrongFrequencyInterval);
-        } else {
-            assertThat(e.getMessage()).isEqualTo("Frequency '" + wrongFrequencyInterval + "' doesn't match regex '" +
-                    FrequencyType.fromFrequencyString(parts[0]).getPattern().pattern() + "'");
-        }
+        assertThat(e.getMessage()).isEqualTo("Frequency type value not found: EvryDayx");
     }
+
+    // EVERYWORKINGDAY("EvryWorkgDay"),
+    @Test
+    public void shouldMatchPattern_everyWorkingDay() {
+        // Given
+        String frequency = FrequencyType.EVERYWORKINGDAY.getFrequencyStr();
+
+        // When
+        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+
+        // Then
+        assertThat(dateTime).isNotNull();
+        assertThat(dateTime.getYear()).isEqualTo(PREVIOUS_DATE_TIME.getYear());
+        assertThat(dateTime.getMonthOfYear()).isEqualTo(PREVIOUS_DATE_TIME.getMonthOfYear());
+        assertThat(dateTime.getDayOfMonth()).isEqualTo(PREVIOUS_DATE_TIME.getDayOfMonth() + 2);
+    }
+
+    @Test
+    public void shouldRaiseException_everyWorkingDay() {
+        // Given
+        String frequency = FrequencyType.EVERYWORKINGDAY.getFrequencyStr() + "x";
+
+        // When
+        IllegalArgumentException e = catchThrowableOfType(() ->
+                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+
+        // Then
+        assertThat(e.getMessage()).isEqualTo("Frequency type value not found: EvryWorkgDayx");
+    }
+
+    // INTERVALWEEKDAY("IntrvlWkDay", "0?([1-9]):0?([1-7])$")
+    @Test
+    public void shouldMatchPattern_weekday() {
+        // Given
+        String frequency = FrequencyType.INTERVALWEEKDAY.getFrequencyStr() + ":01:07";
+
+        // When
+        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+
+        // Then
+        assertThat(dateTime).isNotNull();
+        assertThat(dateTime.getYear()).isEqualTo(PREVIOUS_DATE_TIME.getYear());
+        assertThat(dateTime.getMonthOfYear()).isEqualTo(PREVIOUS_DATE_TIME.getMonthOfYear());
+        assertThat(dateTime.getDayOfMonth()).isEqualTo(PREVIOUS_DATE_TIME.getDayOfMonth() + 8);
+    }
+
+    @Test
+    public void shouldRaiseException_weekday() {
+        // Given
+        String frequency = FrequencyType.INTERVALWEEKDAY.getFrequencyStr() + ":00:07";
+
+        // When
+        IllegalArgumentException e = catchThrowableOfType(() ->
+                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+
+        // Then
+        assertThat(e.getMessage()).isEqualTo("Frequency 'IntrvlWkDay:00:07' doesn't match regex 'IntrvlWkDay:0?([1-9]):0?([1-7])$'");
+    }
+
+    // WEEKINMONTHDAY("WkInMnthDay", "0?([1-5]):0?([1-7])$")
+    @Test
+    public void shouldMatchPattern_weekInMonthDay() {
+        // Given
+        String frequency = FrequencyType.WEEKINMONTHDAY.getFrequencyStr() + ":02:03";
+
+        // When
+        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+
+        // Then
+        assertThat(dateTime).isNotNull();
+        assertThat(dateTime.getYear()).isEqualTo(PREVIOUS_DATE_TIME.getYear());
+        assertThat(dateTime.getMonthOfYear()).isEqualTo(PREVIOUS_DATE_TIME.getMonthOfYear() + 1);
+        assertThat(dateTime.getDayOfMonth()).isEqualTo(2 * 7 + 3);
+    }
+
+    @Test
+    public void shouldRaiseException_weekInMonthDay() {
+        // Given
+        String frequency = FrequencyType.WEEKINMONTHDAY.getFrequencyStr() + ":00:03";
+
+        // When
+        IllegalArgumentException e = catchThrowableOfType(() ->
+                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+
+        // Then
+        assertThat(e.getMessage()).isEqualTo("Frequency 'WkInMnthDay:00:03' doesn't match regex 'WkInMnthDay:0?([1-5]):0?([1-7])$'");
+    }
+
+    // INTERVALMONTHDAY("IntrvlMnthDay", "(0?[1-6]|12|24):(-0?[1-5]|0?[1-9]|[12][0-9]|3[01])$")
+    @Test
+    public void shouldMatchPattern_intervalMonthDay() {
+        // Given
+        String frequency = FrequencyType.INTERVALMONTHDAY.getFrequencyStr() + ":01:30";
+
+        // When
+        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+
+        // Then
+        assertThat(dateTime).isNotNull();
+        assertThat(dateTime.getYear()).isEqualTo(PREVIOUS_DATE_TIME.getYear());
+        assertThat(dateTime.getMonthOfYear()).isEqualTo(PREVIOUS_DATE_TIME.getMonthOfYear() + 1);
+        assertThat(dateTime.getDayOfMonth()).isEqualTo(30);
+    }
+
+    @Test
+    public void shouldRaiseException_intervalMonthDay() {
+        // Given
+        String frequency = FrequencyType.INTERVALMONTHDAY.getFrequencyStr() + ":01:-8";
+
+        // When
+        IllegalArgumentException e = catchThrowableOfType(() ->
+                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+
+        // Then
+        assertThat(e.getMessage()).isEqualTo("Frequency 'IntrvlMnthDay:01:-8' doesn't match regex 'IntrvlMnthDay:(0?[1-6]|12|24):(-0?[1-5]|0?[1-9]|[12][0-9]|3[01])$'");
+    }
+
+    // QUARTERDAY("QtrDay", "(ENGLISH|SCOTTISH|RECEIVED)$")
+    @Test
+    public void shouldMatchPattern_quarterDay() {
+        // Given
+        String frequency = FrequencyType.QUARTERDAY.getFrequencyStr() + ":ENGLISH";
+
+        // When
+        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+
+        // Then
+        assertThat(dateTime).isNotNull();
+        assertThat(dateTime.getYear()).isEqualTo(PREVIOUS_DATE_TIME.getYear());
+        assertThat(dateTime.getMonthOfYear()).isEqualTo(PREVIOUS_DATE_TIME.getMonthOfYear() + 1);
+        assertThat(dateTime.getDayOfMonth()).isEqualTo(25);
+    }
+
+    @Test
+    public void shouldRaiseException_quarterDay() {
+        // Given
+        String frequency = FrequencyType.QUARTERDAY.getFrequencyStr() + ":SENT";
+
+        // When
+        IllegalArgumentException e = catchThrowableOfType(() ->
+                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+
+        // Then
+        assertThat(e.getMessage()).isEqualTo("Frequency 'QtrDay:SENT' doesn't match regex 'QtrDay:(ENGLISH|SCOTTISH|RECEIVED)$'");
+    }
+
+    // INTERVALDAY("IntrvlDay", "(0?[2-9]|[1-2][0-9]|3[0-1])$");
+    @Test
+    public void shouldMatchPattern_intervalDay() {
+        // Given
+        String frequency = FrequencyType.INTERVALDAY.getFrequencyStr() + ":02";
+
+        // When
+        DateTime dateTime = frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency);
+
+        // Then
+        assertThat(dateTime).isNotNull();
+        assertThat(dateTime.getYear()).isEqualTo(PREVIOUS_DATE_TIME.getYear());
+        assertThat(dateTime.getMonthOfYear()).isEqualTo(PREVIOUS_DATE_TIME.getMonthOfYear());
+        assertThat(dateTime.getDayOfMonth()).isEqualTo(PREVIOUS_DATE_TIME.getDayOfMonth() + 2);
+    }
+
+    @Test
+    public void shouldRaiseException_intervalDay() {
+        // Given
+        String frequency = FrequencyType.INTERVALDAY.getFrequencyStr() + ":1";
+
+        // When
+        IllegalArgumentException e = catchThrowableOfType(() ->
+                frequencyService.getNextDateTime(PREVIOUS_DATE_TIME, frequency), IllegalArgumentException.class);
+
+        // Then
+        assertThat(e.getMessage()).isEqualTo("Frequency 'IntrvlDay:1' doesn't match regex 'IntrvlDay:(0?[2-9]|[1-2][0-9]|3[0-1])$'");
+    }
+
 }
