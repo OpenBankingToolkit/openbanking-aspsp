@@ -32,6 +32,30 @@ Release/1.0.112 (#322)
 
 * Release candidate: prepare release 1.0.112
 * Release candidate: prepare for next development iteration
+### GitHub [#323](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/323) 18: Discover RS aspsp payments 3.1.4 links
+[4726880f61e5c4d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4726880f61e5c4d) Jorge Sanchez Perez *2021-01-14 09:24:20*
+18: Discover RS aspsp payments 3.1.4 links (#323)
+
+- Updated the value obReference on @OpenBankingAPI annotation to fix the links published by discovery service
+  - URL: rs.aspsp.${DOMAIN}/open-banking/discovery
+### GitHub [#324](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/324) Release/1.0.113
+[58e7ca0d31e3bee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/58e7ca0d31e3bee) Jorge Sanchez Perez *2021-01-14 10:27:25*
+Release/1.0.113 (#324)
+
+* Release candidate: prepare release 1.0.113
+
+* Release candidate: prepare for next development iteration
+### GitHub [#328](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/328) 672: payment frequency pattern validation
+[5a90bea1d1cd3b4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5a90bea1d1cd3b4) Jorge Sanchez Perez *2021-02-04 10:47:30*
+672: payment frequency pattern validation (#328)
+
+* 672: Payment Frequency pattern validation error
+- update the regular expression for frequency type 'IntrvlMnthDay'
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/672
+
+* - JUnit tests added to validate the payment frequency interval
+
+Co-authored-by: Matt Wills <matt.wills@forgerock.com>
 [c1ddc763b46e6c9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c1ddc763b46e6c9) JamieB *2021-01-11 15:46:34*
 635: Support OBWac and OBSeal Open Banking certs
 

@@ -36,6 +36,8 @@ public class DiscoveryConfig {
     private List<String> supportedAuthMethod;
     @Value("${grant-types.supported}")
     private List<String> supportedGrantTypes;
+    @Value("${response-types.supported}")
+    private List<String> supportedResponseTypes;
     @Value("${user-info.enable}")
     private boolean isUserInfoEnable;
     @Value("${introspection.enable}")
