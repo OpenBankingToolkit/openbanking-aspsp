@@ -56,6 +56,11 @@ Issue: https://github.com/ForgeCloud/ob-deploy/issues/672
 * - JUnit tests added to validate the payment frequency interval
 
 Co-authored-by: Matt Wills <matt.wills@forgerock.com>
+### GitHub [#330](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/330) 674: response_types FAPI compliant
+[237e74d0433d721](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/237e74d0433d721) Jorge Sanchez Perez *2021-02-10 08:08:09*
+674: response_types FAPI compliant (#330)
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/674
 [c1ddc763b46e6c9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c1ddc763b46e6c9) JamieB *2021-01-11 15:46:34*
 635: Support OBWac and OBSeal Open Banking certs
 
