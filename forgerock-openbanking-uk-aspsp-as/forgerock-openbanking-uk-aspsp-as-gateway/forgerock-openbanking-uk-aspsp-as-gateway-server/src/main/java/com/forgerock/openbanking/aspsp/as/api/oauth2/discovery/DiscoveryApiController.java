@@ -22,10 +22,14 @@ package com.forgerock.openbanking.aspsp.as.api.oauth2.discovery;
 
 import com.forgerock.openbanking.am.gateway.AMASPSPGateway;
 import com.forgerock.openbanking.common.model.as.discovery.OIDCDiscoveryResponse;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
+import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -59,9 +63,9 @@ public class DiscoveryApiController implements DiscoveryApi {
     }
 
     @Override
-    public ResponseEntity<OIDCDiscoveryResponse> getDiscovery(
+    public ResponseEntity getDiscovery(
             HttpServletRequest request
-    ) {
+    ) throws OBErrorResponseException {
         String normalEndpoint = "https://as.aspsp." + dnsHostRoot;
         String matlsProtectedEndpoint = withPort("https://matls.as.aspsp." + dnsHostRoot);
 
@@ -95,6 +99,19 @@ public class DiscoveryApiController implements DiscoveryApi {
 
         log.debug("Grant Types from AM: {} will be restricted to as-api configured values: {}", discoveryResponse.getGrantTypesSupported(), discoveryConfig.getSupportedGrantTypes());
         discoveryResponse.setGrantTypesSupported(discoveryConfig.getSupportedGrantTypes());
+
+        // FAPI compliant ('code id_token'): https://github.com/ForgeCloud/ob-deploy/issues/674
+        if(discoveryResponse.getResponseTypesSupported().containsAll(discoveryConfig.getSupportedResponseTypes())){
+            log.debug("Response Types from AM: {} will be restricted to as-api configured values: {}", discoveryResponse.getResponseTypesSupported(), discoveryConfig.getSupportedResponseTypes());
+            discoveryResponse.setResponseTypesSupported(discoveryConfig.getSupportedResponseTypes());
+        } else {
+            log.error("The response types supported by the authorisation server '" + discoveryResponse.getResponseTypesSupported() + "' don't match with the response types supported '" + discoveryConfig.getSupportedResponseTypes() + "' by as-api");
+            throw new OBErrorResponseException(
+                    OBRIErrorType.DISCOVERY_RESPONSE_TYPE_MISMATCH.getHttpStatus(),
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.DISCOVERY_RESPONSE_TYPE_MISMATCH.toOBError1(discoveryResponse.getResponseTypesSupported().toString(), discoveryConfig.getSupportedResponseTypes().toString()));
+        }
+
 
         log.debug("Set requestUriParameterSupported={} from as-api config", discoveryConfig.isRequestUriParameterSupported());
         discoveryResponse.setRequestUriParameterSupported(discoveryConfig.isRequestUriParameterSupported());

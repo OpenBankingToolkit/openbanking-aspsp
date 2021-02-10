@@ -24,6 +24,7 @@ import com.forgerock.openbanking.am.gateway.AMGateway;
 import com.forgerock.openbanking.am.services.AMGatewayService;
 import com.forgerock.openbanking.analytics.model.entries.TokenUsage;
 import com.forgerock.openbanking.analytics.services.TokenUsageService;
+import com.forgerock.openbanking.aspsp.as.api.oauth2.discovery.DiscoveryConfig;
 import com.forgerock.openbanking.aspsp.as.service.JwtOverridingService;
 import com.forgerock.openbanking.aspsp.as.service.headless.authorisation.HeadLessAuthorisationService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
@@ -88,9 +89,10 @@ public class AuthorisationApiController implements AuthorisationApi {
     private JwtOverridingService jwtOverridingService;
     @Autowired
     private TokenUsageService tokenUsageService;
+    @Autowired
+    private DiscoveryConfig discoveryConfig;
 
     private static Pattern ID_TOKEN_PATTERN = Pattern.compile("id_token=?([^&]+)?");
-
 
     @Override
     public ResponseEntity getAuthorisation(
@@ -131,6 +133,14 @@ public class AuthorisationApiController implements AuthorisationApi {
 
             HttpServletRequest request
     ) throws OBErrorResponseException, OBErrorException {
+        // FAPI compliant ('code id_token'): https://github.com/ForgeCloud/ob-deploy/issues/674
+        if(!discoveryConfig.getSupportedResponseTypes().contains(responseType)){
+            log.error("The response types requested '" + responseType + "' don't match with the response types supported '" + discoveryConfig.getSupportedResponseTypes() + "' by as-api");
+            throw new OBErrorResponseException(
+                    OBRIErrorType.REQUEST_RESPONSE_TYPE_MISMATCH.getHttpStatus(),
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.REQUEST_RESPONSE_TYPE_MISMATCH.toOBError1(responseType, discoveryConfig.getSupportedResponseTypes().toString()));
+        }
         SignedJWT requestParameterJwt = validateRequestParameter(responseType, clientId, state, nonce, scopes, redirectUri, requestParametersSerialised);
         requestParametersSerialised = requestParameterJwt.serialize();
         try {

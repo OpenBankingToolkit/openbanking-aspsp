@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.as.api.oauth2.discovery;
 
 import com.forgerock.openbanking.am.gateway.AMASPSPGateway;
 import com.forgerock.openbanking.common.model.as.discovery.OIDCDiscoveryResponse;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.github.jsonzou.jmockdata.JMockData;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,9 +36,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,7 +60,7 @@ public class DiscoveryApiControllerTest {
     }
 
     @Test
-    public void dynamicRegistrationContainsPortWhenNot443() {
+    public void dynamicRegistrationContainsPortWhenNot443() throws OBErrorResponseException {
         // Given
         MockHttpServletRequest req = new MockHttpServletRequest();
         OIDCDiscoveryResponse oidcDiscoveryResponse = JMockData.mock(OIDCDiscoveryResponse.class);
@@ -72,7 +75,7 @@ public class DiscoveryApiControllerTest {
     }
 
     @Test
-    public void dynamicRegistrationDoesNotContainsPortWhen443() {
+    public void dynamicRegistrationDoesNotContainsPortWhen443() throws OBErrorResponseException {
         // Given
         discoveryApiController = new DiscoveryApiController(amGateway, config, "localhost", "443", "", "443");
         MockHttpServletRequest req = new MockHttpServletRequest();
@@ -88,7 +91,7 @@ public class DiscoveryApiControllerTest {
     }
 
     @Test
-    public void requireRequestUriRegistration_isNull_when_requestUriParameterNotSupported() {
+    public void requireRequestUriRegistration_isNull_when_requestUriParameterNotSupported() throws OBErrorResponseException {
         // Given
         MockHttpServletRequest req = new MockHttpServletRequest();
         OIDCDiscoveryResponse oidcDiscoveryResponse = JMockData.mock(OIDCDiscoveryResponse.class);
@@ -107,7 +110,7 @@ public class DiscoveryApiControllerTest {
     }
 
     @Test
-    public void testCustomAPIVersion() {
+    public void testCustomAPIVersion() throws OBErrorResponseException {
         // Given
         discoveryApiController = new DiscoveryApiController(amGateway, config, "localhost", "8074", "RWApiVersion", "CRApiVersion");
         MockHttpServletRequest req = new MockHttpServletRequest();
@@ -121,5 +124,97 @@ public class DiscoveryApiControllerTest {
         // Then
         assertThat(discovery.getBody().getReadWriteApiVersion()).isEqualTo("RWApiVersion");
         assertThat(discovery.getBody().getClientRegistrationApiVersion()).isEqualTo("CRApiVersion");
+    }
+
+    @Test
+    public void testResponseTypesSupported() throws OBErrorResponseException {
+        // Given
+        List<String> responseTypes = List.of("code", "id_token", "code id_token");
+        given(config.getSupportedResponseTypes()).willReturn(responseTypes);
+        discoveryApiController = new DiscoveryApiController(amGateway, config, "localhost", "", "", "");
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        OIDCDiscoveryResponse oidcDiscoveryResponse = JMockData.mock(OIDCDiscoveryResponse.class);
+        List<String> amResponseTypes = new ArrayList<>();
+        amResponseTypes.addAll(responseTypes);
+        amResponseTypes.add("device_code");
+        amResponseTypes.add("device_code code id_token");
+        oidcDiscoveryResponse.setResponseTypesSupported(amResponseTypes);
+        ResponseEntity<OIDCDiscoveryResponse> response = new ResponseEntity<>(oidcDiscoveryResponse, HttpStatus.OK);
+        given(amGateway.toAM(req, new HttpHeaders(), new ParameterizedTypeReference<OIDCDiscoveryResponse>() {})).willReturn(response);
+
+        // When
+        ResponseEntity<OIDCDiscoveryResponse> discovery = discoveryApiController.getDiscovery(req);
+
+        // Then
+        assertThat(discovery.getBody().getResponseTypesSupported()).isEqualTo(responseTypes);
+    }
+
+    @Test
+    public void testResponseTypeSupported() throws OBErrorResponseException {
+        // Given
+        List<String> responseTypes = List.of("code id_token");
+        given(config.getSupportedResponseTypes()).willReturn(responseTypes);
+        discoveryApiController = new DiscoveryApiController(amGateway, config, "localhost", "", "", "");
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        OIDCDiscoveryResponse oidcDiscoveryResponse = JMockData.mock(OIDCDiscoveryResponse.class);
+        List<String> amResponseTypes = new ArrayList<>();
+        amResponseTypes.addAll(responseTypes);
+        amResponseTypes.add("device_code");
+        amResponseTypes.add("device_code code id_token");
+        oidcDiscoveryResponse.setResponseTypesSupported(amResponseTypes);
+        ResponseEntity<OIDCDiscoveryResponse> response = new ResponseEntity<>(oidcDiscoveryResponse, HttpStatus.OK);
+        given(amGateway.toAM(req, new HttpHeaders(), new ParameterizedTypeReference<OIDCDiscoveryResponse>() {})).willReturn(response);
+
+        // When
+        ResponseEntity<OIDCDiscoveryResponse> discovery = discoveryApiController.getDiscovery(req);
+
+        // Then
+        assertThat(discovery.getBody().getResponseTypesSupported()).isEqualTo(responseTypes);
+    }
+
+
+    @Test
+    public void testResponseTypesSupported_dont_match() {
+        // Given
+        List<String> responseTypes = List.of("code", "id_token", "code id_token");
+        given(config.getSupportedResponseTypes()).willReturn(responseTypes);
+        discoveryApiController = new DiscoveryApiController(amGateway, config, "localhost", "", "", "");
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        OIDCDiscoveryResponse oidcDiscoveryResponse = JMockData.mock(OIDCDiscoveryResponse.class);
+        List<String> amResponseTypes = new ArrayList<>();
+        amResponseTypes.addAll(responseTypes.subList(0,1));
+        amResponseTypes.add("device_code");
+        amResponseTypes.add("device_code code id_token");
+        oidcDiscoveryResponse.setResponseTypesSupported(amResponseTypes);
+        ResponseEntity<OIDCDiscoveryResponse> response = new ResponseEntity<>(oidcDiscoveryResponse, HttpStatus.OK);
+        given(amGateway.toAM(req, new HttpHeaders(), new ParameterizedTypeReference<OIDCDiscoveryResponse>() {})).willReturn(response);
+
+        // When
+        OBErrorResponseException e = catchThrowableOfType(() -> discoveryApiController.getDiscovery(req), OBErrorResponseException.class);
+
+        // Then
+        assertThat(e.getErrors().get(0).getMessage()).isEqualTo("The response types supported by the authorisation server '" + amResponseTypes + "' don't match with the response types supported '" + responseTypes + "' by as-api");
+        assertThat(e.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void testResponseTypeSupported_dont_match() {
+        // Given
+        List<String> responseTypes = List.of("code id_token");
+        given(config.getSupportedResponseTypes()).willReturn(responseTypes);
+        discoveryApiController = new DiscoveryApiController(amGateway, config, "localhost", "", "", "");
+        MockHttpServletRequest req = new MockHttpServletRequest();
+        OIDCDiscoveryResponse oidcDiscoveryResponse = JMockData.mock(OIDCDiscoveryResponse.class);
+        List<String> amResponseTypes = List.of("device_code", "device_code code id_token");
+        oidcDiscoveryResponse.setResponseTypesSupported(amResponseTypes);
+        ResponseEntity<OIDCDiscoveryResponse> response = new ResponseEntity<>(oidcDiscoveryResponse, HttpStatus.OK);
+        given(amGateway.toAM(req, new HttpHeaders(), new ParameterizedTypeReference<OIDCDiscoveryResponse>() {})).willReturn(response);
+
+        // When
+        OBErrorResponseException e = catchThrowableOfType(() -> discoveryApiController.getDiscovery(req), OBErrorResponseException.class);
+
+        // Then
+        assertThat(e.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(e.getErrors().get(0).getMessage()).isEqualTo("The response types supported by the authorisation server '" + amResponseTypes + "' don't match with the response types supported '" + responseTypes + "' by as-api");
     }
 }

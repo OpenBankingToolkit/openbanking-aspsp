@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.as.api.authorisation;
 
 import com.forgerock.openbanking.am.services.AMGatewayService;
 import com.forgerock.openbanking.aspsp.as.api.authorisation.redirect.AuthorisationApiController;
+import com.forgerock.openbanking.aspsp.as.api.oauth2.discovery.DiscoveryConfig;
 import com.forgerock.openbanking.aspsp.as.service.headless.authorisation.HeadLessAuthorisationService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -35,14 +36,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.aspsp.as.api.authorisation.JwtTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,12 +60,16 @@ public class AuthorisationApiControllerTest {
     private CryptoApiClient cryptoApiClient;
     @Mock
     private AMGatewayService amGatewayService;
+    @Mock
+    private DiscoveryConfig discoveryConfig;
     @InjectMocks
     private AuthorisationApiController authorisationApiController;
 
     @Test
     public void shouldNotThrowExceptionWhenContainAllScopes() throws OBErrorException, OBErrorResponseException {
         // Given
+        List<String> responseTypes = List.of("code id_token");
+        given(discoveryConfig.getSupportedResponseTypes()).willReturn(responseTypes);
         String jwt = toEncodedSignedTestJwt("jwt/authorisation.jwt");
         Tpp tpp = new Tpp();
         OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
@@ -70,7 +78,7 @@ public class AuthorisationApiControllerTest {
         given(tppStoreService.findByClientId(null)).willReturn(Optional.of(tpp));
 
         // When
-        authorisationApiController.getAuthorisation(null, null, null, null, "openid accounts payments", null, jwt, true, null, null, null, null, null);
+        authorisationApiController.getAuthorisation(responseTypes.get(0), null, null, null, "openid accounts payments", null, jwt, true, null, null, null, null, null);
 
         // Then no exception
     }
@@ -78,6 +86,8 @@ public class AuthorisationApiControllerTest {
     @Test
     public void shouldNotThrowExceptionContainAllScopesAnyOrder() throws OBErrorException, OBErrorResponseException {
         // Given
+        List<String> responseTypes = List.of("code id_token");
+        given(discoveryConfig.getSupportedResponseTypes()).willReturn(responseTypes);
         String jwt = toEncodedSignedTestJwt("jwt/authorisation.jwt");
         Tpp tpp = new Tpp();
         OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
@@ -86,7 +96,7 @@ public class AuthorisationApiControllerTest {
         given(tppStoreService.findByClientId(null)).willReturn(Optional.of(tpp));
 
         // When
-        authorisationApiController.getAuthorisation(null, null, null, null, "payments openid accounts", null, jwt, true, null, null, null, null, null);
+        authorisationApiController.getAuthorisation(responseTypes.get(0), null, null, null, "payments openid accounts", null, jwt, true, null, null, null, null, null);
 
         // Then no exception
     }
@@ -94,6 +104,8 @@ public class AuthorisationApiControllerTest {
     @Test
     public void shouldNotThrowExceptionWhenNoUserInfo() throws OBErrorException, OBErrorResponseException {
         // Given
+        List<String> responseTypes = List.of("code id_token");
+        given(discoveryConfig.getSupportedResponseTypes()).willReturn(responseTypes);
         String jwt = toEncodedSignedTestJwt("jwt/authorisation-no-user-info.jwt");
         Tpp tpp = new Tpp();
         OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
@@ -102,7 +114,7 @@ public class AuthorisationApiControllerTest {
         given(tppStoreService.findByClientId(null)).willReturn(Optional.of(tpp));
 
         // When
-        authorisationApiController.getAuthorisation(null, null, null, null, "payments openid accounts", null, jwt, true, null, null, null, null, null);
+        authorisationApiController.getAuthorisation(responseTypes.get(0), null, null, null, "payments openid accounts", null, jwt, true, null, null, null, null, null);
 
         // Then no exception
     }
@@ -110,6 +122,8 @@ public class AuthorisationApiControllerTest {
     @Test(expected = OBErrorException.class)
     public void shouldThrowExceptionWhenJwtScopesDoNotMatchQueryParamScope() throws OBErrorException, OBErrorResponseException {
         // Given
+        List<String> responseTypes = List.of("code id_token");
+        given(discoveryConfig.getSupportedResponseTypes()).willReturn(responseTypes);
         String jwt = toEncodedSignedTestJwt("jwt/authorisation.jwt");
         Tpp tpp = new Tpp();
         OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
@@ -118,9 +132,48 @@ public class AuthorisationApiControllerTest {
         given(tppStoreService.findByClientId(null)).willReturn(Optional.of(tpp));
 
         // When
-        authorisationApiController.getAuthorisation(null, null, null, null, "openid accounts", null, jwt, true, null, null, null, null, null);
+        authorisationApiController.getAuthorisation(responseTypes.get(0), null, null, null, "openid accounts", null, jwt, true, null, null, null, null, null);
 
         // Then exception
+    }
+
+    @Test
+    public void shouldNotThrowExceptionWhen_responseTypesMatch() throws OBErrorException, OBErrorResponseException {
+        // Given
+        List<String> responseTypes = List.of("code id_token");
+        given(discoveryConfig.getSupportedResponseTypes()).willReturn(responseTypes);
+        String jwt = toEncodedSignedTestJwt("jwt/authorisation.jwt");
+        Tpp tpp = new Tpp();
+        OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
+        registrationResponse.setJwks_uri("");
+        tpp.setRegistrationResponse(registrationResponse);
+        given(tppStoreService.findByClientId(null)).willReturn(Optional.of(tpp));
+        String responseType = responseTypes.get(0);
+
+        // When
+        authorisationApiController.getAuthorisation(responseType, null, null, null, "openid accounts payments", null, jwt, true, null, null, null, null, null);
+
+        // Then no exception
+    }
+
+    @Test
+    public void shouldBeBadRequestWhen_responseTypesNotMatch() {
+        // Given
+        List<String> responseTypes = List.of("code id_token");
+        given(discoveryConfig.getSupportedResponseTypes()).willReturn(responseTypes);
+        String jwt = toEncodedSignedTestJwt("jwt/authorisation.jwt");
+        Tpp tpp = new Tpp();
+        OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
+        registrationResponse.setJwks_uri("");
+        tpp.setRegistrationResponse(registrationResponse);
+        String responseType = "device_code";
+
+        // When
+        OBErrorResponseException e = catchThrowableOfType(() -> authorisationApiController.getAuthorisation(responseType, null, null, null, "openid accounts payments", null, jwt, true, null, null, null, null, null), OBErrorResponseException.class);
+
+        // Then
+        assertThat(e.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(e.getErrors().get(0).getMessage()).isEqualTo("The response type '" + responseType + "' is not supported. Supported response types are '"+discoveryConfig.getSupportedResponseTypes()+"'");
     }
 
     @Test
