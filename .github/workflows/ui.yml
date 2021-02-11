@@ -43,7 +43,6 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - working-directory: ./forgerock-openbanking-ui
         id: version
         run: |
           echo "::set-output name=BUILD_VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)-${GITHUB_SHA::7}"
