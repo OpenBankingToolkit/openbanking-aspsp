@@ -73,6 +73,23 @@ Release/1.0.114 (#332)
 ### GitHub [#333](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/333) Upgrade ui github actions
 [22520a316018988](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/22520a316018988) Jorge Sanchez Perez *2021-02-11 11:12:59*
 upgrade ui github actions reestricted only to PR, master merge and Release publish (#333)
+### GitHub [#334](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/334) Release/1.0.115
+[f96c0fa793c9224](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f96c0fa793c9224) Jorge Sanchez Perez *2021-02-11 14:57:24*
+Release/1.0.115 (#334)
+
+* Release candidate: prepare release 1.0.115
+
+* Release candidate: prepare for next development iteration
+
+* Improve github UI actions to get the version from release tag and maven pom file, to manage the versions in the same way that maven artifacts
+
+* fix ui-release action
+
+* Delete working directory fro checkout step to get the version from ./pom.xml file
+
+* Fix action
+
+* Fix build actions
 [c1ddc763b46e6c9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c1ddc763b46e6c9) JamieB *2021-01-11 15:46:34*
 635: Support OBWac and OBSeal Open Banking certs
 
