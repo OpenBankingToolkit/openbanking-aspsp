@@ -206,20 +206,6 @@
 				<groupId>ru.yaal.maven</groupId>
 				<artifactId>write-text-files-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>perform</goal>
-						</goals>
-						<configuration>
-							<skip>true</skip>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 		<resources>
 			<resource>
