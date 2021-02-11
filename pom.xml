@@ -49,6 +49,7 @@
         <ob-auth.version>1.0.65</ob-auth.version>
         <ob-jwkms.version>1.1.76</ob-jwkms.version>
         <spring-security-multi-auth-starter.version>2.2.1.0.0.54</spring-security-multi-auth-starter.version>
+        <maven-release-plugin.version>3.0.0-M1</maven-release-plugin.version>
     </properties>
 
     <modules>
@@ -201,6 +202,15 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${maven-release-plugin.version}</version>
+                <configuration>
+                    <tagNameFormat>@{version}</tagNameFormat>
+                    <scmCommentPrefix>Release candidate:</scmCommentPrefix>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>se.bjurr.gitchangelog</groupId>
                 <artifactId>git-changelog-maven-plugin</artifactId>
