@@ -3,12 +3,8 @@ name: Build-UI Release
 on:
   release:
     types: [ published ]
-  env:
-    RELEASE_VERSION: ${{ github.event.release.tag_name }}
-    GITHUB_SHA: ${{ github.sha }}
-
 env:
-  GITHUB_ACCESS_TOKEN: ${{ secrets.FORGECLOUD_ACCESS_TOKEN }}
+  RELEASE_VERSION: ${{ github.event.release.tag_name }}
   GITHUB_SHA: ${{ github.sha }}
 
 jobs:
