@@ -69,10 +69,10 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - working-directory: ./forgerock-openbanking-ui
-        id: version
-        run: |
-          echo "::set-output name=BUILD_VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)-${GITHUB_SHA::7}"
+      - name: prepare version
+          id: version
+          run: |
+            echo "::set-output name=BUILD_VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)-${GITHUB_SHA::7}"
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
@@ -96,10 +96,10 @@ jobs:
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v2
-      - working-directory: ./forgerock-openbanking-ui
-        id: version
-        run: |
-          echo "::set-output name=BUILD_VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)-${GITHUB_SHA::7}"
+      - name: prepare version
+          id: version
+          run: |
+            echo "::set-output name=BUILD_VERSION::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)-${GITHUB_SHA::7}"
       - name: Checkout Repo
         uses: actions/checkout@v2
         with:
