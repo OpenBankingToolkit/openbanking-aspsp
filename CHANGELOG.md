@@ -61,6 +61,18 @@ Co-authored-by: Matt Wills <matt.wills@forgerock.com>
 674: response_types FAPI compliant (#330)
 
 Issue: https://github.com/ForgeCloud/ob-deploy/issues/674
+### GitHub [#332](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/332) Release/1.0.114
+[4f505efc9528a6f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4f505efc9528a6f) Jorge Sanchez Perez *2021-02-10 08:48:02*
+Release/1.0.114 (#332)
+
+* Release candidate: prepare release 1.0.114
+
+* Release candidate: prepare for next development iteration
+
+* changelog
+### GitHub [#333](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/333) Upgrade ui github actions
+[22520a316018988](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/22520a316018988) Jorge Sanchez Perez *2021-02-11 11:12:59*
+upgrade ui github actions reestricted only to PR, master merge and Release publish (#333)
 [c1ddc763b46e6c9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c1ddc763b46e6c9) JamieB *2021-01-11 15:46:34*
 635: Support OBWac and OBSeal Open Banking certs
 

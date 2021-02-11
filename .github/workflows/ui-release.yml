@@ -3,7 +3,9 @@ name: Build-UI Release
 on:
   release:
     types: [ published ]
-
+  env:
+    RELEASE_VERSION: ${{ github.event.release.tag_name }}
+    GITHUB_SHA: ${{ github.sha }}
 
 env:
   GITHUB_ACCESS_TOKEN: ${{ secrets.FORGECLOUD_ACCESS_TOKEN }}
@@ -40,8 +42,8 @@ jobs:
       - working-directory: ./forgerock-openbanking-ui
         id: version
         run: |
-          export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
-          echo "::set-output name=BUILD_VERSION::$BUILD_VERSION"
+          export VERSION=${RELEASE_VERSION}-${GITHUB_SHA::7}
+          echo "::set-output name=BUILD_VERSION::$VERSION"
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
@@ -52,12 +54,11 @@ jobs:
       - name: Build bank docker image
         working-directory: ./forgerock-openbanking-ui
         run: |
-          export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
-          echo "Building docker image eu.gcr.io/openbanking-214714/obri/bank-ui:${BUILD_VERSION}"
+          echo "Building docker image eu.gcr.io/openbanking-214714/obri/bank-ui:${{ steps.version.outputs.BUILD_VERSION }}"
           echo "${{ secrets.GCR_JSON_KEY_BASE64 }}" | base64 -d | docker login eu.gcr.io -u _json_key --password-stdin
-          docker build --build-arg BUILD_VERSION=$BUILD_VERSION -f projects/bank/docker/Dockerfile -t eu.gcr.io/openbanking-214714/obri/bank-ui:latest -t eu.gcr.io/openbanking-214714/obri/bank-ui:$BUILD_VERSION .
+          docker build --build-arg BUILD_VERSION=${{ steps.version.outputs.BUILD_VERSION }} -f projects/bank/docker/Dockerfile -t eu.gcr.io/openbanking-214714/obri/bank-ui:latest -t eu.gcr.io/openbanking-214714/obri/bank-ui:${{ steps.version.outputs.BUILD_VERSION }} .
           docker push eu.gcr.io/openbanking-214714/obri/bank-ui:latest
-          docker push eu.gcr.io/openbanking-214714/obri/bank-ui:$BUILD_VERSION
+          docker push eu.gcr.io/openbanking-214714/obri/bank-ui:${{ steps.version.outputs.BUILD_VERSION }}
   build_manual_onboarding:
     name: Build Register App
     runs-on: ubuntu-latest
@@ -68,8 +69,8 @@ jobs:
       - working-directory: ./forgerock-openbanking-ui
         id: version
         run: |
-          export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
-          echo "::set-output name=BUILD_VERSION::$BUILD_VERSION"
+          export VERSION=${RELEASE_VERSION}-${GITHUB_SHA::7}
+          echo "::set-output name=BUILD_VERSION::$VERSION"
       - name: Download Artifact
         uses: actions/download-artifact@master
         with:
@@ -80,16 +81,14 @@ jobs:
       - name: Build register docker image
         working-directory: ./forgerock-openbanking-ui
         run: |
-          export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
-          echo "Building docker image eu.gcr.io/openbanking-214714/obri/manual-onboarding:${BUILD_VERSION}"
+          echo "Building docker image eu.gcr.io/openbanking-214714/obri/manual-onboarding:${{ steps.version.outputs.BUILD_VERSION }}"
           echo "${{ secrets.GCR_JSON_KEY_BASE64 }}" | base64 -d | docker login eu.gcr.io -u _json_key --password-stdin
-          docker build --build-arg BUILD_VERSION=$BUILD_VERSION -f projects/manual-onboarding/docker/Dockerfile -t eu.gcr.io/openbanking-214714/obri/manual-onboarding:latest -t eu.gcr.io/openbanking-214714/obri/manual-onboarding:$BUILD_VERSION .
+          docker build --build-arg BUILD_VERSION=${{ steps.version.outputs.BUILD_VERSION }} -f projects/manual-onboarding/docker/Dockerfile -t eu.gcr.io/openbanking-214714/obri/manual-onboarding:latest -t eu.gcr.io/openbanking-214714/obri/manual-onboarding:${{ steps.version.outputs.BUILD_VERSION }} .
           docker push eu.gcr.io/openbanking-214714/obri/manual-onboarding:latest
-          docker push eu.gcr.io/openbanking-214714/obri/manual-onboarding:$BUILD_VERSION
+          docker push eu.gcr.io/openbanking-214714/obri/manual-onboarding:${{ steps.version.outputs.BUILD_VERSION }}
   update_ob_deploy:
     name: Update ob-deploy
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
     needs: [build_manual_onboarding, build_bank_ui]
     steps:
       - name: Checkout Repo
@@ -97,8 +96,8 @@ jobs:
       - working-directory: ./forgerock-openbanking-ui
         id: version
         run: |
-          export BUILD_VERSION=$(jq -r ".project_version" package.json)-${GITHUB_SHA::7}
-          echo "::set-output name=BUILD_VERSION::$BUILD_VERSION"
+          export VERSION=${RELEASE_VERSION}-${GITHUB_SHA::7}
+          echo "::set-output name=BUILD_VERSION::$VERSION"
       - name: Checkout Repo
         uses: actions/checkout@v2
         with:
