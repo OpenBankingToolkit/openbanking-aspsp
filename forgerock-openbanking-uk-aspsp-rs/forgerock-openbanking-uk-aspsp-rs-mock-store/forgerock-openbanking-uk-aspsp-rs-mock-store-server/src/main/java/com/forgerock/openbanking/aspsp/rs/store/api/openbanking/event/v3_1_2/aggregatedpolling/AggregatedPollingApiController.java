@@ -63,32 +63,7 @@ public class AggregatedPollingApiController implements AggregatedPollingApi {
         this.tppRepository = tppRepository;
     }
 
-    @ApiOperation(value = "Poll events", nickname = "pollEvents", notes = "", response = OBEventPollingResponse1.class, authorizations = {
-            @Authorization(value = "TPPOAuth2Security", scopes = {
-                    @AuthorizationScope(scope = "accounts", description = "Accounts scope"),
-                    @AuthorizationScope(scope = "payments", description = "Payments  scope"),
-                    @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
-            })
-    }, tags = {"event polling"})
-    @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Events successfully polled", response = OBEventPollingResponse1.class),
-            @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
-            @ApiResponse(code = 401, message = "Unauthorized"),
-            @ApiResponse(code = 403, message = "Forbidden"),
-            @ApiResponse(code = 405, message = "Method Not Allowed"),
-            @ApiResponse(code = 406, message = "Not Acceptable"),
-            @ApiResponse(code = 409, message = "Conflict"),
-            @ApiResponse(code = 415, message = "Unsupported Media Type"),
-            @ApiResponse(code = 429, message = "Too Many Requests"),
-            @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-    @PreAuthorize("hasAnyAuthority('ROLE_AISP', 'ROLE_PISP')")
-    @OpenBankingAPI(
-            obReference = OBReference.EVENT_AGGREGATED_POLLING
-    )
-    @RequestMapping(
-            produces = {"application/json; charset=utf-8"},
-            consumes = {"application/json; charset=utf-8"},
-            method = RequestMethod.POST)
+    @Override
     public ResponseEntity pollEvents(
             @ApiParam(value = "Default", required = true)
             @Valid

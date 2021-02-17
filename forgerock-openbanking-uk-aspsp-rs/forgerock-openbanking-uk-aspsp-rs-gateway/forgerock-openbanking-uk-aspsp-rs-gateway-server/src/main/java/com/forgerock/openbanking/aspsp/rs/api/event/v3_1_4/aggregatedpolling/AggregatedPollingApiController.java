@@ -21,13 +21,63 @@
 package com.forgerock.openbanking.aspsp.rs.api.event.v3_1_4.aggregatedpolling;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.constants.OpenBankingHttpHeaders;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import uk.org.openbanking.datamodel.event.OBEventPolling1;
+import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.Collections;
 
 @Controller("AggregatedPollingApi3.1.4")
-public class AggregatedPollingApiController extends com.forgerock.openbanking.aspsp.rs.api.event.v3_1_3.aggregatedpolling.AggregatedPollingApiController implements AggregatedPollingApi {
+@Slf4j
+public class AggregatedPollingApiController implements AggregatedPollingApi {
+    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final RsStoreGateway rsStoreGateway;
 
     public AggregatedPollingApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway) {
-        super(rsEndpointWrapperService, rsStoreGateway);
+        this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.rsStoreGateway = rsStoreGateway;
     }
+
+    @Override
+    public ResponseEntity<OBEventPollingResponse1> pollEvents(
+            @ApiParam(value = "Default", required = true)
+            @Valid
+            @RequestBody OBEventPolling1 obEventPolling,
+
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+            @RequestHeader(value = "Authorization", required = true) String authorization,
+
+            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
+            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
+
+            HttpServletRequest request,
+
+            Principal principal
+    ) throws OBErrorResponseException {
+        return rsEndpointWrapperService.aggregatedPollingEndpoint()
+                .obVersion(OBVersion.v3_1_4)
+                .authorization(authorization)
+                .principal(principal)
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            additionalHttpHeaders.add(OpenBankingHttpHeaders.X_OB_CLIENT_ID, tppId);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBEventPollingResponse1.class, obEventPolling);
+                        }
+                );
+    }
+
 }

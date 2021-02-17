@@ -50,9 +50,7 @@ public interface AggregatedPollingApi {
 
     @ApiOperation(value = "Poll events", nickname = "pollEvents", notes = "", response = OBEventPollingResponse1.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
-                    @AuthorizationScope(scope = "accounts", description = "Accounts scope"),
-                    @AuthorizationScope(scope = "payments", description = "Payments  scope"),
-                    @AuthorizationScope(scope = "fundsconfirmations", description = "Funds Confirmations scope")
+                    @AuthorizationScope(scope = "eventpolling", description = "Ability to poll for, acknowledge and receive Security Event Tokens")
             })
     }, tags = {"event polling"})
     @ApiResponses(value = {

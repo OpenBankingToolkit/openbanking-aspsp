@@ -152,6 +152,10 @@ public class RSEndpointWrapperService {
         return new EventNotificationsApiEndpointWrapper(this);
     }
 
+    public AggregatedPollingApiEndpointWrapper aggregatedPollingEndpoint() {
+        return new AggregatedPollingApiEndpointWrapper(this);
+    }
+
     public CryptoApiClient getCryptoApiClient() {
         return cryptoApiClient;
     }

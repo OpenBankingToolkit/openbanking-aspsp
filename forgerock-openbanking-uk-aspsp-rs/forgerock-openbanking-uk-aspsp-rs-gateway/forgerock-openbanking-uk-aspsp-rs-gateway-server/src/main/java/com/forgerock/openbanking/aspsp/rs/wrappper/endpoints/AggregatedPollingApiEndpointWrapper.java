@@ -34,7 +34,6 @@ import uk.org.openbanking.OBConstants;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -44,14 +43,14 @@ import static com.forgerock.openbanking.model.error.OBRIErrorType.SERVER_ERROR;
 
 @Component
 @Slf4j
-public class EventNotificationsApiEndpointWrapper extends RSEndpointWrapper<EventNotificationsApiEndpointWrapper, EventNotificationsApiEndpointWrapper.EventNotificationRestEndpointContent> {
+public class AggregatedPollingApiEndpointWrapper extends RSEndpointWrapper<AggregatedPollingApiEndpointWrapper, AggregatedPollingApiEndpointWrapper.AggregatedPollingRestEndpointContent> {
 
-    public EventNotificationsApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
+    public AggregatedPollingApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
         super(RSEndpointWrapperService);
     }
 
     @Override
-    protected ResponseEntity run(EventNotificationRestEndpointContent main) throws OBErrorException {
+    protected ResponseEntity run(AggregatedPollingRestEndpointContent main) throws OBErrorException {
         return main.run(tppId);
     }
 
@@ -104,7 +103,13 @@ public class EventNotificationsApiEndpointWrapper extends RSEndpointWrapper<Even
     @Override
     protected void applyFilters() throws OBErrorException {
         // Do not verify financial id as it is not required for events API from 3.1.2 onwards
-        verifyAccessToken(Arrays.asList(OpenBankingConstants.Scope.PAYMENTS, OpenBankingConstants.Scope.ACCOUNTS, OpenBankingConstants.Scope.FUNDS_CONFIRMATIONS),
+        List scopes;
+        if(obVersion.isBeforeVersion(OBVersion.v3_1_4)){
+            scopes = Arrays.asList(OpenBankingConstants.Scope.EVENT_POLLING);
+        } else {
+            scopes = Arrays.asList(OpenBankingConstants.Scope.ACCOUNTS, OpenBankingConstants.Scope.FUNDS_CONFIRMATIONS);
+        }
+        verifyAccessToken(scopes,
                 Collections.singletonList(
                         OIDCConstants.GrantType.CLIENT_CREDENTIAL
                 )
@@ -113,7 +118,7 @@ public class EventNotificationsApiEndpointWrapper extends RSEndpointWrapper<Even
         verifyMatlsFromAccessToken();
     }
 
-    public interface EventNotificationRestEndpointContent {
+    public interface AggregatedPollingRestEndpointContent {
         ResponseEntity run(String tppId) throws OBErrorException;
     }
 }
