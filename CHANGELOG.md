@@ -90,6 +90,21 @@ Release/1.0.115 (#334)
 * Fix action
 
 * Fix build actions
+### GitHub [#335](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/335) Release/1.0.116
+[9e9e7b79999bf95](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9e9e7b79999bf95) Jorge Sanchez Perez *2021-02-11 15:33:29*
+Release/1.0.116 (#335)
+
+* Release candidate: prepare release 1.0.116
+
+* Release candidate: prepare for next development iteration
+
+* fix id prepare version ui action
+### GitHub [#336](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/336) Update ui-release action
+[c57a260e9499d03](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c57a260e9499d03) Jorge Sanchez Perez *2021-02-11 16:22:36*
+Update ui-release action to update the release-published.json file from the root folder instead of from master-dev folder (#336)
+### GitHub [#338](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/338) Fix push event to master
+[8a133e20f858d88](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8a133e20f858d88) Jorge Sanchez Perez *2021-02-12 09:55:22*
+Fix push event to master (#338)
 [c1ddc763b46e6c9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c1ddc763b46e6c9) JamieB *2021-01-11 15:46:34*
 635: Support OBWac and OBSeal Open Banking certs
 

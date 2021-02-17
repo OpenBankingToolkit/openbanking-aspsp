@@ -25,6 +25,7 @@ import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.constants.OIDCConstants;
+import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
@@ -85,7 +86,7 @@ public class CallbackUrlApiControllerIT {
     @Test
     public void getCallbackUrls() throws Exception {
         // Given
-        String jws = jws("accounts", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        String jws = jws(OpenBankingConstants.Scope.ACCOUNTS, OIDCConstants.GrantType.CLIENT_CREDENTIAL);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         OBCallbackUrlsResponse1 obCallbackUrlsResponse = new OBCallbackUrlsResponse1();
@@ -106,7 +107,7 @@ public class CallbackUrlApiControllerIT {
     @Test
     public void createCallbackUrls_badRequest_InvalidObject() throws Exception {
         // Given
-        String jws = jws("accounts", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        String jws = jws(OpenBankingConstants.Scope.ACCOUNTS, OIDCConstants.GrantType.CLIENT_CREDENTIAL);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         OBCallbackUrl1 obCallbackUrl1 = new OBCallbackUrl1().data(
