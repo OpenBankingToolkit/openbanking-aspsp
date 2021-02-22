@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[1e18b5080b61311](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1e18b5080b61311) jorgesanchezperez *2021-02-17 15:20:00*
+Release candidate: prepare for next development iteration
+## 1.1.117
 ### GitHub [#314](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/314) 14: payment refunds - Domestic payments
 [7990cc32fc3f982](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7990cc32fc3f982) Jorge Sanchez Perez *2021-01-11 10:09:45*
 14: payment refunds - Domestic payments (#314)
@@ -105,6 +108,15 @@ Update ui-release action to update the release-published.json file from the root
 ### GitHub [#338](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/338) Fix push event to master
 [8a133e20f858d88](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8a133e20f858d88) Jorge Sanchez Perez *2021-02-12 09:55:22*
 Fix push event to master (#338)
+### GitHub [#340](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/340) 327: Aggregated polling API scopes by version
+[7dc2b64b7e8119f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7dc2b64b7e8119f) Jorge Sanchez Perez *2021-02-17 14:40:25*
+327: Aggregated polling API scopes by version (#340)
+
+- Update Aggregated polling scopes by version
+- Bumped latest common version 1.0.89
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/327
+[481b2566a86d94f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/481b2566a86d94f) jorgesanchezperez *2021-02-17 15:19:50*
+Release candidate: prepare release 1.1.117
 [c1ddc763b46e6c9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c1ddc763b46e6c9) JamieB *2021-01-11 15:46:34*
 635: Support OBWac and OBSeal Open Banking certs
 
