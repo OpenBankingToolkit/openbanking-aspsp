@@ -31,7 +31,7 @@ public enum OBReference {
     DIRECT_DEBITS("DirectDebits"),
     PRODUCTS("Products"),
     STANDING_ORDERS("StandingOrders"),
-    TRANSACTIONS("Transaction"),
+    TRANSACTIONS("Transactions"),
     OFFERS("Offers"),
     PARTY("Party"),
     SCHEDULED_PAYMENTS("ScheduledPayments"),
