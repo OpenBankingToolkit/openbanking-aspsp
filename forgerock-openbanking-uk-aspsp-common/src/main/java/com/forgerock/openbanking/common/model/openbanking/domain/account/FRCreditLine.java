@@ -20,6 +20,9 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.account;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,9 +45,11 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 @Builder
 public class FRCreditLine {
-
+    @JsonProperty("Included") // JSON format required for RCS UI (see AccountWithBalance within ConsentDetails objects)
     private Boolean included;
+    @JsonProperty("Type")
     private FRLimitType type;
+    @JsonProperty("Amount")
     private FRAmount amount;
 
     public enum FRLimitType {
@@ -64,10 +69,12 @@ public class FRCreditLine {
             return value;
         }
 
+        @JsonValue
         public String toString() {
             return value;
         }
 
+        @JsonCreator
         public static FRLimitType fromValue(String value) {
             return Stream.of(values())
                     .filter(type -> type.getValue().equals(value))

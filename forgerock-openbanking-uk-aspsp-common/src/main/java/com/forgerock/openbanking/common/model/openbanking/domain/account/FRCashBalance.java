@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.account;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRCreditDebitIndicator;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
@@ -45,11 +46,16 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class FRCashBalance {
-
+    @JsonProperty("AccountId") // JSON format required for RCS UI (see AccountWithBalance within ConsentDetails objects)
     private String accountId;
+    @JsonProperty("CreditDebitIndicator")
     private FRCreditDebitIndicator creditDebitIndicator;
+    @JsonProperty("Type")
     private FRBalanceType type;
+    @JsonProperty("DateTime")
     private DateTime dateTime;
+    @JsonProperty("Amount")
     private FRAmount amount;
+    @JsonProperty("CreditLine")
     private List<FRCreditLine> creditLines;
 }
