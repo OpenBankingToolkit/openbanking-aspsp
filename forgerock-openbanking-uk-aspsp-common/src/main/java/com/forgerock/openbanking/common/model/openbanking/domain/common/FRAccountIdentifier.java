@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,9 +40,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class FRAccountIdentifier {
-
+    @JsonProperty("SchemeName") // JSON format required for RCS UI (see AccountWithBalance within ConsentDetails objects)
     private String schemeName;
+    @JsonProperty("Identification")
     private String identification;
+    @JsonProperty("Name")
     private String name;
+    @JsonProperty("SecondaryIdentification")
     private String secondaryIdentification;
 }

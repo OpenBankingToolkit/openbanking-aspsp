@@ -20,6 +20,9 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.account;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRAccountServicer;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import lombok.AllArgsConstructor;
@@ -45,18 +48,29 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 @Builder
 public class FRFinancialAccount {
-
+    @JsonProperty("AccountId") // JSON format required for RCS UI (see AccountWithBalance within ConsentDetails objects)
     private String accountId;
+    @JsonProperty("Status")
     private FRAccountStatusCode status;
+    @JsonProperty("StatusUpdateDateTime")
     private DateTime statusUpdateDateTime;
+    @JsonProperty("Currency")
     private String currency;
+    @JsonProperty("AccountType")
     private FRAccountTypeCode accountType;
+    @JsonProperty("AccountSubType")
     private FRAccountSubTypeCode accountSubType;
+    @JsonProperty("Description")
     private String description;
+    @JsonProperty("Nickname")
     private String nickname;
+    @JsonProperty("OpeningDate")
     private DateTime openingDate;
+    @JsonProperty("MaturityDate")
     private DateTime maturityDate;
+    @JsonProperty("Account")
     private List<FRAccountIdentifier> accounts;
+    @JsonProperty("Servicer")
     private FRAccountServicer servicer;
 
     public enum FRAccountStatusCode {
@@ -76,10 +90,12 @@ public class FRFinancialAccount {
             return value;
         }
 
+        @JsonValue
         public String toString() {
             return value;
         }
 
+        @JsonCreator
         public static FRAccountStatusCode fromValue(String value) {
             return Stream.of(values())
                     .filter(type -> type.getValue().equals(value))
@@ -102,10 +118,12 @@ public class FRFinancialAccount {
             return value;
         }
 
+        @JsonValue
         public String toString() {
             return value;
         }
 
+        @JsonCreator
         public static FRAccountTypeCode fromValue(String value) {
             return Stream.of(values())
                     .filter(type -> type.getValue().equals(value))
@@ -134,10 +152,12 @@ public class FRFinancialAccount {
             return value;
         }
 
+        @JsonValue
         public String toString() {
             return value;
         }
 
+        @JsonCreator
         public static FRAccountSubTypeCode fromValue(String value) {
             return Stream.of(values())
                     .filter(type -> type.getValue().equals(value))
