@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.domain.common;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,7 +40,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class FRAmount {
-
+    @JsonProperty("Amount") // JSON format required for RCS UI (see AccountWithBalance within ConsentDetails objects)
     private String amount;
+    @JsonProperty("Currency")
     private String currency;
 }
