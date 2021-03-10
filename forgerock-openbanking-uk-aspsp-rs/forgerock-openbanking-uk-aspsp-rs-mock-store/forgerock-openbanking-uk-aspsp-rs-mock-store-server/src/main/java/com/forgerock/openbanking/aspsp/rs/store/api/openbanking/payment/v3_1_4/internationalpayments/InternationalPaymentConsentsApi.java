@@ -25,8 +25,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_4.internationalpayments;
 
-import com.forgerock.openbanking.common.openbanking.OBReference;
-import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
+import com.forgerock.openbanking.api.annotations.OBReference;
+import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.*;
 import org.joda.time.DateTime;

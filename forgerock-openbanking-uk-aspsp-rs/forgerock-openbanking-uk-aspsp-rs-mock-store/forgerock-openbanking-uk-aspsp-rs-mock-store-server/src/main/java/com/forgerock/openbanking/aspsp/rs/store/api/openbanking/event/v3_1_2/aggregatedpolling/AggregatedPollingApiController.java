@@ -23,8 +23,6 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.ag
 import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.service.event.EventPollingService;
 import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventPolling;
-import com.forgerock.openbanking.common.openbanking.OBReference;
-import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
@@ -33,13 +31,9 @@ import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.event.OBEventPolling1;
 import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
 

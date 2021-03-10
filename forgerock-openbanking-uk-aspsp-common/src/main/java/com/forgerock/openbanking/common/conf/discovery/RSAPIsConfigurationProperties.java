@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.common.conf.discovery;
 
-import com.forgerock.openbanking.common.openbanking.OBGroupName;
-import com.forgerock.openbanking.common.openbanking.OBReference;
-import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
+import com.forgerock.openbanking.api.annotations.OBGroupName;
+import com.forgerock.openbanking.api.annotations.OBReference;
+import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanDefinition;
