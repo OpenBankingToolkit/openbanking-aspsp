@@ -124,9 +124,9 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
                         .getStringClaim(OIDCConstants.OIDCClaim.CONSENT_APPROVAL_REDIRECT_URI);
 
 
-                ConsentDecisionDelegate consentDecisionController = intentTypeService.getConsentDecision(intentId);
+                ConsentDecisionDelegate consentDecisionDelegate = intentTypeService.getConsentDecision(intentId);
                 //Verify consent is own by the right TPP
-                String tppIdBehindConsent = consentDecisionController.getTppIdBehindConsent();
+                String tppIdBehindConsent = consentDecisionDelegate.getTppIdBehindConsent();
                 Optional<Tpp> isTpp = tppStoreService.findById(tppIdBehindConsent);
                 if (!isTpp.isPresent()) {
                     log.error("The TPP '{}' that created this intent id '{}' doesn't exist anymore.", tppIdBehindConsent, intentId);
@@ -145,7 +145,7 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
                 Map<String, String> profile = userProfileService.getProfile(ssoToken, amOpenBankingConfiguration.endpointUserProfile,
                         amOpenBankingConfiguration.cookieName);
                 String username = profile.get(amOpenBankingConfiguration.userProfileId);
-                String userIdBehindConsent = consentDecisionController.getUserIDBehindConsent();
+                String userIdBehindConsent = consentDecisionDelegate.getUserIDBehindConsent();
 
                 if (!username.equals(userIdBehindConsent)) {
                     log.error("The consent was associated with user '{}' but now, its user '{}' that " +
@@ -154,8 +154,8 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
                             userIdBehindConsent, username);
                 }
 
-                //Call the right decision controller, cased on the intent type
-                consentDecisionController.consentDecision(consentDecisionSerialised, decision);
+                //Call the right decision delegate, cased on the intent type
+                consentDecisionDelegate.consentDecision(consentDecisionSerialised, decision);
 
                 log.debug("Redirect the resource owner to the original oauth2/openid request but this time, with the " +
                         "consent response jwt '{}'.", consentContextJwt);

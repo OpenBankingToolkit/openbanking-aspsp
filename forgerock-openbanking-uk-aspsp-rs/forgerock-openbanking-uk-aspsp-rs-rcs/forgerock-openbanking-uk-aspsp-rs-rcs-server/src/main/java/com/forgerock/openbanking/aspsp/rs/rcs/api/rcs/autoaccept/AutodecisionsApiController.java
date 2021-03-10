@@ -108,9 +108,9 @@ public class AutodecisionsApiController implements AutodecisionsApi {
                     amOpenBankingConfiguration.cookieName);
             String username = profile.get(amOpenBankingConfiguration.userProfileId);
             List<FRAccount> accounts = getAccountOrGenerateData(username);
-            //Call the right decision controller, cased on the intent type
-            ConsentDecisionDelegate consentDecisionController = intentTypeService.getConsentDecision(intentId);
-            consentDecisionController.autoaccept(accounts, username);
+            //Call the right decision delegate, cased on the intent type
+            ConsentDecisionDelegate consentDecisionDelegate = intentTypeService.getConsentDecision(intentId);
+            consentDecisionDelegate.autoaccept(accounts, username);
 
             log.debug("Redirect the resource owner to the original oauth2/openid request but this time, with the " +
                     "consent response jwt '{}'.", consentRequestJwt);
