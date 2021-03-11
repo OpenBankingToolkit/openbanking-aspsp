@@ -25,9 +25,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.account.v3_1_4.party;
 
-import com.forgerock.openbanking.common.openbanking.OBGroupName;
-import com.forgerock.openbanking.common.openbanking.OBReference;
-import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
+import com.forgerock.openbanking.api.annotations.OBGroupName;
+import com.forgerock.openbanking.api.annotations.OBReference;
+import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 

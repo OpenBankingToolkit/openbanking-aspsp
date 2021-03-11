@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.aggregatedpolling;
 
-import com.forgerock.openbanking.common.openbanking.OBGroupName;
-import com.forgerock.openbanking.common.openbanking.OBReference;
-import com.forgerock.openbanking.common.openbanking.OpenBankingAPI;
+import com.forgerock.openbanking.api.annotations.OBGroupName;
+import com.forgerock.openbanking.api.annotations.OBReference;
+import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;

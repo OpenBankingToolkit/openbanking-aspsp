@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.model.openbanking;
 
 
-import com.forgerock.openbanking.common.openbanking.OBGroupName;
+import com.forgerock.openbanking.api.annotations.OBGroupName;
 
 import java.util.Arrays;
 import java.util.List;
