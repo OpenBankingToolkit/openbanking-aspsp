@@ -15,6 +15,12 @@ Release/1.1.118 (#342)
 * Release candidate: prepare release 1.1.118
 
 * Release candidate: prepare for next development iteration
+[0bd6069b9ede3cf](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0bd6069b9ede3cf) Matt Wills *2021-03-10 11:29:45*
+20 - Fix expected JSON format
+
+- Fix the expected JSON format for objects within AccountWithBalance (that's returned as part of the various ConsentDetails objects to the consent UI).
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/20
 [5d03755734ada6f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5d03755734ada6f) Matt Wills *2021-03-01 08:55:24*
 296 - Minor fixes and corrections
 [1e18b5080b61311](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1e18b5080b61311) jorgesanchezperez *2021-02-17 15:20:00*
