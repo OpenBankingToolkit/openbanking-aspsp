@@ -97,8 +97,8 @@ public class DataCreator {
                        FRTransactionRepository transactionRepository, FRStatementRepository statementRepository,
                        FRScheduledPaymentRepository scheduledPaymentRepository, FRPartyRepository partyRepository,
                        FROfferRepository offerRepository,
-                       @Value("${rs.data.upload.limit.documents:1000}") Integer documentLimit,
-                       @Value("${rs.data.upload.limit.accounts:100}") Integer accountLimit) {
+                       @Value("${rs.data.upload.limit.documents:5000}") Integer documentLimit,
+                       @Value("${rs.data.upload.limit.accounts:500}") Integer accountLimit) {
         this.accountsRepository = accountsRepository;
         this.balanceRepository = balanceRepository;
         this.beneficiaryRepository = beneficiaryRepository;
