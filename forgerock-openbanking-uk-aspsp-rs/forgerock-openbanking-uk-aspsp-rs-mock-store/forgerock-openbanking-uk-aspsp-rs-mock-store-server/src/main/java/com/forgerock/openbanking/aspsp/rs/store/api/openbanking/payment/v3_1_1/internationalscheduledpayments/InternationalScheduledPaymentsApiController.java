@@ -22,9 +22,11 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledConsentRepository;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 
 @Controller("InternationalScheduledPaymentsApiV3.1.1")
 @Slf4j
@@ -33,5 +35,10 @@ public class InternationalScheduledPaymentsApiController extends com.forgerock.o
                                                        InternationalScheduledPaymentSubmissionRepository internationalScheduledPaymentSubmissionRepository,
                                                        ResourceLinkService resourceLinkService) {
         super(internationalScheduledConsentRepository, internationalScheduledPaymentSubmissionRepository, resourceLinkService);
+    }
+
+    @Override
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_1();
     }
 }

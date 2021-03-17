@@ -79,7 +79,7 @@ public interface FundsConfirmationConsentsApi {
             @RequestBody OBFundsConfirmationConsent1 obFundsConfirmationConsent,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
+            @RequestHeader(value = "Authorization") String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
             @RequestHeader(value = "x-fapi-auth-date", required = false)
@@ -94,8 +94,8 @@ public interface FundsConfirmationConsentsApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "The PISP ID")
-            @RequestHeader(value = "x-ob-pisp-id", required = false) String pispId,
+            @ApiParam(value = "The PISP Client ID" )
+            @RequestHeader(value="x-ob-client-id") String clientId,
 
             HttpServletRequest request,
 
@@ -118,7 +118,7 @@ public interface FundsConfirmationConsentsApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-    @RequestMapping(value = FUNDS_CONFIRMATION_CONSENTS_PATH,
+    @RequestMapping(value = FUNDS_CONFIRMATION_CONSENTS_PATH + "/{ConsentId}",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity<OBFundsConfirmationConsentResponse1> getFundsConfirmationConsentsConsentId(
@@ -126,7 +126,7 @@ public interface FundsConfirmationConsentsApi {
             @PathVariable("ConsentId") String consentId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
+            @RequestHeader(value = "Authorization") String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
             @RequestHeader(value = "x-fapi-auth-date", required = false)
@@ -140,9 +140,6 @@ public interface FundsConfirmationConsentsApi {
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
-            @ApiParam(value = "The PISP ID" )
-            @RequestHeader(value="x-ob-pisp-id", required=false) String pispId,
 
             HttpServletRequest request,
 
@@ -165,14 +162,14 @@ public interface FundsConfirmationConsentsApi {
             @ApiResponse(code = 406, message = "Not Acceptable"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-    @RequestMapping(value = FUNDS_CONFIRMATION_CONSENTS_PATH+"/{ConsentId}",
+    @RequestMapping(value = FUNDS_CONFIRMATION_CONSENTS_PATH + "/{ConsentId}",
             method = RequestMethod.DELETE)
     ResponseEntity<Void> deleteFundsConfirmationConsentsConsentId(
             @ApiParam(value = "ConsentId", required = true)
             @PathVariable("ConsentId") String consentId,
 
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
+            @RequestHeader(value = "Authorization") String authorization,
 
             @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
             @RequestHeader(value = "x-fapi-auth-date", required = false)
@@ -186,9 +183,6 @@ public interface FundsConfirmationConsentsApi {
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
-            @ApiParam(value = "The PISP ID" )
-            @RequestHeader(value="x-ob-pisp-id", required=false) String pispId,
 
             HttpServletRequest request,
 

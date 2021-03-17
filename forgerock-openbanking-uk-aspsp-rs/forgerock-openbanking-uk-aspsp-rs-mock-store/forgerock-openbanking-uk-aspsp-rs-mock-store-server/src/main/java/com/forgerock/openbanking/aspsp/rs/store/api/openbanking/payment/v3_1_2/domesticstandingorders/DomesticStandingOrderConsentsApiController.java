@@ -22,15 +22,23 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_2.
 
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticStandingOrderConsentRepository;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 
 @Controller("DomesticStandingOrderConsentsApiV3.1.2")
 @Slf4j
 public class DomesticStandingOrderConsentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticstandingorders.DomesticStandingOrderConsentsApiController implements DomesticStandingOrderConsentsApi {
+
     public DomesticStandingOrderConsentsApiController(ConsentMetricService consentMetricService, DomesticStandingOrderConsentRepository domesticStandingOrderConsentRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         super(consentMetricService, domesticStandingOrderConsentRepository, tppRepository, resourceLinkService);
+    }
+
+    @Override
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_2();
     }
 }

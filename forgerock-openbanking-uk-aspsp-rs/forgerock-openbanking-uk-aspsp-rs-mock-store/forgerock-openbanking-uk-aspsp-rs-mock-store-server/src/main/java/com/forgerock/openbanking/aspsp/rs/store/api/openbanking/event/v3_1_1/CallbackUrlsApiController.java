@@ -32,8 +32,8 @@ import org.springframework.stereotype.Controller;
 @Slf4j
 public class CallbackUrlsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1.CallbackUrlsApiController implements CallbackUrlsApi {
 
-
     public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
         super(callbackUrlsRepository, tppRepository, resourceLinkService, new EventResponseUtil(resourceLinkService, OBVersion.v3_1_1, true));
     }
+
 }

@@ -341,7 +341,7 @@ public class DataCreator {
         Example<FRAccount> example = Example.of(FRAccount.builder().userID(username).build());
         if (accountsRepository.count(example) > accountLimit) {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                    String.format("Cannot add account as it has exceeded maximum limit of %s", documentLimit));
+                    String.format("Cannot add account as it has exceeded maximum limit of %s", accountLimit));
         }
         return account;
     }

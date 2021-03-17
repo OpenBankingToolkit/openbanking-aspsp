@@ -87,8 +87,8 @@ public interface FundsConfirmationConsentsApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "The PISP ID" )
-            @RequestHeader(value="x-ob-pisp-id", required=false) String pispId,
+            @ApiParam(value = "The PISP Client ID" )
+            @RequestHeader(value="x-ob-client-id", required=false) String clientId,
 
             HttpServletRequest request,
 
@@ -111,7 +111,7 @@ public interface FundsConfirmationConsentsApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = FUNDS_CONFIRMATION_CONSENTS_PATH+"/{ConsentId}",
+    @RequestMapping(value = FUNDS_CONFIRMATION_CONSENTS_PATH + "/{ConsentId}",
             produces = {"application/json; charset=utf-8"},
             method = RequestMethod.GET)
     ResponseEntity getFundsConfirmationConsentsConsentId(
@@ -137,9 +137,6 @@ public interface FundsConfirmationConsentsApi {
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
 
-            @ApiParam(value = "The PISP ID" )
-            @RequestHeader(value="x-ob-pisp-id", required=false) String pispId,
-
             HttpServletRequest request,
 
             Principal principal
@@ -160,7 +157,7 @@ public interface FundsConfirmationConsentsApi {
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
 
-    @RequestMapping(value = FUNDS_CONFIRMATION_CONSENTS_PATH+"/{ConsentId}",
+    @RequestMapping(value = FUNDS_CONFIRMATION_CONSENTS_PATH + "/{ConsentId}",
             method = RequestMethod.DELETE)
     ResponseEntity deleteFundsConfirmationConsentsConsentId(
             @ApiParam(value = "ConsentId", required = true)
@@ -184,9 +181,6 @@ public interface FundsConfirmationConsentsApi {
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
-            @ApiParam(value = "The PISP ID" )
-            @RequestHeader(value="x-ob-pisp-id", required=false) String pispId,
 
             HttpServletRequest request,
 

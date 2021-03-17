@@ -103,7 +103,6 @@ public class FundsConfirmationApiController implements FundsConfirmationApi {
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.add("x-ob-payment-id", consentId);
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Collections.emptyMap(), OBFundsConfirmationResponse1.class, obFundsConfirmation);
                         }
                 );
@@ -142,9 +141,7 @@ public class FundsConfirmationApiController implements FundsConfirmationApi {
                 .xFapiFinancialId(xFapiFinancialId)
                 .principal(principal)
                 .execute(
-                        (String tppId) -> {
-                            return rsStoreGateway.toRsStore(request, new HttpHeaders(), OBFundsConfirmationResponse1.class);
-                        }
+                        (String tppId) -> rsStoreGateway.toRsStore(request, new HttpHeaders(), OBFundsConfirmationResponse1.class)
                 );
     }
 }

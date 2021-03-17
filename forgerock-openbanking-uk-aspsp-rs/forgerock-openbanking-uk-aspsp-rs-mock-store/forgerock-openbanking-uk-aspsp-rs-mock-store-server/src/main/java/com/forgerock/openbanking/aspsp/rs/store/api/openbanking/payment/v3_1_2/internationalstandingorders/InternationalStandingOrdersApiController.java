@@ -22,9 +22,11 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_2.
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderConsentRepository;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 
 @Controller("InternationalStandingOrdersApiV3.1.2")
 @Slf4j
@@ -34,5 +36,10 @@ public class InternationalStandingOrdersApiController extends com.forgerock.open
                                                     InternationalStandingOrderPaymentSubmissionRepository internationalStandingOrderPaymentSubmissionRepository,
                                                     ResourceLinkService resourceLinkService) {
         super(internationalStandingOrderConsentRepository, internationalStandingOrderPaymentSubmissionRepository, resourceLinkService);
+    }
+
+    @Override
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_2();
     }
 }

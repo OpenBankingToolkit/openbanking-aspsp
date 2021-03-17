@@ -23,11 +23,13 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.funds.v3_0;
 import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.funds.FRFundsConfirmationData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -39,6 +41,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksFundsConfirmation3;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationDataResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
@@ -70,36 +73,18 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
 
     @Override
     public ResponseEntity createFundsConfirmation(
-            @ApiParam(value = "Default", required = true)
-            @Valid
-            @RequestBody OBFundsConfirmation1 obFundsConfirmation,
-
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            @Valid OBFundsConfirmation1 obFundsConfirmation1,
+            String xFapiFinancialId, String authorization,
+            DateTime xFapiCustomerLastLoggedTime,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) {
-        log.debug("Create funds confirmation: {}", obFundsConfirmation);
+        log.debug("Create funds confirmation: {}", obFundsConfirmation1);
 
-        String consentId = obFundsConfirmation.getData().getConsentId();
+        String consentId = obFundsConfirmation1.getData().getConsentId();
         Optional<FRFundsConfirmation> isSubmission = fundsConfirmationRepository.findById(consentId);
 
         Optional<FRFundsConfirmationConsent> isConsent = fundsConfirmationConsentRepository.findById(consentId);
@@ -110,7 +95,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
         // Check if funds are available on the account selected in consent
         boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(
                 isConsent.get().getAccountId(),
-                obFundsConfirmation.getData().getInstructedAmount().getAmount());
+                obFundsConfirmation1.getData().getInstructedAmount().getAmount());
 
 
         FRFundsConfirmation frFundsConfirmation = isSubmission
@@ -122,38 +107,22 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
                                 .build()
         );
         frFundsConfirmation.setFundsAvailable(areFundsAvailable);
-        frFundsConfirmation.setFundsConfirmation(toFRFundsConfirmationData(obFundsConfirmation));
+        frFundsConfirmation.setFundsConfirmation(toFRFundsConfirmationData(obFundsConfirmation1));
         frFundsConfirmation = fundsConfirmationRepository.save(frFundsConfirmation);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(frFundsConfirmation, isConsent.get()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(frFundsConfirmation, isConsent.get(), request));
     }
 
     @Override
     public ResponseEntity getFundsConfirmationId(
-            @ApiParam(value = "FundsConfirmationId", required = true)
-            @PathVariable("FundsConfirmationId") String fundsConfirmationId,
-
-            @ApiParam(value = "The unique id of the ASPSP to which the request is issued. The unique id will be issued by OB.", required = true)
-            @RequestHeader(value = "x-fapi-financial-id", required = true) String xFapiFinancialId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
-            @RequestHeader(value = "Authorization", required = true) String authorization,
-
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
-            @RequestHeader(value="x-fapi-customer-last-logged-time", required=false)
-            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiCustomerLastLoggedTime,
-
-            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
-            @RequestHeader(value = "x-fapi-customer-ip-address", required = false) String xFapiCustomerIpAddress,
-
-            @ApiParam(value = "An RFC4122 UID used as a correlation id.")
-            @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
-
-            @ApiParam(value = "Indicates the user-agent that the PSU is using.")
-            @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
-
+            String fundsConfirmationId,
+            String xFapiFinancialId,
+            String authorization,
+            DateTime xFapiCustomerLastLoggedTime,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
             HttpServletRequest request,
-
             Principal principal
     ) {
         Optional<FRFundsConfirmation> isFundsConfirmation = fundsConfirmationRepository.findById(fundsConfirmationId);
@@ -164,12 +133,12 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
 
         Optional<FRFundsConfirmationConsent> isSetup = fundsConfirmationConsentRepository.findById(frPaymentSubmission.getFundsConfirmation().getConsentId());
         return isSetup
-                .<ResponseEntity>map(frFundsConfirmationConsent1 -> ResponseEntity.ok(packageResponse(frPaymentSubmission, frFundsConfirmationConsent1)))
+                .<ResponseEntity>map(frFundsConfirmationConsent1 -> ResponseEntity.ok(packageResponse(frPaymentSubmission, frFundsConfirmationConsent1, request)))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Payment setup behind payment submission '" + fundsConfirmationId + "' can't be found"));
 
     }
 
-    private OBFundsConfirmationResponse1 packageResponse(FRFundsConfirmation fundsConfirmation, FRFundsConfirmationConsent consent) {
+    private OBFundsConfirmationResponse1 packageResponse(FRFundsConfirmation fundsConfirmation, FRFundsConfirmationConsent consent, HttpServletRequest request) {
         final FRFundsConfirmationData obFundsConfirmationData = fundsConfirmation.getFundsConfirmation();
         return new OBFundsConfirmationResponse1()
                 .data(new OBFundsConfirmationDataResponse1()
@@ -180,8 +149,7 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
                         .reference(obFundsConfirmationData.getReference())
                         .consentId(consent.getId()))
                 .meta(new Meta())
-                .links(resourceLinkService.toSelfLink(fundsConfirmation, discovery -> discovery.getV_3_0().getCreateFundsConfirmation()))
-                ;
+                .links(resourceLinkService.toSelfLink(fundsConfirmation, discovery -> discovery.getVersion(VersionPathExtractor.getVersionFromPath(request)).getCreateFundsConfirmation()));
     }
 
 }

@@ -21,16 +21,23 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_2.domesticpayments;
 
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 
 @Controller("DomesticPaymentConsentsApiV3.1.2")
 public class DomesticPaymentConsentsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.domesticpayments.DomesticPaymentConsentsApiController implements DomesticPaymentConsentsApi {
 
     public DomesticPaymentConsentsApiController(DomesticConsentRepository domesticConsentRepository, TppRepository tppRepository, FundsAvailabilityService fundsAvailabilityService, ResourceLinkService resourceLinkService, ConsentMetricService consentMetricService) {
         super(domesticConsentRepository, tppRepository, fundsAvailabilityService, resourceLinkService, consentMetricService);
+    }
+
+    @Override
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_2();
     }
 }
