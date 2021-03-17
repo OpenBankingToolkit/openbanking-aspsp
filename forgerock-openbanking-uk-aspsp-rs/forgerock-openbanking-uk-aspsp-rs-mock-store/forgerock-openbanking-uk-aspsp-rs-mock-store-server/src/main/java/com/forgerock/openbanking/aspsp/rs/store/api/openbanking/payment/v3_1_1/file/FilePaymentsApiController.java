@@ -22,10 +22,12 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 
 @Controller("FilePaymentsApiV3.1.1")
 @Slf4j
@@ -36,5 +38,10 @@ public class FilePaymentsApiController extends com.forgerock.openbanking.aspsp.r
                                      PaymentReportFile1Service paymentReportFileService,
                                      ResourceLinkService resourceLinkService) {
         super(fileConsentRepository, filePaymentSubmissionRepository, paymentReportFileService, resourceLinkService);
+    }
+
+    @Override
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1_1();
     }
 }

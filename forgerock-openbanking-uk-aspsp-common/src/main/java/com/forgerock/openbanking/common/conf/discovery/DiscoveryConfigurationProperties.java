@@ -52,6 +52,21 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_3;
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_4;
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_5;
+        public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_6;
+
+        public OBDiscoveryAPILinksFundsConfirmation3 getVersion(OBVersion version){
+            switch (version){
+                case v3_0: return v_3_0;
+                case v3_1: return v_3_1;
+                case v3_1_1: return v_3_1_1;
+                case v3_1_2: return v_3_1_2;
+                case v3_1_3: return v_3_1_3;
+                case v3_1_4: return v_3_1_4;
+                case v3_1_5: return v_3_1_5;
+                case v3_1_6: return v_3_1_6;
+                default: return null;
+            }
+        }
     }
 
     @Data

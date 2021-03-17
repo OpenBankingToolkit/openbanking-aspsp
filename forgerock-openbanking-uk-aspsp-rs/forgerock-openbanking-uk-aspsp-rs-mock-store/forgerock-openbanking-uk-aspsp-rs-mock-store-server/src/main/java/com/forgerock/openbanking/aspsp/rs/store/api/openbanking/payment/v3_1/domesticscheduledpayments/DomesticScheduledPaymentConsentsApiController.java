@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.do
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.DomesticScheduledConsentRepository;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
@@ -44,6 +45,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
 import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduledConsentResponse2;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent2;
@@ -194,9 +196,12 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                         .permission(OBExternalPermissions2Code.valueOf(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission().name()))
                         .authorisation(toOBAuthorisation1(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation()))
                 )
-                .links(resourceLinkService.toSelfLink(domesticScheduledConsent, discovery -> discovery.getV_3_1().getGetDomesticScheduledPaymentConsent()))
+                .links(resourceLinkService.toSelfLink(domesticScheduledConsent, discovery -> getVersion(discovery).getGetDomesticScheduledPaymentConsent()))
                 .risk(toOBRisk1(domesticScheduledConsent.getRisk()))
-                .meta(new Meta())
-                ;
+                .meta(new Meta());
+    }
+
+    protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
+        return discovery.getV_3_1();
     }
 }

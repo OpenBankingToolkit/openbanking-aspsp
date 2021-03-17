@@ -97,8 +97,8 @@ public class DataCreator {
                        FRTransactionRepository transactionRepository, FRStatementRepository statementRepository,
                        FRScheduledPaymentRepository scheduledPaymentRepository, FRPartyRepository partyRepository,
                        FROfferRepository offerRepository,
-                       @Value("${rs.data.upload.limit.documents}") Integer documentLimit,
-                       @Value("${rs.data.upload.limit.accounts}") Integer accountLimit) {
+                       @Value("${rs.data.upload.limit.documents:5000}") Integer documentLimit,
+                       @Value("${rs.data.upload.limit.accounts:500}") Integer accountLimit) {
         this.accountsRepository = accountsRepository;
         this.balanceRepository = balanceRepository;
         this.beneficiaryRepository = beneficiaryRepository;
@@ -341,7 +341,7 @@ public class DataCreator {
         Example<FRAccount> example = Example.of(FRAccount.builder().userID(username).build());
         if (accountsRepository.count(example) > accountLimit) {
             throw new ResponseStatusException(HttpStatus.PAYLOAD_TOO_LARGE,
-                    String.format("Cannot add account as it has exceeded maximum limit of %s", documentLimit));
+                    String.format("Cannot add account as it has exceeded maximum limit of %s", accountLimit));
         }
         return account;
     }

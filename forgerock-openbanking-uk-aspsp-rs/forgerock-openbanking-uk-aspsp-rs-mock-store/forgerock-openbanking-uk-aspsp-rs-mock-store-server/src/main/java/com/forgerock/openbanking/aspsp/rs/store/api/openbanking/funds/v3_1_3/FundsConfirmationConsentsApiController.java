@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.funds.v3_1_3;
 
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -43,15 +44,16 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
     }
 
     @Override
-    public ResponseEntity<OBFundsConfirmationConsentResponse1> createFundsConfirmationConsent(@Valid OBFundsConfirmationConsent1 obFundsConfirmationConsent,
-                                                                                              String authorization,
-                                                                                              DateTime xFapiAuthDate,
-                                                                                              String xFapiCustomerIpAddress,
-                                                                                              String xFapiInteractionId,
-                                                                                              String xCustomerUserAgent,
-                                                                                              String pispId,
-                                                                                              HttpServletRequest request,
-                                                                                              Principal principal) {
+    public ResponseEntity<OBFundsConfirmationConsentResponse1> createFundsConfirmationConsent(
+            @Valid OBFundsConfirmationConsent1 obFundsConfirmationConsent,
+            String authorization, DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            String clientId,
+            HttpServletRequest request,
+            Principal principal
+    ){
         return previousVersionController.createFundsConfirmationConsent(
                 obFundsConfirmationConsent,
                 DUMMY_FINANCIAL_ID,
@@ -60,21 +62,22 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
                 xFapiCustomerIpAddress,
                 xFapiInteractionId,
                 xCustomerUserAgent,
-                pispId,
+                clientId,
                 request,
                 principal);
     }
 
     @Override
-    public ResponseEntity getFundsConfirmationConsentsConsentId(String consentId,
-                                                                String authorization,
-                                                                DateTime xFapiAuthDate,
-                                                                String xFapiCustomerIpAddress,
-                                                                String xFapiInteractionId,
-                                                                String xCustomerUserAgent,
-                                                                String pispId,
-                                                                HttpServletRequest request,
-                                                                Principal principal) {
+    public ResponseEntity getFundsConfirmationConsentsConsentId(
+            String consentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ){
         return previousVersionController.getFundsConfirmationConsentsConsentId(
                 consentId,
                 DUMMY_FINANCIAL_ID,
@@ -83,21 +86,21 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
                 xFapiCustomerIpAddress,
                 xFapiInteractionId,
                 xCustomerUserAgent,
-                pispId,
                 request,
                 principal);
     }
 
     @Override
-    public ResponseEntity deleteFundsConfirmationConsentsConsentId(String consentId,
-                                                                         String authorization,
-                                                                         DateTime xFapiAuthDate,
-                                                                         String xFapiCustomerIpAddress,
-                                                                         String xFapiInteractionId,
-                                                                         String xCustomerUserAgent,
-                                                                         String pispId,
-                                                                         HttpServletRequest request,
-                                                                         Principal principal) {
+    public ResponseEntity deleteFundsConfirmationConsentsConsentId(
+            String consentId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ){
         return previousVersionController.deleteFundsConfirmationConsentsConsentId(
                 consentId,
                 xFapiInteractionId,
@@ -106,7 +109,6 @@ public class FundsConfirmationConsentsApiController implements FundsConfirmation
                 xFapiCustomerIpAddress,
                 xFapiInteractionId,
                 xCustomerUserAgent,
-                pispId,
                 request,
                 principal);
     }

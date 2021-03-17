@@ -15,6 +15,28 @@ Release/1.1.118 (#342)
 * Release candidate: prepare release 1.1.118
 
 * Release candidate: prepare for next development iteration
+### GitHub [#346](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/346) 201: Analytics empty data
+[c0e3227e4ed0b8c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c0e3227e4ed0b8c) Jorge Sanchez Perez *2021-03-11 08:46:35*
+201: Analytics empty data (#346)
+
+* 201: Analytics empty data
+- Bumped `ob-common` version 1.1.0
+- Added new dependency `ob-common-annotations`
+- Refactorisation of classes to use the new origin of annotation `OpenBankingAPI`
+- Bumped `ob-clients` version 1.1.0
+- Bumped `ob-auth` version 1.0.67
+- Bumped `ob-jwkms` version 1.1.78
+- Upgrade minor version to 1.2.0-SNAPSHOT
+- Prepare for the next release
+
+* Changelog updated
+### GitHub [#350](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/350) Release/1.2.0
+[32efab6fcf30f25](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/32efab6fcf30f25) Jorge Sanchez Perez *2021-03-11 09:18:43*
+Release/1.2.0 (#350)
+
+* Release candidate: prepare release 1.2.0
+
+* Release candidate: prepare for next development iteration
 [0bd6069b9ede3cf](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0bd6069b9ede3cf) Matt Wills *2021-03-10 11:29:45*
 20 - Fix expected JSON format
 

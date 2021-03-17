@@ -20,11 +20,13 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.funds.v3_1_3;
 
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -42,14 +44,16 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     }
 
     @Override
-    public ResponseEntity createFundsConfirmations(@Valid OBFundsConfirmation1 obFundsConfirmation1,
-                                                   String authorization,
-                                                   DateTime xFapiAuthDate,
-                                                   String xFapiCustomerIpAddress,
-                                                   String xFapiInteractionId,
-                                                   String xCustomerUserAgent,
-                                                   HttpServletRequest request,
-                                                   Principal principal) {
+    public ResponseEntity createFundsConfirmations(
+            @Valid OBFundsConfirmation1 obFundsConfirmation1,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ){
         return previousVersionController.createFundsConfirmation(
                 obFundsConfirmation1,
                 DUMMY_FINANCIAL_ID,
@@ -63,14 +67,16 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     }
 
     @Override
-    public ResponseEntity getFundsConfirmationId(String fundsConfirmationId,
-                                                 String authorization,
-                                                 DateTime xFapiAuthDate,
-                                                 String xFapiCustomerIpAddress,
-                                                 String xFapiInteractionId,
-                                                 String xCustomerUserAgent,
-                                                 HttpServletRequest request,
-                                                 Principal principal) {
+    public ResponseEntity getFundsConfirmationId(
+            String fundsConfirmationId,
+            String authorization,
+            DateTime xFapiAuthDate,
+            String xFapiCustomerIpAddress,
+            String xFapiInteractionId,
+            String xCustomerUserAgent,
+            HttpServletRequest request,
+            Principal principal
+    ){
         return previousVersionController.getFundsConfirmationId(
                 fundsConfirmationId,
                 DUMMY_FINANCIAL_ID,
