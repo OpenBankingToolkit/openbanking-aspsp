@@ -96,7 +96,8 @@ public class DataUpdater {
                        FRProductRepository productRepository, FRStandingOrderRepository standingOrderRepository,
                        FRTransactionRepository transactionRepository, FRStatementRepository statementRepository,
                        FRScheduledPaymentRepository scheduledPaymentRepository, FRPartyRepository partyRepository,
-                       FROfferRepository offerRepository, @Value("${rs.data.upload.limit.documents}") Integer documentLimit) {
+                       FROfferRepository offerRepository,
+                       @Value("${rs.data.upload.limit.documents:5000}") Integer documentLimit) {
         this.accountsRepository = accountsRepository;
         this.balanceRepository = balanceRepository;
         this.beneficiaryRepository = beneficiaryRepository;
