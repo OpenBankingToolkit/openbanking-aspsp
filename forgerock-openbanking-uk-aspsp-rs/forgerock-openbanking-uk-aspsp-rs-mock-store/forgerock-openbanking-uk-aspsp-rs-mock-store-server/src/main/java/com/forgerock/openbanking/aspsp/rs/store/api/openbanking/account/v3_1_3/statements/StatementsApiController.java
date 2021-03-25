@@ -109,7 +109,7 @@ public class StatementsApiController implements StatementsApi {
             throw new OBErrorResponseException(
                     HttpStatus.BAD_REQUEST,
                     OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.REQUEST_INVALID_HEADER.toOBError1("Invalid header 'accept' the only supported value for this operation is '" + MediaType.APPLICATION_PDF_VALUE + "'"));
+                    OBRIErrorType.REQUEST_INVALID_HEADER.toOBError1("Invalid header 'Accept' the only supported value for this operation is '" + MediaType.APPLICATION_PDF_VALUE + "'"));
         }
 
         // Check if this customer has a statement file
