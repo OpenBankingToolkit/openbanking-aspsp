@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[8fed42b0aaa563e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8fed42b0aaa563e) JamieB *2021-03-18 17:34:43*
+Release candidate: prepare for next development iteration
+## 1.2.2
 ### GitHub [#342](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/342) Release/1.1.118
 [141816573d0231d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/141816573d0231d) Jorge Sanchez Perez *2021-02-22 15:07:48*
 Release/1.1.118 (#342)
@@ -37,6 +40,37 @@ Release/1.2.0 (#350)
 * Release candidate: prepare release 1.2.0
 
 * Release candidate: prepare for next development iteration
+### GitHub [#354](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/354) Release/1.2.1
+[8e85606d358c96d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8e85606d358c96d) Jorge Sanchez Perez *2021-03-18 09:49:29*
+Release/1.2.1 (#354)
+
+* Release candidate: prepare release 1.2.1
+
+* Release candidate: prepare for next development iteration
+[d24b7341d82295e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d24b7341d82295e) JamieB *2021-03-18 17:34:37*
+Release candidate: prepare release 1.2.2
+[49c8d51b3ae697f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/49c8d51b3ae697f) JamieB *2021-03-18 17:12:30*
+721: Need a default spring value for all spring config
+
+So that this can run even if no spring config server is available the
+rs.data.upload.limit.documents spring config value. This was causing
+failure of integration tests in the obri project when no spring config
+was available.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/721
+[b78ec6751ee3bc4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b78ec6751ee3bc4) jorgesanchezperez *2021-03-17 17:31:18*
+Deleted application.yml file from rs-mock-store-server library
+[0049d9050fa579c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0049d9050fa579c) jorgesanchezperez *2021-03-17 17:29:06*
+increase default values for limits defined on DataCreator
+[9af9357b7254cd4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9af9357b7254cd4) jorgesanchezperez *2021-03-17 17:25:24*
+Fix license
+[5c211b60d24784f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5c211b60d24784f) jorgesanchezperez *2021-03-17 17:24:08*
+Added default values for data creator documents and accounts limits
+[20e8a19e9790614](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/20e8a19e9790614) jorgesanchezperez *2021-03-17 17:11:17*
+351-352: self link by version and funds confirmations
+Issues:
+https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/351
+https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/352
 [0bd6069b9ede3cf](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0bd6069b9ede3cf) Matt Wills *2021-03-10 11:29:45*
 20 - Fix expected JSON format
 

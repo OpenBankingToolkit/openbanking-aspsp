@@ -21,11 +21,11 @@
 package com.forgerock.openbanking.aspsp.rs.api.discovery;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.forgerock.openbanking.common.conf.discovery.GenericOBDiscoveryAPILinks;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.org.openbanking.datamodel.discovery.GenericOBDiscoveryAPILinks;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPI;
 
 import java.util.List;
