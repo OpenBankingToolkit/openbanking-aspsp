@@ -27,6 +27,8 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStatement;
 import com.forgerock.openbanking.common.services.openbanking.converter.account.FRStatementConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
+import com.forgerock.openbanking.model.error.OBRIErrorType;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -163,12 +165,15 @@ public class StatementsApiController implements StatementsApi {
             @RequestHeader(value = "x-fapi-interaction-id", required = false) String xFapiInteractionId,
 
             @ApiParam(value = "HTTP accept header. Statements only implemented for certain media types.", required = true)
-            @RequestHeader(value = "Accept", required = true) String accept) {
+            @RequestHeader(value = "Accept", required = true) String accept) throws OBErrorResponseException {
 
         log.info("Received a statement file download request for account: {} (Accept: {}). Interaction Id: {}", accountId, accept, xFapiInteractionId);
         if (!accept.contains(MediaType.APPLICATION_PDF_VALUE)) {
-            // Mo other file type is implemented apart from PDF
-            return new ResponseEntity<Resource>(HttpStatus.NOT_IMPLEMENTED);
+            // No other file type is implemented apart from PDF
+            throw new OBErrorResponseException(
+                    HttpStatus.BAD_REQUEST,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.REQUEST_INVALID_HEADER.toOBError1("Invalid header 'Accept' the only supported value for this operation is '" + MediaType.APPLICATION_PDF_VALUE + "'"));
         }
 
         // Check if this cusotmer has a statement file
@@ -179,7 +184,8 @@ public class StatementsApiController implements StatementsApi {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(statement.get());
         }
-        return new ResponseEntity<Resource>(HttpStatus.NOT_IMPLEMENTED);
+        // this never will happen
+        return ResponseEntity.notFound().build();
     }
 
     private Integer getContentLength(Resource resource) {
