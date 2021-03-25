@@ -90,7 +90,7 @@ public class StatementsApiControllerIT {
 
         assertThat(thrown).isInstanceOf(OBErrorResponseException.class)
                 .satisfies(t -> assertThat(((OBErrorResponseException) t).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST))
-                .satisfies(t -> assertThat(((OBErrorResponseException) t).getErrors().get(0).getMessage()).isEqualTo("Invalid header 'accept' the only supported value for this operation is " + MediaType.APPLICATION_PDF_VALUE));
+                .satisfies(t -> assertThat(((OBErrorResponseException) t).getErrors().get(0).getMessage()).isEqualTo("Invalid header 'Accept' the only supported value for this operation is '" + MediaType.APPLICATION_PDF_VALUE + "'"));
     }
 
     @Test
