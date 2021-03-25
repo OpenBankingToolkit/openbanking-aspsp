@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.discovery;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.openbanking.common.conf.discovery.GenericOBDiscoveryAPILinks;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;
@@ -33,7 +34,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.util.UriComponentsBuilder;
-import uk.org.openbanking.datamodel.discovery.GenericOBDiscoveryAPILinks;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPI;
 
 import java.net.URI;
