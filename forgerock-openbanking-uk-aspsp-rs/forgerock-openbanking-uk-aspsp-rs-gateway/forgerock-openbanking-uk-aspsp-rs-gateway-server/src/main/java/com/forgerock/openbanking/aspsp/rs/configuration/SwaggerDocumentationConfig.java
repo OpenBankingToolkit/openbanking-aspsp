@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.aspsp.rs.configuration;
 
-import com.forgerock.openbanking.common.conf.discovery.GenericOBDiscoveryAPILinks;
 import com.forgerock.openbanking.common.conf.discovery.RSAPIsConfigurationProperties;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -35,6 +34,7 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.ApiSelectorBuilder;
 import springfox.documentation.spring.web.plugins.Docket;
+import uk.org.openbanking.datamodel.discovery.GenericOBDiscoveryAPILinks;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPI;
 
 import java.security.Principal;

@@ -31,6 +31,7 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
+import uk.org.openbanking.datamodel.discovery.GenericOBDiscoveryAPILinks;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPI;
 
 import java.lang.reflect.Method;
