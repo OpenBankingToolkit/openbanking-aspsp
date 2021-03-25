@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v2_0.statements;
 
 import com.forgerock.openbanking.aspsp.rs.store.service.statement.StatementPDFService;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,13 +31,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatementsApiControllerIT {
@@ -72,25 +75,26 @@ public class StatementsApiControllerIT {
     }
 
     @Test
-    public void getStatementsFile_wrongAcceptHeader_501() throws Exception
-    {
-        ResponseEntity<Resource> response = statementsApiController.getAccountStatementFile("a12345",
-                0,
-                "s12345",
-                "f12345",
-                "token",
-                DateTime.now(),
-                "",
-                "interaction1234",
-                "application/xml");
+    public void getStatementsFile_wrongAcceptHeader_BadRequest() throws Exception {
+        Throwable thrown = catchThrowable(() -> {
+            statementsApiController.getAccountStatementFile("a12345",
+                    0,
+                    "s12345",
+                    "f12345",
+                    "token",
+                    DateTime.now(),
+                    "",
+                    "interaction1234",
+                    "application/xml");
+        });
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(501);
-        assertThat(response.getBody()).isNull();
-        verifyZeroInteractions(statementPDFService);
+        assertThat(thrown).isInstanceOf(OBErrorResponseException.class)
+                .satisfies(t -> assertThat(((OBErrorResponseException) t).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST))
+                .satisfies(t -> assertThat(((OBErrorResponseException) t).getErrors().get(0).getMessage()).isEqualTo("Invalid header 'Accept' the only supported value for this operation is '" + MediaType.APPLICATION_PDF_VALUE + "'"));
     }
 
     @Test
-    public void getStatementsFile_noPdfForProfile_501() throws Exception
+    public void getStatementsFile_noPdfForProfile() throws Exception
     {
         given(statementPDFService.getPdfStatement()).willReturn(Optional.empty());
 
@@ -104,7 +108,7 @@ public class StatementsApiControllerIT {
                 "interaction1234",
                 "application/pdf");
 
-        assertThat(response.getStatusCodeValue()).isEqualTo(501);
+        assertThat(response.getStatusCodeValue()).isEqualTo(404);
         assertThat(response.getBody()).isNull();
     }
 

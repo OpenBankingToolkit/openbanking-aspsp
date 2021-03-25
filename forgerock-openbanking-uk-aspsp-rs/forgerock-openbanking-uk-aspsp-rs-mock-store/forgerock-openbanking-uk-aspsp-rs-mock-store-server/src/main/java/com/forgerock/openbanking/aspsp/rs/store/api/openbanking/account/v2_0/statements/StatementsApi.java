@@ -119,7 +119,7 @@ public interface StatementsApi {
     @RequestMapping(value = "/accounts/{AccountId}/statements/{StatementId}/file",
             produces = {"*/*"},
             method = RequestMethod.GET)
-    ResponseEntity<Resource> getAccountStatementFile(
+    ResponseEntity getAccountStatementFile(
             @ApiParam(value = "A unique identifier used to identify the account resource.", required = true)
             @PathVariable("AccountId") String accountId,
 
@@ -149,7 +149,7 @@ public interface StatementsApi {
 
             @ApiParam(value = "HTTP Accept header defining what files will be accepted.", required=true)
             @RequestHeader(value="Accept", required=true) String accept
-    );
+    ) throws OBErrorResponseException;
 
     @ApiOperation(value = "Get Statements", nickname = "getStatements", notes = "Get Statements", response = OBReadStatement1.class, authorizations = {
             @Authorization(value = "PSUOAuth2Security", scopes = {
