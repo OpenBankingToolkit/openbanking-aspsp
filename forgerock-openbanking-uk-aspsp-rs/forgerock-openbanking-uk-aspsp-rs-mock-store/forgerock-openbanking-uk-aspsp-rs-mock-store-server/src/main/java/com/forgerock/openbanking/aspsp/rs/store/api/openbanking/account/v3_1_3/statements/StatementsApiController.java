@@ -127,7 +127,7 @@ public class StatementsApiController implements StatementsApi {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(statement.get());
         }
-        // this never will happen
+        // this will happen when a static PDF hasn't provided and configured on the sandbox
         return ResponseEntity.notFound().build();
     }
 
