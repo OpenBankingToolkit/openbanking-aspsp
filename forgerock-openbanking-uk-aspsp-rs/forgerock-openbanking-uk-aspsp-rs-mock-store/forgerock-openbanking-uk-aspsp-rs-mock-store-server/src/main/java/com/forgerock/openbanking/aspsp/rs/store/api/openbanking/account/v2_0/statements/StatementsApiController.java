@@ -168,6 +168,13 @@ public class StatementsApiController implements StatementsApi {
             @RequestHeader(value = "Accept", required = true) String accept) throws OBErrorResponseException {
 
         log.info("Received a statement file download request for account: {} (Accept: {}). Interaction Id: {}", accountId, accept, xFapiInteractionId);
+
+        /*
+         * Issue related: https://github.com/ForgeCloud/ob-reference-implementation/issues/1583
+         * The AISP endpoint '/statements/{statementId}/file' has been implemented to return a fixed PDF file for all statement file requests.
+         * A PDF file will only be returned if the "Accept: application/pdf" header is supplied in the request
+         * and a PDF has been provided by the customer and configured on the sandbox.
+         */
         if (!accept.contains(MediaType.APPLICATION_PDF_VALUE)) {
             // No other file type is implemented apart from PDF
             throw new OBErrorResponseException(
@@ -184,7 +191,7 @@ public class StatementsApiController implements StatementsApi {
                     .contentType(MediaType.APPLICATION_PDF)
                     .body(statement.get());
         }
-        // this never will happen
+        // this will happen when a static PDF hasn't provided and configured on the sandbox
         return ResponseEntity.notFound().build();
     }
 
