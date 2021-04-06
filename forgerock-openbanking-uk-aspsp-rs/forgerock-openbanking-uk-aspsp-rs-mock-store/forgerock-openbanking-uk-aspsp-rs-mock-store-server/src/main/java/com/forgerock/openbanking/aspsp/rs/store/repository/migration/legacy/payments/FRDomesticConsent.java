@@ -38,6 +38,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
+@Deprecated
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

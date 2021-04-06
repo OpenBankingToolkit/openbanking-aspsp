@@ -42,6 +42,7 @@ import java.util.Date;
 /**
  * FRPaymentConsent setup entity for storing in DB
  */
+@Deprecated
 @Data
 @Builder
 @NoArgsConstructor

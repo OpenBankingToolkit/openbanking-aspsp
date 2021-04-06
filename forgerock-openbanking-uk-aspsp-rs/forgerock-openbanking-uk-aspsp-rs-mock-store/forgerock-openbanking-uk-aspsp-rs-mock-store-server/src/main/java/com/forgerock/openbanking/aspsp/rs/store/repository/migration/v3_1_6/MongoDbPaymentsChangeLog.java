@@ -54,8 +54,6 @@ public class MongoDbPaymentsChangeLog {
     private static final String RISK = "risk";
     private static final String DELIVERY_ADDRESS = "deliveryAddress";
     private static final String COUNTRY_SUB_DIVISION = "countrySubDivision";
-    private static final String OB_VERSION_FIELD = "obVersion";
-    private static final String OB_VERSION_VALUE = "v3_1_6";
     private static final String SEPARATOR = ".";
 
 
@@ -98,7 +96,7 @@ public class MongoDbPaymentsChangeLog {
         // Criteria to query only documents where countrySubDivision not null and obVersion is 'v3_1_6'
         // { "${writeRiskParentField}.risk.deliveryAddress.countrySubDivision" : { "$ne" : null }, "$and" : [{ "obVersion" : "v3_1_6" }] }
         Criteria queryCriteria = new Criteria(jsonPathCriteria)
-                .ne(null).andOperator(new Criteria(OB_VERSION_FIELD).is(OB_VERSION_VALUE));
+                .ne(null);
 
         BulkOperations bulkOperations = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, legacyClazz);
         // get the documents filter by criteria
@@ -109,7 +107,7 @@ public class MongoDbPaymentsChangeLog {
                 legacyClassDocInstance -> {
                     try {
                         // return a Optional Pair [id, countrySubDivision] for each document
-                        Optional<Pair<String, String>> optIdAndCountrySubDivision = getPair(legacyClazz, legacyClassDocInstance, writeRiskParentField);
+                        Optional<Pair<String, String>> optIdAndCountrySubDivision = getIdAndCountrySubDivision(legacyClazz, legacyClassDocInstance, writeRiskParentField);
                         if (optIdAndCountrySubDivision.isPresent()) {
                             if (optIdAndCountrySubDivision.get().getFirst() != null && optIdAndCountrySubDivision.get().getSecond() != null) {
                                 // we get only the first value of countrySubDivisions
@@ -142,7 +140,7 @@ public class MongoDbPaymentsChangeLog {
      * @throws InvocationTargetException
      * @throws IllegalAccessException
      */
-    private <T> Optional<Pair<String, String>> getPair(Class<T> legacyClazz, Object legacyClassDocInstance, String writeRiskParentField) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+    private <T> Optional<Pair<String, String>> getIdAndCountrySubDivision(Class<T> legacyClazz, Object legacyClassDocInstance, String writeRiskParentField) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
         Optional<Method> optionalMethod = Arrays.stream(legacyClazz.getDeclaredMethods()).filter(m -> m.getName().toLowerCase().endsWith(writeRiskParentField.toLowerCase())).findFirst();
         if (optionalMethod.isPresent()) {
             String division = null;

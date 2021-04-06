@@ -35,6 +35,7 @@ import lombok.NoArgsConstructor;
  * a mutable {@link Data} rather than an immutable {@link lombok.Value} one.
  * </p>
  */
+@Deprecated
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

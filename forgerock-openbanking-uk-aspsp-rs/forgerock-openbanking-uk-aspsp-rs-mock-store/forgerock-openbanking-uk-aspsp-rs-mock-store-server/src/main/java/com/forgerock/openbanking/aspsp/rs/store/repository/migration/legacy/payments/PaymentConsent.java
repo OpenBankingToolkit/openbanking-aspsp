@@ -28,7 +28,7 @@ import org.joda.time.DateTime;
 /**
  * Representation of a payment.
  */
-
+@Deprecated
 public interface PaymentConsent {
 
     void setPisp(Tpp tpp);

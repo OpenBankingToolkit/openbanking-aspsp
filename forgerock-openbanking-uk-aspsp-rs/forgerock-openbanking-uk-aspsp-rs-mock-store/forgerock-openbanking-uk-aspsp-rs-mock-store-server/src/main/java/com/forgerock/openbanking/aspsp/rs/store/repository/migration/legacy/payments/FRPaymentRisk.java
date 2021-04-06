@@ -37,6 +37,7 @@ import java.util.List;
  * a mutable {@link Data} rather than an immutable {@link lombok.Value} one.
  * </p>
  */
+@Deprecated
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
