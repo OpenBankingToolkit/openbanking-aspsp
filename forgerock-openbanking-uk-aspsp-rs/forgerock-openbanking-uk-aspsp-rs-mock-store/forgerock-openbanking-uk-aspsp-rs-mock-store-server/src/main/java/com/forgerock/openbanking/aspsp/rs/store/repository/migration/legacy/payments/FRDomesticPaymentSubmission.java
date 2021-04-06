@@ -35,7 +35,8 @@ import java.util.Date;
 @Builder
 @Data
 @Document
-public class FRDomesticPaymentSubmission implements PaymentSubmission {
+@Deprecated
+public class FRDomesticPaymentSubmission implements PaymentSubmission, LegacySubDivisionDocument {
 
     @Id
     @Indexed
@@ -51,4 +52,9 @@ public class FRDomesticPaymentSubmission implements PaymentSubmission {
     public String idempotencyKey;
 
     public OBVersion obVersion;
+
+    @Override
+    public String getCountrySubDivision() {
+        return domesticPayment.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+    }
 }

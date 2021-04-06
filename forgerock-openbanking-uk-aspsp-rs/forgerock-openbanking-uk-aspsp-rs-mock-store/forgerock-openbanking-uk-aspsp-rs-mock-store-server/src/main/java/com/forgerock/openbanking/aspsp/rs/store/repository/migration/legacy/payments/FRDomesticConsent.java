@@ -20,10 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.payments;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.version.OBVersion;
-import com.forgerock.openbanking.model.Tpp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,7 +30,6 @@ import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -43,7 +40,8 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Document
-public class FRDomesticConsent {
+@Deprecated
+public class FRDomesticConsent implements LegacySubDivisionDocument {
     @Id
     @Indexed
     public String id;
@@ -69,5 +67,12 @@ public class FRDomesticConsent {
     public OBVersion obVersion;
 
 
-
+    @Override
+    public String getCountrySubDivision() {
+        if (domesticConsent.getRisk() == null || domesticConsent.getRisk().getDeliveryAddress() == null) {
+            return null;
+        }
+        FRPaymentRisk.FRRiskDeliveryAddress deliveryAddress = domesticConsent.getRisk().getDeliveryAddress();
+        return deliveryAddress.getCountrySubDivision() == null ? null : deliveryAddress.getCountrySubDivision().get(0);
+    }
 }
