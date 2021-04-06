@@ -18,14 +18,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.domain.payment.common;
+package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.payments;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDataDomesticScheduled;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * Represents an equivalent object in the OB data model. It is stored within mongo (instead of the OB object), in order to make it easier to introduce new
@@ -33,41 +32,15 @@ import java.util.List;
  *
  * <p>
  * Note that this object is used across multiple versions of the Read/Write API, meaning that some values won't be populated. For this reason it is
- * a mutable {@link lombok.Data} rather than an immutable {@link lombok.Value} one.
+ * a mutable {@link Data} rather than an immutable {@link lombok.Value} one.
  * </p>
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FRPaymentRisk {
+public class FRWriteDomesticScheduled {
 
-    private FRExternalPaymentContextCode paymentContextCode;
-    private String merchantCategoryCode;
-    private String merchantCustomerIdentification;
-    private FRRiskDeliveryAddress deliveryAddress;
-
-    /**
-     * Represents an equivalent object in the OB data model. It is stored within mongo (instead of the OB object), in order to make it easier to introduce new
-     * versions of the Read/Write API.
-     *
-     * <p>
-     * Note that this object is used across multiple versions of the Read/Write API, meaning that some values won't be populated. For this reason it is
-     * a mutable {@link lombok.Data} rather than an immutable {@link lombok.Value} one.
-     * </p>
-     */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder
-    public static class FRRiskDeliveryAddress {
-
-        private List<String> addressLine;
-        private String streetName;
-        private String buildingNumber;
-        private String postCode;
-        private String townName;
-        private String countrySubDivision;
-        private String country;
-    }
+    private FRWriteDataDomesticScheduled data;
+    private FRPaymentRisk risk;
 }

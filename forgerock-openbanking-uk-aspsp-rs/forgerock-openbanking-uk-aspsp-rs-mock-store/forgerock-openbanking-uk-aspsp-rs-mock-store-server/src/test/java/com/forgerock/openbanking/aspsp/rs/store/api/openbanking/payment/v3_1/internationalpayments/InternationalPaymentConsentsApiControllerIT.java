@@ -151,7 +151,7 @@ public class InternationalPaymentConsentsApiControllerIT {
         consentRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
+                .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
 
@@ -192,7 +192,7 @@ public class InternationalPaymentConsentsApiControllerIT {
         consentRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
+                .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
 

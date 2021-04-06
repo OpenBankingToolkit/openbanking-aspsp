@@ -143,7 +143,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
         consentRequest.getData().getInitiation().getCreditorPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
+                .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
         consentRequest.getData().permission(OBExternalPermissions2Code.CREATE);

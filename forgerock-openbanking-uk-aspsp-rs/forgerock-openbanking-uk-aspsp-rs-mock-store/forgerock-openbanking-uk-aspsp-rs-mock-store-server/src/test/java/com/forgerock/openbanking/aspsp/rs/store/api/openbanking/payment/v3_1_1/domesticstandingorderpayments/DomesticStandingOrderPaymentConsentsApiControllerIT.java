@@ -150,7 +150,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         consentRequest.getData().authorisation(new OBWriteDomesticConsent4DataAuthorisation().authorisationType(AuthorisationTypeEnum.ANY).completionDateTime(DateTime.now()));
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
+                .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
         consentRequest.getData().permission(PermissionEnum.CREATE);
@@ -200,7 +200,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         consentRequest.getData().authorisation(new OBWriteDomesticConsent4DataAuthorisation().authorisationType(AuthorisationTypeEnum.ANY).completionDateTime(DateTime.now()));
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
+                .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
         consentRequest.getData().permission(PermissionEnum.CREATE);

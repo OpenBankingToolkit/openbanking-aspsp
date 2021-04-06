@@ -185,7 +185,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         consentRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
+                .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
 
@@ -225,7 +225,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         consentRequest.getData().getInitiation().getCreditorPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
         consentRequest.getData().getInitiation().supplementaryData(null);
         consentRequest.getRisk().merchantCategoryCode("ABCD")
-                .getDeliveryAddress().addressLine(Collections.singletonList("3 Queens Square")).country("GP").countrySubDivision(Collections.singletonList("aaa"));
+                .getDeliveryAddress().addressLine(Collections.singletonList("3 Queens Square")).country("GP").countrySubDivision("aaa");
         consentRequest.getData().getAuthorisation().completionDateTime(null);
 
         FRDomesticConsent existingConsent = JMockData.mock(FRDomesticConsent.class);

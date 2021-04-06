@@ -187,7 +187,7 @@ public class PaymentsApiControllerIT {
         OBPaymentSetupResponse1 paymentSetupResponse = JMockData.mock(OBPaymentSetupResponse1.class);
         paymentSetupResponse.getData().getInitiation().getInstructedAmount().setCurrency("GBP");
         paymentSetupResponse.getData().getInitiation().getInstructedAmount().setAmount("10.00");
-        paymentSetupResponse.getRisk().getDeliveryAddress().setCountrySubDivision(Arrays.asList("South Gloucestershire"));
+        paymentSetupResponse.getRisk().getDeliveryAddress().setCountrySubDivision("South Gloucestershire");
         paymentSetupResponse.getRisk().getDeliveryAddress().setAddressLine(Collections.emptyList());
         paymentSetupResponse.getRisk().getDeliveryAddress().setCountry("GB");
         paymentSetupResponse.getRisk().setMerchantCategoryCode("ABCD");

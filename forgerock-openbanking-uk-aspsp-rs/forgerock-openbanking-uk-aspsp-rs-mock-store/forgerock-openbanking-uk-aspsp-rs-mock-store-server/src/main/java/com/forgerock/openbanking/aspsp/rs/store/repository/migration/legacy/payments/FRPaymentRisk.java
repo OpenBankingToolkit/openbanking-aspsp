@@ -18,8 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.domain.payment.common;
+package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.payments;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRExternalPaymentContextCode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,7 +34,7 @@ import java.util.List;
  *
  * <p>
  * Note that this object is used across multiple versions of the Read/Write API, meaning that some values won't be populated. For this reason it is
- * a mutable {@link lombok.Data} rather than an immutable {@link lombok.Value} one.
+ * a mutable {@link Data} rather than an immutable {@link lombok.Value} one.
  * </p>
  */
 @Data
@@ -53,7 +54,7 @@ public class FRPaymentRisk {
      *
      * <p>
      * Note that this object is used across multiple versions of the Read/Write API, meaning that some values won't be populated. For this reason it is
-     * a mutable {@link lombok.Data} rather than an immutable {@link lombok.Value} one.
+     * a mutable {@link Data} rather than an immutable {@link lombok.Value} one.
      * </p>
      */
     @Data
@@ -67,7 +68,7 @@ public class FRPaymentRisk {
         private String buildingNumber;
         private String postCode;
         private String townName;
-        private String countrySubDivision;
+        private List<String> countrySubDivision;
         private String country;
     }
 }

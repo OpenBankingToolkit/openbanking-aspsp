@@ -30,7 +30,7 @@ public class FRRiskTestDataFactory {
         return FRPaymentRisk.builder()
                 .merchantCategoryCode("ABCD")
                 .deliveryAddress(FRPaymentRisk.FRRiskDeliveryAddress.builder()
-                        .countrySubDivision(singletonList("Wessex"))
+                        .countrySubDivision("Wessex")
                         .addressLine(singletonList("3 Queens Square"))
                         .townName("Bristol")
                         .country("GB")
