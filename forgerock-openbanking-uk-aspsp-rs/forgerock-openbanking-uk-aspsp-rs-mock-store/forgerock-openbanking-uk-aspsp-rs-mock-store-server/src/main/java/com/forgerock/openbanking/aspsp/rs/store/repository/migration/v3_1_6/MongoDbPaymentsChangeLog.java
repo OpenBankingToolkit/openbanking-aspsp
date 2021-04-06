@@ -151,7 +151,6 @@ public class MongoDbPaymentsChangeLog {
             PropertyDescriptor pd = new PropertyDescriptor("id", legacyClassDocInstance.getClass());
             id = (String) pd.getReadMethod().invoke(legacyClassDocInstance);
 
-            //String fieldName = Arrays.stream(legacyClazz.getFields()).filter(field -> field.getName().equals(writeConsentField)).findFirst().get().getName();
             // get the write risk parent object
             pd = new PropertyDescriptor(writeRiskParentField, legacyClassDocInstance.getClass());
             Object obj = pd.getReadMethod().invoke(legacyClassDocInstance);
