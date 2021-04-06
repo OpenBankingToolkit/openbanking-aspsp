@@ -67,7 +67,7 @@ public class MongoDbPaymentsChangeLog {
         log.info("-----------------------------------------------------------------------");
         log.info("Migrating Payments API data from v3.1.6 to v3.1.6 patch...");
 
-        int docsUpdated = getObjectsToUpdate().stream().mapToInt(objectToUpdate -> upgrade(mongoTemplate, objectToUpdate.legacyClass, objectToUpdate.writeConsentField)).sum();
+        int docsUpdated = getObjectsToUpdate().stream().mapToInt(objectToUpdate -> upgrade(mongoTemplate, objectToUpdate.legacyClass, objectToUpdate.writeRiskParentField)).sum();
 
         elapsedTime.stop();
 
@@ -228,11 +228,11 @@ public class MongoDbPaymentsChangeLog {
 
     class ObjectToUpdate{
         Class legacyClass; // class from legacy.payments
-        String writeConsentField; // name of the field to get FRWriteConsent object and root field of document to path risk elements, stored in mongodb
+        String writeRiskParentField; // name of the field to get FRWrite object that contains the Risk and root field of document to path risk elements, stored in mongodb
 
-        public ObjectToUpdate(Class legacyClass, String writeConsentField) {
+        public ObjectToUpdate(Class legacyClass, String writeRiskParentField) {
             this.legacyClass = legacyClass;
-            this.writeConsentField = writeConsentField;
+            this.writeRiskParentField = writeRiskParentField;
         }
     }
 }
