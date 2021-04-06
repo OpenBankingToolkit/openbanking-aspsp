@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.pay
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.nimbusds.jose.crypto.impl.LegacyConcatKDF;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
@@ -36,7 +37,7 @@ import java.util.Date;
 @Builder
 @Data
 @Document
-public class FRDomesticPaymentSubmission implements PaymentSubmission {
+public class FRDomesticPaymentSubmission implements PaymentSubmission, LegacyCountrySubDivision {
 
     @Id
     @Indexed
@@ -52,4 +53,21 @@ public class FRDomesticPaymentSubmission implements PaymentSubmission {
     public String idempotencyKey;
 
     public OBVersion obVersion;
+
+    @Override
+    public String getDocumentId() {
+        return this.id;
+    }
+
+    @Override
+    public String getCountrySubDivision() {
+        if(this.domesticPayment.getRisk()!=null){
+            if(this.domesticPayment.getRisk().getDeliveryAddress()!=null){
+                if(this.domesticPayment.getRisk().getDeliveryAddress().getCountrySubDivision()!=null && !this.domesticPayment.getRisk().getDeliveryAddress().getCountrySubDivision().isEmpty()){
+                    return this.domesticPayment.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+                }
+            }
+        }
+        return null;
+    }
 }

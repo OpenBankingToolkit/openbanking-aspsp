@@ -48,7 +48,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document
-public class FRPaymentSetup {
+public class FRPaymentSetup implements LegacyCountrySubDivision {
     @Id
     @Indexed
     public String id;
@@ -71,4 +71,21 @@ public class FRPaymentSetup {
     public Date updated;
 
     public OBVersion obVersion;
+
+    @Override
+    public String getDocumentId() {
+        return this.id;
+    }
+
+    @Override
+    public String getCountrySubDivision() {
+        if(this.paymentSetupRequest.getRisk()!=null){
+            if(this.paymentSetupRequest.getRisk().getDeliveryAddress()!=null){
+                if(this.paymentSetupRequest.getRisk().getDeliveryAddress().getCountrySubDivision()!=null && !this.paymentSetupRequest.getRisk().getDeliveryAddress().getCountrySubDivision().isEmpty()){
+                    return this.paymentSetupRequest.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+                }
+            }
+        }
+        return null;
+    }
 }

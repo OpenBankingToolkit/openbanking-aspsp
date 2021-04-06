@@ -41,7 +41,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Document
-public class FRDomesticStandingOrderConsent {
+public class FRDomesticStandingOrderConsent implements LegacyCountrySubDivision {
     @Id
     @Indexed
     public String id;
@@ -66,4 +66,20 @@ public class FRDomesticStandingOrderConsent {
 
     public OBVersion obVersion;
 
+    @Override
+    public String getDocumentId() {
+        return this.id;
+    }
+
+    @Override
+    public String getCountrySubDivision() {
+        if(this.domesticStandingOrderConsent.getRisk()!=null){
+            if(this.domesticStandingOrderConsent.getRisk().getDeliveryAddress()!=null){
+                if(this.domesticStandingOrderConsent.getRisk().getDeliveryAddress().getCountrySubDivision()!=null && !this.domesticStandingOrderConsent.getRisk().getDeliveryAddress().getCountrySubDivision().isEmpty()){
+                    return this.domesticStandingOrderConsent.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+                }
+            }
+        }
+        return null;
+    }
 }

@@ -94,7 +94,7 @@ public class MongoDbPaymentsChangeLog {
                 .append(SEPARATOR).append(COUNTRY_SUB_DIVISION).toString();
 
         // Criteria to query only documents where countrySubDivision not null and obVersion is 'v3_1_6'
-        // { "${writeRiskParentField}.risk.deliveryAddress.countrySubDivision" : { "$ne" : null }, "$and" : [{ "obVersion" : "v3_1_6" }] }
+        // { "${writeRiskParentField}.risk.deliveryAddress.countrySubDivision" : { "$ne" : null } }
         Criteria queryCriteria = new Criteria(jsonPathCriteria)
                 .ne(null);
 
@@ -105,19 +105,14 @@ public class MongoDbPaymentsChangeLog {
         List<Pair<Query, Update>> updates = new ArrayList<>();
         mongoTemplate.find(query, legacyClazz).forEach(
                 legacyClassDocInstance -> {
-                    try {
-                        // return a Optional Pair [id, countrySubDivision] for each document
-                        Optional<Pair<String, String>> optIdAndCountrySubDivision = getIdAndCountrySubDivision(legacyClazz, legacyClassDocInstance, writeRiskParentField);
-                        if (optIdAndCountrySubDivision.isPresent()) {
-                            if (optIdAndCountrySubDivision.get().getFirst() != null && optIdAndCountrySubDivision.get().getSecond() != null) {
-                                // we get only the first value of countrySubDivisions
-                                Query queryUpdate = new Query().addCriteria(new Criteria("_id").is(optIdAndCountrySubDivision.get().getFirst()));
-                                updates.add(Pair.of(queryUpdate, update.set(jsonPathCriteria, optIdAndCountrySubDivision.get().getSecond())));
-                            }
+                        // getting the id and the first element of countrySubDivision from the document
+                        String id = ((LegacyCountrySubDivision)legacyClassDocInstance).getDocumentId();
+                        String division = ((LegacyCountrySubDivision)legacyClassDocInstance).getCountrySubDivision();
+                        if(id!=null && division!=null){
+                            // we get only the first value of countrySubDivisions
+                            Query queryUpdate = new Query().addCriteria(new Criteria("_id").is(id));
+                            updates.add(Pair.of(queryUpdate, update.set(jsonPathCriteria, division)));
                         }
-                    } catch (IntrospectionException | InvocationTargetException | IllegalAccessException e) {
-                        log.error("Error getting the id and countrySubDivision from the document [{}]", legacyClassDocInstance.toString(), e);
-                    }
                 }
         );
         // run the bulk operation
@@ -127,55 +122,6 @@ public class MongoDbPaymentsChangeLog {
         // execution time control - stop
         stop(legacyClazz, docsUpdated, elapsedTime);
         return docsUpdated;
-    }
-
-    /*
-     * Introspect the legacyClassDocInstance to get the id and countrySubDivision values to prepare the bulk update operation
-     * @param legacyClazz collection class
-     * @param legacyClassDocInstance document legacyClass instance
-     * @param writeRiskParentField field name to get the write object that contains the risk object related with the collection class
-     * @param <T> generic parameter to conforms legacyClazz object
-     * @return a optional pair with the id and the first value of countrySubDivision
-     * @throws IntrospectionException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     */
-    private <T> Optional<Pair<String, String>> getIdAndCountrySubDivision(Class<T> legacyClazz, Object legacyClassDocInstance, String writeRiskParentField) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
-        Optional<Method> optionalMethod = Arrays.stream(legacyClazz.getDeclaredMethods()).filter(m -> m.getName().toLowerCase().endsWith(writeRiskParentField.toLowerCase())).findFirst();
-        if (optionalMethod.isPresent()) {
-            String division = null;
-            String id;
-            // get the id value
-            PropertyDescriptor pd = new PropertyDescriptor("id", legacyClassDocInstance.getClass());
-            id = (String) pd.getReadMethod().invoke(legacyClassDocInstance);
-
-            // get the write risk parent object
-            pd = new PropertyDescriptor(writeRiskParentField, legacyClassDocInstance.getClass());
-            Object obj = pd.getReadMethod().invoke(legacyClassDocInstance);
-
-            // get the risk object
-            pd = new PropertyDescriptor(RISK, obj.getClass());
-            obj = pd.getReadMethod().invoke(obj);
-            log.info(obj.toString());
-
-            // get the delivery adress object
-            pd = new PropertyDescriptor(DELIVERY_ADDRESS, obj.getClass());
-            obj = pd.getReadMethod().invoke(obj);
-            log.info(obj.toString());
-
-            // get the country sub division object
-            pd = new PropertyDescriptor(COUNTRY_SUB_DIVISION, obj.getClass());
-            obj = pd.getReadMethod().invoke(obj);
-
-            // get the first value of country sub division object list
-            if (obj instanceof List) {
-                division = (String) ((List) obj).get(0);
-            }
-            // build the optional pair with the id and the country sub division
-            return Optional.of(Pair.of(id, division));
-        }
-        // empty if doesn't exist the proper objects to extract the values
-        return Optional.empty();
     }
 
     private <T> StopWatch start(Class<T> clazz) {

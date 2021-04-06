@@ -36,7 +36,7 @@ import java.util.Date;
 @Builder
 @Data
 @Document
-public class FRInternationalScheduledPaymentSubmission implements PaymentSubmission {
+public class FRInternationalScheduledPaymentSubmission implements PaymentSubmission, LegacyCountrySubDivision {
     @Id
     @Indexed
     public String id;
@@ -51,4 +51,21 @@ public class FRInternationalScheduledPaymentSubmission implements PaymentSubmiss
     public String idempotencyKey;
 
     public OBVersion obVersion;
+
+    @Override
+    public String getDocumentId() {
+        return this.id;
+    }
+
+    @Override
+    public String getCountrySubDivision() {
+        if(this.internationalScheduledPayment.getRisk()!=null){
+            if(this.internationalScheduledPayment.getRisk().getDeliveryAddress()!=null){
+                if(this.internationalScheduledPayment.getRisk().getDeliveryAddress().getCountrySubDivision()!=null && !this.internationalScheduledPayment.getRisk().getDeliveryAddress().getCountrySubDivision().isEmpty()){
+                    return this.internationalScheduledPayment.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+                }
+            }
+        }
+        return null;
+    }
 }
