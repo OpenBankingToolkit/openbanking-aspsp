@@ -31,6 +31,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @Deprecated
 @Builder
@@ -61,8 +62,9 @@ public class FRInternationalStandingOrderPaymentSubmission implements PaymentSub
     public String getCountrySubDivision() {
         if(this.internationalStandingOrder.getRisk()!=null){
             if(this.internationalStandingOrder.getRisk().getDeliveryAddress()!=null){
-                if(this.internationalStandingOrder.getRisk().getDeliveryAddress().getCountrySubDivision()!=null && !this.internationalStandingOrder.getRisk().getDeliveryAddress().getCountrySubDivision().isEmpty()){
-                    return this.internationalStandingOrder.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+                List<String> countrySubDivision = this.internationalStandingOrder.getRisk().getDeliveryAddress().getCountrySubDivision();
+                if(countrySubDivision!=null && !countrySubDivision.isEmpty()){
+                    return countrySubDivision.get(0);
                 }
             }
         }

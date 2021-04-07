@@ -37,6 +37,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @Deprecated
 @Data
@@ -78,8 +79,9 @@ public class FRDomesticConsent implements LegacyCountrySubDivision{
     public String getCountrySubDivision() {
         if(this.domesticConsent.getRisk()!=null){
             if(this.domesticConsent.getRisk().getDeliveryAddress()!=null){
-                if(this.domesticConsent.getRisk().getDeliveryAddress().getCountrySubDivision()!=null && !this.domesticConsent.getRisk().getDeliveryAddress().getCountrySubDivision().isEmpty()){
-                    return this.domesticConsent.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+                List<String> countrySubDivision = this.domesticConsent.getRisk().getDeliveryAddress().getCountrySubDivision();
+                if(countrySubDivision!=null && !countrySubDivision.isEmpty()){
+                    return countrySubDivision.get(0);
                 }
             }
         }

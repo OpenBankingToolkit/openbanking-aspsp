@@ -32,6 +32,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @Deprecated
 @Builder
@@ -63,8 +64,9 @@ public class FRDomesticPaymentSubmission implements PaymentSubmission, LegacyCou
     public String getCountrySubDivision() {
         if(this.domesticPayment.getRisk()!=null){
             if(this.domesticPayment.getRisk().getDeliveryAddress()!=null){
-                if(this.domesticPayment.getRisk().getDeliveryAddress().getCountrySubDivision()!=null && !this.domesticPayment.getRisk().getDeliveryAddress().getCountrySubDivision().isEmpty()){
-                    return this.domesticPayment.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+                List<String> countrySubDivision = this.domesticPayment.getRisk().getDeliveryAddress().getCountrySubDivision();
+                if(countrySubDivision!=null && !countrySubDivision.isEmpty()){
+                    return countrySubDivision.get(0);
                 }
             }
         }

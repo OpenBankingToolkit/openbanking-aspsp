@@ -38,6 +38,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * FRPaymentConsent setup entity for storing in DB
@@ -81,8 +82,9 @@ public class FRPaymentSetup implements LegacyCountrySubDivision {
     public String getCountrySubDivision() {
         if(this.paymentSetupRequest.getRisk()!=null){
             if(this.paymentSetupRequest.getRisk().getDeliveryAddress()!=null){
-                if(this.paymentSetupRequest.getRisk().getDeliveryAddress().getCountrySubDivision()!=null && !this.paymentSetupRequest.getRisk().getDeliveryAddress().getCountrySubDivision().isEmpty()){
-                    return this.paymentSetupRequest.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+                List<String> countrySubDivision = this.paymentSetupRequest.getRisk().getDeliveryAddress().getCountrySubDivision();
+                if(countrySubDivision!=null && !countrySubDivision.isEmpty()){
+                    return countrySubDivision.get(0);
                 }
             }
         }

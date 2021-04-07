@@ -35,6 +35,9 @@ import org.springframework.util.StopWatch;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.springframework.data.mongodb.core.query.Query.query;
+import static org.springframework.data.mongodb.core.query.Update.update;
+
 /*
  * Data base migration changeSet
  * Describe what changes need to be done for objects with version v3_1_6
@@ -75,7 +78,7 @@ public class MongoDbPaymentsChangeLog {
      * @param writeRiskParentField field name to get the write object that contains the risk object related with the collection class
      * @param <T> generic parameter to conforms legacyClazz object
      */
-    private <T> int upgrade(MongoTemplate mongoTemplate, Class<T> legacyClazz, String writeRiskParentField) {
+    private <T> int upgrade(MongoTemplate mongoTemplate, Class<? extends LegacyCountrySubDivision> legacyClazz, String writeRiskParentField) {
         // execution time control - start
         StopWatch elapsedTime = start(legacyClazz);
 
@@ -95,17 +98,15 @@ public class MongoDbPaymentsChangeLog {
         BulkOperations bulkOperations = mongoTemplate.bulkOps(BulkOperations.BulkMode.UNORDERED, legacyClazz);
         // get the documents filter by criteria
         Query query = new Query().addCriteria(queryCriteria);
-        Update update = new Update();
         List<Pair<Query, Update>> updates = new ArrayList<>();
         mongoTemplate.find(query, legacyClazz).forEach(
                 legacyClassDocInstance -> {
                         // getting the id and the first element of countrySubDivision from the document
-                        String id = ((LegacyCountrySubDivision)legacyClassDocInstance).getDocumentId();
-                        String division = ((LegacyCountrySubDivision)legacyClassDocInstance).getCountrySubDivision();
+                        String id = legacyClassDocInstance.getDocumentId();
+                        String division = legacyClassDocInstance.getCountrySubDivision();
                         if(id!=null && division!=null){
-                            // we get only the first value of countrySubDivisions
-                            Query queryUpdate = new Query().addCriteria(new Criteria("_id").is(id));
-                            updates.add(Pair.of(queryUpdate, update.set(jsonPathCriteria, division)));
+                            // Prepare the updates
+                            updates.add(Pair.of(query(new Criteria("_id").is(id)), update(jsonPathCriteria, division)));
                         }
                 }
         );
@@ -164,11 +165,11 @@ public class MongoDbPaymentsChangeLog {
         return objectsToUpdate;
     }
 
-    class ObjectToUpdate{
-        Class legacyClass; // class from legacy.payments
+    private static class ObjectToUpdate{
+        Class<? extends LegacyCountrySubDivision> legacyClass; // class from legacy.payments
         String writeRiskParentField; // name of the field to get FRWrite object that contains the Risk and root field of document to path risk elements, stored in mongodb
 
-        public ObjectToUpdate(Class legacyClass, String writeRiskParentField) {
+        public ObjectToUpdate(Class<? extends LegacyCountrySubDivision> legacyClass, String writeRiskParentField) {
             this.legacyClass = legacyClass;
             this.writeRiskParentField = writeRiskParentField;
         }

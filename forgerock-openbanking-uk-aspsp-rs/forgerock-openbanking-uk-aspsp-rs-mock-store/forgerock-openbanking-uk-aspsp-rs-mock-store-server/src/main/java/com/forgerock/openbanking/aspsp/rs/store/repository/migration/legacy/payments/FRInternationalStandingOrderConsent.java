@@ -38,6 +38,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @Deprecated
 @Data
@@ -79,8 +80,9 @@ public class FRInternationalStandingOrderConsent implements LegacyCountrySubDivi
     public String getCountrySubDivision() {
         if(this.internationalStandingOrderConsent.getRisk()!=null){
             if(this.internationalStandingOrderConsent.getRisk().getDeliveryAddress()!=null){
-                if(this.internationalStandingOrderConsent.getRisk().getDeliveryAddress().getCountrySubDivision()!=null && !this.internationalStandingOrderConsent.getRisk().getDeliveryAddress().getCountrySubDivision().isEmpty()){
-                    return this.internationalStandingOrderConsent.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+                List<String> countrySubDivision = this.internationalStandingOrderConsent.getRisk().getDeliveryAddress().getCountrySubDivision();
+                if(countrySubDivision!=null && !countrySubDivision.isEmpty()){
+                    return countrySubDivision.get(0);
                 }
             }
         }

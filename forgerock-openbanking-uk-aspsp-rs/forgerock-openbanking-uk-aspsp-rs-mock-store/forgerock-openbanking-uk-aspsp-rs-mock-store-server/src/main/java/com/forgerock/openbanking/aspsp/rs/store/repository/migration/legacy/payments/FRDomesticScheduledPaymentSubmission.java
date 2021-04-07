@@ -31,6 +31,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
+import java.util.List;
 
 @Deprecated
 @Builder
@@ -61,8 +62,9 @@ public class FRDomesticScheduledPaymentSubmission implements PaymentSubmission, 
     public String getCountrySubDivision() {
         if(this.domesticScheduledPayment.getRisk()!=null){
             if(this.domesticScheduledPayment.getRisk().getDeliveryAddress()!=null){
-                if(this.domesticScheduledPayment.getRisk().getDeliveryAddress().getCountrySubDivision()!=null && !this.domesticScheduledPayment.getRisk().getDeliveryAddress().getCountrySubDivision().isEmpty()){
-                    return this.domesticScheduledPayment.getRisk().getDeliveryAddress().getCountrySubDivision().get(0);
+                List<String> countrySubDivision = this.domesticScheduledPayment.getRisk().getDeliveryAddress().getCountrySubDivision();
+                if(countrySubDivision!=null && !countrySubDivision.isEmpty()){
+                    return countrySubDivision.get(0);
                 }
             }
         }
