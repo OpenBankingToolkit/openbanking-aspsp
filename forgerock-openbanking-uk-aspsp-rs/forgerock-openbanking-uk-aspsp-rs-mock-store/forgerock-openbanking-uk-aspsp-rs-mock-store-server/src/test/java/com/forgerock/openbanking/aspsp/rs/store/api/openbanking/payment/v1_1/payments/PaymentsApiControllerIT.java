@@ -94,7 +94,7 @@ public class PaymentsApiControllerIT {
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
-                .countrySubDivision(Arrays.asList("Wessex"))
+                .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
 

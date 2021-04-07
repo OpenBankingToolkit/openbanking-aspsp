@@ -7,6 +7,34 @@ Revert "Merge pull request #356 from OpenBankingToolkit/issue/16-discovery-seria
 
 This reverts commit 95736879f65e84956368935f33eb6ddcc3368e44, reversing
 changes made to 8ad781b544611fb6c6654ffa8b5305c1f7268fad.
+### GitHub [#358](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/358) 23: GetAccountStatementFile: 501 Not Implemented
+[e31214edb3b0b1c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e31214edb3b0b1c) Jorge Sanchez Perez *2021-03-25 16:37:50*
+23: GetAccountStatementFile: 501 Not Implemented (#358)
+
+* 23: GetAccountStatementFile: 501 Not Implemented
+- Improvements in the response.
+- Integration tests adapted
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/23
+
+* improve error message
+
+* improve error message for integration tests
+### GitHub [#359](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/359) Issue/23 get account statement file not implemented
+[3222e0077e5e720](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3222e0077e5e720) Jorge Sanchez Perez *2021-03-26 09:40:49*
+Issue/23 get account statement file not implemented (#359)
+
+* 23: GetAccountStatementFile: 501 Not Implemented
+- Improvements in the response.
+- Integration tests adapted
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/23
+
+* improve error message
+
+* improve error message for integration tests
+
+* added comment for GetAccountStatementFile operation
+
+* added comment for not found resolution
 [2c8e8e022f91825](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2c8e8e022f91825) Matt Wills *2021-03-25 09:55:27*
 16: Switch to GenericOBDiscoveryAPILinks in uk-datamodel
 

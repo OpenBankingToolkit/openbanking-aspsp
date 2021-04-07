@@ -18,23 +18,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
+package com.forgerock.openbanking.aspsp.rs.store.repository.migration.legacy.payments;
 
-import static java.util.Collections.singletonList;
-
-public class FRRiskTestDataFactory {
-
-    public static FRPaymentRisk aValidFRRisk() {
-        return FRPaymentRisk.builder()
-                .merchantCategoryCode("ABCD")
-                .deliveryAddress(FRPaymentRisk.FRRiskDeliveryAddress.builder()
-                        .countrySubDivision("Wessex")
-                        .addressLine(singletonList("3 Queens Square"))
-                        .townName("Bristol")
-                        .country("GB")
-                        .build())
-                .build();
-    }
+@Deprecated
+public interface LegacyCountrySubDivision {
+    String getDocumentId();
+    String getCountrySubDivision();
 }
