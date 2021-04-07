@@ -35,6 +35,30 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/23
 * added comment for GetAccountStatementFile operation
 
 * added comment for not found resolution
+### GitHub [#362](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/362) 27: upgrade datatype &#39;countrySubDivision&#39;
+[9848d03dc2507c2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9848d03dc2507c2) Jorge Sanchez Perez *2021-04-07 07:40:06*
+27: upgrade datatype 'countrySubDivision' (#362)
+
+* 27: upgrade datatype 'countrySubDivision'
+- Clean and tidy up old migration classes
+- Create new changeLog to upgrade the datatype for payments
+- Bumped starter parent version 1.1.88
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/27
+
+* Deleted commented source lines
+
+* Change property name of ObjectToUpdate class
+
+* Added deprecated annotation for legacy classes, deleted the obVersion filter
+
+* Mongobee local runner renamed and moved into test sources directory
+
+* Added interface on legacy classes to get the id and countrySubDivision values
+
+* Fix license format
+
+* improvements and format
 [2c8e8e022f91825](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2c8e8e022f91825) Matt Wills *2021-03-25 09:55:27*
 16: Switch to GenericOBDiscoveryAPILinks in uk-datamodel
 
