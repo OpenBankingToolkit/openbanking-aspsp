@@ -25,11 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -39,29 +35,20 @@ import java.util.Optional;
 @Slf4j
 public class StatementPDFService {
 
-    private static final String STATEMENT_PDF_PATH = "account/statements/%s/statement.pdf";
+    private String statementFilePath;
 
-    private final List<String> activeProfiles;
-
-    public StatementPDFService(@Value("${spring.profiles.active:}") String activeProfileStr) {
-        if (StringUtils.isEmpty(activeProfileStr)) {
-            log.warn("No active profiles found");
-            activeProfiles = Collections.emptyList();
-        } else {
-            activeProfiles = Arrays.asList(activeProfileStr.split(","));
-            log.debug("activeProfiles={}", activeProfileStr);
-        }
-
+    public StatementPDFService(@Value("${rs-store.statement.resource.file.path:account/statements/default/fr-statement.pdf}") String statementFilePath) {
+        this.statementFilePath = statementFilePath;
     }
 
     public Optional<Resource> getPdfStatement() {
-        return activeProfiles.stream()
-                .map(profile -> new ClassPathResource(String.format(STATEMENT_PDF_PATH, profile)))
-                .filter(ClassPathResource::exists)
-                .peek(r -> log.debug("Found statement PDF {} for profiles: {}", r.getPath(), activeProfiles))
-                .map(resource -> (Resource) resource)
-                .findFirst()
-        ;
+        Resource resource = new ClassPathResource(statementFilePath);
+        if (resource.exists()) {
+            log.debug("Found statement PDF in '{}'", statementFilePath);
+            return Optional.of(resource);
+        }
+        log.warn("Statement PDF not found in '{}'", statementFilePath);
+        return Optional.empty();
     }
 
 }

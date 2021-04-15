@@ -59,6 +59,25 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/27
 * Fix license format
 
 * improvements and format
+### GitHub [#364](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/364) Release/1.2.3
+[e7fb62c6a21c994](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e7fb62c6a21c994) Jorge Sanchez Perez *2021-04-07 11:47:42*
+Release/1.2.3 (#364)
+
+* Release candidate: prepare release 1.2.3
+
+* Release candidate: prepare for next development iteration
+
+* Release candidate: rollback the release of 1.2.3
+
+* Bumped versions
+- Bumped common version 1.1.1
+- Bumped clients version 1.1.1
+- Bumped auth version 1.0.68
+- Bumped jwkms version 1.1.79
+
+* Release candidate: prepare release 1.2.3
+
+* Release candidate: prepare for next development iteration
 [2c8e8e022f91825](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2c8e8e022f91825) Matt Wills *2021-03-25 09:55:27*
 16: Switch to GenericOBDiscoveryAPILinks in uk-datamodel
 

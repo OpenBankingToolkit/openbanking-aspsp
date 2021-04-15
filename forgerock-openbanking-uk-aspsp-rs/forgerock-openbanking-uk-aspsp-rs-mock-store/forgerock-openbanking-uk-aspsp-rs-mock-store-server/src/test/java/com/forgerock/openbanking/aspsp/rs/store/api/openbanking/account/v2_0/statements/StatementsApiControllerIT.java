@@ -43,7 +43,7 @@ import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatementsApiControllerIT {
-    private static final String TEST_PDF = "account/statements/test/statement.pdf";
+    private static final String TEST_PDF = "account/statements/test/fr-statement.pdf";
 
     @Mock
     private StatementPDFService statementPDFService;
@@ -94,7 +94,7 @@ public class StatementsApiControllerIT {
     }
 
     @Test
-    public void getStatementsFile_noPdfForProfile() throws Exception
+    public void getStatementsFile_noPdfFound() throws Exception
     {
         given(statementPDFService.getPdfStatement()).willReturn(Optional.empty());
 
