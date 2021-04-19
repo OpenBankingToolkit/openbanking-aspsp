@@ -45,7 +45,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -173,7 +172,7 @@ public class StatementsApiController implements StatementsApi {
          * Issue related: https://github.com/ForgeCloud/ob-reference-implementation/issues/1583
          * The AISP endpoint '/statements/{statementId}/file' has been implemented to return a fixed PDF file for all statement file requests.
          * A PDF file will only be returned if the "Accept: application/pdf" header is supplied in the request
-         * and a PDF has been provided by the customer and configured on the sandbox.
+         * and a PDF has been provided by the customer and configured on the sandbox bucket.
          */
         if (!accept.contains(MediaType.APPLICATION_PDF_VALUE)) {
             // No other file type is implemented apart from PDF
@@ -183,27 +182,21 @@ public class StatementsApiController implements StatementsApi {
                     OBRIErrorType.REQUEST_INVALID_HEADER.toOBError1("Invalid header 'Accept' the only supported value for this operation is '" + MediaType.APPLICATION_PDF_VALUE + "'"));
         }
 
-        // Check if this cusotmer has a statement file
+        // Get the statement file from GCP bucket
         Optional<Resource> statement = statementPDFService.getPdfStatement();
         if (statement.isPresent()) {
-            return ResponseEntity.ok()
-                    .contentLength(getContentLength(statement.get()))
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(statement.get());
+            try {
+                return ResponseEntity.ok()
+                        .contentLength(statement.get().contentLength())
+                        .contentType(MediaType.APPLICATION_PDF)
+                        .body(statement.get());
+            } catch (IOException e) {
+                log.warn("We found a statement PDF file '{}' for ASPSP but could no get content-length with error", statement.get().getDescription(), e);
+                return null;
+            }
         }
-        // this will happen when a static PDF hasn't provided and configured on the sandbox
+        // this will happen when the statement resource not found in the GCP bucket
         return ResponseEntity.notFound().build();
-    }
-
-    private Integer getContentLength(Resource resource) {
-        String data = "";
-        try {
-            byte[] bdata = FileCopyUtils.copyToByteArray(resource.getInputStream());
-            return bdata.length;
-        } catch (IOException e) {
-            log.warn("We found a statement PDF file '{}' for ASPSP but could no get content-length with error", resource.getFilename(), e);
-            return null;
-        }
     }
 
     @Override

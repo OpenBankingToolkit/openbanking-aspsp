@@ -35,7 +35,7 @@
         <groupId>com.forgerock.openbanking.aspsp</groupId>
         <artifactId>forgerock-openbanking-aspsp</artifactId>
         <version>1.2.4-SNAPSHOT</version>
-        <relativePath>../../../</relativePath>
+        <relativePath>../../../pom.xml</relativePath>
     </parent>
 
     <dependencies>
@@ -114,7 +114,6 @@
             <groupId>com.github.mongobee</groupId>
             <artifactId>mongobee</artifactId>
         </dependency>
-
         <dependency>
             <groupId>com.github.jsonzou</groupId>
             <artifactId>jmockdata</artifactId>

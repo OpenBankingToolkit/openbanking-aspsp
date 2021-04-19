@@ -28,8 +28,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -43,7 +44,7 @@ import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatementsApiControllerIT {
-    private static final String TEST_PDF = "account/statements/test/statement.pdf";
+    private static final String TEST_PDF = "account/statements/test/fr-statement.pdf";
 
     @Mock
     private StatementPDFService statementPDFService;
@@ -56,9 +57,11 @@ public class StatementsApiControllerIT {
     }
 
     @Test
-    public void getStatementsFile_acceptsPDF_hasPdfForProfile_returnPdf() throws Exception
-    {
-        given(statementPDFService.getPdfStatement()).willReturn(Optional.of(new ClassPathResource(TEST_PDF)));
+    public void getStatementsFile_acceptsPDF_hasPdfForProfile_returnPdf() throws Exception {
+
+        given(statementPDFService.getPdfStatement()).willReturn(
+                Optional.of(Mockito.mock(InputStreamResource.class))
+        );
 
         ResponseEntity<Resource> response = statementsApiController.getAccountStatementFile("a12345",
                 0,
@@ -70,8 +73,8 @@ public class StatementsApiControllerIT {
                 "interaction1234",
                 "application/pdf");
 
-       assertThat(response.getStatusCodeValue()).isEqualTo(200);
-       assertThat(response.getBody()).isInstanceOf(Resource.class);
+        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getBody()).isInstanceOf(Resource.class);
     }
 
     @Test
@@ -94,8 +97,7 @@ public class StatementsApiControllerIT {
     }
 
     @Test
-    public void getStatementsFile_noPdfForProfile() throws Exception
-    {
+    public void getStatementsFile_noPdfFound() throws Exception {
         given(statementPDFService.getPdfStatement()).willReturn(Optional.empty());
 
         ResponseEntity<Resource> response = statementsApiController.getAccountStatementFile("a12345",

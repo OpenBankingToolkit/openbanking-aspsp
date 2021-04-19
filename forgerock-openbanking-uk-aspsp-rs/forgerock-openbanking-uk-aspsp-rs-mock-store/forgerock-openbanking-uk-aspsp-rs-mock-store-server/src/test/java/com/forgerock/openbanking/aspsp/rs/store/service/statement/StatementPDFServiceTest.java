@@ -31,46 +31,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StatementPDFServiceTest {
 
     @Test
-    public void getPdfStatement_testProfile_found() {
+    public void getPdfStatement_test_found() {
         // Given
-        StatementPDFService statementPDFService = new StatementPDFService("other,test");
+        StatementPDFService statementPDFService = new StatementPDFService();
+        statementPDFService.setBucketName("ob-sandbox-storage");
+        statementPDFService.setResource("statements/default/fr-statement.pdf");
 
         // When
         Optional<Resource> resource = statementPDFService.getPdfStatement();
 
         // Then
         assertThat(resource.isPresent()).isTrue();
-        assertThat(resource.orElseThrow(IllegalStateException::new).getFilename()).isEqualTo("statement.pdf");
+        assertThat(resource.orElseThrow(IllegalStateException::new).getDescription())
+                .containsIgnoringCase("[Resource ob-sandbox-storage/statements/default/fr-statement.pdf loaded through InputStream]");
     }
 
     @Test
-    public void getPdfStatement_wrongProfile_notFound() {
+    public void getPdfStatement_notFound() {
         // Given
-        StatementPDFService statementPDFService = new StatementPDFService("obri,other");
-
-        // When
-        Optional<Resource> resource = statementPDFService.getPdfStatement();
-
-        // Then
-        assertThat(resource.isPresent()).isFalse();
-    }
-
-    @Test
-    public void getPdfStatement_noProfile_notFound() {
-        // Given
-        StatementPDFService statementPDFService = new StatementPDFService("");
-
-        // When
-        Optional<Resource> resource = statementPDFService.getPdfStatement();
-
-        // Then
-        assertThat(resource.isPresent()).isFalse();
-    }
-
-    @Test
-    public void getPdfStatement_nullProfile_notFound() {
-        // Given
-        StatementPDFService statementPDFService = new StatementPDFService(null);
+        StatementPDFService statementPDFService = new StatementPDFService();
+        statementPDFService.setBucketName("ob-sandbox-storage");
+        statementPDFService.setResource("account/statements/folder/folder/fr-statement.pdf");
 
         // When
         Optional<Resource> resource = statementPDFService.getPdfStatement();

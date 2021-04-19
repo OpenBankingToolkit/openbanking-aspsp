@@ -20,9 +20,13 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.service.statement;
 
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -32,36 +36,75 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.gcp.GCPBucketStorageAccessor.getStorage;
+
 /**
- * Service to fetch a PSU statement in PDF format
+ * Service to fetch a PSU statement resource file from a gcp bucket<br>
+ * <pre>{@code
+ * // yaml configuration
+ * gcp-storage:
+ *   project-id: openbanking-214714 # default value
+ *     statements:
+ *       bucket-name: ob-sandbox-storage # default value
+ *       resource: statements/default/fr-statement.pdf # default value
+ * }</pre>
  */
 @Service
 @Slf4j
 public class StatementPDFService {
 
-    private static final String STATEMENT_PDF_PATH = "account/statements/%s/statement.pdf";
+    private static String BUCKET_NAME;
+    private static String RESOURCE;
 
-    private final List<String> activeProfiles;
-
-    public StatementPDFService(@Value("${spring.profiles.active:}") String activeProfileStr) {
-        if (StringUtils.isEmpty(activeProfileStr)) {
-            log.warn("No active profiles found");
-            activeProfiles = Collections.emptyList();
-        } else {
-            activeProfiles = Arrays.asList(activeProfileStr.split(","));
-            log.debug("activeProfiles={}", activeProfileStr);
-        }
-
+    /* to inject the value in the static variable */
+    @Value("${gcp-storage.statements.bucket-name:ob-sandbox-storage}")
+    public void setBucketName(String bucketName) {
+        BUCKET_NAME = bucketName;
     }
 
+    /* to inject the value in the static variable */
+    @Value("${gcp-storage.statements.resource:statements/default/fr-statement.pdf}")
+    public void setResource(String resource) {
+        RESOURCE = resource;
+    }
+
+    /*
+     * The following code only works when the credentials are defined via the environment variable
+     * GOOGLE_APPLICATION_CREDENTIALS, and those credentials are authorized to access the bucket
+     */
+    /**
+     * Fetch a resource from the GCP bucket
+     * @return optional Resource if found otherwise optional empty
+     */
     public Optional<Resource> getPdfStatement() {
-        return activeProfiles.stream()
-                .map(profile -> new ClassPathResource(String.format(STATEMENT_PDF_PATH, profile)))
-                .filter(ClassPathResource::exists)
-                .peek(r -> log.debug("Found statement PDF {} for profiles: {}", r.getPath(), activeProfiles))
-                .map(resource -> (Resource) resource)
-                .findFirst()
-        ;
+        try {
+            Storage storage = getStorage();
+            if (storage.get(BUCKET_NAME, new Storage.BucketGetOption[0]) != null) {
+                Blob blob = storage.get(BlobId.of(BUCKET_NAME, RESOURCE));
+                if (blob != null) {
+                    log.debug("Found statement resource {} in '{}'", RESOURCE, BUCKET_NAME);
+                    return Optional.of(
+                            getByteArrayResource(
+                                    storage.readAllBytes(
+                                            BlobId.of(BUCKET_NAME, RESOURCE)
+                                    )
+                            )
+                    );
+                }
+            }
+            log.warn("Statement resource {} not found in '{}'", RESOURCE, BUCKET_NAME);
+        } catch (StorageException exception) {
+            log.error(exception.getMessage());
+        }
+        return Optional.empty();
+    }
+
+    private ByteArrayResource getByteArrayResource(byte[] byteArray) {
+        // https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/InputStreamResource.html
+        // The docs suggest using ByteArrayResource to cache the content in memory, rather than InputStreamResource.
+        // to avoid "java.lang.IllegalStateException: InputStream has already been read - do not use InputStreamResource if a stream needs to be read multiple times"
+        return new ByteArrayResource(byteArray,
+                String.format("Resource %s/%s loaded through InputStream", BUCKET_NAME, RESOURCE));
     }
 
 }
