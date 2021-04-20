@@ -39,7 +39,7 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 import static org.springframework.data.mongodb.core.query.Update.update;
 
 /*
- * Data base migration changeSet
+ * MongoDB migration changeSet
  * Describe what changes need to be done for objects with version v3_1_6
  * For that case we will change the dataType from the field 'countrySubDivision' from Array to String
  * Fix of issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/27, ticket: 59553
@@ -62,7 +62,9 @@ public class MongoDbPaymentsChangeLog {
         log.info("-----------------------------------------------------------------------");
         log.info("Migrating Payments API data from v3.1.6 to v3.1.6 patch...");
 
-        int docsUpdated = getObjectsToUpdate().stream().mapToInt(objectToUpdate -> upgrade(mongoTemplate, objectToUpdate.legacyClass, objectToUpdate.writeRiskParentField)).sum();
+        int docsUpdated = getObjectsToUpdate().stream()
+                .mapToInt(objectToUpdate -> upgrade(mongoTemplate, objectToUpdate))
+                .sum();
 
         elapsedTime.stop();
 
@@ -71,27 +73,24 @@ public class MongoDbPaymentsChangeLog {
         log.info("Finished migrating Payments API data from v3.1.6 to v3.1.6 patch");
     }
 
-    /*
+    /**
      * Entry method to execute the upgrade bulk operation
      * @param mongoTemplate
      * @param legacyClazz collection class
-     * @param writeRiskParentField field name to get the write object that contains the risk object related with the collection class
      * @param <T> generic parameter to conforms legacyClazz object
      */
-    private <T> int upgrade(MongoTemplate mongoTemplate, Class<? extends LegacyCountrySubDivision> legacyClazz, String writeRiskParentField) {
+    private <T> int upgrade(MongoTemplate mongoTemplate, Class<? extends LegacyCountrySubDivision> legacyClazz) {
         // execution time control - start
         StopWatch elapsedTime = start(legacyClazz);
 
         // number of docs updated
         int docsUpdated = 0;
         // prepare the json path to build the criteria filter
-        String jsonPathCriteria = new StringBuffer(writeRiskParentField)
-                .append(SEPARATOR).append(RISK)
-                .append(SEPARATOR).append(DELIVERY_ADDRESS)
-                .append(SEPARATOR).append(COUNTRY_SUB_DIVISION).toString();
+        String jsonPathCriteria = "*" + // TODO test wildcard of document field name
+                SEPARATOR + RISK +
+                SEPARATOR + DELIVERY_ADDRESS +
+                SEPARATOR + COUNTRY_SUB_DIVISION;
 
-        // Criteria to query only documents where countrySubDivision not null and obVersion is 'v3_1_6'
-        // { "${writeRiskParentField}.risk.deliveryAddress.countrySubDivision" : { "$ne" : null } }
         Criteria queryCriteria = new Criteria(jsonPathCriteria)
                 .ne(null);
 
@@ -99,15 +98,16 @@ public class MongoDbPaymentsChangeLog {
         // get the documents filter by criteria
         Query query = new Query().addCriteria(queryCriteria);
         List<Pair<Query, Update>> updates = new ArrayList<>();
-        mongoTemplate.find(query, legacyClazz).forEach(
-                legacyClassDocInstance -> {
-                        // getting the id and the first element of countrySubDivision from the document
-                        String id = legacyClassDocInstance.getDocumentId();
-                        String division = legacyClassDocInstance.getCountrySubDivision();
-                        if(id!=null && division!=null){
-                            // Prepare the updates
-                            updates.add(Pair.of(query(new Criteria("_id").is(id)), update(jsonPathCriteria, division)));
-                        }
+        List<? extends LegacyCountrySubDivision> legacyDocument = mongoTemplate.find(query, legacyClazz);
+        legacyDocument.forEach(
+                legacyDoc -> {
+                    // getting the id and the first element of countrySubDivision from the document
+                    String id = legacyDoc.getDocumentId();
+                    String division = legacyDoc.getCountrySubDivision();
+                    if (id != null && division != null) {
+                        // Prepare the updates
+                        updates.add(Pair.of(query(new Criteria("_id").is(id)), update(jsonPathCriteria, division)));
+                    }
                 }
         );
         // run the bulk operation
@@ -133,45 +133,34 @@ public class MongoDbPaymentsChangeLog {
         log.info("-----------------------------------------------------------------------");
     }
 
-    /*
+    /**
      * List of objects to update
      * @return list of objects to update
      */
-    private List<ObjectToUpdate> getObjectsToUpdate(){
-        List<ObjectToUpdate> objectsToUpdate = new ArrayList<>();
+    private List<Class<? extends LegacyCountrySubDivision>> getObjectsToUpdate(){
+        List<Class<? extends LegacyCountrySubDivision>> objectsToUpdate = new ArrayList<>();
         // Domestic payments
-        objectsToUpdate.add(new ObjectToUpdate(FRDomesticConsent.class, "domesticConsent"));
+        objectsToUpdate.add(FRDomesticConsent.class);
 
-        objectsToUpdate.add(new ObjectToUpdate(FRDomesticPaymentSubmission.class, "domesticPayment"));
+        objectsToUpdate.add(FRDomesticPaymentSubmission.class);
         // Domestic scheduled payments
-        objectsToUpdate.add(new ObjectToUpdate(FRDomesticScheduledConsent.class, "domesticScheduledConsent"));
-        objectsToUpdate.add(new ObjectToUpdate(FRDomesticScheduledPaymentSubmission.class, "domesticScheduledPayment"));
+        objectsToUpdate.add(FRDomesticScheduledConsent.class);
+        objectsToUpdate.add(FRDomesticScheduledPaymentSubmission.class);
         // Domestic standing orders
-        objectsToUpdate.add(new ObjectToUpdate(FRDomesticStandingOrderConsent.class, "domesticStandingOrderConsent"));
-        objectsToUpdate.add(new ObjectToUpdate(FRDomesticStandingOrderPaymentSubmission.class, "domesticStandingOrder"));
+        objectsToUpdate.add(FRDomesticStandingOrderConsent.class);
+        objectsToUpdate.add(FRDomesticStandingOrderPaymentSubmission.class);
         // International payments
-        objectsToUpdate.add(new ObjectToUpdate(FRInternationalConsent.class,"internationalConsent"));
-        objectsToUpdate.add(new ObjectToUpdate(FRInternationalPaymentSubmission.class, "internationalPayment"));
+        objectsToUpdate.add(FRInternationalConsent.class);
+        objectsToUpdate.add(FRInternationalPaymentSubmission.class);
         // International scheduled payments
-        objectsToUpdate.add(new ObjectToUpdate(FRInternationalScheduledConsent.class, "internationalScheduledConsent"));
-        objectsToUpdate.add(new ObjectToUpdate(FRInternationalScheduledPaymentSubmission.class, "internationalScheduledPayment"));
+        objectsToUpdate.add(FRInternationalScheduledConsent.class);
+        objectsToUpdate.add(FRInternationalScheduledPaymentSubmission.class);
         // International standing Orders
-        objectsToUpdate.add(new ObjectToUpdate(FRInternationalStandingOrderConsent.class, "internationalStandingOrderConsent"));
-        objectsToUpdate.add(new ObjectToUpdate(FRInternationalStandingOrderPaymentSubmission.class, "internationalStandingOrder"));
+        objectsToUpdate.add(FRInternationalStandingOrderConsent.class);
+        objectsToUpdate.add(FRInternationalStandingOrderPaymentSubmission.class);
 
-        objectsToUpdate.add(new ObjectToUpdate(FRPaymentSetup.class, "paymentSetupRequest"));
-
+        objectsToUpdate.add(FRPaymentSetup.class);
 
         return objectsToUpdate;
-    }
-
-    private static class ObjectToUpdate{
-        Class<? extends LegacyCountrySubDivision> legacyClass; // class from legacy.payments
-        String writeRiskParentField; // name of the field to get FRWrite object that contains the Risk and root field of document to path risk elements, stored in mongodb
-
-        public ObjectToUpdate(Class<? extends LegacyCountrySubDivision> legacyClass, String writeRiskParentField) {
-            this.legacyClass = legacyClass;
-            this.writeRiskParentField = writeRiskParentField;
-        }
     }
 }
