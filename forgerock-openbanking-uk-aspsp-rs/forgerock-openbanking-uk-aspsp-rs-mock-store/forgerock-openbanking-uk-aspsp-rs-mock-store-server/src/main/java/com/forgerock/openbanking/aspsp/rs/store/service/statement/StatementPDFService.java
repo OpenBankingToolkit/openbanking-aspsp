@@ -79,7 +79,7 @@ public class StatementPDFService {
     public Optional<Resource> getPdfStatement() {
         try {
             Storage storage = getStorage();
-            if (storage.get(BUCKET_NAME, new Storage.BucketGetOption[0]) != null) {
+            if (storage.get(BUCKET_NAME) != null) {
                 Blob blob = storage.get(BlobId.of(BUCKET_NAME, RESOURCE));
                 if (blob != null) {
                     log.debug("Found statement resource {} in '{}'", RESOURCE, BUCKET_NAME);
