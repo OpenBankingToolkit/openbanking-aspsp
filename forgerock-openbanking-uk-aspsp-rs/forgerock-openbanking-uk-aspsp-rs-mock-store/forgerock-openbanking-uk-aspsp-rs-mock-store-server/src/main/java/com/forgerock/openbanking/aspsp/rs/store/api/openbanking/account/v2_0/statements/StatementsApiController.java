@@ -51,6 +51,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
 import uk.org.openbanking.datamodel.account.OBReadStatement1;
 import uk.org.openbanking.datamodel.account.OBReadStatement1Data;
+import uk.org.openbanking.datamodel.error.OBError1;
 
 import java.io.IOException;
 import java.util.List;
@@ -190,12 +191,17 @@ public class StatementsApiController implements StatementsApi {
                         .contentLength(statement.get().contentLength())
                         .contentType(MediaType.APPLICATION_PDF)
                         .body(statement.get());
-            } catch (IOException e) {
-                log.warn("We found a statement PDF file '{}' for ASPSP but could no get content-length with error", statement.get().getDescription(), e);
-                return null;
+            } catch (IOException exception) {
+                log.warn("We found a statement PDF file '{}' for ASPSP but could no get content-length with error", statement.get().getDescription(), exception);
+                OBError1 obError1 = new OBError1().errorCode(HttpStatus.INTERNAL_SERVER_ERROR.toString())
+                        .message("We found a statement PDF file '" + statement.get().getDescription() + "' for ASPSP but could no get content-length with error");
+                throw new OBErrorResponseException(
+                        OBRIErrorType.SERVER_ERROR.getHttpStatus(),
+                        OBRIErrorResponseCategory.SERVER_INTERNAL_ERROR,
+                        obError1);
             }
         }
-        // this will happen when the statement resource not found in the GCP bucket
+        // this will happen when the statement resource not found in the GCP bucket or IOException happens
         return ResponseEntity.notFound().build();
     }
 
