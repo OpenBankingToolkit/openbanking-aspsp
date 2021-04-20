@@ -78,6 +78,29 @@ Release/1.2.3 (#364)
 * Release candidate: prepare release 1.2.3
 
 * Release candidate: prepare for next development iteration
+### GitHub [#368](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/368) 28: Get statement from GCP bucket
+[641999645c4b878](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/641999645c4b878) Jorge Sanchez Perez *2021-04-20 14:14:15*
+28: Get statement from GCP bucket (#368)
+
+* 28: Get statement from GCP bucket
+- Bumped starter parent 1.1.89
+- Bumped common version 1.1.2
+- Bumped clients version 1.1.2
+- Bumped auth version 1.0.69
+- Bumped jwkms version 1.1.80
+- Fetch statement from GCP bucket implemented
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/28
+
+* fix license header
+
+* added OBErrorResponse when could not get the content length, added the IT test for that case
+
+* Deleted redudant Array Creation
+
+* delete unused imports and format the source
+
+* 28: fetch statement pdf resource from gcp
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/28
 [2c8e8e022f91825](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2c8e8e022f91825) Matt Wills *2021-03-25 09:55:27*
 16: Switch to GenericOBDiscoveryAPILinks in uk-datamodel
 
