@@ -29,11 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.gcp.GCPBucketStorageAccessor.getStorage;
@@ -72,6 +68,7 @@ public class StatementPDFService {
      * The following code only works when the credentials are defined via the environment variable
      * GOOGLE_APPLICATION_CREDENTIALS, and those credentials are authorized to access the bucket
      */
+
     /**
      * Fetch a resource from the GCP bucket
      * @return optional Resource if found otherwise optional empty
