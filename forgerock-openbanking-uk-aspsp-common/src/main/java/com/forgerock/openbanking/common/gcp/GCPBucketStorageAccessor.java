@@ -23,28 +23,22 @@ package com.forgerock.openbanking.common.gcp;
 import com.google.cloud.storage.Storage;
 import com.google.cloud.storage.StorageOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
+@Component
 public class GCPBucketStorageAccessor {
-
-    private static String PROJECT_ID;
-
-    private static volatile Storage storage = null;
-
-    /* to inject the value in the static variable */
     @Value("${gcp-storage.project-id:openbanking-214714}")
-    public void setProjectId(String projectId) {
-        PROJECT_ID = projectId;
+    private String projectId;
+    private Storage storage;
+
+    @PostConstruct
+    public void initStorage() {
+        storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
     }
 
-    /**
-     * Generic method to get the storage gcp object from a specific projectId
-     * @return storage gcp object
-     */
-    public static Storage getStorage() {
-        if (storage != null) {
-            return storage;
-        } else {
-            return StorageOptions.newBuilder().setProjectId(PROJECT_ID).build().getService();
-        }
+    public Storage getStorage() {
+        return storage;
     }
 }

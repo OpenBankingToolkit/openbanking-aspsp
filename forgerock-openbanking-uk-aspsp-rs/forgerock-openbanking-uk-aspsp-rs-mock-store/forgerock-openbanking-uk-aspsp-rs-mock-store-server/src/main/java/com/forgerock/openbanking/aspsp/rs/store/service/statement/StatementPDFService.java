@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.service.statement;
 
+import com.forgerock.openbanking.common.gcp.GCPBucketStorageAccessor;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.google.cloud.storage.Storage;
@@ -31,8 +32,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-
-import static com.forgerock.openbanking.common.gcp.GCPBucketStorageAccessor.getStorage;
 
 /**
  * Service to fetch a PSU statement resource file from a gcp bucket<br>
@@ -49,19 +48,16 @@ import static com.forgerock.openbanking.common.gcp.GCPBucketStorageAccessor.getS
 @Slf4j
 public class StatementPDFService {
 
-    private static String BUCKET_NAME;
-    private static String RESOURCE;
+    private final GCPBucketStorageAccessor bucketStorageAccessor;
+    private final String bucketName;
+    private final String resource;
 
-    /* to inject the value in the static variable */
-    @Value("${gcp-storage.statements.bucket-name:ob-sandbox-storage}")
-    public void setBucketName(String bucketName) {
-        BUCKET_NAME = bucketName;
-    }
-
-    /* to inject the value in the static variable */
-    @Value("${gcp-storage.statements.resource:statements/default/fr-statement.pdf}")
-    public void setResource(String resource) {
-        RESOURCE = resource;
+    public StatementPDFService(GCPBucketStorageAccessor bucketStorageAccessor,
+                               @Value("${gcp-storage.statements.bucket-name:ob-sandbox-storage}") String bucketName,
+                               @Value("${gcp-storage.statements.resource:statements/default/fr-statement.pdf}") String resource) {
+        this.bucketStorageAccessor = bucketStorageAccessor;
+        this.bucketName = bucketName;
+        this.resource = resource;
     }
 
     /*
@@ -75,21 +71,21 @@ public class StatementPDFService {
      */
     public Optional<Resource> getPdfStatement() {
         try {
-            Storage storage = getStorage();
-            if (storage.get(BUCKET_NAME) != null) {
-                Blob blob = storage.get(BlobId.of(BUCKET_NAME, RESOURCE));
+            Storage storage = bucketStorageAccessor.getStorage();
+            if (storage.get(bucketName) != null) {
+                Blob blob = storage.get(BlobId.of(bucketName, resource));
                 if (blob != null) {
-                    log.debug("Found statement resource {} in '{}'", RESOURCE, BUCKET_NAME);
+                    log.debug("Found statement resource {} in '{}'", resource, bucketName);
                     return Optional.of(
                             getByteArrayResource(
                                     storage.readAllBytes(
-                                            BlobId.of(BUCKET_NAME, RESOURCE)
+                                            BlobId.of(bucketName, resource)
                                     )
                             )
                     );
                 }
             }
-            log.warn("Statement resource {} not found in '{}'", RESOURCE, BUCKET_NAME);
+            log.warn("Statement resource {} not found in '{}'", resource, bucketName);
         } catch (StorageException exception) {
             log.error(exception.getMessage());
         }
@@ -101,7 +97,7 @@ public class StatementPDFService {
         // The docs suggest using ByteArrayResource to cache the content in memory, rather than InputStreamResource.
         // to avoid "java.lang.IllegalStateException: InputStream has already been read - do not use InputStreamResource if a stream needs to be read multiple times"
         return new ByteArrayResource(byteArray,
-                String.format("Resource %s/%s loaded through InputStream", BUCKET_NAME, RESOURCE));
+                String.format("Resource %s/%s loaded through InputStream", bucketName, resource));
     }
 
 }
