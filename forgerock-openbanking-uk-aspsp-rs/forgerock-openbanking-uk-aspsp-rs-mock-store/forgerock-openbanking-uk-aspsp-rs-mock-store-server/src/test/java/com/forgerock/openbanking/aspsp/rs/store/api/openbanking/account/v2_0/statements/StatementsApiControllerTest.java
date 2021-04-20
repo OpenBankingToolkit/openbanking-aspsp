@@ -42,11 +42,9 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.doThrow;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StatementsApiControllerIT {
+public class StatementsApiControllerTest {
 
     @Mock
     private StatementPDFService statementPDFService;
@@ -80,7 +78,7 @@ public class StatementsApiControllerIT {
     }
 
     @Test
-    public void getStatementsFile_wrongAcceptHeader_BadRequest() throws Exception {
+    public void getStatementsFile_wrongAcceptHeader_BadRequest() {
         Throwable thrown = catchThrowable(() -> statementsApiController.getAccountStatementFile("a12345",
                 0,
                 "s12345",
@@ -117,14 +115,14 @@ public class StatementsApiControllerIT {
     @Test
     public void getStatementsFile_contentLenghtError() throws Exception {
         given(statementPDFService.getPdfStatement()).willReturn(
-               Optional.of(Mockito.mock(InputStreamResource.class))
+                Optional.of(Mockito.mock(InputStreamResource.class))
         );
 
         given(statementPDFService.getPdfStatement().get().contentLength()).willThrow(new IOException());
 
         given(statementPDFService.getPdfStatement().get().getDescription()).willReturn("statement.pdf");
 
-        Throwable thrown = catchThrowable(() ->  statementsApiController.getAccountStatementFile("a12345",
+        Throwable thrown = catchThrowable(() -> statementsApiController.getAccountStatementFile("a12345",
                 0,
                 "s12345",
                 "f12345",

@@ -20,22 +20,49 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.service.statement;
 
+import com.forgerock.openbanking.common.gcp.GCPBucketStorageAccessor;
+import com.google.cloud.storage.Blob;
+import com.google.cloud.storage.BlobId;
+import com.google.cloud.storage.Bucket;
+import com.google.cloud.storage.Storage;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.io.Resource;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
-
+@RunWith(MockitoJUnitRunner.class)
 public class StatementPDFServiceTest {
+
+    private static final String BUCKET_NAME = "ob-sandbox-storage";
+
+    @Mock
+    private GCPBucketStorageAccessor gcpBucketStorageAccessor;
+
+    @Mock
+    private Storage storage;
+
+    @Before
+    public void setup() {
+        given(storage.get(BUCKET_NAME)).willReturn(mock(Bucket.class));
+        given(gcpBucketStorageAccessor.getStorage()).willReturn(storage);
+    }
 
     @Test
     public void getPdfStatement_test_found() {
         // Given
-        StatementPDFService statementPDFService = new StatementPDFService();
-        statementPDFService.setBucketName("ob-sandbox-storage");
-        statementPDFService.setResource("statements/default/fr-statement.pdf");
+        String resourcePath = "statements/statement-exists.pdf";
+        given(storage.get(isA(BlobId.class))).willReturn(mock(Blob.class));
+        given(storage.readAllBytes(isA(BlobId.class))).willReturn(new byte[0]);
+        StatementPDFService statementPDFService = new StatementPDFService(gcpBucketStorageAccessor, BUCKET_NAME, resourcePath);
 
         // When
         Optional<Resource> resource = statementPDFService.getPdfStatement();
@@ -43,15 +70,15 @@ public class StatementPDFServiceTest {
         // Then
         assertThat(resource.isPresent()).isTrue();
         assertThat(resource.orElseThrow(IllegalStateException::new).getDescription())
-                .containsIgnoringCase("[Resource ob-sandbox-storage/statements/default/fr-statement.pdf loaded through InputStream]");
+                .containsIgnoringCase("[Resource " + BUCKET_NAME + "/" + resourcePath + " loaded through InputStream]");
     }
 
     @Test
     public void getPdfStatement_notFound() {
         // Given
-        StatementPDFService statementPDFService = new StatementPDFService();
-        statementPDFService.setBucketName("ob-sandbox-storage");
-        statementPDFService.setResource("account/statements/folder/folder/fr-statement.pdf");
+        String resourcePath = "statements/statement-does-not-exist.pdf";
+        given(storage.get(isA(BlobId.class))).willReturn(null);
+        StatementPDFService statementPDFService = new StatementPDFService(gcpBucketStorageAccessor, BUCKET_NAME, resourcePath);
 
         // When
         Optional<Resource> resource = statementPDFService.getPdfStatement();
