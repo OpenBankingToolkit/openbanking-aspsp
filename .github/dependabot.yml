@@ -1,0 +1,83 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: com.forgerock.openbanking:forgerock-openbanking-auth
+    versions:
+    - 1.0.67
+    - 1.0.69
+  - dependency-name: com.forgerock.openbanking.jwkms:forgerock-openbanking-jwkms-embedded
+    versions:
+    - 1.1.78
+    - 1.1.80
+  - dependency-name: com.forgerock.openbanking.clients:forgerock-openbanking-analytics-webclient
+    versions:
+    - 1.1.0
+    - 1.1.2
+  - dependency-name: com.forgerock.openbanking.clients:forgerock-openbanking-analytics-client
+    versions:
+    - 1.1.0
+    - 1.1.2
+  - dependency-name: com.forgerock.openbanking.clients:forgerock-openbanking-jwkms-client
+    versions:
+    - 1.1.0
+    - 1.1.2
+  - dependency-name: com.forgerock.openbanking:forgerock-openbanking-ssl
+    versions:
+    - 1.0.87
+    - 1.0.88
+    - 1.1.0
+    - 1.1.2
+  - dependency-name: com.forgerock.openbanking:forgerock-openbanking-upgrade
+    versions:
+    - 1.0.87
+    - 1.0.88
+    - 1.1.0
+    - 1.1.2
+  - dependency-name: com.forgerock.openbanking:forgerock-openbanking-oidc
+    versions:
+    - 1.0.87
+    - 1.0.88
+    - 1.1.0
+    - 1.1.2
+  - dependency-name: com.forgerock.openbanking:forgerock-openbanking-jwt
+    versions:
+    - 1.0.87
+    - 1.0.88
+    - 1.1.0
+    - 1.1.2
+  - dependency-name: com.forgerock.openbanking:forgerock-openbanking-am
+    versions:
+    - 1.0.87
+    - 1.0.88
+    - 1.1.0
+    - 1.1.2
+  - dependency-name: com.forgerock.openbanking:forgerock-openbanking-model
+    versions:
+    - 1.0.87
+    - 1.0.88
+    - 1.1.0
+    - 1.1.2
+  - dependency-name: com.forgerock.openbanking:forgerock-openbanking-annotations
+    versions:
+    - 1.1.2
+  - dependency-name: com.forgerock.openbanking:forgerock-openbanking-starter-parent
+    versions:
+    - 1.1.87
+    - 1.1.88
+    - 1.1.89
+  - dependency-name: org.apache.maven.plugins:maven-release-plugin
+    versions:
+    - 3.0.0-M4
+  - dependency-name: se.bjurr.gitchangelog:git-changelog-maven-plugin
+    versions:
+    - "1.67"
+    - "1.68"
+    - "1.69"
+  - dependency-name: org.jetbrains:annotations
+    versions:
+    - 20.1.0
