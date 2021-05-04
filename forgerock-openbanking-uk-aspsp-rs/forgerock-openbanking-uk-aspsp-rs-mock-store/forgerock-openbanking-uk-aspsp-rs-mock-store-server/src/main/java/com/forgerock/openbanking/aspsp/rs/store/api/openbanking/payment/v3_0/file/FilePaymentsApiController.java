@@ -26,6 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentS
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFile;
+import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.UnsupportedFileTypeException;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
@@ -225,9 +226,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                                         .toOBError1(filePaymentId))
                 );
         log.debug("Consent '{}' exists with status: {} so generating a report file for type: '{}'", consent.getId(), consent.getStatus(), consent.getFileType());
-        final String reportFile = paymentReportFileService.createPaymentReport(consent);
-        log.debug("Generated report file for consent: '{}'", consent.getId());
-        return ResponseEntity.ok(reportFile);
+        try {
+            final String reportFile = paymentReportFileService.createPaymentReport(consent);
+            log.debug("Generated report file for consent: '{}'", consent.getId());
+            return ResponseEntity.ok(reportFile);
+        } catch (UnsupportedFileTypeException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("{ \"Description\" : \"Report for file type " + consent.getFileType().getFileType() + " not supported\" }");
+        }
     }
 
     private OBWriteFileResponse1 responseEntity(FRFilePaymentSubmission frPaymentSubmission, FRFileConsent frFileConsent) {
