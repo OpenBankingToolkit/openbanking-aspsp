@@ -26,15 +26,15 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.file;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
-import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FileConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.payments.FilePaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFile;
 import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report.PaymentReportFile1Service;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFilePaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -181,9 +181,13 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                                         .toOBError1(filePaymentId))
                 );
         log.debug("Consent '{}' exists so generating a report file for type: '{}'", consent.getId(), consent.getStatus(), consent.getFileType());
-        final String reportFile = paymentReportFileService.createPaymentReport(consent);
-        log.debug("Generated report file for consent: '{}'", consent.getId());
-        return ResponseEntity.ok(reportFile);
+        try {
+            final String reportFile = paymentReportFileService.createPaymentReport(consent);
+            log.debug("Generated report file for consent: '{}'", consent.getId());
+            return ResponseEntity.ok(reportFile);
+        } catch (IllegalArgumentException exception) {
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("{ \"Description\" : \"Report for file type \"" + consent.getFileType().getFileType() + " not supported\" }");
+        }
     }
 
     private OBWriteFileResponse2 responseEntity(FRFilePaymentSubmission frPaymentSubmission, FRFileConsent frFileConsent) {

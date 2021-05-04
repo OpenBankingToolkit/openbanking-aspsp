@@ -101,6 +101,17 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/28
 
 * 28: fetch statement pdf resource from gcp
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/28
+### GitHub [#374](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/374) Release/1.3.0
+[3814a23a87850d9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3814a23a87850d9) Jorge Sanchez Perez *2021-04-20 14:55:39*
+Release/1.3.0 (#374)
+
+* upgrade the version
+
+* Release candidate: prepare release 1.3.0
+
+* Release candidate: prepare for next development iteration
+
+* added changelog
 [2c8e8e022f91825](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2c8e8e022f91825) Matt Wills *2021-03-25 09:55:27*
 16: Switch to GenericOBDiscoveryAPILinks in uk-datamodel
 
