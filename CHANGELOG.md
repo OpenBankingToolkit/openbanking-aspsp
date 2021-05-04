@@ -112,6 +112,22 @@ Release/1.3.0 (#374)
 * Release candidate: prepare for next development iteration
 
 * added changelog
+### GitHub [#376](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/376) 741: Report file payment, csv file type not supported
+[4f31533bc8180a4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4f31533bc8180a4) Jorge Sanchez Perez *2021-05-04 14:58:20*
+741: Report file payment, csv file type not supported (#376)
+
+* 741: Report file payment, csv file type not supported
+- Report file not supported for CSV file types, response improved
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/741
+
+* added response improvement on version 3.0
+
+* 741: unsupported file type
+- added new exception 'UnsupportedFileTypeException'
+- Payment report file service update to throw the specific exception
+- Controllers updated to catch the new exception
+
+* fix body message quotes
 [2c8e8e022f91825](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2c8e8e022f91825) Matt Wills *2021-03-25 09:55:27*
 16: Switch to GenericOBDiscoveryAPILinks in uk-datamodel
 
