@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.report;
 
 
+import com.forgerock.openbanking.common.model.openbanking.forgerock.filepayment.v3_0.UnsupportedFileTypeException;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -75,7 +76,7 @@ public class PaymentReportFile1Service {
                 return obiePainXmlReportBuilder.toPaymentReport(consent);
             default:
                 log.error("Consent submitted with file type {} should not have passed validation. No report file is supported for this type.", consent.getFileType());
-                throw new IllegalArgumentException("No report file is supported for this type: " + consent.getFileType());
+                throw new UnsupportedFileTypeException("No report file is supported for this type: " + consent.getFileType());
         }
     }
 }
