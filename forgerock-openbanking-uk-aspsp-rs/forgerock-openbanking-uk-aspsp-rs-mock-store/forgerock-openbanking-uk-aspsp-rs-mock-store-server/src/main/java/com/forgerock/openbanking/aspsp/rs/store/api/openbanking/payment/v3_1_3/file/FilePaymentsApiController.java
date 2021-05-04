@@ -187,7 +187,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
             log.debug("Generated report file for consent: '{}'", consent.getId());
             return ResponseEntity.ok(reportFile);
         } catch (UnsupportedFileTypeException exception) {
-            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("{ \"Description\" : \"Report for file type \"" + consent.getFileType().getFileType() + " not supported\" }");
+            return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body("{ \"Description\" : \"Report for file type " + consent.getFileType().getFileType() + " not supported\" }");
         }
     }
 
