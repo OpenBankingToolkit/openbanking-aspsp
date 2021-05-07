@@ -75,13 +75,13 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksEventNotification3 v_3_0;
         public OBDiscoveryAPILinksEventNotification3 v_3_1;
         public OBDiscoveryAPILinksEventNotification3 v_3_1_1;
-        public OBDiscoveryAPILinksEventNotification3 v_3_1_2;
-        public OBDiscoveryAPILinksEventNotification3 v_3_1_3;
-        public OBDiscoveryAPILinksEventNotification3 v_3_1_4;
-        public OBDiscoveryAPILinksEventNotification3 v_3_1_5;
-        public OBDiscoveryAPILinksEventNotification3 v_3_1_6;
+        public OBDiscoveryAPILinksEventNotification4 v_3_1_2;
+        public OBDiscoveryAPILinksEventNotification4 v_3_1_3;
+        public OBDiscoveryAPILinksEventNotification4 v_3_1_4;
+        public OBDiscoveryAPILinksEventNotification4 v_3_1_5;
+        public OBDiscoveryAPILinksEventNotification4 v_3_1_6;
 
-        public OBDiscoveryAPILinksEventNotification3 getVersion(OBVersion version){
+        public OBDiscoveryAPILinks getVersion(OBVersion version){
             switch (version){
                 case v3_0: return v_3_0;
                 case v3_1: return v_3_1;

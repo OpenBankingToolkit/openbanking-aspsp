@@ -128,6 +128,15 @@ Issue: https://github.com/ForgeCloud/ob-deploy/issues/741
 - Controllers updated to catch the new exception
 
 * fix body message quotes
+### GitHub [#377](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/377) Release/1.3.1
+[f37ac92de401455](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f37ac92de401455) Jorge Sanchez Perez *2021-05-06 10:36:14*
+Release/1.3.1 (#377)
+
+* Release candidate: prepare release 1.3.1
+
+* Release candidate: prepare for next development iteration
+
+* changelog
 [2c8e8e022f91825](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2c8e8e022f91825) Matt Wills *2021-03-25 09:55:27*
 16: Switch to GenericOBDiscoveryAPILinks in uk-datamodel
 
