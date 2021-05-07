@@ -23,9 +23,9 @@ package com.forgerock.openbanking.common.services.openbanking.converter.account;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FROfferData;
 import uk.org.openbanking.datamodel.account.OBExternalOfferType1Code;
 import uk.org.openbanking.datamodel.account.OBOffer1;
+import uk.org.openbanking.datamodel.account.OBReadOffer1DataOffer;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.*;
 
 public class FROfferConverter {
 
@@ -46,8 +46,28 @@ public class FROfferConverter {
                 .fee(toOBActiveOrHistoricCurrencyAndAmount(offerData.getFee()));
     }
 
+    public static OBReadOffer1DataOffer toOBReadOffer1DataOffer(FROfferData offerData) {
+        return offerData == null ? null : new OBReadOffer1DataOffer()
+                .accountId(offerData.getAccountId())
+                .offerId(offerData.getOfferId())
+                .offerType(toOBReadOffer1DataOfferType(offerData.getOfferType()))
+                .description(offerData.getDescription())
+                .startDateTime(offerData.getStartDateTime())
+                .endDateTime(offerData.getEndDateTime())
+                .rate(offerData.getRate())
+                .value(offerData.getValue())
+                .term(offerData.getTerm())
+                .URL(offerData.getURL())
+                .amount(toOBReadOffer1DataAmount(offerData.getAmount()))
+                .fee(toOBReadOffer1DataFee(offerData.getFee()));
+    }
+
     public static OBExternalOfferType1Code toOBExternalOfferType1Code(FROfferData.FROfferType offerType) {
         return offerType == null ? null : OBExternalOfferType1Code.valueOf(offerType.name());
+    }
+
+    public static OBReadOffer1DataOffer.OfferTypeEnum toOBReadOffer1DataOfferType(FROfferData.FROfferType offerType) {
+        return offerType == null ? null : OBReadOffer1DataOffer.OfferTypeEnum.valueOf(offerType.name());
     }
 
     // OB to FR

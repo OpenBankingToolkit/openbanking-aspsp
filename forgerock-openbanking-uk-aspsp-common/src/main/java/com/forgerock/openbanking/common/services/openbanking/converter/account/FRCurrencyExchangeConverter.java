@@ -23,8 +23,7 @@ package com.forgerock.openbanking.common.services.openbanking.converter.account;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRCurrencyExchange;
 import uk.org.openbanking.datamodel.account.OBCurrencyExchange5;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.*;
 
 public class FRCurrencyExchangeConverter {
 
@@ -37,7 +36,7 @@ public class FRCurrencyExchangeConverter {
         .exchangeRate(currencyExchange.getExchangeRate())
         .contractIdentification(currencyExchange.getContractIdentification())
         .quotationDate(currencyExchange.getQuotationDate())
-        .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(currencyExchange.getInstructedAmount()));
+        .instructedAmount(toOBCurrencyExchange5InstructedAmount(currencyExchange.getInstructedAmount()));
     }
 
     // OB to FR

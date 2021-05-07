@@ -137,6 +137,19 @@ Release/1.3.1 (#377)
 * Release candidate: prepare for next development iteration
 
 * changelog
+### GitHub [#378](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/378) 31: self links event-subscriptions correction
+[f0989595cc17900](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f0989595cc17900) Jorge Sanchez Perez *2021-05-07 14:39:42*
+31: self links event-subscriptions correction (#378)
+
+- fix self links on event-subscriptions
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/31
+### GitHub [#380](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/380) Release/1.3.2
+[52f899ddaf6b9dc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/52f899ddaf6b9dc) Jorge Sanchez Perez *2021-05-07 14:54:44*
+Release/1.3.2 (#380)
+
+* Release candidate: prepare release 1.3.2
+
+* Release candidate: prepare for next development iteration
 [2c8e8e022f91825](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2c8e8e022f91825) Matt Wills *2021-03-25 09:55:27*
 16: Switch to GenericOBDiscoveryAPILinks in uk-datamodel
 

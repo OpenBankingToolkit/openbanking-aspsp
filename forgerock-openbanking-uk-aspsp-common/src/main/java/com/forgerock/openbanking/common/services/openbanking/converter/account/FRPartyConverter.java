@@ -21,14 +21,9 @@
 package com.forgerock.openbanking.common.services.openbanking.converter.account;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRPartyData;
-import uk.org.openbanking.datamodel.account.OBExternalPartyType1Code;
-import uk.org.openbanking.datamodel.account.OBParty1;
-import uk.org.openbanking.datamodel.account.OBParty2;
-import uk.org.openbanking.datamodel.account.OBPartyRelationships1;
-import uk.org.openbanking.datamodel.account.OBRelationship1;
+import uk.org.openbanking.datamodel.account.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountPostalAddressConverter.toFRPostalAddressList;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountPostalAddressConverter.toOBPostalAddress8List;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountPostalAddressConverter.*;
 
 public class FRPartyConverter {
 
@@ -59,7 +54,7 @@ public class FRPartyConverter {
                 .phone(party.getPhone())
                 .mobile(party.getMobile())
                 .relationships(toOBPartyRelationships1(party.getRelationship()))
-                .address(toOBPostalAddress8List(party.getAddresses()));
+                .address(toOBParty2AddressList(party.getAddresses()));
     }
 
     public static OBExternalPartyType1Code toOBExternalPartyType1Code(FRPartyData.FRPartyType partyType) {
@@ -68,7 +63,7 @@ public class FRPartyConverter {
 
     public static OBPartyRelationships1 toOBPartyRelationships1(FRPartyData.FRRelationship relationship) {
         return relationship == null ? null : new OBPartyRelationships1()
-                .account(new OBRelationship1()
+                .account(new OBPartyRelationships1Account()
                         .related(relationship.getRelated())
                         .id(relationship.getId()));
     }

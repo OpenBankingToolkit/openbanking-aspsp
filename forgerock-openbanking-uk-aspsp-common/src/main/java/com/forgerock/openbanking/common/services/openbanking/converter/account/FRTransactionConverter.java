@@ -34,18 +34,11 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.ac
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountSupplementaryDataConverter.toOBSupplementaryData1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCashBalanceConverter.toFRBalanceType;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCashBalanceConverter.toOBBalanceType1Code;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toFRCreditDebitIndicator;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toOBCreditDebitCode;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toOBCreditDebitCode1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.toOBTransaction5CreditDebitIndicatorEnum;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCreditDebitIndicatorConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCurrencyExchangeConverter.toFRCurrencyExchange;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCurrencyExchangeConverter.toOBCurrencyExchange5;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.*;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toAccountOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount10;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount9;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toFRFinancialAgent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.toOBBranchAndFinancialInstitutionIdentification2;
 
@@ -237,16 +230,16 @@ public class FRTransactionConverter {
 
     public static OBTransactionCardInstrument1 toOBTransactionCardInstrument1(FRTransactionData.FRTransactionCardInstrument cardInstrument) {
         return cardInstrument == null ? null : new OBTransactionCardInstrument1()
-                .cardSchemeName(toOBExternalCardSchemeType1Code(cardInstrument.getCardSchemeName()))
-                .authorisationType(toOBExternalCardAuthorisationType1Code(cardInstrument.getAuthorisationType()))
+                .cardSchemeName(toOBTransactionCardInstrument1CardSchemeName(cardInstrument.getCardSchemeName()))
+                .authorisationType(toOBTransactionCardInstrument1AuthorisationType(cardInstrument.getAuthorisationType()))
                 .name(cardInstrument.getName())
                 .identification(cardInstrument.getIdentification());
     }
 
     public static OBTransactionCashBalance toOBTransactionCashBalance(FRTransactionCashBalance balance) {
         return balance == null ? null : new OBTransactionCashBalance()
-                .amount(toOBActiveOrHistoricCurrencyAndAmount(balance.getAmount()))
-                .creditDebitIndicator(toOBCreditDebitCode(balance.getCreditDebitIndicator()))
+                .amount(toOBTransactionCashBalanceAmount(balance.getAmount()))
+                .creditDebitIndicator(toOBCreditDebitCode2(balance.getCreditDebitIndicator()))
                 .type(toOBBalanceType1Code(balance.getType()));
     }
 
@@ -260,8 +253,16 @@ public class FRTransactionConverter {
         return cardSchemeName == null ? null : OBExternalCardSchemeType1Code.valueOf(cardSchemeName.name());
     }
 
+    public static OBTransactionCardInstrument1.CardSchemeNameEnum toOBTransactionCardInstrument1CardSchemeName(FRTransactionData.FRCardScheme cardSchemeName) {
+        return cardSchemeName == null ? null : OBTransactionCardInstrument1.CardSchemeNameEnum.valueOf(cardSchemeName.name());
+    }
+
     public static OBExternalCardAuthorisationType1Code toOBExternalCardAuthorisationType1Code(FRTransactionData.FRCardAuthorisationType authorisationType) {
         return authorisationType == null ? null : OBExternalCardAuthorisationType1Code.valueOf(authorisationType.name());
+    }
+
+    public static OBTransactionCardInstrument1.AuthorisationTypeEnum toOBTransactionCardInstrument1AuthorisationType(FRTransactionData.FRCardAuthorisationType authorisationType) {
+        return authorisationType == null ? null : OBTransactionCardInstrument1.AuthorisationTypeEnum.valueOf(authorisationType.name());
     }
 
     // OB to FR
@@ -380,7 +381,15 @@ public class FRTransactionConverter {
         return cardSchemeName == null ? null : FRTransactionData.FRCardScheme.valueOf(cardSchemeName.name());
     }
 
+    public static FRTransactionData.FRCardScheme toFRCardScheme(OBTransactionCardInstrument1.CardSchemeNameEnum cardSchemeName) {
+        return cardSchemeName == null ? null : FRTransactionData.FRCardScheme.valueOf(cardSchemeName.name());
+    }
+
     public static FRTransactionData.FRCardAuthorisationType toFRCardAuthorisationType(OBExternalCardAuthorisationType1Code authorisationType) {
+        return authorisationType == null ? null : FRTransactionData.FRCardAuthorisationType.valueOf(authorisationType.name());
+    }
+
+    public static FRTransactionData.FRCardAuthorisationType toFRCardAuthorisationType(OBTransactionCardInstrument1.AuthorisationTypeEnum authorisationType) {
         return authorisationType == null ? null : FRTransactionData.FRCardAuthorisationType.valueOf(authorisationType.name());
     }
 }

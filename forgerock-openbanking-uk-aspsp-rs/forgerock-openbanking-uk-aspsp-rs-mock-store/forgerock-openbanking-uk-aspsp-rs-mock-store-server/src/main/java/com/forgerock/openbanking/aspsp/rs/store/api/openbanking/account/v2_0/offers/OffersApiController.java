@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FROfferConverter.toOBOffer1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FROfferConverter.toOBReadOffer1DataOffer;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Controller("OffersApiV2.0")
@@ -104,7 +104,7 @@ public class OffersApiController implements OffersApi {
         return ResponseEntity.ok(new OBReadOffer1().data(new OBReadOffer1Data().offer(
                 offers.getContent()
                         .stream()
-                        .map(o -> toOBOffer1(o.getOffer()))
+                        .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
                         .map(o -> accountDataInternalIdFilter.apply(o))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))
@@ -155,7 +155,7 @@ public class OffersApiController implements OffersApi {
         return ResponseEntity.ok(new OBReadOffer1().data(new OBReadOffer1Data().offer(
                 offers.getContent()
                         .stream()
-                        .map(o -> toOBOffer1(o.getOffer()))
+                        .map(o -> toOBReadOffer1DataOffer(o.getOffer()))
                         .map(dd -> accountDataInternalIdFilter.apply(dd))
                         .collect(Collectors.toList())))
                 .links(PaginationUtil.generateLinks(httpUrl, page, totalPages))

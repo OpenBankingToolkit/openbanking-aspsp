@@ -27,10 +27,8 @@ import uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountRiskConverter.toFRAccountRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountRiskConverter.toOBRisk2;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toFRExternalPermissionsCodeList;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.toOBExternalPermissions1CodeList;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalRequestStatusCodeConverter.toFRExternalRequestStatusCode;
-import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalRequestStatusCodeConverter.toOBExternalRequestStatus1Code;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalPermissionsCodeConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRExternalRequestStatusCodeConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRLinksConverter.toFRLinks;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRLinksConverter.toLinks;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRMetaConverter.toFRMeta;
