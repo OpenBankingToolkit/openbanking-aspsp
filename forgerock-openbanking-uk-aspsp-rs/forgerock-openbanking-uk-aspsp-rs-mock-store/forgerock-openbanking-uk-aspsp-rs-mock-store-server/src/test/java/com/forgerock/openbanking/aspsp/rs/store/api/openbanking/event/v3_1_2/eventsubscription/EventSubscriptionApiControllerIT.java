@@ -22,7 +22,6 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.ev
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.events.EventSubscriptionsRepository;
-import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventSubscriptionData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.event.FREventSubscription;
@@ -30,6 +29,7 @@ import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
+import com.forgerock.openbanking.repositories.TppRepository;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;
@@ -44,11 +44,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.event.OBEventSubscription1;
-import uk.org.openbanking.datamodel.event.OBEventSubscription1Data;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1Data;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1;
+import uk.org.openbanking.datamodel.event.*;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -129,7 +125,6 @@ public class EventSubscriptionApiControllerIT {
     public void createCallbackUrls_urlAlreadyExistsForTpp_conflict() throws Exception {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        String id = UUID.randomUUID().toString();
         eventSubscriptionsRepository.save(FREventSubscription.builder()
                 .tppId(tpp.getId())
                 .eventSubscription(FREventSubscriptionData.builder().build())
@@ -177,6 +172,7 @@ public class EventSubscriptionApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getBody().getLinks().getSelf()).contains("/event-subscriptions");
         assertThat(response.getBody().getData().getEventSubscription().get(0).getCallbackUrl()).isEqualTo("http://callback");
     }
 
@@ -211,6 +207,7 @@ public class EventSubscriptionApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getBody().getLinks().getSelf()).contains("/event-subscriptions");
         assertThat(response.getBody().getData().getCallbackUrl()).isEqualTo("http://callback/update");
 
         final Optional<FREventSubscription> byId = eventSubscriptionsRepository.findById(eventSubsId);
@@ -249,6 +246,7 @@ public class EventSubscriptionApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(200);
+        assertThat(response.getBody().getLinks().getSelf()).contains("/event-subscriptions");
     }
 
     @Test

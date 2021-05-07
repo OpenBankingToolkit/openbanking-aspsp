@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.event;
 
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.event.FRCallbackUrlData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCallbackUrl;
@@ -27,12 +28,16 @@ import com.forgerock.openbanking.common.model.version.OBVersion;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.account.Links;
 import uk.org.openbanking.datamodel.account.Meta;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinks;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksEventNotification3;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksEventNotification4;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlResponse1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlResponseData1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponse1;
 import uk.org.openbanking.datamodel.event.OBCallbackUrlsResponseData1;
 
 import java.util.Collection;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -112,10 +117,34 @@ public class EventResponseUtil {
     }
 
     private Links toSelfLink(FRCallbackUrl frCallbackUrl) {
-        return this.resourceLinkService.toSelfLink(frCallbackUrl, discovery -> discovery.getVersion(version).getGetCallbackUrls());
+        return this.resourceLinkService.toSelfLink(frCallbackUrl, getUrlCallbackFunction());
     }
 
     private boolean shouldHaveMetaSection() {
         return haveMetaSection && version != null;
+    }
+
+    public Function<DiscoveryConfigurationProperties.EventNotificationApis, String> getUrlCallbackFunction() {
+        return
+                eventNotificationApis -> {
+                    OBDiscoveryAPILinks obDiscoveryAPILinks = eventNotificationApis.getVersion(version);
+                    if (obDiscoveryAPILinks instanceof OBDiscoveryAPILinksEventNotification4) {
+                        return ((OBDiscoveryAPILinksEventNotification4) obDiscoveryAPILinks).getGetCallbackUrls();
+                    } else {
+                        return ((OBDiscoveryAPILinksEventNotification3) obDiscoveryAPILinks).getGetCallbackUrls();
+                    }
+                };
+    }
+
+    public Function<DiscoveryConfigurationProperties.EventNotificationApis, String> getUrlEventSubscriptionsFunction() {
+        return
+                eventNotificationApis -> {
+                    OBDiscoveryAPILinks obDiscoveryAPILinks = eventNotificationApis.getVersion(version);
+                    if (obDiscoveryAPILinks instanceof OBDiscoveryAPILinksEventNotification4) {
+                        return ((OBDiscoveryAPILinksEventNotification4) obDiscoveryAPILinks).getCreateEventSubscription();
+                    } else {
+                        return ((OBDiscoveryAPILinksEventNotification3) obDiscoveryAPILinks).getGetCallbackUrls();
+                    }
+                };
     }
 }

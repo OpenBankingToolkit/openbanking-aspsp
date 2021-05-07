@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_2.eventsubscription;
 
-import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.events.EventSubscriptionsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.event.FREventSubscriptionData;
@@ -31,6 +30,7 @@ import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
+import com.forgerock.openbanking.repositories.TppRepository;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,22 +42,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Links;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.event.OBEventSubscription1;
-import uk.org.openbanking.datamodel.event.OBEventSubscription1Data;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionResponse1Data;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1Data;
-import uk.org.openbanking.datamodel.event.OBEventSubscriptionsResponse1DataEventSubscription;
+import uk.org.openbanking.datamodel.event.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.event.FREventSubscriptionConverter.toFREventSubscriptionData;
@@ -285,7 +275,7 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
                     .data(new OBEventSubscriptionsResponse1Data()
                             .eventSubscription(eventSubsByClient))
                     .meta(new Meta())
-                    .links(resourceLinkService.toSelfLink(discovery -> discovery.getVersion(eventResponseUtil.version).getGetCallbackUrls()));
+                    .links(resourceLinkService.toSelfLink(eventResponseUtil.getUrlEventSubscriptionsFunction()));
         }
     }
 
@@ -298,7 +288,8 @@ public class EventSubscriptionApiController implements EventSubscriptionApi {
                         .eventTypes(obEventSubs.getEventTypes())
                         .version(obEventSubs.getVersion())
                 )
-                .links(resourceLinkService.toSelfLink(frEventSubscription, discovery -> discovery.getVersion(eventResponseUtil.version).getGetCallbackUrls()))
+                .links(resourceLinkService.toSelfLink(frEventSubscription, eventResponseUtil.getUrlEventSubscriptionsFunction()))
                 .meta(new Meta());
     }
+
 }
