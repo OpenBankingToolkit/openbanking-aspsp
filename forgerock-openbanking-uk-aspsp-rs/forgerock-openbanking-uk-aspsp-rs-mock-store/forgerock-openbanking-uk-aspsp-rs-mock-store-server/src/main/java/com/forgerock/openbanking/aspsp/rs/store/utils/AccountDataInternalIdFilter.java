@@ -106,6 +106,13 @@ public class AccountDataInternalIdFilter {
         return apply(data, showOfferIds, data::setOfferId);
     }
 
+    public OBReadOffer1DataOffer apply(OBReadOffer1DataOffer data) {
+        if (showAllAccountDataInternalIds) {
+            return displayAllInternalIds(data);
+        }
+        return apply(data, showOfferIds, data::setOfferId);
+    }
+
     public OBReadProduct2DataProduct apply(OBReadProduct2DataProduct data) {
         if (showAllAccountDataInternalIds) {
             return displayAllInternalIds(data);

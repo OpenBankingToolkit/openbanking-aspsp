@@ -41,8 +41,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.FileCopyUtils;
 import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
+import uk.org.openbanking.datamodel.account.OBReadDataStatement2;
 import uk.org.openbanking.datamodel.account.OBReadStatement2;
-import uk.org.openbanking.datamodel.account.OBReadStatement2Data;
 
 import java.io.IOException;
 import java.util.List;
@@ -184,7 +184,7 @@ public class StatementsApiController implements StatementsApi {
     }
 
     private ResponseEntity<OBReadStatement2> packageResponse(int page, String httpUrl, List<FRStatement> statements, int totalPages) {
-        return ResponseEntity.ok(new OBReadStatement2().data(new OBReadStatement2Data().statement(
+        return ResponseEntity.ok(new OBReadStatement2().data(new OBReadDataStatement2().statement(
                 statements
                         .stream()
                         .map(st -> toOBStatement2(st.getStatement()))
