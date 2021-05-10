@@ -28,8 +28,19 @@ package com.forgerock.openbanking.aspsp.rs.api.account.v3_1_6.accounts;
 import com.forgerock.openbanking.api.annotations.OBGroupName;
 import com.forgerock.openbanking.api.annotations.OBReference;
 import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
-import io.swagger.annotations.Api;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import io.swagger.annotations.*;
+import org.joda.time.DateTime;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+import uk.org.openbanking.datamodel.account.OBReadAccount6;
+
+import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+
+import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
 @Api(tags = "v3.1.6-Accounts", description = "the accounts API")
 @OpenBankingAPI(
@@ -38,5 +49,99 @@ import org.springframework.web.bind.annotation.RequestMapping;
         obReference = OBReference.ACCOUNTS
 )
 @RequestMapping(value = "/open-banking/v3.1.6/aisp")
-public interface AccountsApi extends com.forgerock.openbanking.aspsp.rs.api.account.v3_1_5.accounts.AccountsApi {
+public interface AccountsApi {
+
+    @ApiOperation(value = "Get Account", nickname = "getAccount", notes = "", response = OBReadAccount6.class, authorizations = {
+            @Authorization(value = "PSUOAuth2Security", scopes = {
+                    @AuthorizationScope(scope = "accounts", description = "Ability to read Account information")
+            })
+    }, tags = {"v3.1.6-GetAccount",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Account resource successfully retrieved", response = OBReadAccount6.class),
+            @ApiResponse(code = 400, message = "Bad request", response = Void.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Void.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Void.class),
+            @ApiResponse(code = 404, message = "Not found", response = Void.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed", response = Void.class),
+            @ApiResponse(code = 406, message = "Not Acceptable", response = Void.class),
+            @ApiResponse(code = 429, message = "Too Many Requests", response = Void.class),
+            @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class)})
+
+    @PreAuthorize("hasAuthority('ROLE_AISP')")
+    @OpenBankingAPI(
+            obReference = OBReference.GET_ACCOUNT
+    )
+    @RequestMapping(value = "/accounts/{AccountId}",
+            produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" },
+            method = RequestMethod.GET)
+    ResponseEntity<OBReadAccount6> getAccount(
+            @ApiParam(value = "AccountId",required=true)
+            @PathVariable("AccountId") String accountId,
+
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
+            @RequestHeader(value="Authorization", required=true) String authorization,
+
+            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC" )
+            @RequestHeader(value="x-fapi-auth-date", required=false)
+            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
+
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
+            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+
+            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
+            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+
+            @ApiParam(value = "Indicates the user-agent that the PSU is using." )
+            @RequestHeader(value="x-customer-user-agent", required=false) String xCustomerUserAgent,
+
+            HttpServletRequest request,
+
+            Principal principal) throws OBErrorResponseException;
+
+    @ApiOperation(value = "Get Accounts", nickname = "getAccounts", notes = "Get a list of accounts", response = OBReadAccount6.class, authorizations = {
+            @Authorization(value = "PSUOAuth2Security", scopes = {
+                    @AuthorizationScope(scope = "accounts", description = "Ability to read Accounts information")
+            })
+    }, tags = {"v3.1.6-GetAccount",})
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Accounts retrieved", response = OBReadAccount6.class),
+            @ApiResponse(code = 400, message = "Bad request", response = Void.class),
+            @ApiResponse(code = 401, message = "Unauthorized", response = Void.class),
+            @ApiResponse(code = 403, message = "Forbidden", response = Void.class),
+            @ApiResponse(code = 404, message = "Not found", response = Void.class),
+            @ApiResponse(code = 405, message = "Method Not Allowed", response = Void.class),
+            @ApiResponse(code = 406, message = "Not Acceptable", response = Void.class),
+            @ApiResponse(code = 429, message = "Too Many Requests", response = Void.class),
+            @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class)})
+
+    @PreAuthorize("hasAuthority('ROLE_AISP')")
+    @OpenBankingAPI(
+            obReference = OBReference.GET_ACCOUNTS
+    )
+    @RequestMapping(value = "/accounts",
+            produces = { "application/json; charset=utf-8", "application/json", "application/jose+jwe" },
+            method = RequestMethod.GET)
+    ResponseEntity<OBReadAccount6> getAccounts(
+            @ApiParam(value = "Page number.", required = false, defaultValue = "0")
+            @RequestParam(value = "page", defaultValue = "0") String page,
+
+            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
+            @RequestHeader(value="Authorization", required=true) String authorization,
+
+            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC" )
+            @RequestHeader(value="x-fapi-auth-date", required=false)
+            @DateTimeFormat(pattern = HTTP_DATE_FORMAT) DateTime xFapiAuthDate,
+
+            @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP." )
+            @RequestHeader(value="x-fapi-customer-ip-address", required=false) String xFapiCustomerIpAddress,
+
+            @ApiParam(value = "An RFC4122 UID used as a correlation id." )
+            @RequestHeader(value="x-fapi-interaction-id", required=false) String xFapiInteractionId,
+
+            @ApiParam(value = "Indicates the user-agent that the PSU is using." )
+            @RequestHeader(value="x-customer-user-agent", required=false) String xCustomerUserAgent,
+
+            HttpServletRequest request,
+
+            Principal principal) throws OBErrorResponseException;
 }
