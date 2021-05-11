@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[79073ae9e7c4814](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/79073ae9e7c4814) JamieB *2021-05-11 08:02:35*
+Release candidate: prepare for next development iteration
+## 1.3.3
 ### GitHub [#356](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/356) 16: Switched to GenericOBDiscoveryAPILinks in uk-datamodel
 [47a5dac51797c70](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/47a5dac51797c70) Matt Wills *2021-03-25 11:09:09*
 Revert "Merge pull request #356 from OpenBankingToolkit/issue/16-discovery-serialization"
@@ -150,6 +153,14 @@ Release/1.3.2 (#380)
 * Release candidate: prepare release 1.3.2
 
 * Release candidate: prepare for next development iteration
+[fd3ba6bccc88d73](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fd3ba6bccc88d73) JamieB *2021-05-11 08:02:28*
+Release candidate: prepare release 1.3.3
+[c4f059c5d87c7c3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c4f059c5d87c7c3) JamieB *2021-05-11 07:39:18*
+34: Empty commit to force codefresh build
+[d46d7cb97ca4a0c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d46d7cb97ca4a0c) JamieB *2021-05-11 07:23:52*
+34: Use forgerock spring-security-multi-auth
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-jwkms/pull/121
 [c6d6941a043526e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c6d6941a043526e) Matt Wills *2021-05-10 13:57:39*
 32: v3.1.7 of Accounts API controllers
 
