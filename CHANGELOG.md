@@ -150,6 +150,16 @@ Release/1.3.2 (#380)
 * Release candidate: prepare release 1.3.2
 
 * Release candidate: prepare for next development iteration
+[c6d6941a043526e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c6d6941a043526e) Matt Wills *2021-05-10 13:57:39*
+32: v3.1.7 of Accounts API controllers
+
+- Includes correction to v3.1.6 of AccountsApi
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
+[cd06381131fbc8b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/cd06381131fbc8b) Matt Wills *2021-05-07 15:04:41*
+32: v3.1.7 of the Accounts API datamodel (prior to new controllers)
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
 [2c8e8e022f91825](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2c8e8e022f91825) Matt Wills *2021-03-25 09:55:27*
 16: Switch to GenericOBDiscoveryAPILinks in uk-datamodel
 

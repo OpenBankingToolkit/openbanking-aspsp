@@ -22,7 +22,7 @@ package com.forgerock.openbanking.common.services.aspsp;
 
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
-import dev.openbanking4.spring.security.multiauth.model.authentication.JwtAuthentication;
+import com.forgerock.spring.security.multiauth.model.authentication.JwtAuthentication;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;

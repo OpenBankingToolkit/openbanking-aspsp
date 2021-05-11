@@ -135,7 +135,8 @@ public class AuthorisationApiController implements AuthorisationApi {
     ) throws OBErrorResponseException, OBErrorException {
         // FAPI compliant ('code id_token'): https://github.com/ForgeCloud/ob-deploy/issues/674
         if(!discoveryConfig.getSupportedResponseTypes().contains(responseType)){
-            log.error("The response types requested '" + responseType + "' don't match with the response types supported '" + discoveryConfig.getSupportedResponseTypes() + "' by as-api");
+            log.error("The response types requested '" + responseType + "' don't match with the response types supported '"
+                    + discoveryConfig.getSupportedResponseTypes() + "' by as-api");
             throw new OBErrorResponseException(
                     OBRIErrorType.REQUEST_RESPONSE_TYPE_MISMATCH.getHttpStatus(),
                     OBRIErrorResponseCategory.REQUEST_INVALID,

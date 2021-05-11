@@ -33,7 +33,7 @@ import com.forgerock.openbanking.register.model.ManualRegUser;
 import com.forgerock.openbanking.register.service.ManualRegistrationApplicationService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import dev.openbanking4.spring.security.multiauth.model.authentication.JwtAuthentication;
+import com.forgerock.spring.security.multiauth.model.authentication.JwtAuthentication;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

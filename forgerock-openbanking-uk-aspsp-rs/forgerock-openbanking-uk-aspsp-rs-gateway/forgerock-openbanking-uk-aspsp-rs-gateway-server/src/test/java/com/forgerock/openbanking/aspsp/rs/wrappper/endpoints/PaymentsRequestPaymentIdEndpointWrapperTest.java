@@ -34,7 +34,7 @@ import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.error.ErrorCode;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
-import dev.openbanking4.spring.security.multiauth.model.authentication.PasswordLessUserNameAuthentication;
+import com.forgerock.spring.security.multiauth.model.authentication.PasswordLessUserNameAuthentication;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

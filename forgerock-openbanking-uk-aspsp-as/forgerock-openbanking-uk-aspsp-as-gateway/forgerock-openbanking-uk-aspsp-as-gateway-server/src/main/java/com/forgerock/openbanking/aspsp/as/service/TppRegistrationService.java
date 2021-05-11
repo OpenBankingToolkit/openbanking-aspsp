@@ -41,7 +41,7 @@ import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.JWTClaimsSet;
-import dev.openbanking4.spring.security.multiauth.model.authentication.X509Authentication;
+import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;

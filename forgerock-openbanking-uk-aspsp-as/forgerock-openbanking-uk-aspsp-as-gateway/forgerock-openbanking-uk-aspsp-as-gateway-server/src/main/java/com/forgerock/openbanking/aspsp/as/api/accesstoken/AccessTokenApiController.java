@@ -36,7 +36,6 @@ import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.AccessTokenResponse;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -47,8 +46,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.Charset;
@@ -61,31 +58,31 @@ import java.util.UUID;
 @Slf4j
 public class AccessTokenApiController implements AccessTokenApi {
 
-    @Autowired
     private AMASPSPGateway amGateway;
-    @Autowired
     private HeadLessAccessTokenService headLessAccessTokenService;
-    @Autowired
     private TppStoreService tppStoreService;
-    @Autowired
     private AMGatewayService amGatewayService;
-    @Autowired
     private JwtOverridingService jwtOverridingService;
-    @Autowired
     private TokenUsageService tokenUsageService;
 
+    @Autowired
+    public AccessTokenApiController(AMASPSPGateway amGateway, HeadLessAccessTokenService headLessAccessTokenService,
+                                    TppStoreService tppStoreService, AMGatewayService amGatewayService,
+                                    JwtOverridingService jwtOverridingService, TokenUsageService tokenUsageService) {
+        this.amGateway = amGateway;
+        this.headLessAccessTokenService = headLessAccessTokenService;
+        this.tppStoreService = tppStoreService;
+        this.amGatewayService = amGatewayService;
+        this.jwtOverridingService = jwtOverridingService;
+        this.tokenUsageService = tokenUsageService;
+    }
+
     @Override
-    public ResponseEntity getAccessToken(
-            @RequestBody MultiValueMap paramMap,
+    public ResponseEntity getAccessToken(MultiValueMap paramMap, String authorization, Principal principal,
+                                         HttpServletRequest request) throws OBErrorResponseException, OBErrorException {
 
-            @ApiParam(value = "Authorization header")
-            @RequestHeader(value = "Authorization", required = false) String authorization,
-
-            Principal principal,
-
-            HttpServletRequest request
-    ) throws OBErrorResponseException, OBErrorException {
         PairClientIDAuthMethod clientIDAuthMethod = verifyMATLSMatchesRequest(paramMap, authorization, principal);
+
         AMGateway amGateway = this.amGateway;
         //The token endpoint can also be used as audience, as per OIDC spec
         if (clientIDAuthMethod.authMethod == OIDCConstants.TokenEndpointAuthMethods.PRIVATE_KEY_JWT) {

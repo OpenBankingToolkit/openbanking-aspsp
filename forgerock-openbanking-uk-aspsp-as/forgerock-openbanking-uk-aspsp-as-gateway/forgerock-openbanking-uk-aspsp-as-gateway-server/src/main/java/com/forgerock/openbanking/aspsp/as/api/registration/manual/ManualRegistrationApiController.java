@@ -37,7 +37,7 @@ import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import dev.openbanking4.spring.security.multiauth.model.authentication.X509Authentication;
+import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

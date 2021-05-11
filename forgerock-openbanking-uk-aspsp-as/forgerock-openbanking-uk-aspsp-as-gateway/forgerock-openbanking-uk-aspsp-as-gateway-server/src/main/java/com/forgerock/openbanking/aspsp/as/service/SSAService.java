@@ -33,7 +33,7 @@ import com.forgerock.openbanking.model.SoftwareStatementRole;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jwt.JWTClaimsSet;
-import dev.openbanking4.spring.security.multiauth.model.authentication.PSD2Authentication;
+import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authentication;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;

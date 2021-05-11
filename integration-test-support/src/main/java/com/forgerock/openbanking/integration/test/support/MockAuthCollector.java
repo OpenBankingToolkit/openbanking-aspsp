@@ -20,9 +20,9 @@
  */
 package com.forgerock.openbanking.integration.test.support;
 
-import dev.openbanking4.spring.security.multiauth.configurers.AuthCollector;
-import dev.openbanking4.spring.security.multiauth.model.authentication.AuthenticationWithEditableAuthorities;
-import dev.openbanking4.spring.security.multiauth.model.authentication.PasswordLessUserNameAuthentication;
+import com.forgerock.spring.security.multiauth.configurers.AuthCollector;
+import com.forgerock.spring.security.multiauth.model.authentication.AuthenticationWithEditableAuthorities;
+import com.forgerock.spring.security.multiauth.model.authentication.PasswordLessUserNameAuthentication;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.servlet.http.HttpServletRequest;
