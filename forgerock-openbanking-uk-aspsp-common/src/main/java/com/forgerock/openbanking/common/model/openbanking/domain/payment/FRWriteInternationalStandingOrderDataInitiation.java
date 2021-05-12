@@ -45,7 +45,7 @@ import org.joda.time.DateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FRWriteInternationalStandingOrderDataInitiation {
+public class FRWriteInternationalStandingOrderDataInitiation implements FRInternationalDataInitiation {
 
     private String frequency;
     private String reference;

@@ -61,8 +61,7 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsuppo
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConverter.toOBWriteDomesticDomesticStandingOrder3;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -253,7 +252,7 @@ public class DomesticStandingOrdersApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(bodyData.getRefund()).isNull();
         assertThat(bodyData.getConsentId()).isEqualTo(consent.getId());
-        assertThat(bodyData.getInitiation()).isEqualTo(toOBWriteDomesticStandingOrder3DataInitiation(submission.getDomesticStandingOrder().getData().getInitiation()));
+        assertThat(bodyData.getInitiation()).isEqualTo(toOBWriteDomesticStandingOrderConsentResponse6DataInitiation(submission.getDomesticStandingOrder().getData().getInitiation()));
         assertThat(bodyData.getCreationDateTime()).isEqualTo(consent.getCreated());
         assertThat(bodyData.getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdate());
     }
@@ -276,7 +275,7 @@ public class DomesticStandingOrdersApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(bodyData.getRefund()).isNotNull();
         assertThat(bodyData.getConsentId()).isEqualTo(consent.getId());
-        assertThat(bodyData.getInitiation()).isEqualTo(toOBWriteDomesticStandingOrder3DataInitiation(submission.getDomesticStandingOrder().getData().getInitiation()));
+        assertThat(bodyData.getInitiation()).isEqualTo(toOBWriteDomesticStandingOrderConsentResponse6DataInitiation(submission.getDomesticStandingOrder().getData().getInitiation()));
         assertThat(bodyData.getCreationDateTime()).isEqualTo(consent.getCreated());
         assertThat(bodyData.getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdate());
     }

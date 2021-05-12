@@ -32,8 +32,12 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternational;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRInternationalResponseDataRefund;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalPaymentSubmission;
+import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRResponseDataRefundConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -44,7 +48,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBWriteInternational3;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse4;
+import uk.org.openbanking.datamodel.payment.OBWriteInternationalResponse4Data;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -55,7 +62,7 @@ import static com.forgerock.openbanking.common.model.openbanking.persistence.pay
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConsentConverter.toOBWriteInternational3DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalConverter.toFRWriteInternational;
-import static com.forgerock.openbanking.common.services.openbanking.payment.ResponseRefundPaymentsFactory.getOBWriteInternationalResponse4DataRefundInstance;
+import static com.forgerock.openbanking.common.services.openbanking.payment.FRResponseDataRefundFactory.frInternationalResponseDataRefund;
 
 @Controller("InternationalPaymentsApiV3.1.4")
 @Slf4j
@@ -145,32 +152,28 @@ public class InternationalPaymentsApiController implements InternationalPayments
             String xCustomerUserAgent,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) {
         // Optional endpoint - not implemented
-        return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     private OBWriteInternationalResponse4 responseEntity(FRInternationalPaymentSubmission frPaymentSubmission, FRInternationalConsent frInternationalConsent) {
-        OBWriteInternationalResponse4 obWriteInternationalResponse4 = new OBWriteInternationalResponse4()
+        FRReadRefundAccount readRefundAccount = frInternationalConsent.getInternationalConsent().getData().getReadRefundAccount();
+        FRWriteInternationalDataInitiation initiation = frPaymentSubmission.getInternationalPayment().getData().getInitiation();
+        Optional<FRInternationalResponseDataRefund> refund = frInternationalResponseDataRefund(readRefundAccount, initiation);
+
+        return new OBWriteInternationalResponse4()
                 .data(new OBWriteInternationalResponse4Data()
                         .internationalPaymentId(frPaymentSubmission.getId())
-                        .initiation(toOBWriteInternational3DataInitiation(frPaymentSubmission.getInternationalPayment().getData().getInitiation()))
+                        .initiation(toOBWriteInternational3DataInitiation(initiation))
                         .creationDateTime(frInternationalConsent.getCreated())
                         .statusUpdateDateTime(frInternationalConsent.getStatusUpdate())
                         .status(toOBWriteInternationalResponse4DataStatus(frInternationalConsent.getStatus()))
                         .consentId(frInternationalConsent.getId())
-                        .exchangeRateInformation(toOBWriteInternationalConsentResponse4DataExchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate())))
+                        .exchangeRateInformation(toOBWriteInternationalConsentResponse4DataExchangeRateInformation(frInternationalConsent.getCalculatedExchangeRate()))
+                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteInternationalResponse4DataRefund).orElse(null)))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalPayment()))
                 .meta(new Meta());
-
-        // ZD: 55834 - https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
-        getOBWriteInternationalResponse4DataRefundInstance(
-                frInternationalConsent.getInternationalConsent().getData().getReadRefundAccount(),
-                toOBWriteInternational3DataInitiation(frInternationalConsent.getInitiation())
-        ).ifPresent(
-                dataRefund -> obWriteInternationalResponse4.getData().setRefund(dataRefund)
-        );
-        return obWriteInternationalResponse4;
     }
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {

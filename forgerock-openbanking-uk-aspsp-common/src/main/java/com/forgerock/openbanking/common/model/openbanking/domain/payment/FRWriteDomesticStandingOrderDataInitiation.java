@@ -42,7 +42,7 @@ import org.joda.time.DateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FRWriteDomesticStandingOrderDataInitiation {
+public class FRWriteDomesticStandingOrderDataInitiation implements FRDomesticDataInitiation {
 
     private String frequency;
     private String reference;

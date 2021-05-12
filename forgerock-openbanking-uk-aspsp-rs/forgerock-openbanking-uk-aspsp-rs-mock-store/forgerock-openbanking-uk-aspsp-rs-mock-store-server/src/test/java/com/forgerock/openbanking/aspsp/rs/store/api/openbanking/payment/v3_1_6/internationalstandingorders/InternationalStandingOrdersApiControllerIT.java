@@ -62,6 +62,7 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsuppo
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrder4DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsentResponse7DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -228,7 +229,7 @@ public class InternationalStandingOrdersApiControllerIT {
         FRInternationalStandingOrderPaymentSubmission submission = submissionRepository.findById(response.getBody().getData().getInternationalStandingOrderId()).get();
         assertThat(submission.getId()).isEqualTo(rBody.getData().getConsentId());
         // Refund
-        OBWriteInternationalResponse5DataRefund refund = rBody.getData().getRefund();
+        OBWriteInternationalStandingOrderResponse7DataRefund refund = rBody.getData().getRefund();
         assertThat(refund).isNotNull();
         assertThat(refund.getAccount().getIdentification()).isEqualTo(consent.getInitiation().getDebtorAccount().getIdentification());
         assertThat(refund.getAccount().getName()).isEqualTo(consent.getInitiation().getDebtorAccount().getName());
@@ -256,7 +257,7 @@ public class InternationalStandingOrdersApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(bodyData.getRefund()).isNull();
         assertThat(bodyData.getConsentId()).isEqualTo(consent.getId());
-        assertThat(bodyData.getInitiation()).isEqualTo(toOBWriteInternationalStandingOrder4DataInitiation(submission.getInternationalStandingOrder().getData().getInitiation()));
+        assertThat(bodyData.getInitiation()).isEqualTo(toOBWriteInternationalStandingOrderConsentResponse7DataInitiation(submission.getInternationalStandingOrder().getData().getInitiation()));
         assertThat(bodyData.getCreationDateTime()).isEqualTo(consent.getCreated());
         assertThat(bodyData.getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdate());
     }
@@ -279,7 +280,7 @@ public class InternationalStandingOrdersApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
         assertThat(bodyData.getRefund()).isNotNull();
         assertThat(bodyData.getConsentId()).isEqualTo(consent.getId());
-        assertThat(bodyData.getInitiation()).isEqualTo(toOBWriteInternationalStandingOrder4DataInitiation(submission.getInternationalStandingOrder().getData().getInitiation()));
+        assertThat(bodyData.getInitiation()).isEqualTo(toOBWriteInternationalStandingOrderConsentResponse7DataInitiation(submission.getInternationalStandingOrder().getData().getInitiation()));
         assertThat(bodyData.getCreationDateTime()).isEqualTo(consent.getCreated());
         assertThat(bodyData.getStatusUpdateDateTime()).isEqualTo(consent.getStatusUpdate());
     }

@@ -176,8 +176,8 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new OBWriteFundsConfirmationResponse1()
-                        .data(new OBWriteDataFundsConfirmationResponse1()
-                                .fundsAvailableResult(new OBFundsAvailableResult1()
+                        .data(new OBWriteFundsConfirmationResponse1Data()
+                                .fundsAvailableResult(new OBWriteFundsConfirmationResponse1DataFundsAvailableResult()
                                         .fundsAvailable(areFundsAvailable)
                                         .fundsAvailableDateTime(DateTime.now())
                                 ))

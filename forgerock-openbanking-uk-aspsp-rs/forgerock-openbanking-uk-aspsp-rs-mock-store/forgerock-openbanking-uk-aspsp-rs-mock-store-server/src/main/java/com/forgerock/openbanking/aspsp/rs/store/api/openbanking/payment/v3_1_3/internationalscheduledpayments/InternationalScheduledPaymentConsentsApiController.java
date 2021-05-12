@@ -28,7 +28,6 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_3.
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledConsentRepository;
-import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
@@ -40,6 +39,7 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FR
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
+import com.forgerock.openbanking.repositories.TppRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -47,13 +47,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.OBFundsAvailableResult1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse4;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse4Data;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -177,8 +171,8 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new OBWriteFundsConfirmationResponse1()
-                        .data(new OBWriteDataFundsConfirmationResponse1()
-                                .fundsAvailableResult(new OBFundsAvailableResult1()
+                        .data(new OBWriteFundsConfirmationResponse1Data()
+                                .fundsAvailableResult(new OBWriteFundsConfirmationResponse1DataFundsAvailableResult()
                                         .fundsAvailable(areFundsAvailable)
                                         .fundsAvailableDateTime(DateTime.now())
                                 ))

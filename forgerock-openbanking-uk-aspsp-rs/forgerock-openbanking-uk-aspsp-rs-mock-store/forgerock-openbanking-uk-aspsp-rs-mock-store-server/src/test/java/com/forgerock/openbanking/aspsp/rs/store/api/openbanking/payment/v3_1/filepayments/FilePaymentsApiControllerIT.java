@@ -53,14 +53,12 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBWriteDataFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFileConsentResponse2;
-import uk.org.openbanking.datamodel.payment.OBWriteFileResponse2;
+import uk.org.openbanking.datamodel.payment.*;
 
 import java.math.BigDecimal;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBFile2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConverter.toOBWriteFile2;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -161,9 +159,9 @@ public class FilePaymentsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFileConsent consent = saveConsent();
         OBWriteFile2 submissionRequest = new OBWriteFile2()
-                .data(new OBWriteDataFile2()
+                .data(new OBWriteFile2Data()
                         .consentId(consent.getId())
-                        .initiation(toOBFile2(consent.getInitiation())));
+                        .initiation(toOBWriteFile2DataInitiation(consent.getInitiation())));
 
         // When
         HttpResponse<OBWriteFileResponse2> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1/pisp/file-payments")
@@ -192,9 +190,9 @@ public class FilePaymentsApiControllerIT {
         FRFilePaymentSubmission submission = savePaymentSubmission(consent);
 
         OBWriteFile2 obWriteFile = new OBWriteFile2();
-        obWriteFile.data(new OBWriteDataFile2()
+        obWriteFile.data(new OBWriteFile2Data()
                 .consentId(submission.getId())
-                .initiation(toOBFile2(consent.getInitiation())));
+                .initiation(toOBWriteFile2DataInitiation(consent.getInitiation())));
 
         // When
         HttpResponse<String> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1/pisp/file-payments")
@@ -224,9 +222,9 @@ public class FilePaymentsApiControllerIT {
         consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
 
         OBWriteFile2 submissionRequest = new OBWriteFile2()
-                .data(new OBWriteDataFile2()
-                        .consentId(consent.getId())
-                        .initiation(toOBFile2(consent.getInitiation())));
+                .data(new OBWriteFile2Data()
+                .consentId(consent.getId())
+                .initiation(toOBWriteFile2DataInitiation(consent.getInitiation())));
 
         // When
         HttpResponse<String> response = Unirest.post("https://rs-store:" + port + "/open-banking/v3.1/pisp/file-payments")

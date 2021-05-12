@@ -57,7 +57,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteFileResponse3DataStatus;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBWriteFile2DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConverter.toFRWriteFile;
 
@@ -199,7 +199,7 @@ public class FilePaymentsApiController implements FilePaymentsApi {
                         .creationDateTime(frFileConsent.getCreated())
                         .statusUpdateDateTime(DateTime.now())
                         .status(toOBWriteFileResponse3DataStatus(frFileConsent.getStatus()))
-                        .debtor(toOBDebtorIdentification1(frFileConsent.getInitiation().getDebtorAccount()))
+                        .debtor(toOBCashAccountDebtor4(frFileConsent.getInitiation().getDebtorAccount()))
                         .consentId(frFileConsent.getId()))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetFilePayment()))
                 .meta(new Meta());
