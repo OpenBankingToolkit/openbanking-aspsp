@@ -28,7 +28,6 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_5.
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalConsentRepository;
-import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
@@ -40,6 +39,7 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FR
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
+import com.forgerock.openbanking.repositories.TppRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -47,12 +47,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.OBFundsAvailableResult1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsentResponse6Data;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -61,7 +56,7 @@ import java.util.Optional;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseReadRefundAccountConverter.toOBWriteInternationalConsentResponse6DataReadRefundAccount;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteInternationalConsentResponse6DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
@@ -174,8 +169,8 @@ public class InternationalPaymentConsentsApiController implements InternationalP
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new OBWriteFundsConfirmationResponse1()
-                        .data(new OBWriteDataFundsConfirmationResponse1()
-                                .fundsAvailableResult(new OBFundsAvailableResult1()
+                        .data(new OBWriteFundsConfirmationResponse1Data()
+                                .fundsAvailableResult(new OBWriteFundsConfirmationResponse1DataFundsAvailableResult()
                                         .fundsAvailable(areFundsAvailable)
                                         .fundsAvailableDateTime(DateTime.now())
                                 ))
@@ -195,7 +190,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                         .exchangeRateInformation(toOBWriteInternationalConsentResponse6DataExchangeRateInformation(internationalConsent.getCalculatedExchangeRate()))
                         .consentId(internationalConsent.getId())
                         .authorisation(toOBWriteDomesticConsent4DataAuthorisation(internationalConsent.getInternationalConsent().getData().getAuthorisation()))
-                        .debtor(toOBDebtorIdentification1(internationalConsent.getInitiation().getDebtorAccount()))
+                        .debtor(toOBCashAccountDebtor4(internationalConsent.getInitiation().getDebtorAccount()))
                 )
                 .risk(toOBRisk1(internationalConsent.getRisk()))
                 .links(resourceLinkService.toSelfLink(internationalConsent, discovery -> getVersion(discovery).getGetInternationalPaymentConsent()))

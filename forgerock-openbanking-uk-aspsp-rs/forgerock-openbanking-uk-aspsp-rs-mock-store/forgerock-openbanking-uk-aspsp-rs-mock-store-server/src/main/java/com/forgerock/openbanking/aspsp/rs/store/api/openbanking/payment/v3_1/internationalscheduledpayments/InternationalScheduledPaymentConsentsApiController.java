@@ -22,11 +22,10 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.in
 
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
-import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
-import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalScheduledConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.PaginationUtil;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledConsent;
@@ -36,6 +35,7 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FR
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
+import com.forgerock.openbanking.repositories.TppRepository;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -48,13 +48,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.OBExternalPermissions2Code;
-import uk.org.openbanking.datamodel.payment.OBFundsAvailableResult1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataInternationalScheduledConsentResponse2;
-import uk.org.openbanking.datamodel.payment.OBWriteFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent2;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse2;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -237,8 +231,8 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new OBWriteFundsConfirmationResponse1()
-                        .data(new OBWriteDataFundsConfirmationResponse1()
-                                .fundsAvailableResult(new OBFundsAvailableResult1()
+                        .data(new OBWriteFundsConfirmationResponse1Data()
+                                .fundsAvailableResult(new OBWriteFundsConfirmationResponse1DataFundsAvailableResult()
                                         .fundsAvailable(areFundsAvailable)
                                         .fundsAvailableDateTime(DateTime.now())
                                 ))

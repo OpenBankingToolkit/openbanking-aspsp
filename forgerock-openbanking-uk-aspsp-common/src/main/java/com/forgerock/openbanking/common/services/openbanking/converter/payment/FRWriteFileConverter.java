@@ -22,13 +22,9 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDataFile;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteFile;
-import uk.org.openbanking.datamodel.payment.OBWriteDataFile1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataFile2;
-import uk.org.openbanking.datamodel.payment.OBWriteFile1;
-import uk.org.openbanking.datamodel.payment.OBWriteFile2;
+import uk.org.openbanking.datamodel.payment.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toFRWriteFileDataInitiation;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.toOBFile2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteFileConsentConverter.*;
 
 public class FRWriteFileConverter {
 
@@ -59,15 +55,28 @@ public class FRWriteFileConverter {
                 .build();
     }
 
+    public static FRWriteDataFile toFRWriteDataFile(OBWriteFile2Data data) {
+        return data == null ? null : FRWriteDataFile.builder()
+                .consentId(data.getConsentId())
+                .initiation(toFRWriteFileDataInitiation(data.getInitiation()))
+                .build();
+    }
+
     // FR to OB
     public static OBWriteFile2 toOBWriteFile2(FRWriteFile filePayment) {
         return filePayment == null ? null : new OBWriteFile2()
-                .data(toOBWriteDataFile2(filePayment.getData()));
+                .data(toOBWriteFile2Data(filePayment.getData()));
     }
 
     public static OBWriteDataFile2 toOBWriteDataFile2(FRWriteDataFile data) {
         return data == null ? null : new OBWriteDataFile2()
                 .consentId(data.getConsentId())
                 .initiation(toOBFile2(data.getInitiation()));
+    }
+
+    public static OBWriteFile2Data toOBWriteFile2Data(FRWriteDataFile data) {
+        return data == null ? null : new OBWriteFile2Data()
+                .consentId(data.getConsentId())
+                .initiation(toOBWriteFile2DataInitiation(data.getInitiation()));
     }
 }

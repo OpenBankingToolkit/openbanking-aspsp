@@ -32,8 +32,12 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduled;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDomesticResponseDataRefund;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticScheduledPaymentSubmission;
+import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRResponseDataRefundConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -44,7 +48,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
-import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse4;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledResponse4Data;
+import uk.org.openbanking.datamodel.payment.OBWritePaymentDetailsResponse1;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -54,7 +61,7 @@ import java.util.Optional;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseStatusCodeConverter.toOBWriteDomesticScheduledResponse4DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduled2DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConverter.toFRWriteDomesticScheduled;
-import static com.forgerock.openbanking.common.services.openbanking.payment.ResponseRefundPaymentsFactory.getOBWriteDomesticResponse4DataRefundInstance;
+import static com.forgerock.openbanking.common.services.openbanking.payment.FRResponseDataRefundFactory.frDomesticResponseDataRefund;
 
 @Controller("DomesticScheduledPaymentsApiV3.1.4")
 @Slf4j
@@ -146,31 +153,27 @@ public class DomesticScheduledPaymentsApiController implements DomesticScheduled
             String xCustomerUserAgent,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) {
         // Optional endpoint - not implemented
-        return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     private OBWriteDomesticScheduledResponse4 responseEntity(FRDomesticScheduledPaymentSubmission frPaymentSubmission, FRDomesticScheduledConsent frDomesticScheduledConsent) {
+        FRReadRefundAccount readRefundAccount = frDomesticScheduledConsent.getDomesticScheduledConsent().getData().getReadRefundAccount();
+        FRWriteDomesticScheduledDataInitiation initiation = frPaymentSubmission.getDomesticScheduledPayment().getData().getInitiation();
+        Optional<FRDomesticResponseDataRefund> refund = frDomesticResponseDataRefund(readRefundAccount, initiation);
 
-        OBWriteDomesticScheduledResponse4 obWriteDomesticScheduledResponse4 = new OBWriteDomesticScheduledResponse4()
+        return new OBWriteDomesticScheduledResponse4()
                 .data(new OBWriteDomesticScheduledResponse4Data()
                         .domesticScheduledPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteDomesticScheduled2DataInitiation(frDomesticScheduledConsent.getInitiation()))
                         .creationDateTime(frDomesticScheduledConsent.getCreated())
                         .statusUpdateDateTime(frDomesticScheduledConsent.getStatusUpdate())
                         .status(toOBWriteDomesticScheduledResponse4DataStatus(frDomesticScheduledConsent.getStatus()))
-                        .consentId(frDomesticScheduledConsent.getId()))
+                        .consentId(frDomesticScheduledConsent.getId())
+                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse4DataRefund).orElse(null)))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetDomesticScheduledPayment()))
                 .meta(new Meta());
-
-        // ZD: 55834 - https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
-        getOBWriteDomesticResponse4DataRefundInstance(
-                frDomesticScheduledConsent.getDomesticScheduledConsent().getData().getReadRefundAccount(),
-                toOBWriteDomesticScheduled2DataInitiation(frDomesticScheduledConsent.getInitiation())
-        ).ifPresent(dataRefund -> obWriteDomesticScheduledResponse4.getData().setRefund(dataRefund));
-
-        return obWriteDomesticScheduledResponse4;
     }
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {

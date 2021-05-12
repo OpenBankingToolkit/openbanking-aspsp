@@ -32,8 +32,12 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduled;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalScheduledDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRInternationalResponseDataRefund;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalScheduledPaymentSubmission;
+import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRResponseDataRefundConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -55,11 +59,11 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteInternationalScheduledResponse6DataStatus;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConverter.toFRWriteInternationalScheduled;
-import static com.forgerock.openbanking.common.services.openbanking.payment.ResponseRefundPaymentsFactory.getOBWriteInternationalResponse5DataRefundInstance;
+import static com.forgerock.openbanking.common.services.openbanking.payment.FRResponseDataRefundFactory.frInternationalResponseDataRefund;
 
 @Controller("InternationalScheduledPaymentsApiV3.1.5")
 @Slf4j
@@ -146,14 +150,17 @@ public class InternationalScheduledPaymentsApiController implements Internationa
             String xCustomerUserAgent,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) {
         // Optional endpoint - not implemented
-        return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     private OBWriteInternationalScheduledResponse6 responseEntity(FRInternationalScheduledPaymentSubmission frPaymentSubmission, FRInternationalScheduledConsent frInternationalScheduledConsent) {
+        FRReadRefundAccount readRefundAccount = frInternationalScheduledConsent.getInternationalScheduledConsent().getData().getReadRefundAccount();
+        FRWriteInternationalScheduledDataInitiation initiation = frPaymentSubmission.getInternationalScheduledPayment().getData().getInitiation();
+        Optional<FRInternationalResponseDataRefund> refund = frInternationalResponseDataRefund(readRefundAccount, initiation);
 
-        OBWriteInternationalScheduledResponse6 obWriteInternationalScheduledResponse6 = new OBWriteInternationalScheduledResponse6()
+        return new OBWriteInternationalScheduledResponse6()
                 .data(new OBWriteInternationalScheduledResponse6Data()
                         .internationalScheduledPaymentId(frPaymentSubmission.getId())
                         .initiation(toOBWriteInternationalScheduled3DataInitiation(frPaymentSubmission.getInternationalScheduledPayment().getData().getInitiation()))
@@ -162,18 +169,11 @@ public class InternationalScheduledPaymentsApiController implements Internationa
                         .consentId(frInternationalScheduledConsent.getId())
                         .status(toOBWriteInternationalScheduledResponse6DataStatus(frInternationalScheduledConsent.getStatus()))
                         .exchangeRateInformation(toOBWriteInternationalConsentResponse6DataExchangeRateInformation(frInternationalScheduledConsent.getCalculatedExchangeRate()))
-                        .debtor(toOBDebtorIdentification1(frInternationalScheduledConsent.getInitiation().getDebtorAccount()))
-                        .expectedExecutionDateTime(frInternationalScheduledConsent.getInitiation().getRequestedExecutionDateTime()))
+                        .debtor(toOBCashAccountDebtor4(frInternationalScheduledConsent.getInitiation().getDebtorAccount()))
+                        .expectedExecutionDateTime(frInternationalScheduledConsent.getInitiation().getRequestedExecutionDateTime())
+                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteInternationalResponse5DataRefund).orElse(null)))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalScheduledPayment()))
                 .meta(new Meta());
-
-        // ZD: 55834 - https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
-        getOBWriteInternationalResponse5DataRefundInstance(
-                frInternationalScheduledConsent.getInternationalScheduledConsent().getData().getReadRefundAccount(),
-                toOBWriteInternationalScheduled3DataInitiation(frInternationalScheduledConsent.getInitiation())
-        ).ifPresent(dataRefund -> obWriteInternationalScheduledResponse6.getData().setRefund(dataRefund));
-
-        return obWriteInternationalScheduledResponse6;
     }
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {

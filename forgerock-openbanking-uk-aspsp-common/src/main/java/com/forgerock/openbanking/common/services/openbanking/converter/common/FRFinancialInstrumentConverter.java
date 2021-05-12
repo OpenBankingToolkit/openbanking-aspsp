@@ -22,19 +22,10 @@ package com.forgerock.openbanking.common.services.openbanking.converter.common;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAgent;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialCreditor;
-import uk.org.openbanking.datamodel.account.OBBranchAndFinancialInstitutionIdentification2;
-import uk.org.openbanking.datamodel.account.OBBranchAndFinancialInstitutionIdentification4;
-import uk.org.openbanking.datamodel.account.OBBranchAndFinancialInstitutionIdentification5;
-import uk.org.openbanking.datamodel.account.OBBranchAndFinancialInstitutionIdentification51;
-import uk.org.openbanking.datamodel.account.OBBranchAndFinancialInstitutionIdentification60;
-import uk.org.openbanking.datamodel.account.OBBranchAndFinancialInstitutionIdentification61;
-import uk.org.openbanking.datamodel.account.OBBranchAndFinancialInstitutionIdentification62;
+import uk.org.openbanking.datamodel.account.*;
 import uk.org.openbanking.datamodel.payment.OBBranchAndFinancialInstitutionIdentification3;
 import uk.org.openbanking.datamodel.payment.OBBranchAndFinancialInstitutionIdentification6;
-import uk.org.openbanking.datamodel.payment.OBPartyIdentification43;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationCreditor;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationCreditorAgent;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiationCreditorAgent;
+import uk.org.openbanking.datamodel.payment.*;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountServicerConverter.toOBExternalFinancialInstitutionIdentification2Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentPostalAddressConverter.toFRPostalAddress;
@@ -51,6 +42,13 @@ public class FRFinancialInstrumentConverter {
     }
 
     public static FRFinancialCreditor toFRFinancialCreditor(OBWriteInternational3DataInitiationCreditor creditor) {
+        return creditor == null ? null : FRFinancialCreditor.builder()
+                .name(creditor.getName())
+                .postalAddress(toFRPostalAddress(creditor.getPostalAddress()))
+                .build();
+    }
+
+    public static FRFinancialCreditor toFRFinancialCreditor(OBWriteInternationalScheduledConsentResponse6DataInitiationCreditor creditor) {
         return creditor == null ? null : FRFinancialCreditor.builder()
                 .name(creditor.getName())
                 .postalAddress(toFRPostalAddress(creditor.getPostalAddress()))
@@ -146,6 +144,12 @@ public class FRFinancialInstrumentConverter {
     // FR to OB
     public static OBWriteInternational3DataInitiationCreditor toOBWriteInternational3DataInitiationCreditor(FRFinancialCreditor creditor) {
         return creditor == null ? null : new OBWriteInternational3DataInitiationCreditor()
+                .name(creditor.getName())
+                .postalAddress(toOBPostalAddress6(creditor.getPostalAddress()));
+    }
+
+    public static OBWriteInternationalScheduledConsentResponse6DataInitiationCreditor toOBWriteInternationalScheduledConsentResponse6DataInitiationCreditor(FRFinancialCreditor creditor) {
+        return creditor == null ? null : new OBWriteInternationalScheduledConsentResponse6DataInitiationCreditor()
                 .name(creditor.getName())
                 .postalAddress(toOBPostalAddress6(creditor.getPostalAddress()));
     }

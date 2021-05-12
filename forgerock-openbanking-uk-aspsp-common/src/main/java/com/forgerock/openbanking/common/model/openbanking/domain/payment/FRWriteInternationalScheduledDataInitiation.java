@@ -48,7 +48,7 @@ import org.joda.time.DateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FRWriteInternationalScheduledDataInitiation {
+public class FRWriteInternationalScheduledDataInitiation implements FRInternationalDataInitiation {
 
     private String instructionIdentification;
     private String endToEndIdentification;

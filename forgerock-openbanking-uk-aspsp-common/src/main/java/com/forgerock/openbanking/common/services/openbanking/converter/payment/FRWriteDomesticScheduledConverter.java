@@ -22,15 +22,11 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDataDomesticScheduled;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticScheduled;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduled1;
-import uk.org.openbanking.datamodel.payment.OBWriteDataDomesticScheduled2;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduled2;
+import uk.org.openbanking.datamodel.payment.*;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledDataInitiation;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBDomesticScheduled2;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.*;
 
 public class FRWriteDomesticScheduledConverter {
 
@@ -63,10 +59,17 @@ public class FRWriteDomesticScheduledConverter {
                 .build();
     }
 
+    public static FRWriteDataDomesticScheduled toFRWriteDataDomesticScheduled(OBWriteDomesticScheduled2Data data) {
+        return data == null ? null : FRWriteDataDomesticScheduled.builder()
+                .consentId(data.getConsentId())
+                .initiation(toFRWriteDomesticScheduledDataInitiation(data.getInitiation()))
+                .build();
+    }
+
     // FR to OB
     public static OBWriteDomesticScheduled2 toOBWriteDomesticScheduled2(FRWriteDomesticScheduled domesticScheduledPayment) {
         return domesticScheduledPayment == null ? null : new OBWriteDomesticScheduled2()
-                .data(toOBWriteDataDomesticScheduled2(domesticScheduledPayment.getData()))
+                .data(toOBWriteDomesticScheduled2Data(domesticScheduledPayment.getData()))
                 .risk(toOBRisk1(domesticScheduledPayment.getRisk()));
     }
 
@@ -74,5 +77,11 @@ public class FRWriteDomesticScheduledConverter {
         return data == null ? null : new OBWriteDataDomesticScheduled2()
                 .consentId(data.getConsentId())
                 .initiation(toOBDomesticScheduled2(data.getInitiation()));
+    }
+
+    public static OBWriteDomesticScheduled2Data toOBWriteDomesticScheduled2Data(FRWriteDataDomesticScheduled data) {
+        return data == null ? null : new OBWriteDomesticScheduled2Data()
+                .consentId(data.getConsentId())
+                .initiation(toOBWriteDomesticScheduled2DataInitiation(data.getInitiation()));
     }
 }

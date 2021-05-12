@@ -59,7 +59,6 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsuppo
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRPostalAddressTestDataFactory.aValidFRPostalAddress;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBDomesticScheduled2;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduled2DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConverter.toOBWriteDomesticScheduled2;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -140,9 +139,9 @@ public class DomesticScheduledPaymentsApiControllerIT {
         FRDomesticScheduledConsent consent = saveConsent(FRReadRefundAccount.NO);
         OBWriteDomesticScheduled2 submissionRequest = new OBWriteDomesticScheduled2()
                 .risk(toOBRisk1(consent.getRisk()))
-                .data(new OBWriteDataDomesticScheduled2()
+                .data(new OBWriteDomesticScheduled2Data()
                         .consentId(consent.getId())
-                        .initiation(toOBDomesticScheduled2(consent.getInitiation())));
+                        .initiation(toOBWriteDomesticScheduled2DataInitiation(consent.getInitiation())));
 
         // When
         HttpResponse<OBWriteDomesticScheduledResponse5> response = Unirest.post(RS_STORE_URL + port + CONTEXT_PATH)
@@ -171,9 +170,9 @@ public class DomesticScheduledPaymentsApiControllerIT {
         FRDomesticScheduledConsent consent = saveConsent(null);
         OBWriteDomesticScheduled2 submissionRequest = new OBWriteDomesticScheduled2()
                 .risk(toOBRisk1(consent.getRisk()))
-                .data(new OBWriteDataDomesticScheduled2()
+                .data(new OBWriteDomesticScheduled2Data()
                         .consentId(consent.getId())
-                        .initiation(toOBDomesticScheduled2(consent.getInitiation())));
+                        .initiation(toOBWriteDomesticScheduled2DataInitiation(consent.getInitiation())));
 
         // When
         HttpResponse<OBWriteDomesticScheduledResponse5> response = Unirest.post(RS_STORE_URL + port + CONTEXT_PATH)
@@ -202,9 +201,9 @@ public class DomesticScheduledPaymentsApiControllerIT {
         FRDomesticScheduledConsent consent = saveConsent(FRReadRefundAccount.YES);
         OBWriteDomesticScheduled2 submissionRequest = new OBWriteDomesticScheduled2()
                 .risk(toOBRisk1(consent.getRisk()))
-                .data(new OBWriteDataDomesticScheduled2()
+                .data(new OBWriteDomesticScheduled2Data()
                         .consentId(consent.getId())
-                        .initiation(toOBDomesticScheduled2(consent.getInitiation())));
+                        .initiation(toOBWriteDomesticScheduled2DataInitiation(consent.getInitiation())));
 
         // When
         HttpResponse<OBWriteDomesticScheduledResponse5> response = Unirest.post(RS_STORE_URL + port + CONTEXT_PATH)

@@ -22,7 +22,6 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_1.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper;
-import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.payments.InternationalStandingOrderConsentRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
@@ -31,6 +30,7 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.payment.Co
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.repositories.TppRepository;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -46,14 +46,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBPostalAddress6;
-import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationInstructedAmount;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiationCreditor;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrder4DataInitiationCreditorAgent;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent3;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsentResponse3;
+import uk.org.openbanking.datamodel.payment.*;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -183,7 +176,7 @@ public class InternationalStandingOrderPaymentConsentsApiControllerIT {
         initiation.frequency("EvryDay");
         initiation.reference("123");
         initiation.numberOfPayments("12");
-        initiation.setCreditor(new OBWriteInternational3DataInitiationCreditor().name("user").postalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square"))));
+        initiation.setCreditor(new OBWriteInternationalScheduledConsentResponse6DataInitiationCreditor().name("user").postalAddress(new OBPostalAddress6().country("GB").addressLine(Collections.singletonList("3 Queens Square"))));
         initiation.setCreditorAgent(new OBWriteInternationalStandingOrder4DataInitiationCreditorAgent().identification("123").name("test").schemeName("UK.OBIE.SortCodeAccountNumber"));
         initiation.setExtendedPurpose(null);
         initiation.setDestinationCountryCode("GB");

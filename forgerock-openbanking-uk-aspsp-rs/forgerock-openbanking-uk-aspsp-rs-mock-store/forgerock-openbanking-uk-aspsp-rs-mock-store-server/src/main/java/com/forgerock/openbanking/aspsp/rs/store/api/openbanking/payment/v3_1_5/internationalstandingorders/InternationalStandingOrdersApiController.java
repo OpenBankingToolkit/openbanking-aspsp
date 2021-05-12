@@ -32,8 +32,12 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrder;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteInternationalStandingOrderDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRInternationalResponseDataRefund;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRInternationalStandingOrderPaymentSubmission;
+import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRResponseDataRefundConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -55,10 +59,10 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteInternationalStandingOrderResponse7DataStatus;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrder4DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsentResponse7DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConverter.toFRWriteInternationalStandingOrder;
-import static com.forgerock.openbanking.common.services.openbanking.payment.ResponseRefundPaymentsFactory.getOBWriteInternationalResponse5DataRefundInstance;
+import static com.forgerock.openbanking.common.services.openbanking.payment.FRResponseDataRefundFactory.frInternationalResponseDataRefund;
 
 @Controller("InternationalStandingOrdersApiV3.1.5")
 @Slf4j
@@ -146,32 +150,28 @@ public class InternationalStandingOrdersApiController implements InternationalSt
             String xCustomerUserAgent,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) {
         // Optional endpoint - not implemented
-        return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     private OBWriteInternationalStandingOrderResponse7 responseEntity(FRInternationalStandingOrderPaymentSubmission frPaymentSubmission, FRInternationalStandingOrderConsent frInternationalStandingOrderConsent) {
+        FRReadRefundAccount readRefundAccount = frInternationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getReadRefundAccount();
+        FRWriteInternationalStandingOrderDataInitiation initiation = frPaymentSubmission.getInternationalStandingOrder().getData().getInitiation();
+        Optional<FRInternationalResponseDataRefund> refund = frInternationalResponseDataRefund(readRefundAccount, initiation);
 
-        OBWriteInternationalStandingOrderResponse7 obWriteInternationalStandingOrderResponse7 = new OBWriteInternationalStandingOrderResponse7()
+        return new OBWriteInternationalStandingOrderResponse7()
                 .data(new OBWriteInternationalStandingOrderResponse7Data()
                         .internationalStandingOrderId(frPaymentSubmission.getId())
-                        .initiation(toOBWriteInternationalStandingOrder4DataInitiation(frPaymentSubmission.getInternationalStandingOrder().getData().getInitiation()))
+                        .initiation(toOBWriteInternationalStandingOrderConsentResponse7DataInitiation(frPaymentSubmission.getInternationalStandingOrder().getData().getInitiation()))
                         .creationDateTime(frInternationalStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(frInternationalStandingOrderConsent.getStatusUpdate())
                         .status(toOBWriteInternationalStandingOrderResponse7DataStatus(frInternationalStandingOrderConsent.getStatus()))
-                        .debtor(toOBDebtorIdentification1(frInternationalStandingOrderConsent.getInitiation().getDebtorAccount()))
-                        .consentId(frInternationalStandingOrderConsent.getId()))
+                        .debtor(toOBCashAccountDebtor4(frInternationalStandingOrderConsent.getInitiation().getDebtorAccount()))
+                        .consentId(frInternationalStandingOrderConsent.getId())
+                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteInternationalStandingOrderResponse7DataRefund).orElse(null)))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetInternationalStandingOrder()))
                 .meta(new Meta());
-
-        // ZD: 55834 - https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
-        getOBWriteInternationalResponse5DataRefundInstance(
-                frInternationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getReadRefundAccount(),
-                toOBWriteInternationalStandingOrder4DataInitiation(frInternationalStandingOrderConsent.getInitiation())
-        ).ifPresent(dataRefund -> obWriteInternationalStandingOrderResponse7.getData().setRefund(dataRefund));
-
-        return obWriteInternationalStandingOrderResponse7;
     }
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {

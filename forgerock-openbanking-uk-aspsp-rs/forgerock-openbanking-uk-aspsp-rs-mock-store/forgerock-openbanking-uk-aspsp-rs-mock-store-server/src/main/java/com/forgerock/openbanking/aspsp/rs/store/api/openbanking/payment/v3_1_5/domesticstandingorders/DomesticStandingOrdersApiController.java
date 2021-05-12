@@ -32,8 +32,12 @@ import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrder;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticStandingOrderDataInitiation;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDomesticResponseDataRefund;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticStandingOrderPaymentSubmission;
+import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRResponseDataRefundConverter;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -55,10 +59,10 @@ import java.util.Date;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteDomesticStandingOrderResponse6DataStatus;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBDebtorIdentification1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3DataInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrderConsentResponse6DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConverter.toFRWriteDomesticStandingOrder;
-import static com.forgerock.openbanking.common.services.openbanking.payment.ResponseRefundPaymentsFactory.getOBWriteDomesticResponse5DataRefundInstance;
+import static com.forgerock.openbanking.common.services.openbanking.payment.FRResponseDataRefundFactory.frDomesticResponseDataRefund;
 
 @Controller("DomesticStandingOrdersApiV3.1.5")
 @Slf4j
@@ -146,32 +150,28 @@ public class DomesticStandingOrdersApiController implements DomesticStandingOrde
             String xCustomerUserAgent,
             HttpServletRequest request,
             Principal principal
-    ) throws OBErrorResponseException {
+    ) {
         // Optional endpoint - not implemented
-        return new ResponseEntity<OBWritePaymentDetailsResponse1>(HttpStatus.NOT_IMPLEMENTED);
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     private OBWriteDomesticStandingOrderResponse6 responseEntity(FRDomesticStandingOrderPaymentSubmission frPaymentSubmission, FRDomesticStandingOrderConsent frDomesticStandingOrderConsent) {
+        FRReadRefundAccount readRefundAccount = frDomesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getReadRefundAccount();
+        FRWriteDomesticStandingOrderDataInitiation initiation = frPaymentSubmission.getDomesticStandingOrder().getData().getInitiation();
+        Optional<FRDomesticResponseDataRefund> refund = frDomesticResponseDataRefund(readRefundAccount, initiation);
 
-        OBWriteDomesticStandingOrderResponse6 obWriteDomesticStandingOrderResponse6 = new OBWriteDomesticStandingOrderResponse6()
+        return new OBWriteDomesticStandingOrderResponse6()
                 .data(new OBWriteDomesticStandingOrderResponse6Data()
                         .domesticStandingOrderId(frPaymentSubmission.getId())
-                        .initiation(toOBWriteDomesticStandingOrder3DataInitiation(frDomesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getInitiation()))
+                        .initiation(toOBWriteDomesticStandingOrderConsentResponse6DataInitiation(initiation))
                         .creationDateTime(frDomesticStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(frDomesticStandingOrderConsent.getStatusUpdate())
                         .status(toOBWriteDomesticStandingOrderResponse6DataStatus(frDomesticStandingOrderConsent.getStatus()))
-                        .debtor(toOBDebtorIdentification1(frDomesticStandingOrderConsent.getInitiation().getDebtorAccount()))
-                        .consentId(frDomesticStandingOrderConsent.getId()))
+                        .debtor(toOBCashAccountDebtor4(frDomesticStandingOrderConsent.getInitiation().getDebtorAccount()))
+                        .consentId(frDomesticStandingOrderConsent.getId())
+                        .refund(refund.map(FRResponseDataRefundConverter::toOBWriteDomesticResponse5DataRefund).orElse(null)))
                 .links(resourceLinkService.toSelfLink(frPaymentSubmission, discovery -> getVersion(discovery).getGetDomesticStandingOrder()))
                 .meta(new Meta());
-
-        // ZD: 55834 - https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/14
-        getOBWriteDomesticResponse5DataRefundInstance(
-                frDomesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getReadRefundAccount(),
-                toOBWriteDomesticStandingOrder3DataInitiation(frDomesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getInitiation())
-        ).ifPresent(dataRefund -> obWriteDomesticStandingOrderResponse6.getData().setRefund(dataRefund));
-
-        return obWriteDomesticStandingOrderResponse6;
     }
 
     protected OBDiscoveryAPILinksPayment4 getVersion(DiscoveryConfigurationProperties.PaymentApis discovery) {
