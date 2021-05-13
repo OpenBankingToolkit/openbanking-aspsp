@@ -1,6 +1,18 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[6891d6ec4fbeb64](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6891d6ec4fbeb64) Matt Wills *2021-05-12 11:54:03*
+32: Bumped parent pom to release version
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
+[9daa4c020e616a9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9daa4c020e616a9) Matt Wills *2021-05-12 11:53:24*
+32: Additional changes after regeneration of v3.1.7 datamodel (using Open API spec)
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
+[0336d2691fa87ce](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0336d2691fa87ce) Matt Wills *2021-05-12 11:53:24*
+32: v3.1.7 of Payments API controllers
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
 [79073ae9e7c4814](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/79073ae9e7c4814) JamieB *2021-05-11 08:02:35*
 Release candidate: prepare for next development iteration
 ## 1.3.3
