@@ -65,6 +65,11 @@ public class AccessTokenApiController implements AccessTokenApi {
     private JwtOverridingService jwtOverridingService;
     private TokenUsageService tokenUsageService;
 
+    private static final String CLIENT_ASSERTION = "client_assertion";
+    private static final String GRANT_TYPE = "grant_type";
+    private static final String CLIENT_ID = "client_id";
+    private static final String BASIC = "Basic";
+
     @Autowired
     public AccessTokenApiController(AMASPSPGateway amGateway, HeadLessAccessTokenService headLessAccessTokenService,
                                     TppStoreService tppStoreService, AMGatewayService amGatewayService,
@@ -86,10 +91,10 @@ public class AccessTokenApiController implements AccessTokenApi {
         AMGateway amGateway = this.amGateway;
         //The token endpoint can also be used as audience, as per OIDC spec
         if (clientIDAuthMethod.authMethod == OIDCConstants.TokenEndpointAuthMethods.PRIVATE_KEY_JWT) {
-            amGateway = amGatewayService.getAmGateway((String) paramMap.getFirst("client_assertion"));
+            amGateway = amGatewayService.getAmGateway((String) paramMap.getFirst(CLIENT_ASSERTION));
         }
-
-        OIDCConstants.GrantType grantType = OIDCConstants.GrantType.fromType((String) paramMap.getFirst("grant_type"));
+        // can throw a UnsupportedOIDCGrantTypeException
+        OIDCConstants.GrantType grantType = OIDCConstants.GrantType.fromType((String) paramMap.getFirst(GRANT_TYPE));
         ResponseEntity responseEntity;
         switch (grantType) {
             case HEADLESS_AUTH:
@@ -139,13 +144,13 @@ public class AccessTokenApiController implements AccessTokenApi {
         Tpp tpp = tppStoreService.findByClientId(tppIdFromMATLS).get();
         PairClientIDAuthMethod pairClientIDAuthMethod = new PairClientIDAuthMethod();
 
-        if (paramMap.get("client_assertion") != null) {
-            String clientAssertion = (String) paramMap.getFirst("client_assertion");
+        if (paramMap.get(CLIENT_ASSERTION) != null) {
+            String clientAssertion = (String) paramMap.getFirst(CLIENT_ASSERTION);
             log.debug("Read client ID from client assertion found: {}", clientAssertion);
             try {
                 SignedJWT jws = (SignedJWT) JWTParser.parse(clientAssertion);
                 pairClientIDAuthMethod.clientId = jws.getJWTClaimsSet().getSubject();
-                Object clientIDFromBody = paramMap.getFirst("client_id");
+                Object clientIDFromBody = paramMap.getFirst(CLIENT_ID);
                 if (clientIDFromBody != null
                         && !pairClientIDAuthMethod.clientId.equals(clientIDFromBody)) {
                     log.error("Client ID from the request body {} is not matching the client assertion sub {}", clientIDFromBody, pairClientIDAuthMethod.clientId);
@@ -165,7 +170,7 @@ public class AccessTokenApiController implements AccessTokenApi {
         } else if (authorization != null) {
             log.debug("Read client ID from client authorisation header: {}", authorization);
             pairClientIDAuthMethod.clientId = clientIDFromBasic(authorization);
-            Object clientIDFromBody = paramMap.getFirst("client_id");
+            Object clientIDFromBody = paramMap.getFirst(CLIENT_ID);
             if (clientIDFromBody != null
                     && !pairClientIDAuthMethod.clientId.equals(clientIDFromBody)) {
                 log.error("Client ID from the request body {} is not matching the client secret basic {}", clientIDFromBody, pairClientIDAuthMethod.clientId);
@@ -177,14 +182,14 @@ public class AccessTokenApiController implements AccessTokenApi {
             pairClientIDAuthMethod.authMethod = OIDCConstants.TokenEndpointAuthMethods.CLIENT_SECRET_BASIC;
         } else if (paramMap.get("client_secret") != null) {
             log.debug("Read client ID from client body parameter 'client_id'");
-            pairClientIDAuthMethod.clientId = (String) paramMap.getFirst("client_id");
+            pairClientIDAuthMethod.clientId = (String) paramMap.getFirst(CLIENT_ID);
             pairClientIDAuthMethod.authMethod = OIDCConstants.TokenEndpointAuthMethods.CLIENT_SECRET_POST;
         } else {
             log.debug("Read client ID from client body parameter 'client_id'");
             pairClientIDAuthMethod.authMethod = OIDCConstants.TokenEndpointAuthMethods.TLS_CLIENT_AUTH;
-            pairClientIDAuthMethod.clientId = (String) paramMap.getFirst("client_id");
+            pairClientIDAuthMethod.clientId = (String) paramMap.getFirst(CLIENT_ID);
         }
-
+        // can throw UnsupportedOIDCAuthMethodsException
         OIDCConstants.TokenEndpointAuthMethods authMethodsFromTpp = OIDCConstants.TokenEndpointAuthMethods.fromType(tpp.getRegistrationResponse().getTokenEndpointAuthMethod());
 
         if (!authMethodsFromTpp.equals(pairClientIDAuthMethod.authMethod)) {
@@ -204,9 +209,9 @@ public class AccessTokenApiController implements AccessTokenApi {
     }
 
     private String clientIDFromBasic(String authorization) {
-        if (authorization != null && authorization.startsWith("Basic")) {
+        if (authorization != null && authorization.startsWith(BASIC)) {
             // Authorization: Basic base64credentials
-            String base64Credentials = authorization.substring("Basic".length()).trim();
+            String base64Credentials = authorization.substring(BASIC.length()).trim();
             String credentials = new String(Base64.getDecoder().decode(base64Credentials),
                     Charset.forName("UTF-8"));
             // credentials = username:password

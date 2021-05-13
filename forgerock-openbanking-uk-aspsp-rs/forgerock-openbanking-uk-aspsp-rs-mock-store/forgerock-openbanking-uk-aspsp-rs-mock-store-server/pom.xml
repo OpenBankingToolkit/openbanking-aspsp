@@ -38,6 +38,10 @@
         <relativePath>../../../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <main.basedir.license>${project.parent.basedir}</main.basedir.license>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>com.forgerock.openbanking.uk</groupId>
