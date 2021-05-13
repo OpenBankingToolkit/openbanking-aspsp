@@ -18,6 +18,15 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
 - Added support to build module independently avoiding license error.
 - Added UnsupportedOIDCAuthMethodsException and UnsupportedOIDCGrantTypeException in custom handler
 Issue: https://github.com/ForgeCloud/ob-deploy/issues/742
+### GitHub [#397](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/397) Release/1.3.4
+[92492510eba8e77](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92492510eba8e77) Jorge Sanchez Perez *2021-05-14 08:05:45*
+Release/1.3.4 (#397)
+
+* changelog
+
+* Release candidate: prepare release 1.3.4
+
+* Release candidate: prepare for next development iteration
 [6891d6ec4fbeb64](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6891d6ec4fbeb64) Matt Wills *2021-05-12 11:54:03*
 32: Bumped parent pom to release version
 

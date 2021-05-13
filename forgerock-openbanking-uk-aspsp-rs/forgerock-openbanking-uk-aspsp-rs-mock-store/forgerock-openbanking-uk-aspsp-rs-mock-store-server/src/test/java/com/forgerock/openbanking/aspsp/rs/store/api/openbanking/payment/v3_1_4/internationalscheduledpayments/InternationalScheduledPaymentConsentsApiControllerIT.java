@@ -57,7 +57,7 @@ import uk.org.openbanking.datamodel.payment.*;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.*;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount2;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier2;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
@@ -242,7 +242,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
         initiation.setInstructionIdentification("ACME412");
         initiation.setEndToEndIdentification("FRESCO.21302.GFX.20");
         initiation.setInstructedAmount(aValidFRAmount());
-        initiation.setCreditorAccount(aValidFRAccount2());
+        initiation.setCreditorAccount(aValidFRAccountIdentifier2());
         initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         initiation.setRemittanceInformation(FRRemittanceInformation.builder().build());
         initiation.getExchangeRateInformation().setExpirationDateTime(null);

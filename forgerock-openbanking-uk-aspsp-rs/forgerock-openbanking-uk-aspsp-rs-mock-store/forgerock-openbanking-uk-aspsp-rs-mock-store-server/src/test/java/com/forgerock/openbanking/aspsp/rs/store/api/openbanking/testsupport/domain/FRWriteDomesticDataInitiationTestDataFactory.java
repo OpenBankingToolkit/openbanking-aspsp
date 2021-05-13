@@ -23,8 +23,8 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.dom
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.FRWriteDomesticDataInitiation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount2;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier2;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRPostalAddressTestDataFactory.aValidFRPostalAddress;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRemittanceInformationTestDataFactory.aValidFRRemittanceInformation;
@@ -37,8 +37,8 @@ public class FRWriteDomesticDataInitiationTestDataFactory {
                 .endToEndIdentification("12345")
                 .localInstrument("UK.OBIE.CHAPS")
                 .instructedAmount(aValidFRAmount())
-                .debtorAccount(aValidFRAccount())
-                .creditorAccount(aValidFRAccount2())
+                .debtorAccount(aValidFRAccountIdentifier())
+                .creditorAccount(aValidFRAccountIdentifier2())
                 .creditorPostalAddress(aValidFRPostalAddress())
                 .remittanceInformation(aValidFRRemittanceInformation())
                 .supplementaryData(FRSupplementaryData.builder().build());

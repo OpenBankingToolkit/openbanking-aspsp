@@ -55,6 +55,7 @@ import uk.org.openbanking.datamodel.fund.OBFundsConfirmationData1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -153,7 +154,7 @@ public class FundsConfirmationsApiControllerIT {
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
                 .data(new OBFundsConfirmationData1()
                         .consentId(consent.getId())
-                        .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("100,0").currency("GBP"))
+                        .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("100.00").currency("GBP"))
                         .reference("test1")
                 );
         given(fundsAvailabilityService.isFundsAvailable(any(), any())).willReturn(true);
@@ -213,7 +214,7 @@ public class FundsConfirmationsApiControllerIT {
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
                 .data(new OBFundsConfirmationData1()
                         .consentId(IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId())
-                        .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("100,0").currency("GBP"))
+                        .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("100.00").currency("GBP"))
                         .reference("test1")
                 );
 
@@ -254,6 +255,7 @@ public class FundsConfirmationsApiControllerIT {
         consent.setStatusUpdate(DateTime.now());
         consent.setStatus(ConsentStatusCode.AUTHORISED);
         consent.getFundsConfirmationConsent().setExpirationDateTime(DateTime.parse("2018-11-21T10:43:12.000Z"));
+        consent.getFundsConfirmationConsent().setDebtorAccount(aValidFRAccountIdentifier());
         fundsConfirmationConsentRepository.save(consent);
         return consent;
     }

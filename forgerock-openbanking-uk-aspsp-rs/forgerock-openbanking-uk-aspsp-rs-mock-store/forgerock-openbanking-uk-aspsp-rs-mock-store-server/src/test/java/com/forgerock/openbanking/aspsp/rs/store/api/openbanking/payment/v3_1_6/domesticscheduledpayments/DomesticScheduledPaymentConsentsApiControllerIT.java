@@ -51,17 +51,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.payment.OBSupplementaryData1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse4;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsentResponse5;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.*;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount2;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier2;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
@@ -218,7 +213,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
         initiation.setInstructionIdentification("ACME412");
         initiation.setEndToEndIdentification("FRESCO.21302.GFX.20");
         initiation.setInstructedAmount(aValidFRAmount());
-        initiation.setCreditorAccount(aValidFRAccount2());
+        initiation.setCreditorAccount(aValidFRAccountIdentifier2());
         initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         initiation.setRemittanceInformation(FRRemittanceInformation.builder().build());
     }
