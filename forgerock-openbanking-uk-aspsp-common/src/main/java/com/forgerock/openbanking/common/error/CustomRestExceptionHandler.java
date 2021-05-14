@@ -26,6 +26,8 @@ import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
+import com.forgerock.openbanking.model.error.UnsupportedOIDCAuthMethodsException;
+import com.forgerock.openbanking.model.error.UnsupportedOIDCGrantTypeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -153,7 +155,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class})
     public ResponseEntity<Object> handleMethodArgumentTypeMismatch(
             MethodArgumentTypeMismatchException ex, WebRequest request) {
         return handleOBErrorResponse(
@@ -213,7 +215,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
                         status,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
                         OBRIErrorType.REQUEST_MESSAGE_NOT_READABLE
-                                .toOBError1((ex.getCause()!=null) ? ex.getCause().getMessage() : ex.getMessage())
+                                .toOBError1((ex.getCause() != null) ? ex.getCause().getMessage() : ex.getMessage())
                 ),
                 request);
     }
@@ -281,7 +283,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, headers, status);
     }
 
-    @ExceptionHandler(value = { OBErrorResponseException.class })
+    @ExceptionHandler(value = {OBErrorResponseException.class})
     protected ResponseEntity<Object> handleOBErrorResponse(
             OBErrorResponseException ex, WebRequest request) {
 
@@ -296,7 +298,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
 
-    @ExceptionHandler(value = { OBErrorException.class})
+    @ExceptionHandler(value = {OBErrorException.class})
     protected ResponseEntity<Object> handleOBError(
             OBErrorException ex, WebRequest request) {
         HttpStatus httpStatus = ex.getObriErrorType().getHttpStatus();
@@ -309,10 +311,10 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // Required here because these programming errors can get lost in Spring handlers making debug very difficult
-    @ExceptionHandler(value = { IllegalArgumentException.class})
+    @ExceptionHandler(value = {IllegalArgumentException.class})
     protected ResponseEntity<Object> handleIllegalArgument(
             IllegalArgumentException ex, WebRequest request) {
-        log.error("Internal server error from an IllegalArgumentException", ex);
+        log.error("Internal server error from an {}", ex.getClass().getSimpleName(), ex);
         HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         return ResponseEntity.status(httpStatus).body(
                 new OBErrorResponse1()
@@ -321,7 +323,31 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
                         .message(httpStatus.getReasonPhrase()));
     }
 
-    @ExceptionHandler(value = { HttpMessageConversionException.class})
+    @ExceptionHandler(value = {UnsupportedOIDCGrantTypeException.class})
+    protected ResponseEntity<Object> handleUnsupportedOIDCGrantTypeException(
+            UnsupportedOIDCGrantTypeException ex, WebRequest request) {
+        log.error("Internal server error from an {}", ex.getClass().getSimpleName(), ex);
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        return ResponseEntity.status(httpStatus).body(
+                new OBErrorResponse1()
+                        .code(httpStatus.name())
+                        .id(String.valueOf(tracer.currentSpan().context().traceIdString()))
+                        .message(ex.getMessage()));
+    }
+
+    @ExceptionHandler(value = {UnsupportedOIDCAuthMethodsException.class})
+    protected ResponseEntity<Object> handleUnsupportedOIDCAuthMethodsException(
+            UnsupportedOIDCAuthMethodsException ex, WebRequest request) {
+        log.error("Internal server error from an {}", ex.getClass().getSimpleName(), ex);
+        HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        return ResponseEntity.status(httpStatus).body(
+                new OBErrorResponse1()
+                        .code(httpStatus.name())
+                        .id(String.valueOf(tracer.currentSpan().context().traceIdString()))
+                        .message(ex.getMessage()));
+    }
+
+    @ExceptionHandler(value = {HttpMessageConversionException.class})
     protected ResponseEntity<Object> handleHttpMessageConversionException(
             HttpMessageConversionException ex, WebRequest request) {
         log.debug("An invalid resource format ", ex);
@@ -330,8 +356,8 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
                         HttpStatus.BAD_REQUEST,
                         OBRIErrorResponseCategory.REQUEST_INVALID,
                         OBRIErrorType.INVALID_RESOURCE
-                                .toOBError1((ex.getCause()!=null) ?
-                                        ((ex.getCause().getCause() !=null) ? ex.getCause().getCause().getMessage():
+                                .toOBError1((ex.getCause() != null) ?
+                                        ((ex.getCause().getCause() != null) ? ex.getCause().getCause().getMessage() :
                                                 ex.getCause().getMessage())
                                         : ex.getMessage())
                 ),
@@ -339,7 +365,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     // Handle any 400 error from a downstream REST service
-    @ExceptionHandler(value = { HttpClientErrorException.class})
+    @ExceptionHandler(value = {HttpClientErrorException.class})
     protected ResponseEntity<OBErrorResponse1> handleHttpClientError(
             HttpClientErrorException ex, WebRequest request) {
         log.debug("HTTP client error exception from rs store", ex);

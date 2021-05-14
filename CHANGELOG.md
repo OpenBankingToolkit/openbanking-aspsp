@@ -1,6 +1,11 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#391](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/391) 32: Bumped version of parent pom to pull in minor fix to datamodel
+[0e5b86be2bf47ae](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0e5b86be2bf47ae) Matt Wills *2021-05-13 10:34:21*
+32: Bumped version of parent pom to pull in minor fix to datamodel (#391)
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
 [6891d6ec4fbeb64](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6891d6ec4fbeb64) Matt Wills *2021-05-12 11:54:03*
 32: Bumped parent pom to release version
 
