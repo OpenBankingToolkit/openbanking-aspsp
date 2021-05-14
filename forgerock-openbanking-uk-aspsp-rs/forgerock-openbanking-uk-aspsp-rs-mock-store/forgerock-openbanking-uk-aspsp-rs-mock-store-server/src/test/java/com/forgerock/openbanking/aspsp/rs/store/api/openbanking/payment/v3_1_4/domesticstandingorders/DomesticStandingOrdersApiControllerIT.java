@@ -56,12 +56,11 @@ import uk.org.openbanking.datamodel.payment.*;
 
 import java.util.UUID;
 
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount2;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier2;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBDomesticStandingOrder3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConverter.toOBWriteDomesticDomesticStandingOrder3;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -321,8 +320,8 @@ public class DomesticStandingOrdersApiControllerIT {
         initiation.setRecurringPaymentAmount(aValidFRAmount());
         initiation.setFinalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
         initiation.setFinalPaymentAmount(aValidFRAmount());
-        initiation.setDebtorAccount(aValidFRAccount());
-        initiation.setCreditorAccount(aValidFRAccount2());
+        initiation.setDebtorAccount(aValidFRAccountIdentifier());
+        initiation.setCreditorAccount(aValidFRAccountIdentifier2());
         initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
     }
 }

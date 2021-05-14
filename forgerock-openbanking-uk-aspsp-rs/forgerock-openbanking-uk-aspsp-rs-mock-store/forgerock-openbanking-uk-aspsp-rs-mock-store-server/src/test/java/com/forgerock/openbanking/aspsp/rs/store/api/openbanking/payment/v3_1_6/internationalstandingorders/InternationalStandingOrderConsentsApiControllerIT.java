@@ -57,8 +57,8 @@ import uk.org.openbanking.datamodel.payment.*;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.*;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount;
-import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountTestDataFactory.aValidFRAccount2;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier2;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
@@ -221,8 +221,8 @@ public class InternationalStandingOrderConsentsApiControllerIT {
         initiation.setInstructedAmount(aValidFRAmount());
         initiation.setCurrencyOfTransfer("GBP");
         initiation.setFinalPaymentDateTime(DateTime.now().withMillisOfSecond(0));
-        initiation.setDebtorAccount(aValidFRAccount());
-        initiation.setCreditorAccount(aValidFRAccount2());
+        initiation.setDebtorAccount(aValidFRAccountIdentifier());
+        initiation.setCreditorAccount(aValidFRAccountIdentifier2());
         initiation.setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
     }
 }

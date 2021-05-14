@@ -18,25 +18,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain;
+package com.forgerock.openbanking.aspsp.rs.api.funds.v3_1_7;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
+import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Controller;
 
-public class FRAccountTestDataFactory {
+@Controller("FundsConfirmationApiV3.1.7")
+public class FundsConfirmationApiController extends com.forgerock.openbanking.aspsp.rs.api.funds.v3_1_6.FundsConfirmationApiController implements FundsConfirmationApi {
 
-    public static FRAccountIdentifier aValidFRAccount() {
-        return FRAccountIdentifier.builder()
-                .schemeName("UK.OBIE.SortCodeAccountNumber")
-                .identification("40400411290112")
-                .name("Mr A Jones")
-                .build();
-    }
-
-    public static FRAccountIdentifier aValidFRAccount2() {
-        return FRAccountIdentifier.builder()
-                .schemeName("UK.OBIE.SortCodeAccountNumber")
-                .identification("40400422390112")
-                .name("Mrs B Smith")
-                .build();
+    public FundsConfirmationApiController(
+            RSEndpointWrapperService rsEndpointWrapperService,
+            @Qualifier("FundsConfirmationApiV3.1.2") com.forgerock.openbanking.aspsp.rs.api.funds.v3_1_2.FundsConfirmationApiController baseController
+    ) {
+        super(rsEndpointWrapperService, baseController);
     }
 }
+
