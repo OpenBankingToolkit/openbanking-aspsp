@@ -6,6 +6,18 @@ Changelog of Git Changelog Maven plugin.
 32: Bumped version of parent pom to pull in minor fix to datamodel (#391)
 
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
+### GitHub [#392](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/392) 742: token endpoint 500 error improvements
+[d1c2a4ea43d7d45](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d1c2a4ea43d7d45) Jorge Sanchez Perez *2021-05-14 07:38:05*
+742: token endpoint 500 error improvements (#392)
+
+- Bumped starter parent version 1.1.97
+- Bumped common version 1.1.4
+- Bumped clients version 1.1.4
+- Bumped jwkms version 1.1.83
+- Bumped auth version 1.0.71
+- Added support to build module independently avoiding license error.
+- Added UnsupportedOIDCAuthMethodsException and UnsupportedOIDCGrantTypeException in custom handler
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/742
 [6891d6ec4fbeb64](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6891d6ec4fbeb64) Matt Wills *2021-05-12 11:54:03*
 32: Bumped parent pom to release version
 
