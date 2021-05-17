@@ -27,6 +27,14 @@ Release/1.3.4 (#397)
 * Release candidate: prepare release 1.3.4
 
 * Release candidate: prepare for next development iteration
+[708ca312a764b16](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/708ca312a764b16) Matt Wills *2021-05-14 10:31:10*
+32: Bumped version of parent pom to include v3.1.7 of Events/Funds datamodel
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
+[7e7eac2b578b928](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7e7eac2b578b928) Matt Wills *2021-05-14 09:14:32*
+32: v3.1.7 of Events and Funds API
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
 [6891d6ec4fbeb64](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6891d6ec4fbeb64) Matt Wills *2021-05-12 11:54:03*
 32: Bumped parent pom to release version
 
