@@ -27,6 +27,10 @@ Release/1.3.4 (#397)
 * Release candidate: prepare release 1.3.4
 
 * Release candidate: prepare for next development iteration
+[764b09728e0b43b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/764b09728e0b43b) Matt Wills *2021-05-17 09:59:54*
+32: v3.1.7 Discovery config
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
 [708ca312a764b16](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/708ca312a764b16) Matt Wills *2021-05-14 10:31:10*
 32: Bumped version of parent pom to include v3.1.7 of Events/Funds datamodel
 
