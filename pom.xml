@@ -47,7 +47,7 @@
         <ob-common.version>1.1.4</ob-common.version>
         <ob-clients.version>1.1.4</ob-clients.version>
         <ob-jwkms.version>1.1.83</ob-jwkms.version>
-        <ob-auth.version>1.0.71</ob-auth.version>
+        <ob-auth.version>1.1.0</ob-auth.version>
         <maven-release-plugin.version>3.0.0-M1</maven-release-plugin.version>
         <main.basedir.license>${project.basedir}</main.basedir.license>
     </properties>
