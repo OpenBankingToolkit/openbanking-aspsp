@@ -27,6 +27,26 @@ Release/1.3.4 (#397)
 * Release candidate: prepare release 1.3.4
 
 * Release candidate: prepare for next development iteration
+### GitHub [#404](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/404) Release/1.4.0
+[e56fad339682b16](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e56fad339682b16) Jorge Sanchez Perez *2021-05-17 10:31:59*
+Release/1.4.0 (#404)
+
+* Release 1.4.0
+- Bumped common version 1.2.0
+- Bumped clients version 1.2.0
+- Bumped jwkms version 1.2.0
+- Bumped auth version 1.1.0
+- Upgrade aspsp version to 1.4.0
+
+* Release candidate: prepare release 1.4.0
+
+* Release candidate: prepare for next development iteration
+
+* changelog
+[9f3308ce4919304](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f3308ce4919304) Matt Wills *2021-05-18 10:12:41*
+32: Removed accidental import of org.bouncycastle.asn1.x500.style.RFC4519Style.postalAddress
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
 [764b09728e0b43b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/764b09728e0b43b) Matt Wills *2021-05-17 09:59:54*
 32: v3.1.7 Discovery config
 
