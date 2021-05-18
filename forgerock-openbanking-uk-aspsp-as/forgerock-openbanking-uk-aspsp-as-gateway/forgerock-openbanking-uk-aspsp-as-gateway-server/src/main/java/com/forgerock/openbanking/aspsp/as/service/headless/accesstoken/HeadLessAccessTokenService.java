@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.as.service.headless.accesstoken;
 
 import com.forgerock.openbanking.am.gateway.AMGateway;
-import com.forgerock.openbanking.aspsp.as.api.accesstoken.AccessTokenApiController;
 import com.forgerock.openbanking.aspsp.as.api.authorisation.redirect.AuthorisationApi;
+import com.forgerock.openbanking.aspsp.as.service.PairClientIDAuthMethod;
 import com.forgerock.openbanking.aspsp.as.service.headless.ParseUriUtils;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -51,7 +51,7 @@ public class HeadLessAccessTokenService {
     @Autowired
     private AuthorisationApi authorisationApi;
 
-    public ResponseEntity getAccessToken(AMGateway amGateway,  AccessTokenApiController.PairClientIDAuthMethod clientIDAuthMethod,
+    public ResponseEntity getAccessToken(AMGateway amGateway,  PairClientIDAuthMethod clientIDAuthMethod,
                                          MultiValueMap paramMap, HttpServletRequest request
     ) throws OBErrorResponseException, OBErrorException {
         ResponseEntity authorisation = authorisationApi.getAuthorisation(
@@ -107,7 +107,7 @@ public class HeadLessAccessTokenService {
         }
     }
 
-    private ResponseEntity exchangeCode(AMGateway amGateway, AccessTokenApiController.PairClientIDAuthMethod tokenEndpointAuthMethods, MultiValueMap paramMap, HttpServletRequest request, String code) throws OBErrorResponseException {
+    private ResponseEntity exchangeCode(AMGateway amGateway, PairClientIDAuthMethod tokenEndpointAuthMethods, MultiValueMap paramMap, HttpServletRequest request, String code) throws OBErrorResponseException {
         StringBuilder body = new StringBuilder();
         body.append("grant_type=authorization_code");
 

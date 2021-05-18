@@ -33,7 +33,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ConsentDecision {
-
     private String consentJwt;
     private String decision;
 }

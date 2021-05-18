@@ -22,14 +22,15 @@ package com.forgerock.openbanking.aspsp.as.service.headless.authorisation;
 
 import com.forgerock.openbanking.am.gateway.AMGateway;
 import com.forgerock.openbanking.am.services.AMAuthentication;
+import com.forgerock.openbanking.analytics.services.TokenUsageService;
 import com.forgerock.openbanking.aspsp.as.service.headless.ParseUriUtils;
 import com.forgerock.openbanking.common.conf.headless.HeadLessAuthProperties;
 import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
+import com.forgerock.openbanking.common.services.JwtOverridingService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
@@ -46,26 +47,43 @@ import java.util.Map;
 @Slf4j
 public class HeadLessAuthorisationService {
 
-    @Autowired
-    private RestTemplate restTemplate;
-    @Autowired
-    private AMAuthentication amAuthentication;
+    private final RestTemplate restTemplate;
+    private final AMAuthentication amAuthentication;
+    private final JwtOverridingService jwtOverridingService;
+    private final TokenUsageService tokenUsageService;
 
-    @Value("${dns.hosts.root}")
-    private String dnsHostRoot;
-    @Value("${scgw.port}")
-    private String scgwPort;
-    @Value("${rcs.internal-port}")
-    private String rcsPort;
-    @Value("${am.cookie.name}")
-    private String cookieName;
-    @Value("${am.matls-hostname}")
-    private String amMatlsHostname;
-    @Value("${am.internal.root}")
-    private String amRoot;
+    private final String dnsHostRoot;
+    private final String scgwPort;
+    private final String rcsPort;
+    private final String cookieName;
+    private final String amMatlsHostname;
+    private final String amRoot;
+    private final HeadLessAuthProperties headLessAuthProperties;
 
-    @Autowired
-    private HeadLessAuthProperties headLessAuthProperties;
+    public HeadLessAuthorisationService(RestTemplate restTemplate, AMAuthentication amAuthentication,
+                                        JwtOverridingService jwtOverridingService,
+                                        TokenUsageService tokenUsageService,
+                                        HeadLessAuthProperties headLessAuthProperties,
+                                        @Value("${dns.hosts.root}") String dnsHostRoot,
+                                        @Value("${scgw.port}") String scgwPort,
+                                        @Value("${rcs.internal-port}") String rcsPort,
+                                        @Value("${am.cookie.name}") String cookieName,
+                                        @Value("${am.matls-hostname}") String amMatlsHostname,
+                                        @Value("${am.internal.root}") String amRoot) {
+        this.restTemplate = restTemplate;
+        this.amAuthentication = amAuthentication;
+        this.jwtOverridingService = jwtOverridingService;
+        this.tokenUsageService = tokenUsageService;
+        this.dnsHostRoot = dnsHostRoot;
+        this.scgwPort = scgwPort;
+        this.rcsPort = rcsPort;
+        this.cookieName = cookieName;
+        this.amMatlsHostname = amMatlsHostname;
+        this.amRoot = amRoot;
+        this.headLessAuthProperties = headLessAuthProperties;
+    }
+
+
 
     public ResponseEntity getAuthorisation(
             AMGateway amGateway,
@@ -84,7 +102,8 @@ public class HeadLessAuthorisationService {
         }
         try {
             log.debug("Login to AM using the user username='{}' and password='{}'", username, password);
-            AMAuthentication.TokenResponse authenticate = amAuthentication.authenticate( username, password, "simple%20login");
+            AMAuthentication.TokenResponse authenticate = amAuthentication.authenticate( username, password,
+                    "simple%20login");
             log.debug("Successfully authenticated. The token id : '{}'", authenticate.getTokenId());
 
             UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(amRoot)
@@ -110,14 +129,26 @@ public class HeadLessAuthorisationService {
         }
     }
 
-    private String getConsentRequest(AMGateway amGateway, String amAuthorizationEndpoint, AMAuthentication.TokenResponse authenticate) throws OBErrorResponseException, WrongResponseEntity {
+    private String getConsentRequest(AMGateway amGateway, String amAuthorizationEndpoint,
+                                     AMAuthentication.TokenResponse authenticate)
+            throws OBErrorResponseException, WrongResponseEntity {
         //Send the request to AM which will ask us to redirect to the RCS
         HttpHeaders amHeader = new HttpHeaders();
         amHeader.add("Cookie", cookieName + "=" + authenticate.getTokenId());
 
-        ResponseEntity<String> responseEntity = amGateway.toAM(amAuthorizationEndpoint, HttpMethod.GET, amHeader,
-                new ParameterizedTypeReference<String>() {}, null);
-        log.debug("Response received by AM: {}", responseEntity);
+        ResponseEntity<String> responseEntity = null;
+        try {
+            responseEntity = amGateway.toAM(amAuthorizationEndpoint, HttpMethod.GET, amHeader,
+                    new ParameterizedTypeReference<String>() {
+                    }, null);
+            log.debug("Response received by AM: {}", responseEntity);
+        } catch (Exception e){
+            log.error("getConsentRequest() Caught exception from AM.", e);
+            throw new OBErrorResponseException(
+                    OBRIErrorType.HEAD_LESS_AUTH_AS_ERROR_RECEIVED.getHttpStatus(),
+                    OBRIErrorResponseCategory.HEADLESS_AUTH,
+                    OBRIErrorType.HEAD_LESS_AUTH_AS_ERROR_RECEIVED.toOBError1(e.getMessage()));
+        }
 
         if (responseEntity.getStatusCode() != HttpStatus.FOUND) {
             throw new WrongResponseEntity(responseEntity);
@@ -144,7 +175,8 @@ public class HeadLessAuthorisationService {
         }
     }
 
-    private RedirectionAction getRedirectionActionFromRCS(AMAuthentication.TokenResponse authenticate, String consentRequest) {
+    private RedirectionAction getRedirectionActionFromRCS(AMAuthentication.TokenResponse authenticate,
+                                                          String consentRequest) {
         //Auto-approve consent via the RCS
         ParameterizedTypeReference<RedirectionAction> rcsPtr = new ParameterizedTypeReference<RedirectionAction>() {
         };

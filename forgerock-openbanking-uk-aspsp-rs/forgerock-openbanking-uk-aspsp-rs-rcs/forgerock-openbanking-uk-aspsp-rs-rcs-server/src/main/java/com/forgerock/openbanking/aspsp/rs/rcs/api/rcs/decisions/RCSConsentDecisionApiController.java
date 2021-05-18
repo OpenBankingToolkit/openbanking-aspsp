@@ -30,6 +30,7 @@ import com.forgerock.openbanking.common.conf.RcsConfiguration;
 import com.forgerock.openbanking.common.constants.RCSConstants;
 import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.ConsentDecision;
+import com.forgerock.openbanking.common.services.JwtOverridingService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.utils.JwsClaimsUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
@@ -62,45 +63,71 @@ import java.util.Optional;
 @Slf4j
 public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
 
-    @Autowired
-    private CryptoApiClient cryptoApiClient;
-    @Autowired
-    private RcsService rcsService;
-    @Autowired
-    private RcsConfiguration rcsConfiguration;
-    @Autowired
-    private AMOpenBankingConfiguration amOpenBankingConfiguration;
-    @Autowired
-    private RCSErrorService rcsErrorService;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private UserProfileService userProfileService;
-    @Autowired
-    private IntentTypeService intentTypeService;
-    @Autowired
-    private TppStoreService tppStoreService;
+    private final CryptoApiClient cryptoApiClient;
+    private final RcsService rcsService;
+    private final RcsConfiguration rcsConfiguration;
+    private final AMOpenBankingConfiguration amOpenBankingConfiguration;
+    private final RCSErrorService rcsErrorService;
+    private final ObjectMapper objectMapper;
+    private final UserProfileService userProfileService;
+    private final IntentTypeService intentTypeService;
+    private final TppStoreService tppStoreService;
+    private final JwtOverridingService jwtOverridingService;
 
+    @Autowired
+    public RCSConsentDecisionApiController(CryptoApiClient cryptoApiClient, RcsService rcsService,
+                                           RcsConfiguration rcsConfiguration,
+                                           AMOpenBankingConfiguration amOpenBankingConfiguration,
+                                           RCSErrorService rcsErrorService, ObjectMapper objectMapper,
+                                           UserProfileService userProfileService,
+                                           IntentTypeService intentTypeService, TppStoreService tppStoreService,
+                                           JwtOverridingService jwtOverridingService) {
+        this.cryptoApiClient = cryptoApiClient;
+        this.rcsService = rcsService;
+        this.rcsConfiguration = rcsConfiguration;
+        this.amOpenBankingConfiguration = amOpenBankingConfiguration;
+        this.rcsErrorService = rcsErrorService;
+        this.objectMapper = objectMapper;
+        this.userProfileService = userProfileService;
+        this.intentTypeService = intentTypeService;
+        this.tppStoreService = tppStoreService;
+        this.jwtOverridingService = jwtOverridingService;
+    }
+
+    /**
+     *
+     * @param consentDecisionSerialised
+     * @param ssoToken
+     * @return
+     * @throws OBErrorException
+     */
     @Override
     public ResponseEntity decisionAccountSharing(
             @RequestBody String consentDecisionSerialised,
             @CookieValue(value = "${am.cookie.name}") String ssoToken) throws OBErrorException {
-
+        log.debug("decisionAccountSharing() consentDecisionSerialised is {}", consentDecisionSerialised);
 
         //Send a Consent response JWT to the initial request, which is define in the code
-        if (consentDecisionSerialised == null) {
+        if ( consentDecisionSerialised == null || consentDecisionSerialised.isEmpty()) {
             log.debug("Consent decision is empty");
             return rcsErrorService.error(OBRIErrorType.RCS_CONSENT_DECISION_EMPTY);
         }
+
         ConsentDecision consentDecision;
-        String consentRequestJwt;
         try {
             consentDecision = objectMapper.readValue(consentDecisionSerialised, ConsentDecision.class);
-            consentRequestJwt = consentDecision.getConsentJwt();
         } catch (IOException e) {
             log.error("Remote consent decisions invalid", e);
             throw new OBErrorException(OBRIErrorType.RCS_CONSENT_DECISIONS_FORMAT, e.getMessage());
         }
+
+        String consentRequestJwt = consentDecision.getConsentJwt();
+        if(consentRequestJwt == null || consentRequestJwt.isEmpty() || consentRequestJwt.isBlank()){
+            log.error("Remote consent decisions invalid - consentRequestJwt is null ");
+            throw new OBErrorException(OBRIErrorType.RCS_CONSENT_DECISIONS_FORMAT,  "consentRequestJwt was null or " +
+                    "empty");
+        }
+
         try {
             try {
                 log.debug("Received an accept consent request");
@@ -112,7 +139,7 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
                 boolean decision = RCSConstants.Decision.ALLOW.equals(consentDecision.getDecision());
                 log.debug("The decision is '{}'", decision);
 
-                //here is a good time to actually saved that the consent has been approved by our resource owner
+                //here is a good time to actually save that the consent has been approved by our resource owner
                 Claims claims = JwsClaimsUtils.getClaims(consentContextJwt);
                 String intentId = claims.getIdTokenClaims().get(OpenBankingConstants.IdTokenClaim.INTENT_ID)
                         .getValue();
@@ -125,10 +152,16 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
 
 
                 ConsentDecisionDelegate consentDecisionDelegate = intentTypeService.getConsentDecision(intentId);
+                if(consentDecisionDelegate == null){
+                    log.error("No Consent Decision Delegate available from the intent type Service.");
+                    throw new OBErrorException(OBRIErrorType.RCS_CONSENT_REQUEST_INVALID,
+                            "Invalid intent ID? '" + intentId + "'");
+                }
+
                 //Verify consent is own by the right TPP
                 String tppIdBehindConsent = consentDecisionDelegate.getTppIdBehindConsent();
                 Optional<Tpp> isTpp = tppStoreService.findById(tppIdBehindConsent);
-                if (!isTpp.isPresent()) {
+                if (isTpp.isEmpty()) {
                     log.error("The TPP '{}' that created this intent id '{}' doesn't exist anymore.", tppIdBehindConsent, intentId);
                     return rcsErrorService.error(OBRIErrorType.RCS_CONSENT_REQUEST_NOT_FOUND_TPP,
                             tppIdBehindConsent, intentId, clientId);
@@ -158,11 +191,12 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
                 consentDecisionDelegate.consentDecision(consentDecisionSerialised, decision);
 
                 log.debug("Redirect the resource owner to the original oauth2/openid request but this time, with the " +
-                        "consent response jwt '{}'.", consentContextJwt);
+                        "consent response jwt '{}'.", consentContextJwt.toString());
                 String consentJwt = rcsService.generateRCSConsentResponse(rcsConfiguration,
                         amOpenBankingConfiguration, csrf, decision, scopes, clientId);
 
-                ResponseEntity responseEntity = rcsService.sendRCSResponseToAM(ssoToken, RedirectionAction.builder()
+                ResponseEntity responseEntity = rcsService.sendRCSResponseToAM(ssoToken,
+                        RedirectionAction.builder()
                         .redirectUri(redirectUri)
                         .consentJwt(consentJwt)
                         .requestMethod(HttpMethod.POST)
@@ -170,11 +204,21 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
                 log.debug("Response received from AM: {}", responseEntity);
 
                 if (responseEntity.getStatusCode() != HttpStatus.FOUND) {
-                    log.error("When sending the consent response {} to AM, it failed to returned a 302", consentJwt, responseEntity);
+                    log.error("When sending the consent response {} to AM, it failed to returned a 302. response '{}' ",
+                            consentJwt, responseEntity);
                     throw new OBErrorException(OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE);
                 }
 
-                String location = responseEntity.getHeaders().getFirst("Location");
+                ResponseEntity rewrittenResponseEntity = null;
+                try {
+                    rewrittenResponseEntity =
+                            jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(responseEntity);
+                } catch (JwtOverridingService.AccessTokenReWriteException e){
+                    log.info("decisionAccountSharing() Failed to re-write id_token", e);
+                    throw new OBErrorException(OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE);
+                }
+
+                String location = rewrittenResponseEntity.getHeaders().getFirst("Location");
                 log.debug("The redirection to the consent page should be in the location '{}'", location);
 
                 return ResponseEntity.ok(RedirectionAction.builder()

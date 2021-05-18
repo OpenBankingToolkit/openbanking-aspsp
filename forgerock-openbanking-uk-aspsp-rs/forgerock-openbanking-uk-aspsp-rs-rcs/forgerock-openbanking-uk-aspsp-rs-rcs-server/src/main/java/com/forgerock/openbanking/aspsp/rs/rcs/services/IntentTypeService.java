@@ -99,7 +99,7 @@ public class IntentTypeService {
                 return accountAccessConsentDecisionApiController.create(intentId);
             case PAYMENT_SINGLE_REQUEST:
                 log.debug("It's a payment consent request");
-            return singlePaymentConsentDecisionService.create(intentId);
+                return singlePaymentConsentDecisionService.create(intentId);
             case PAYMENT_INTERNATIONAL_CONSENT:
                 log.debug("It's a international payment consent request");
                 return internationalPaymentConsentDecisionFactory.create(intentId);

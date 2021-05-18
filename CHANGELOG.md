@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+
+e9a36d40... 745: Make hybrid flow redirect uri's id_token verifiable
+
 ### GitHub [#391](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/391) 32: Bumped version of parent pom to pull in minor fix to datamodel
 [0e5b86be2bf47ae](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0e5b86be2bf47ae) Matt Wills *2021-05-13 10:34:21*
 32: Bumped version of parent pom to pull in minor fix to datamodel (#391)
@@ -52,6 +55,7 @@ Release/1.4.1 (#406)
 * Release candidate: prepare release 1.4.1
 
 * Release candidate: prepare for next development iteration
+
 [75f094eb79dcb7c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/75f094eb79dcb7c) Matt Wills *2021-05-24 13:36:57*
 33: v3.1.8 of Events and Funds Confirmation APIs
 
@@ -71,6 +75,7 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/33
 - Fixes prior to new v3.1.8 controller classes and interfaces
 
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/76
+
 [9f3308ce4919304](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f3308ce4919304) Matt Wills *2021-05-18 10:12:41*
 32: Removed accidental import of org.bouncycastle.asn1.x500.style.RFC4519Style.postalAddress
 
