@@ -29,8 +29,6 @@ import uk.org.openbanking.datamodel.account.OBPostalAddress8;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.postalAddress;
-
 public class FRAccountPostalAddressConverter {
 
     // OB to FR
@@ -41,7 +39,7 @@ public class FRAccountPostalAddressConverter {
     }
 
     public static FRPostalAddress toFRPostalAddress(OBPostalAddress8 address) {
-        return postalAddress == null ? null : FRPostalAddress.builder()
+        return address == null ? null : FRPostalAddress.builder()
                 .addressType(toAddressTypeCode(address.getAddressType()))
                 .streetName(address.getStreetName())
                 .buildingNumber(address.getBuildingNumber())
@@ -54,7 +52,7 @@ public class FRAccountPostalAddressConverter {
     }
 
     public static FRPostalAddress toFRPostalAddress(OBParty2Address address) {
-        return postalAddress == null ? null : FRPostalAddress.builder()
+        return address == null ? null : FRPostalAddress.builder()
                 .addressType(toAddressTypeCode(address.getAddressType()))
                 .streetName(address.getStreetName())
                 .buildingNumber(address.getBuildingNumber())
@@ -66,18 +64,18 @@ public class FRAccountPostalAddressConverter {
                 .build();
     }
 
-    public static FRPostalAddress toFRPostalAddress(OBPostalAddress6 postalAddress) {
-        return postalAddress == null ? null : FRPostalAddress.builder()
-                .addressType(toAddressTypeCode(postalAddress.getAddressType()))
-                .department(postalAddress.getDepartment())
-                .subDepartment(postalAddress.getSubDepartment())
-                .streetName(postalAddress.getStreetName())
-                .buildingNumber(postalAddress.getBuildingNumber())
-                .postCode(postalAddress.getPostCode())
-                .townName(postalAddress.getTownName())
-                .countrySubDivision(postalAddress.getCountrySubDivision())
-                .country(postalAddress.getCountry())
-                .addressLine(postalAddress.getAddressLine())
+    public static FRPostalAddress toFRPostalAddress(OBPostalAddress6 address) {
+        return address == null ? null : FRPostalAddress.builder()
+                .addressType(toAddressTypeCode(address.getAddressType()))
+                .department(address.getDepartment())
+                .subDepartment(address.getSubDepartment())
+                .streetName(address.getStreetName())
+                .buildingNumber(address.getBuildingNumber())
+                .postCode(address.getPostCode())
+                .townName(address.getTownName())
+                .countrySubDivision(address.getCountrySubDivision())
+                .country(address.getCountry())
+                .addressLine(address.getAddressLine())
                 .build();
     }
 
@@ -98,42 +96,42 @@ public class FRAccountPostalAddressConverter {
                 .collect(Collectors.toList());
     }
 
-    public static OBPostalAddress6 toOBPostalAddress6(FRPostalAddress postalAddress) {
-        return postalAddress == null ? null : new OBPostalAddress6()
-                .addressType(toOBAddressTypeCode(postalAddress.getAddressType()))
-                .department(postalAddress.getDepartment())
-                .subDepartment(postalAddress.getSubDepartment())
-                .streetName(postalAddress.getStreetName())
-                .buildingNumber(postalAddress.getBuildingNumber())
-                .postCode(postalAddress.getPostCode())
-                .townName(postalAddress.getTownName())
-                .countrySubDivision(postalAddress.getCountrySubDivision())
-                .country(postalAddress.getCountry())
-                .addressLine(postalAddress.getAddressLine());
+    public static OBPostalAddress6 toOBPostalAddress6(FRPostalAddress address) {
+        return address == null ? null : new OBPostalAddress6()
+                .addressType(toOBAddressTypeCode(address.getAddressType()))
+                .department(address.getDepartment())
+                .subDepartment(address.getSubDepartment())
+                .streetName(address.getStreetName())
+                .buildingNumber(address.getBuildingNumber())
+                .postCode(address.getPostCode())
+                .townName(address.getTownName())
+                .countrySubDivision(address.getCountrySubDivision())
+                .country(address.getCountry())
+                .addressLine(address.getAddressLine());
     }
 
-    public static OBPostalAddress8 toOBPostalAddress8(FRPostalAddress postalAddress) {
-        return postalAddress == null ? null : new OBPostalAddress8()
-                .addressType(toOBAddressTypeCode(postalAddress.getAddressType()))
-                .addressLine(postalAddress.getAddressLine())
-                .streetName(postalAddress.getStreetName())
-                .buildingNumber(postalAddress.getBuildingNumber())
-                .postCode(postalAddress.getPostCode())
-                .townName(postalAddress.getTownName())
-                .countrySubDivision(postalAddress.getCountrySubDivision())
-                .country(postalAddress.getCountry());
+    public static OBPostalAddress8 toOBPostalAddress8(FRPostalAddress address) {
+        return address == null ? null : new OBPostalAddress8()
+                .addressType(toOBAddressTypeCode(address.getAddressType()))
+                .addressLine(address.getAddressLine())
+                .streetName(address.getStreetName())
+                .buildingNumber(address.getBuildingNumber())
+                .postCode(address.getPostCode())
+                .townName(address.getTownName())
+                .countrySubDivision(address.getCountrySubDivision())
+                .country(address.getCountry());
     }
 
-    private static OBParty2Address toOBParty2Address(FRPostalAddress postalAddress) {
-        return postalAddress == null ? null : new OBParty2Address()
-                .addressType(toOBAddressTypeCode(postalAddress.getAddressType()))
-                .addressLine(postalAddress.getAddressLine())
-                .streetName(postalAddress.getStreetName())
-                .buildingNumber(postalAddress.getBuildingNumber())
-                .postCode(postalAddress.getPostCode())
-                .townName(postalAddress.getTownName())
-                .countrySubDivision(postalAddress.getCountrySubDivision())
-                .country(postalAddress.getCountry());
+    private static OBParty2Address toOBParty2Address(FRPostalAddress address) {
+        return address == null ? null : new OBParty2Address()
+                .addressType(toOBAddressTypeCode(address.getAddressType()))
+                .addressLine(address.getAddressLine())
+                .streetName(address.getStreetName())
+                .buildingNumber(address.getBuildingNumber())
+                .postCode(address.getPostCode())
+                .townName(address.getTownName())
+                .countrySubDivision(address.getCountrySubDivision())
+                .country(address.getCountry());
     }
 
     public static OBAddressTypeCode toOBAddressTypeCode(FRPostalAddress.AddressTypeCode addressType) {
