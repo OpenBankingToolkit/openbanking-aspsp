@@ -58,7 +58,7 @@ import static com.forgerock.openbanking.common.model.openbanking.persistence.pay
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toOBWriteDomesticConsent3DataSCASupportData;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBWriteDomesticScheduledConsentResponse3DataPermission;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBExternalPermissions2Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduled2DataInitiation;
@@ -153,7 +153,7 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
                         .creationDateTime(domesticScheduledConsent.getCreated())
                         .statusUpdateDateTime(domesticScheduledConsent.getStatusUpdate())
                         .consentId(domesticScheduledConsent.getId())
-                        .permission(toOBWriteDomesticScheduledConsentResponse3DataPermission(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission()))
+                        .permission(toOBExternalPermissions2Code(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission()))
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation()))
                         .scASupportData(toOBWriteDomesticConsent3DataSCASupportData(domesticScheduledConsent.getDomesticScheduledConsent().getData().getScASupportData()))
                 )

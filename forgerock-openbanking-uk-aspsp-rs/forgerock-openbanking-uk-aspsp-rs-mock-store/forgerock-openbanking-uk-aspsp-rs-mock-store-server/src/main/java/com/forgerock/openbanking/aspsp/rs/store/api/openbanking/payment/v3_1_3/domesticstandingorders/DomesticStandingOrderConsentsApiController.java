@@ -57,7 +57,7 @@ import java.util.Optional;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_3.ResponseStatusCodeConverter.toOBWriteDomesticStandingOrderConsentResponse4DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBWriteDomesticStandingOrderConsentResponse4DataPermission;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBExternalPermissions2Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3DataInitiation;
@@ -151,7 +151,7 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
                         .creationDateTime(domesticStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(domesticStandingOrderConsent.getStatusUpdate())
                         .consentId(domesticStandingOrderConsent.getId())
-                        .permission(toOBWriteDomesticStandingOrderConsentResponse4DataPermission(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getPermission()))
+                        .permission(toOBExternalPermissions2Code(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getPermission()))
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getAuthorisation()))
                 )
                 .links(resourceLinkService.toSelfLink(domesticStandingOrderConsent, discovery -> getVersion(discovery).getGetDomesticStandingOrderConsent()))

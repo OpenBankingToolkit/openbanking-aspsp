@@ -54,12 +54,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseReadRefundAccountConverter.toOBWriteDomesticStandingOrderConsentResponse5DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.ResponseReadRefundAccountConverter.toOBReadRefundAccountEnum;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseStatusCodeConverter.toOBWriteDomesticStandingOrderConsentResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBWriteDomesticStandingOrderConsentResponse5DataPermission;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBExternalPermissions2Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toFRWriteDomesticStandingOrderConsent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticStandingOrderConsentConverter.toOBWriteDomesticStandingOrder3DataInitiation;
 
@@ -147,13 +147,13 @@ public class DomesticStandingOrderConsentsApiController implements DomesticStand
     private OBWriteDomesticStandingOrderConsentResponse5 responseEntity(FRDomesticStandingOrderConsent domesticStandingOrderConsent) {
         return new OBWriteDomesticStandingOrderConsentResponse5()
                 .data(new OBWriteDomesticStandingOrderConsentResponse5Data()
-                        .readRefundAccount(toOBWriteDomesticStandingOrderConsentResponse5DataReadRefundAccount(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getReadRefundAccount()))
+                        .readRefundAccount(toOBReadRefundAccountEnum(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getReadRefundAccount()))
                         .initiation(toOBWriteDomesticStandingOrder3DataInitiation(domesticStandingOrderConsent.getInitiation()))
                         .status(toOBWriteDomesticStandingOrderConsentResponse5DataStatus(domesticStandingOrderConsent.getStatus()))
                         .creationDateTime(domesticStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(domesticStandingOrderConsent.getStatusUpdate())
                         .consentId(domesticStandingOrderConsent.getId())
-                        .permission(toOBWriteDomesticStandingOrderConsentResponse5DataPermission(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getPermission()))
+                        .permission(toOBExternalPermissions2Code(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getPermission()))
                         .authorisation(toOBWriteDomesticConsent4DataAuthorisation(domesticStandingOrderConsent.getDomesticStandingOrderConsent().getData().getAuthorisation()))
                 )
                 .links(resourceLinkService.toSelfLink(domesticStandingOrderConsent, discovery -> getVersion(discovery).getGetDomesticStandingOrderConsent()))

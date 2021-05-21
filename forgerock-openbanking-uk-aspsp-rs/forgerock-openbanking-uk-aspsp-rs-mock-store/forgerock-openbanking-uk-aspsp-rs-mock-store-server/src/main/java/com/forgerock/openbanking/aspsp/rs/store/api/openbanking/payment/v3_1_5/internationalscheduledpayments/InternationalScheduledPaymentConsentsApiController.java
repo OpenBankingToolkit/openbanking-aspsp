@@ -53,14 +53,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseReadRefundAccountConverter.toOBWriteInternationalScheduledConsentResponse6DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.ResponseReadRefundAccountConverter.toOBReadRefundAccountEnum;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteInternationalScheduledConsentResponse6DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse6DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBWriteInternationalScheduledConsentResponse6DataPermission;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBExternalPermissions2Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledConsent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduledConsentResponse6DataInitiation;
 
@@ -185,14 +185,14 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         OBWriteInternationalScheduledConsentResponse6DataInitiation initiation = toOBWriteInternationalScheduledConsentResponse6DataInitiation(internationalScheduledConsent.getInitiation());
         return new OBWriteInternationalScheduledConsentResponse6()
                 .data(new OBWriteInternationalScheduledConsentResponse6Data()
-                        .readRefundAccount(toOBWriteInternationalScheduledConsentResponse6DataReadRefundAccount(internationalScheduledConsent.getInternationalScheduledConsent().getData().getReadRefundAccount()))
+                        .readRefundAccount(toOBReadRefundAccountEnum(internationalScheduledConsent.getInternationalScheduledConsent().getData().getReadRefundAccount()))
                         .initiation(initiation)
                         .status(toOBWriteInternationalScheduledConsentResponse6DataStatus(internationalScheduledConsent.getStatus()))
                         .creationDateTime(internationalScheduledConsent.getCreated())
                         .statusUpdateDateTime(internationalScheduledConsent.getStatusUpdate())
                         .consentId(internationalScheduledConsent.getId())
                         .exchangeRateInformation(toOBWriteInternationalConsentResponse6DataExchangeRateInformation(internationalScheduledConsent.getCalculatedExchangeRate()))
-                        .permission(toOBWriteInternationalScheduledConsentResponse6DataPermission(internationalScheduledConsent.internationalScheduledConsent.getData().getPermission()))
+                        .permission(toOBExternalPermissions2Code(internationalScheduledConsent.internationalScheduledConsent.getData().getPermission()))
                         .expectedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                         .authorisation(toOBWriteDomesticConsent4DataAuthorisation(internationalScheduledConsent.getInternationalScheduledConsent().getData().getAuthorisation()))
                         .debtor(toOBCashAccountDebtor4(internationalScheduledConsent.getInitiation().getDebtorAccount()))

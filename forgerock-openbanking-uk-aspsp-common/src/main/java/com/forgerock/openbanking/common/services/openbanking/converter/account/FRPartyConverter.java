@@ -77,7 +77,7 @@ public class FRPartyConverter {
                 .name(party.getName())
                 .fullLegalName(party.getFullLegalName())
                 .legalStructure(party.getLegalStructure())
-                .beneficialOwnership(party.isBeneficialOwnership())
+                //.beneficialOwnership(party.isBeneficialOwnership())
                 .accountRole(party.getAccountRole())
                 .emailAddress(party.getEmailAddress())
                 .phone(party.getPhone())

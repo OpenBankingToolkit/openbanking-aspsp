@@ -23,9 +23,7 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataSCASupportData;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataSCASupportData.FRAppliedAuthenticationApproach;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRDataSCASupportData.FRRequestedSCAExemptionType;
-import uk.org.openbanking.datamodel.payment.OBSCASupportData1;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent3DataSCASupportData;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4DataSCASupportData;
+import uk.org.openbanking.datamodel.payment.*;
 
 public class FRDataSCASupportDataConverter {
 
@@ -54,73 +52,41 @@ public class FRDataSCASupportDataConverter {
                 .build();
     }
 
-    public static FRAppliedAuthenticationApproach toFRAppliedAuthenticationApproach(OBWriteDomesticConsent3DataSCASupportData.AppliedAuthenticationApproachEnum appliedAuthenticationApproach) {
+    public static FRAppliedAuthenticationApproach toFRAppliedAuthenticationApproach(OBAppliedAuthenticationApproachEnum appliedAuthenticationApproach) {
         return appliedAuthenticationApproach == null ? null : FRAppliedAuthenticationApproach.valueOf(appliedAuthenticationApproach.name());
     }
 
-    public static FRAppliedAuthenticationApproach toFRAppliedAuthenticationApproach(OBWriteDomesticConsent4DataSCASupportData.AppliedAuthenticationApproachEnum appliedAuthenticationApproach) {
-        return appliedAuthenticationApproach == null ? null : FRAppliedAuthenticationApproach.valueOf(appliedAuthenticationApproach.name());
-    }
-
-    public static FRAppliedAuthenticationApproach toFRAppliedAuthenticationApproach(OBSCASupportData1.AppliedAuthenticationApproachEnum appliedAuthenticationApproach) {
-        return appliedAuthenticationApproach == null ? null : FRAppliedAuthenticationApproach.valueOf(appliedAuthenticationApproach.name());
-    }
-
-    public static FRRequestedSCAExemptionType toFRRequestedSCAExemptionType(OBWriteDomesticConsent3DataSCASupportData.RequestedSCAExemptionTypeEnum requestedSCAExemptionType) {
-        return requestedSCAExemptionType == null ? null : FRRequestedSCAExemptionType.valueOf(requestedSCAExemptionType.name());
-    }
-
-    public static FRRequestedSCAExemptionType toFRRequestedSCAExemptionType(OBWriteDomesticConsent4DataSCASupportData.RequestedSCAExemptionTypeEnum requestedSCAExemptionType) {
-        return requestedSCAExemptionType == null ? null : FRRequestedSCAExemptionType.valueOf(requestedSCAExemptionType.name());
-    }
-
-    public static FRRequestedSCAExemptionType toFRRequestedSCAExemptionType(OBSCASupportData1.RequestedSCAExemptionTypeEnum requestedSCAExemptionType) {
+    public static FRRequestedSCAExemptionType toFRRequestedSCAExemptionType(OBRequestedSCAExemptionTypeEnum requestedSCAExemptionType) {
         return requestedSCAExemptionType == null ? null : FRRequestedSCAExemptionType.valueOf(requestedSCAExemptionType.name());
     }
 
     // FR to OB
     public static OBWriteDomesticConsent3DataSCASupportData toOBWriteDomesticConsent3DataSCASupportData(FRDataSCASupportData scASupportData) {
         return scASupportData == null ? null : new OBWriteDomesticConsent3DataSCASupportData()
-                .requestedSCAExemptionType(to3DataRequestedSCAExemptionType(scASupportData.getRequestedSCAExemptionType()))
-                .appliedAuthenticationApproach(to3DataAppliedAuthenticationApproach(scASupportData.getAppliedAuthenticationApproach()))
+                .requestedSCAExemptionType(toOBRequestedSCAExemptionTypeEnum(scASupportData.getRequestedSCAExemptionType()))
+                .appliedAuthenticationApproach(toOBAppliedAuthenticationApproachEnum(scASupportData.getAppliedAuthenticationApproach()))
                 .referencePaymentOrderId(scASupportData.getReferencePaymentOrderId());
     }
 
     public static OBWriteDomesticConsent4DataSCASupportData toOBWriteDomesticConsent4DataSCASupportData(FRDataSCASupportData scASupportData) {
         return scASupportData == null ? null : new OBWriteDomesticConsent4DataSCASupportData()
-                .requestedSCAExemptionType(to4DataRequestedSCAExemptionType(scASupportData.getRequestedSCAExemptionType()))
-                .appliedAuthenticationApproach(to4DataAppliedAuthenticationApproach(scASupportData.getAppliedAuthenticationApproach()))
+                .requestedSCAExemptionType(toOBRequestedSCAExemptionTypeEnum(scASupportData.getRequestedSCAExemptionType()))
+                .appliedAuthenticationApproach(toOBAppliedAuthenticationApproachEnum(scASupportData.getAppliedAuthenticationApproach()))
                 .referencePaymentOrderId(scASupportData.getReferencePaymentOrderId());
     }
 
     public static OBSCASupportData1 toOBSCASupportData1(FRDataSCASupportData scASupportData) {
         return scASupportData == null ? null : new OBSCASupportData1()
-                .requestedSCAExemptionType(toOBSCASupportData1RequestedSCAExemptionType(scASupportData.getRequestedSCAExemptionType()))
-                .appliedAuthenticationApproach(toOBSCASupportData1AppliedAuthenticationApproach(scASupportData.getAppliedAuthenticationApproach()))
+                .requestedSCAExemptionType(toOBRequestedSCAExemptionTypeEnum(scASupportData.getRequestedSCAExemptionType()))
+                .appliedAuthenticationApproach(toOBAppliedAuthenticationApproachEnum(scASupportData.getAppliedAuthenticationApproach()))
                 .referencePaymentOrderId(scASupportData.getReferencePaymentOrderId());
     }
 
-    public static OBWriteDomesticConsent3DataSCASupportData.RequestedSCAExemptionTypeEnum to3DataRequestedSCAExemptionType(FRRequestedSCAExemptionType requestedSCAExemptionType) {
-        return requestedSCAExemptionType == null ? null : OBWriteDomesticConsent3DataSCASupportData.RequestedSCAExemptionTypeEnum.valueOf(requestedSCAExemptionType.name());
+    public static OBRequestedSCAExemptionTypeEnum toOBRequestedSCAExemptionTypeEnum(FRRequestedSCAExemptionType requestedSCAExemptionType) {
+        return requestedSCAExemptionType == null ? null : OBRequestedSCAExemptionTypeEnum.valueOf(requestedSCAExemptionType.name());
     }
 
-    public static OBWriteDomesticConsent4DataSCASupportData.RequestedSCAExemptionTypeEnum to4DataRequestedSCAExemptionType(FRRequestedSCAExemptionType requestedSCAExemptionType) {
-        return requestedSCAExemptionType == null ? null : OBWriteDomesticConsent4DataSCASupportData.RequestedSCAExemptionTypeEnum.valueOf(requestedSCAExemptionType.name());
-    }
-
-    public static OBSCASupportData1.RequestedSCAExemptionTypeEnum toOBSCASupportData1RequestedSCAExemptionType(FRRequestedSCAExemptionType requestedSCAExemptionType) {
-        return requestedSCAExemptionType == null ? null : OBSCASupportData1.RequestedSCAExemptionTypeEnum.valueOf(requestedSCAExemptionType.name());
-    }
-
-    public static OBWriteDomesticConsent3DataSCASupportData.AppliedAuthenticationApproachEnum to3DataAppliedAuthenticationApproach(FRAppliedAuthenticationApproach appliedAuthenticationApproach) {
-        return appliedAuthenticationApproach == null ? null : OBWriteDomesticConsent3DataSCASupportData.AppliedAuthenticationApproachEnum.valueOf(appliedAuthenticationApproach.name());
-    }
-
-    public static OBWriteDomesticConsent4DataSCASupportData.AppliedAuthenticationApproachEnum to4DataAppliedAuthenticationApproach(FRAppliedAuthenticationApproach appliedAuthenticationApproach) {
-        return appliedAuthenticationApproach == null ? null : OBWriteDomesticConsent4DataSCASupportData.AppliedAuthenticationApproachEnum.valueOf(appliedAuthenticationApproach.name());
-    }
-
-    public static OBSCASupportData1.AppliedAuthenticationApproachEnum toOBSCASupportData1AppliedAuthenticationApproach(FRAppliedAuthenticationApproach appliedAuthenticationApproach) {
-        return appliedAuthenticationApproach == null ? null : OBSCASupportData1.AppliedAuthenticationApproachEnum.valueOf(appliedAuthenticationApproach.name());
+    public static OBAppliedAuthenticationApproachEnum toOBAppliedAuthenticationApproachEnum(FRAppliedAuthenticationApproach appliedAuthenticationApproach) {
+        return appliedAuthenticationApproach == null ? null : OBAppliedAuthenticationApproachEnum.valueOf(appliedAuthenticationApproach.name());
     }
 }

@@ -27,31 +27,21 @@ import com.forgerock.openbanking.common.services.openbanking.converter.common.FR
 import uk.org.openbanking.datamodel.account.OBCashAccount3;
 import uk.org.openbanking.datamodel.payment.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toFRAccountIdentifier;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount3;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBWriteDomestic2DataInitiationCreditorAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBWriteDomestic2DataInitiationDebtorAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBWriteDomestic2DataInitiationInstructedAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRFinancialInstrumentConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRChargeBearerConverter.toFRChargeBearerType;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRChargeBearerConverter.toOBChargeBearerType1Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toFRDataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toFRDataSCASupportData;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toFRExchangeRateInformation;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBExchangeRate1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternational3DataInitiationExchangeRateInformation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRInstructionPriorityConverter.toFRInstructionPriority;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRInstructionPriorityConverter.toOBPriority2Code;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRInstructionPriorityConverter.toOBWriteInternational3DataInitiationInstructionPriority;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRReadRefundAccountConverter.toFRReadRefundAccount;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.toFRRemittanceInformation;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.toOBRemittanceInformation1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.toOBWriteDomestic2DataInitiationRemittanceInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toFRSupplementaryData;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRReadRefundAccountConverter.toFRReadRefundAccount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter.*;
 import static uk.org.openbanking.datamodel.service.converter.payment.CountryCodeHelper.determineCountryCode;
 
 public class FRWriteInternationalConsentConverter {
@@ -187,7 +177,7 @@ public class FRWriteInternationalConsentConverter {
                 .instructionIdentification(initiation.getInstructionIdentification())
                 .endToEndIdentification(initiation.getEndToEndIdentification())
                 .localInstrument(initiation.getLocalInstrument())
-                .instructionPriority(toOBWriteInternational3DataInitiationInstructionPriority(initiation.getInstructionPriority()))
+                .instructionPriority(toOBPriority2Code(initiation.getInstructionPriority()))
                 .purpose(initiation.getPurpose())
                 .extendedPurpose(initiation.getExtendedPurpose())
                 .chargeBearer(toOBChargeBearerType1Code(initiation.getChargeBearer()))

@@ -50,8 +50,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.*;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4DataAuthorisation.AuthorisationTypeEnum;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data.PermissionEnum;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -146,13 +144,13 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         PaymentTestHelper.setupMockTpp(tppRepository);
         OBWriteDomesticStandingOrderConsent5 consentRequest = JMockData.mock(OBWriteDomesticStandingOrderConsent5.class);
         setupTestConsentInitiation(consentRequest.getData().getInitiation());
-        consentRequest.getData().authorisation(new OBWriteDomesticConsent4DataAuthorisation().authorisationType(AuthorisationTypeEnum.ANY).completionDateTime(DateTime.now()));
+        consentRequest.getData().authorisation(new OBWriteDomesticConsent4DataAuthorisation().authorisationType(OBExternalAuthorisation1Code.ANY).completionDateTime(DateTime.now()));
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
                 .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
-        consentRequest.getData().permission(PermissionEnum.CREATE);
+        consentRequest.getData().permission(OBExternalPermissions2Code.CREATE);
 
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
@@ -196,13 +194,13 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         PaymentTestHelper.setupMockTpp(tppRepository);
         OBWriteDomesticStandingOrderConsent5 consentRequest = JMockData.mock(OBWriteDomesticStandingOrderConsent5.class);
         setupTestConsentInitiation(consentRequest.getData().getInitiation());
-        consentRequest.getData().authorisation(new OBWriteDomesticConsent4DataAuthorisation().authorisationType(AuthorisationTypeEnum.ANY).completionDateTime(DateTime.now()));
+        consentRequest.getData().authorisation(new OBWriteDomesticConsent4DataAuthorisation().authorisationType(OBExternalAuthorisation1Code.ANY).completionDateTime(DateTime.now()));
         consentRequest.getRisk().merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
                 .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
                 .country("GP");
-        consentRequest.getData().permission(PermissionEnum.CREATE);
+        consentRequest.getData().permission(OBExternalPermissions2Code.CREATE);
 
         // Ensure optional fields are null
         consentRequest.getData().getInitiation().setDebtorAccount(null);

@@ -54,14 +54,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseReadRefundAccountConverter.toOBWriteDomesticScheduledConsentResponse5DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.ResponseReadRefundAccountConverter.toOBReadRefundAccountEnum;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteDomesticScheduledConsentResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataSCASupportDataConverter.toOBSCASupportData1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBWriteDomesticScheduledConsentResponse5DataPermission;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBExternalPermissions2Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toFRWriteDomesticScheduledConsent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticScheduledConsentConverter.toOBWriteDomesticScheduled2DataInitiation;
 
@@ -148,13 +148,13 @@ public class DomesticScheduledPaymentConsentsApiController implements DomesticSc
     private OBWriteDomesticScheduledConsentResponse5 responseEntity(FRDomesticScheduledConsent domesticScheduledConsent) {
         return new OBWriteDomesticScheduledConsentResponse5()
                 .data(new OBWriteDomesticScheduledConsentResponse5Data()
-                        .readRefundAccount(toOBWriteDomesticScheduledConsentResponse5DataReadRefundAccount(domesticScheduledConsent.getDomesticScheduledConsent().getData().getReadRefundAccount()))
+                        .readRefundAccount(toOBReadRefundAccountEnum(domesticScheduledConsent.getDomesticScheduledConsent().getData().getReadRefundAccount()))
                         .initiation(toOBWriteDomesticScheduled2DataInitiation(domesticScheduledConsent.getInitiation()))
                         .status(toOBWriteDomesticScheduledConsentResponse5DataStatus(domesticScheduledConsent.getStatus()))
                         .creationDateTime(domesticScheduledConsent.getCreated())
                         .statusUpdateDateTime(domesticScheduledConsent.getStatusUpdate())
                         .consentId(domesticScheduledConsent.getId())
-                        .permission(toOBWriteDomesticScheduledConsentResponse5DataPermission(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission()))
+                        .permission(toOBExternalPermissions2Code(domesticScheduledConsent.getDomesticScheduledConsent().getData().getPermission()))
                         .authorisation(toOBWriteDomesticConsent4DataAuthorisation(domesticScheduledConsent.getDomesticScheduledConsent().getData().getAuthorisation()))
                         .scASupportData(toOBSCASupportData1(domesticScheduledConsent.getDomesticScheduledConsent().getData().getScASupportData()))
                         .debtor(toOBCashAccountDebtor4(domesticScheduledConsent.getInitiation().getDebtorAccount()))

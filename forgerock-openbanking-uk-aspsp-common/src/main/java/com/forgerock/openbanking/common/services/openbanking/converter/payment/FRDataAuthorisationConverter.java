@@ -54,24 +54,16 @@ public class FRDataAuthorisationConverter {
         return authorisationType == null ? null : FRDataAuthorisation.AuthorisationType.valueOf(authorisationType.name());
     }
 
-    public static FRDataAuthorisation.AuthorisationType toFRAuthorisationType(OBWriteDomesticConsent3DataAuthorisation.AuthorisationTypeEnum authorisationType) {
-        return authorisationType == null ? null : FRDataAuthorisation.AuthorisationType.valueOf(authorisationType.name());
-    }
-
-    public static FRDataAuthorisation.AuthorisationType toFRAuthorisationType(OBWriteDomesticConsent4DataAuthorisation.AuthorisationTypeEnum authorisationType) {
-        return authorisationType == null ? null : FRDataAuthorisation.AuthorisationType.valueOf(authorisationType.name());
-    }
-
     // FR to OB
     public static OBWriteDomesticConsent3DataAuthorisation toOBWriteDomesticConsent3DataAuthorisation(FRDataAuthorisation authorisation) {
         return authorisation == null ? null : new OBWriteDomesticConsent3DataAuthorisation()
-                .authorisationType(toOBWriteDomesticConsent3DataAuthorisationType(authorisation.getAuthorisationType()))
+                .authorisationType(toOBExternalAuthorisation1Code(authorisation.getAuthorisationType()))
                 .completionDateTime(authorisation.getCompletionDateTime());
     }
 
     public static OBWriteDomesticConsent4DataAuthorisation toOBWriteDomesticConsent4DataAuthorisation(FRDataAuthorisation authorisation) {
         return authorisation == null ? null : new OBWriteDomesticConsent4DataAuthorisation()
-                .authorisationType(toOBWriteDomesticConsent4DataAuthorisationType(authorisation.getAuthorisationType()))
+                .authorisationType(toOBExternalAuthorisation1Code(authorisation.getAuthorisationType()))
                 .completionDateTime(authorisation.getCompletionDateTime());
     }
 
@@ -79,14 +71,6 @@ public class FRDataAuthorisationConverter {
         return authorisation == null ? null : new OBAuthorisation1()
                 .authorisationType(toOBExternalAuthorisation1Code(authorisation.getAuthorisationType()))
                 .completionDateTime(authorisation.getCompletionDateTime());
-    }
-
-    public static OBWriteDomesticConsent3DataAuthorisation.AuthorisationTypeEnum toOBWriteDomesticConsent3DataAuthorisationType(FRDataAuthorisation.AuthorisationType authorisationType) {
-        return authorisationType == null ? null : OBWriteDomesticConsent3DataAuthorisation.AuthorisationTypeEnum.valueOf(authorisationType.name());
-    }
-
-    public static OBWriteDomesticConsent4DataAuthorisation.AuthorisationTypeEnum toOBWriteDomesticConsent4DataAuthorisationType(FRDataAuthorisation.AuthorisationType authorisationType) {
-        return authorisationType == null ? null : OBWriteDomesticConsent4DataAuthorisation.AuthorisationTypeEnum.valueOf(authorisationType.name());
     }
 
     public static OBExternalAuthorisation1Code toOBExternalAuthorisation1Code(FRDataAuthorisation.AuthorisationType authorisationType) {

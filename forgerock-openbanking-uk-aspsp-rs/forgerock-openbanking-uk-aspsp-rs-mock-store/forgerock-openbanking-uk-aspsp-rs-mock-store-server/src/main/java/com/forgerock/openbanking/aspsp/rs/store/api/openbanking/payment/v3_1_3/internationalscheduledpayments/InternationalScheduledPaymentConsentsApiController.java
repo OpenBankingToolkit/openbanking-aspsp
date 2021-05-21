@@ -58,7 +58,7 @@ import static com.forgerock.openbanking.common.services.openbanking.IdempotencyS
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent3DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse4DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBWriteInternationalScheduledConsentResponse4DataPermission;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBExternalPermissions2Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledConsent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
 
@@ -191,7 +191,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                         .statusUpdateDateTime(internationalScheduledConsent.getStatusUpdate())
                         .consentId(internationalScheduledConsent.getId())
                         .exchangeRateInformation(toOBWriteInternationalConsentResponse4DataExchangeRateInformation(internationalScheduledConsent.getCalculatedExchangeRate()))
-                        .permission(toOBWriteInternationalScheduledConsentResponse4DataPermission(internationalScheduledConsent.internationalScheduledConsent.getData().getPermission()))
+                        .permission(toOBExternalPermissions2Code(internationalScheduledConsent.internationalScheduledConsent.getData().getPermission()))
                         .expectedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                         .authorisation(toOBWriteDomesticConsent3DataAuthorisation(internationalScheduledConsent.getInternationalScheduledConsent().getData().getAuthorisation()))
                 )

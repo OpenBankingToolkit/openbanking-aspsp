@@ -18,20 +18,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPermission;
+package com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter;
+
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
 import uk.org.openbanking.datamodel.payment.*;
 
-public class FRPermissionConverter {
+public class ResponseReadRefundAccountConverter {
 
-    // OB to FR
-    public static FRPermission toFRPermission(OBExternalPermissions2Code permission) {
-        return permission == null ? null : FRPermission.valueOf(permission.name());
-    }
-
-    // FR to OB
-    public static OBExternalPermissions2Code toOBExternalPermissions2Code(FRPermission permission) {
-        return permission == null ? null : OBExternalPermissions2Code.valueOf(permission.name());
+    public static OBReadRefundAccountEnum toOBReadRefundAccountEnum(FRReadRefundAccount frReadRefundAccount) {
+        if (frReadRefundAccount != null) {
+            switch (frReadRefundAccount) {
+                case YES:
+                    return OBReadRefundAccountEnum.YES;
+                default:
+                    return OBReadRefundAccountEnum.NO;
+            }
+        }
+        return null;
     }
 }
