@@ -53,7 +53,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseReadRefundAccountConverter.toOBWriteInternationalConsentResponse5DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.ResponseReadRefundAccountConverter.toOBReadRefundAccountEnum;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseStatusCodeConverter.toOBWriteInternationalConsentResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
@@ -184,7 +184,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
     private OBWriteInternationalConsentResponse5 responseEntity(FRInternationalConsent internationalConsent) {
         return new OBWriteInternationalConsentResponse5()
                 .data(new OBWriteInternationalConsentResponse5Data()
-                        .readRefundAccount(toOBWriteInternationalConsentResponse5DataReadRefundAccount(internationalConsent.getInternationalConsent().getData().getReadRefundAccount()))
+                        .readRefundAccount(toOBReadRefundAccountEnum(internationalConsent.getInternationalConsent().getData().getReadRefundAccount()))
                         .initiation(toOBWriteInternational3DataInitiation(internationalConsent.getInitiation()))
                         .status(toOBWriteInternationalConsentResponse5DataStatus(internationalConsent.getStatus()))
                         .creationDateTime(internationalConsent.getCreated())

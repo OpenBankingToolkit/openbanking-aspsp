@@ -22,9 +22,6 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRInstructionPriority;
 import uk.org.openbanking.datamodel.payment.OBPriority2Code;
-import uk.org.openbanking.datamodel.payment.OBWriteInternational3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduled3DataInitiation;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsentResponse6DataInitiation;
 
 public class FRInstructionPriorityConverter {
 
@@ -33,31 +30,7 @@ public class FRInstructionPriorityConverter {
         return instructionPriority == null ? null : FRInstructionPriority.valueOf(instructionPriority.name());
     }
 
-    public static FRInstructionPriority toFRInstructionPriority(OBWriteInternational3DataInitiation.InstructionPriorityEnum instructionPriority) {
-        return instructionPriority == null ? null : FRInstructionPriority.valueOf(instructionPriority.name());
-    }
-
-    public static FRInstructionPriority toFRInstructionPriority(OBWriteInternationalScheduled3DataInitiation.InstructionPriorityEnum instructionPriority) {
-        return instructionPriority == null ? null : FRInstructionPriority.valueOf(instructionPriority.name());
-    }
-
-    public static FRInstructionPriority toFRInstructionPriority(OBWriteInternationalScheduledConsentResponse6DataInitiation.InstructionPriorityEnum instructionPriority) {
-        return instructionPriority == null ? null : FRInstructionPriority.valueOf(instructionPriority.name());
-    }
-
     // FR to OB
-    public static OBWriteInternational3DataInitiation.InstructionPriorityEnum toOBWriteInternational3DataInitiationInstructionPriority(FRInstructionPriority instructionPriority) {
-        return instructionPriority == null ? null : OBWriteInternational3DataInitiation.InstructionPriorityEnum.valueOf(instructionPriority.name());
-    }
-
-    public static OBWriteInternationalScheduled3DataInitiation.InstructionPriorityEnum toOBWriteInternationalScheduled3DataInitiationInstructionPriority(FRInstructionPriority instructionPriority) {
-        return instructionPriority == null ? null : OBWriteInternationalScheduled3DataInitiation.InstructionPriorityEnum.valueOf(instructionPriority.name());
-    }
-
-    public static OBWriteInternationalScheduledConsentResponse6DataInitiation.InstructionPriorityEnum toOBWriteInternationalScheduledConsentResponse6DataInitiationInstructionPriority(FRInstructionPriority instructionPriority) {
-        return instructionPriority == null ? null : OBWriteInternationalScheduledConsentResponse6DataInitiation.InstructionPriorityEnum.valueOf(instructionPriority.name());
-    }
-
     public static OBPriority2Code toOBPriority2Code(FRInstructionPriority instructionPriority) {
         return instructionPriority == null ? null : OBPriority2Code.valueOf(instructionPriority.name());
     }

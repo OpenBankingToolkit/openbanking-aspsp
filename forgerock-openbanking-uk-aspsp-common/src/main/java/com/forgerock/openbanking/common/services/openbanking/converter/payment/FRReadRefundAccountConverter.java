@@ -21,36 +21,12 @@
 package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticScheduledConsent4Data;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticStandingOrderConsent5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalConsent5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalScheduledConsent5Data;
-import uk.org.openbanking.datamodel.payment.OBWriteInternationalStandingOrderConsent6Data;
+import uk.org.openbanking.datamodel.payment.*;
 
 public class FRReadRefundAccountConverter {
 
-    public static FRReadRefundAccount toFRReadRefundAccount(OBWriteDomesticConsent4Data.ReadRefundAccountEnum readRefundAccount) {
-        return readRefundAccount == null ? null : FRReadRefundAccount.valueOf(readRefundAccount.name());
-    }
-
-    public static FRReadRefundAccount toFRReadRefundAccount(OBWriteDomesticScheduledConsent4Data.ReadRefundAccountEnum readRefundAccount) {
-        return readRefundAccount == null ? null : FRReadRefundAccount.valueOf(readRefundAccount.name());
-    }
-
-    public static FRReadRefundAccount toFRReadRefundAccount(OBWriteDomesticStandingOrderConsent5Data.ReadRefundAccountEnum readRefundAccount) {
-        return readRefundAccount == null ? null : FRReadRefundAccount.valueOf(readRefundAccount.name());
-    }
-
-    public static FRReadRefundAccount toFRReadRefundAccount(OBWriteInternationalConsent5Data.ReadRefundAccountEnum readRefundAccount) {
-        return readRefundAccount == null ? null : FRReadRefundAccount.valueOf(readRefundAccount.name());
-    }
-
-    public static FRReadRefundAccount toFRReadRefundAccount(OBWriteInternationalScheduledConsent5Data.ReadRefundAccountEnum readRefundAccount) {
-        return readRefundAccount == null ? null : FRReadRefundAccount.valueOf(readRefundAccount.name());
-    }
-
-    public static FRReadRefundAccount toFRReadRefundAccount(OBWriteInternationalStandingOrderConsent6Data.ReadRefundAccountEnum readRefundAccount) {
+    // OB to FR
+    public static FRReadRefundAccount toFRReadRefundAccount(OBReadRefundAccountEnum readRefundAccount) {
         return readRefundAccount == null ? null : FRReadRefundAccount.valueOf(readRefundAccount.name());
     }
 }

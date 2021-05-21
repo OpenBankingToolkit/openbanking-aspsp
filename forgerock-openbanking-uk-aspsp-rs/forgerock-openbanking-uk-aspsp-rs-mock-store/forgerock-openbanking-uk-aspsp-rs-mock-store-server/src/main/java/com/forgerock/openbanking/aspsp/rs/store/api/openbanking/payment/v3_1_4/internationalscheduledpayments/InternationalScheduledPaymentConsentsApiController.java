@@ -53,13 +53,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseReadRefundAccountConverter.toOBWriteInternationalScheduledConsentResponse5DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.ResponseReadRefundAccountConverter.toOBReadRefundAccountEnum;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_4.ResponseStatusCodeConverter.toOBWriteInternationalScheduledConsentResponse5DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRExchangeRateConverter.toOBWriteInternationalConsentResponse5DataExchangeRateInformation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBWriteInternationalScheduledConsentResponse5DataPermission;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBExternalPermissions2Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toFRWriteInternationalScheduledConsent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalScheduledConsentConverter.toOBWriteInternationalScheduled3DataInitiation;
 
@@ -187,14 +187,14 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
         OBWriteInternationalScheduled3DataInitiation initiation = toOBWriteInternationalScheduled3DataInitiation(internationalScheduledConsent.getInitiation());
         return new OBWriteInternationalScheduledConsentResponse5()
                 .data(new OBWriteInternationalScheduledConsentResponse5Data()
-                        .readRefundAccount(toOBWriteInternationalScheduledConsentResponse5DataReadRefundAccount(internationalScheduledConsent.getInternationalScheduledConsent().getData().getReadRefundAccount()))
+                        .readRefundAccount(toOBReadRefundAccountEnum(internationalScheduledConsent.getInternationalScheduledConsent().getData().getReadRefundAccount()))
                         .initiation(initiation)
                         .status(toOBWriteInternationalScheduledConsentResponse5DataStatus(internationalScheduledConsent.getStatus()))
                         .creationDateTime(internationalScheduledConsent.getCreated())
                         .statusUpdateDateTime(internationalScheduledConsent.getStatusUpdate())
                         .consentId(internationalScheduledConsent.getId())
                         .exchangeRateInformation(toOBWriteInternationalConsentResponse5DataExchangeRateInformation(internationalScheduledConsent.getCalculatedExchangeRate()))
-                        .permission(toOBWriteInternationalScheduledConsentResponse5DataPermission(internationalScheduledConsent.internationalScheduledConsent.getData().getPermission()))
+                        .permission(toOBExternalPermissions2Code(internationalScheduledConsent.internationalScheduledConsent.getData().getPermission()))
                         .expectedExecutionDateTime(initiation.getRequestedExecutionDateTime())
                         .authorisation(toOBWriteDomesticConsent4DataAuthorisation(internationalScheduledConsent.getInternationalScheduledConsent().getData().getAuthorisation()))
                 )

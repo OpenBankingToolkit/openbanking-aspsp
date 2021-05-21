@@ -53,13 +53,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseReadRefundAccountConverter.toOBWriteInternationalStandingOrderConsentResponse7DataReadRefundAccount;
+import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.ResponseReadRefundAccountConverter.toOBReadRefundAccountEnum;
 import static com.forgerock.openbanking.common.model.openbanking.persistence.payment.converter.v3_1_5.ResponseStatusCodeConverter.toOBWriteInternationalStandingOrderConsentResponse7DataStatus;
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccountDebtor4;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRDataAuthorisationConverter.toOBWriteDomesticConsent4DataAuthorisation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBWriteInternationalStandingOrderConsentResponse7DataPermission;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPermissionConverter.toOBExternalPermissions2Code;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toFRWriteInternationalStandingOrderConsent;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteInternationalStandingOrderConsentConverter.toOBWriteInternationalStandingOrderConsentResponse7DataInitiation;
 
@@ -145,13 +145,13 @@ public class InternationalStandingOrderConsentsApiController implements Internat
     private OBWriteInternationalStandingOrderConsentResponse7 responseEntity(FRInternationalStandingOrderConsent internationalStandingOrderConsent) {
         return new OBWriteInternationalStandingOrderConsentResponse7()
                 .data(new OBWriteInternationalStandingOrderConsentResponse7Data()
-                        .readRefundAccount(toOBWriteInternationalStandingOrderConsentResponse7DataReadRefundAccount(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getReadRefundAccount()))
+                        .readRefundAccount(toOBReadRefundAccountEnum(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getReadRefundAccount()))
                         .initiation(toOBWriteInternationalStandingOrderConsentResponse7DataInitiation(internationalStandingOrderConsent.getInitiation()))
                         .status(toOBWriteInternationalStandingOrderConsentResponse7DataStatus(internationalStandingOrderConsent.getStatus()))
                         .creationDateTime(internationalStandingOrderConsent.getCreated())
                         .statusUpdateDateTime(internationalStandingOrderConsent.getStatusUpdate())
                         .consentId(internationalStandingOrderConsent.getId())
-                        .permission(toOBWriteInternationalStandingOrderConsentResponse7DataPermission(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getPermission()))
+                        .permission(toOBExternalPermissions2Code(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getPermission()))
                         .authorisation(toOBWriteDomesticConsent4DataAuthorisation(internationalStandingOrderConsent.getInternationalStandingOrderConsent().getData().getAuthorisation()))
                         .debtor(toOBCashAccountDebtor4(internationalStandingOrderConsent.getInitiation().getDebtorAccount()))
                 ).risk(toOBRisk1(internationalStandingOrderConsent.getRisk()))

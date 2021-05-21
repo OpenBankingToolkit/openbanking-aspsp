@@ -43,6 +43,15 @@ Release/1.4.0 (#404)
 * Release candidate: prepare for next development iteration
 
 * changelog
+### GitHub [#406](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/406) Release/1.4.1
+[c20afa490c34de8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c20afa490c34de8) Jorge Sanchez Perez *2021-05-18 14:33:09*
+Release/1.4.1 (#406)
+
+* changelog
+
+* Release candidate: prepare release 1.4.1
+
+* Release candidate: prepare for next development iteration
 [9f3308ce4919304](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f3308ce4919304) Matt Wills *2021-05-18 10:12:41*
 32: Removed accidental import of org.bouncycastle.asn1.x500.style.RFC4519Style.postalAddress
 
