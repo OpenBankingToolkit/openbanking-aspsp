@@ -52,6 +52,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_5;
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_6;
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_7;
+        public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_8;
 
         public OBDiscoveryAPILinksFundsConfirmation3 getVersion(OBVersion version){
             switch (version){
@@ -64,6 +65,7 @@ public class DiscoveryConfigurationProperties {
                 case v3_1_5: return v_3_1_5;
                 case v3_1_6: return v_3_1_6;
                 case v3_1_7: return v_3_1_7;
+                case v3_1_8: return v_3_1_8;
                 default: return null;
             }
         }
@@ -81,6 +83,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksEventNotification4 v_3_1_5;
         public OBDiscoveryAPILinksEventNotification4 v_3_1_6;
         public OBDiscoveryAPILinksEventNotification4 v_3_1_7;
+        public OBDiscoveryAPILinksEventNotification4 v_3_1_8;
 
         public OBDiscoveryAPILinks getVersion(OBVersion version){
             switch (version){
@@ -93,6 +96,7 @@ public class DiscoveryConfigurationProperties {
                 case v3_1_5: return v_3_1_5;
                 case v3_1_6: return v_3_1_6;
                 case v3_1_7: return v_3_1_7;
+                case v3_1_8: return v_3_1_8;
                 default: return null;
             }
         }
@@ -112,6 +116,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksPayment4 v_3_1_5;
         public OBDiscoveryAPILinksPayment4 v_3_1_6;
         public OBDiscoveryAPILinksPayment4 v_3_1_7;
+        public OBDiscoveryAPILinksPayment4 v_3_1_8;
     }
 
     @Data
@@ -128,6 +133,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksAccount3 v_3_1_5;
         public OBDiscoveryAPILinksAccount3 v_3_1_6;
         public OBDiscoveryAPILinksAccount3 v_3_1_7;
+        public OBDiscoveryAPILinksAccount3 v_3_1_8;
     }
 
     @Data
