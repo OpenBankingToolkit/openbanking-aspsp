@@ -30,5 +30,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Api(value = "callback-urls", description = "the event notification callback urls API")
 @RequestMapping(value = "/open-banking/v3.1.7")
-public interface CallbackUrlsApi extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_5.callbackurl.CallbackUrlsApi {
+public interface CallbackUrlsApi extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_6.callbackurl.CallbackUrlsApi {
 }

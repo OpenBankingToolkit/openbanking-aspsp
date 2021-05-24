@@ -18,16 +18,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_7.aggregatedpolling;
+package com.forgerock.openbanking.aspsp.rs.api.funds.v3_1_8;
 
-import com.forgerock.openbanking.aspsp.rs.store.service.event.EventPollingService;
-import com.forgerock.openbanking.repositories.TppRepository;
+import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 
-@Controller("AggregatedPollingApi3.1.7")
-public class AggregatedPollingApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_6.aggregatedpolling.AggregatedPollingApiController implements AggregatedPollingApi {
+@Controller("FundsConfirmationApiV3.1.8")
+public class FundsConfirmationApiController extends com.forgerock.openbanking.aspsp.rs.api.funds.v3_1_7.FundsConfirmationApiController implements FundsConfirmationApi {
 
-    public AggregatedPollingApiController(EventPollingService eventPollingService, TppRepository tppRepository) {
-        super(eventPollingService, tppRepository);
+    public FundsConfirmationApiController(
+            RSEndpointWrapperService rsEndpointWrapperService,
+            @Qualifier("FundsConfirmationApiV3.1.2") com.forgerock.openbanking.aspsp.rs.api.funds.v3_1_2.FundsConfirmationApiController baseController
+    ) {
+        super(rsEndpointWrapperService, baseController);
     }
 }
+

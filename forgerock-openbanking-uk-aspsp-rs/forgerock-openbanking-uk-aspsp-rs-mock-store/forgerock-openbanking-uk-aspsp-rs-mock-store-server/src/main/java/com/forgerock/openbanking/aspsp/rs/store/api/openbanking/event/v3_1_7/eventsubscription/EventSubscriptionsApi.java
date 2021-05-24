@@ -33,5 +33,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
         obReference = OBReference.EVENTS
 )
 @RequestMapping(value = "/open-banking/v3.1.7/event-subscriptions")
-public interface EventSubscriptionsApi extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_5.eventsubscription.EventSubscriptionsApi {
+public interface EventSubscriptionsApi extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_6.eventsubscription.EventSubscriptionsApi {
 }

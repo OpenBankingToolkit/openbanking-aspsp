@@ -18,9 +18,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_7.callbackurl;
+package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_8.eventsubscription;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.events.CallbackUrlsRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.events.EventSubscriptionsRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.event.EventResponseUtil;
@@ -28,15 +28,16 @@ import com.forgerock.openbanking.repositories.TppRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-@Controller("CallbackUrlsApiV3.1.7")
-public class CallbackUrlsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_6.callbackurl.CallbackUrlsApiController implements CallbackUrlsApi {
+@Controller("EventSubscriptionApiV3.1.8")
+public class EventSubscriptionsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_7.eventsubscription.EventSubscriptionsApiController implements EventSubscriptionsApi {
 
     @Autowired
-    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
-        super(callbackUrlsRepository, tppRepository, resourceLinkService, new EventResponseUtil(resourceLinkService, OBVersion.v3_1_6, true));
+    public EventSubscriptionsApiController(EventSubscriptionsRepository eventSubscriptionsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
+        super(eventSubscriptionsRepository, tppRepository, resourceLinkService, new EventResponseUtil(resourceLinkService, OBVersion.v3_1_6, true));
     }
 
-    public CallbackUrlsApiController(CallbackUrlsRepository callbackUrlsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtil eventResponseUtil) {
-        super(callbackUrlsRepository, tppRepository, resourceLinkService, eventResponseUtil);
+    public EventSubscriptionsApiController(EventSubscriptionsRepository eventSubscriptionsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtil eventResponseUtil) {
+        super(eventSubscriptionsRepository, tppRepository, resourceLinkService, eventResponseUtil);
     }
+
 }
