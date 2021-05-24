@@ -52,6 +52,18 @@ Release/1.4.1 (#406)
 * Release candidate: prepare release 1.4.1
 
 * Release candidate: prepare for next development iteration
+[75f094eb79dcb7c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/75f094eb79dcb7c) Matt Wills *2021-05-24 13:36:57*
+33: v3.1.8 of Events and Funds Confirmation APIs
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/33
+[ff6bd0672f383d6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ff6bd0672f383d6) Matt Wills *2021-05-24 13:25:28*
+33: v3.1.8 of Accounts API gateway controllers and interfaces
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/33
+[0a1b7f53da3cc34](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0a1b7f53da3cc34) Matt Wills *2021-05-24 12:54:37*
+33: v3.1.8 of Payment API controllers and interfaces
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/33
 [492016f2f9a6054](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/492016f2f9a6054) Matt Wills *2021-05-21 14:27:18*
 76: Migrated to v3.1.8 of uk-datamodel
 
