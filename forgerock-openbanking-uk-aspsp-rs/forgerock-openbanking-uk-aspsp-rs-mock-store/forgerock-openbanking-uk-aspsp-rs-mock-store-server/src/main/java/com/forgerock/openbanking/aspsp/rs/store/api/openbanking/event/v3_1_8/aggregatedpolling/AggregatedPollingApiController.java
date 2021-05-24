@@ -18,14 +18,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_7.aggregatedpolling;
+package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_8.aggregatedpolling;
 
 import com.forgerock.openbanking.aspsp.rs.store.service.event.EventPollingService;
 import com.forgerock.openbanking.repositories.TppRepository;
 import org.springframework.stereotype.Controller;
 
-@Controller("AggregatedPollingApi3.1.7")
-public class AggregatedPollingApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_6.aggregatedpolling.AggregatedPollingApiController implements AggregatedPollingApi {
+@Controller("AggregatedPollingApi3.1.8")
+public class AggregatedPollingApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_7.aggregatedpolling.AggregatedPollingApiController implements AggregatedPollingApi {
 
     public AggregatedPollingApiController(EventPollingService eventPollingService, TppRepository tppRepository) {
         super(eventPollingService, tppRepository);

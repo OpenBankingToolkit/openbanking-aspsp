@@ -29,7 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller("EventSubscriptionApiV3.1.7")
-public class EventSubscriptionsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_5.eventsubscription.EventSubscriptionsApiController implements EventSubscriptionsApi {
+public class EventSubscriptionsApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_6.eventsubscription.EventSubscriptionsApiController implements EventSubscriptionsApi {
 
     @Autowired
     public EventSubscriptionsApiController(EventSubscriptionsRepository eventSubscriptionsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {

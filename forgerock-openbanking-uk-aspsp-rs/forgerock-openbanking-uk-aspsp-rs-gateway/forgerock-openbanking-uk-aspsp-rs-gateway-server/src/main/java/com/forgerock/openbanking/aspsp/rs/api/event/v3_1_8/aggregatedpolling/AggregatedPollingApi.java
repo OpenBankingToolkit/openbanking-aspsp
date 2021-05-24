@@ -18,16 +18,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_7.aggregatedpolling;
+package com.forgerock.openbanking.aspsp.rs.api.event.v3_1_8.aggregatedpolling;
 
-import com.forgerock.openbanking.aspsp.rs.store.service.event.EventPollingService;
-import com.forgerock.openbanking.repositories.TppRepository;
-import org.springframework.stereotype.Controller;
+import com.forgerock.openbanking.api.annotations.OBGroupName;
+import com.forgerock.openbanking.api.annotations.OBReference;
+import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
+import io.swagger.annotations.Api;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-@Controller("AggregatedPollingApi3.1.7")
-public class AggregatedPollingApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.event.v3_1_6.aggregatedpolling.AggregatedPollingApiController implements AggregatedPollingApi {
-
-    public AggregatedPollingApiController(EventPollingService eventPollingService, TppRepository tppRepository) {
-        super(eventPollingService, tppRepository);
-    }
+@Api(value = "aggregated-polling", description = "the event notification aggregated polling API")
+@OpenBankingAPI(
+        obVersion = "3.1.8",
+        obGroupName = OBGroupName.EVENT,
+        obReference = OBReference.EVENTS
+)
+@RequestMapping(value = "/open-banking/v3.1.8/events")
+public interface AggregatedPollingApi extends com.forgerock.openbanking.aspsp.rs.api.event.v3_1_7.aggregatedpolling.AggregatedPollingApi {
 }
