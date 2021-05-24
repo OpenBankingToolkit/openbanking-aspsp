@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_7.domesticstandingorders;
+package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_8.file;
 
 import com.forgerock.openbanking.api.annotations.OBGroupName;
 import com.forgerock.openbanking.api.annotations.OBReference;
@@ -26,12 +26,12 @@ import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(value = "domestic-standing-orders", description = "the domestic-standing-orders API")
+@Api(value = "file-payments", description = "the file-payments API")
 @OpenBankingAPI(
-        obVersion = "3.1.7",
+        obVersion = "3.1.8",
         obGroupName = OBGroupName.PISP,
-        obReference = OBReference.DOMESTIC_STANDING_ORDERS_PAYMENTS
+        obReference = OBReference.FILE_PAYMENTS
 )
-@RequestMapping(value = "/open-banking/v3.1.7/pisp")
-public interface DomesticStandingOrdersApi extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_6.domesticstandingorders.DomesticStandingOrdersApi {
+@RequestMapping(value = "/open-banking/v3.1.8/pisp")
+public interface FilePaymentsApi extends com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_7.file.FilePaymentsApi {
 }

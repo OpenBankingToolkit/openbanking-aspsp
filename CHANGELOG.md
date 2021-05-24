@@ -52,6 +52,13 @@ Release/1.4.1 (#406)
 * Release candidate: prepare release 1.4.1
 
 * Release candidate: prepare for next development iteration
+[492016f2f9a6054](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/492016f2f9a6054) Matt Wills *2021-05-21 14:27:18*
+76: Migrated to v3.1.8 of uk-datamodel
+
+- Fixed compilation errors after moving to consolidated enums
+- Fixes prior to new v3.1.8 controller classes and interfaces
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/76
 [9f3308ce4919304](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f3308ce4919304) Matt Wills *2021-05-18 10:12:41*
 32: Removed accidental import of org.bouncycastle.asn1.x500.style.RFC4519Style.postalAddress
 
