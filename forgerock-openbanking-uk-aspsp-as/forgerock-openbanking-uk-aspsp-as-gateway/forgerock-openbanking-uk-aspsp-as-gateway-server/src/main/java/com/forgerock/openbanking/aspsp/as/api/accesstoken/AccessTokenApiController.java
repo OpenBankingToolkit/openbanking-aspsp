@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
@@ -54,8 +55,6 @@ public class AccessTokenApiController implements AccessTokenApi {
     private final AMGatewayService amGatewayService;
     private final JwtOverridingService jwtOverridingService;
     private final MatlsRequestVerificationService matlsRequestVerificationService;
-
-    private static final String GRANT_TYPE = "grant_type";
 
 
     @Autowired
@@ -79,14 +78,14 @@ public class AccessTokenApiController implements AccessTokenApi {
         AMGateway amGateway = this.amGateway;
         //The token endpoint can also be used as audience, as per OIDC spec
         if (clientIDAuthMethod.getAuthMethod() == OIDCConstants.TokenEndpointAuthMethods.PRIVATE_KEY_JWT) {
-            String  clientAssertion = (String) paramMap.getFirst(OIDCConstants.OIDCClaim.CLIENT_ASSERTION);
-            if(clientAssertion == null || clientAssertion.isBlank() || clientAssertion.isEmpty()){
+            String clientAssertion = (String) paramMap.getFirst(OIDCConstants.OIDCClaim.CLIENT_ASSERTION);
+            if (clientAssertion == null || clientAssertion.isBlank() || clientAssertion.isEmpty()) {
                 log.debug("getAccessToken() clientAssertion was null or blank");
                 throw new OBErrorResponseException(
                         OBRIErrorType.ACCESS_TOKEN_INVALID.getHttpStatus(),
                         OBRIErrorResponseCategory.ACCESS_TOKEN,
                         OBRIErrorType.ACCESS_TOKEN_INVALID.toOBError1("No client_assertion in body"
-                ));
+                        ));
             }
             amGateway = amGatewayService.getAmGateway(clientAssertion);
         }
@@ -94,25 +93,39 @@ public class AccessTokenApiController implements AccessTokenApi {
         // can throw a UnsupportedOIDCGrantTypeException
         OIDCConstants.GrantType grantType =
                 OIDCConstants.GrantType.fromType((String) paramMap.getFirst(OIDCConstants.OIDCClaim.GRANT_TYPE));
-        ResponseEntity<AccessTokenResponse> responseEntity;
 
+        ResponseEntity<AccessTokenResponse> responseEntity;
         switch (grantType) {
-            case HEADLESS_AUTH:
+            case HEADLESS_AUTH: {
                 responseEntity = headLessAccessTokenService.getAccessToken(amGateway, clientIDAuthMethod, paramMap,
                         request);
+                HttpStatus statusCode = responseEntity.getStatusCode();
+                if (!statusCode.is2xxSuccessful() && !statusCode.is3xxRedirection()) {
+                    log.warn("getAccessToken() unsuccessful call to headlessAuthTokenService. StatusCode: {}, body: {}",
+                            statusCode, responseEntity.getBody());
+                    throw new OBErrorResponseException(
+                            OBRIErrorType.ACCESS_TOKEN_INVALID.getHttpStatus(),
+                            OBRIErrorResponseCategory.ACCESS_TOKEN,
+                            OBRIErrorType.ACCESS_TOKEN_INVALID.toOBError1(responseEntity.getBody())
+                    );
+                }
+                log.debug("getAccessToken() response from headLessAccessTokenService; {}", responseEntity);
                 break;
+            }
             case CLIENT_CREDENTIAL:
             case AUTHORIZATION_CODE:
             case PASSWORD:
             case REFRESH_TOKEN:
-            default:
+            default: {
                 //proxy to AM
                 ResponseEntity responseFromAM = amGateway.toAM(request, new HttpHeaders(),
-                        new ParameterizedTypeReference<AccessTokenResponse>() {}, paramMap);
+                        new ParameterizedTypeReference<AccessTokenResponse>() {
+                        }, paramMap);
                 log.debug("getAccessToken() response from AM; {}", responseFromAM);
-                if(!responseFromAM.getStatusCode().is2xxSuccessful() && !responseFromAM.getStatusCode().is3xxRedirection()){
+                HttpStatus statusCode = responseFromAM.getStatusCode();
+                if (!statusCode.is2xxSuccessful() && !statusCode.is3xxRedirection()) {
                     log.warn("getAccessToken() Un-successful call to AM to get access token. Status code: {}, body " +
-                            "{}",responseFromAM.getStatusCode(), responseFromAM.getBody() );
+                            "{}", responseFromAM.getStatusCode(), responseFromAM.getBody());
                     throw new OBErrorResponseException(
                             OBRIErrorType.ACCESS_TOKEN_INVALID.getHttpStatus(),
                             OBRIErrorResponseCategory.ACCESS_TOKEN,
@@ -122,6 +135,7 @@ public class AccessTokenApiController implements AccessTokenApi {
                 log.debug("getAccessToken() accessTokenResponse from AM is {}", accessTokenResponse);
                 responseEntity = ResponseEntity.status(responseFromAM.getStatusCode()).body(accessTokenResponse);
                 log.debug("getAccessToken() new reponse to return is {}", responseEntity);
+            }
         }
 
         try {

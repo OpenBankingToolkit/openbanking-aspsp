@@ -73,23 +73,23 @@ import java.util.regex.Pattern;
  */
 public class AuthorisationApiController implements AuthorisationApi {
 
-    private final  HeadLessAuthorisationService headLessAuthorisationService;
-    private final  CryptoApiClient cryptoApiClient;
-    private final  TppStoreService tppStoreService;
-    private final  String cookieName;
-    private final  boolean isHeadlessAlwaysEnabled;
-    private final  AMGatewayService amGatewayService;
-    private final  JwtOverridingService jwtOverridingService;
-    private final  TokenUsageService tokenUsageService;
-    private final  DiscoveryConfig discoveryConfig;
-    private static Pattern ID_TOKEN_PATTERN = Pattern.compile("id_token=?([^&]+)?");
+    private static final Pattern ID_TOKEN_PATTERN = Pattern.compile("id_token=?([^&]+)?");
+    private final HeadLessAuthorisationService headLessAuthorisationService;
+    private final CryptoApiClient cryptoApiClient;
+    private final TppStoreService tppStoreService;
+    private final String cookieName;
+    private final boolean isHeadlessAlwaysEnabled;
+    private final AMGatewayService amGatewayService;
+    private final JwtOverridingService jwtOverridingService;
+    private final TokenUsageService tokenUsageService;
+    private final DiscoveryConfig discoveryConfig;
 
     @Autowired
-    public AuthorisationApiController(HeadLessAuthorisationService headLessAuthorisationService, 
+    public AuthorisationApiController(HeadLessAuthorisationService headLessAuthorisationService,
                                       CryptoApiClient cryptoApiClient, TppStoreService tppStoreService,
                                       @Value("${am.cookie.name}") String cookieName,
                                       @Value("${as.headless.always-enable}") boolean isHeadlessAlwaysEnabled,
-                                      AMGatewayService amGatewayService, JwtOverridingService jwtOverridingService, 
+                                      AMGatewayService amGatewayService, JwtOverridingService jwtOverridingService,
                                       TokenUsageService tokenUsageService, DiscoveryConfig discoveryConfig) {
         this.headLessAuthorisationService = headLessAuthorisationService;
         this.cryptoApiClient = cryptoApiClient;
@@ -101,10 +101,45 @@ public class AuthorisationApiController implements AuthorisationApi {
         this.tokenUsageService = tokenUsageService;
         this.discoveryConfig = discoveryConfig;
     }
-    
-    
+
+    private static boolean hasQueryParamIdToken(ResponseEntity responseEntity) {
+        if (hasNoLocationHeader(responseEntity)) return false;
+        if (responseEntity.getHeaders().getLocation().getQuery() == null) {
+            return false;
+        }
+        return responseEntity.getHeaders().getLocation().getQuery().contains("error_description");
+    }
+
+
+    private static boolean hasFragmentIdToken(ResponseEntity responseEntity) {
+        if (hasNoLocationHeader(responseEntity)) return false;
+        if (responseEntity.getHeaders().getLocation().getFragment() == null) {
+            return false;
+        }
+
+        if (!responseEntity.getHeaders().getLocation().getFragment().contains("id_token")) {
+            log.debug("Fragment {} doesn't contains id_token", responseEntity.getHeaders().getLocation().getFragment());
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean hasNoLocationHeader(ResponseEntity responseEntity) {
+        if (responseEntity == null) {
+            return true;
+        }
+        if (responseEntity.getStatusCode() != HttpStatus.FOUND) {
+            return true;
+        }
+        if (responseEntity.getHeaders().getLocation() == null) {
+            return true;
+        }
+        log.debug("Location {}", responseEntity.getHeaders().getLocation());
+        return false;
+    }
 
     /**
+     * getAuthorisation - Implementation of the /authorize OIDC Connect endpoint.
      * @param responseType required = true
      * @param clientId required = true
      * @param state required = false
@@ -118,6 +153,7 @@ public class AuthorisationApiController implements AuthorisationApi {
      * @param ssoToken (required = false)
      * @param body required = false
      * @return A <code>ResponseEntity</code> containing the result of authorization request
+     * @throws OBErrorResponseException or OBErrorException when errors occur that prevent authorization
      */
     @Override
     public ResponseEntity getAuthorisation(
@@ -126,7 +162,7 @@ public class AuthorisationApiController implements AuthorisationApi {
             String ssoToken, MultiValueMap body, HttpServletRequest request
     ) throws OBErrorResponseException, OBErrorException {
         // FAPI compliant ('code id_token'): https://github.com/ForgeCloud/ob-deploy/issues/674
-        if(!discoveryConfig.getSupportedResponseTypes().contains(responseType)){
+        if (!discoveryConfig.getSupportedResponseTypes().contains(responseType)) {
             log.error("The response types requested '" + responseType + "' don't match with the response types " +
                     "supported '" + discoveryConfig.getSupportedResponseTypes() + "' by as-api");
             throw new OBErrorResponseException(
@@ -162,7 +198,8 @@ public class AuthorisationApiController implements AuthorisationApi {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("Cookie", cookieName + "=" + ssoToken);
             responseEntity = amGateway.toAM(request, httpHeaders, queryParameters,
-                    new ParameterizedTypeReference<String>() {}, body);
+                    new ParameterizedTypeReference<String>() {
+                    }, body);
         }
         log.debug("getAuthorisation() responseEntity {}", responseEntity);
 
@@ -174,11 +211,11 @@ public class AuthorisationApiController implements AuthorisationApi {
         }
 
         //Rewriting the response as we need to re-sign the id token. We can assume the id_token will exist as a fragment
-        if(hasFragmentIdToken(responseEntity)) {
+        if (hasFragmentIdToken(responseEntity)) {
             try {
                 responseEntity = this.jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(responseEntity);
                 tokenUsageService.incrementTokenUsage(TokenUsage.ID_TOKEN);
-            } catch (JwtOverridingService.AccessTokenReWriteException e){
+            } catch (JwtOverridingService.AccessTokenReWriteException e) {
                 String supportUID = UUID.randomUUID().toString();
                 log.info("getAuthorisation() Failed to re-write the id_token", e);
                 throw new OBErrorResponseException(
@@ -190,45 +227,6 @@ public class AuthorisationApiController implements AuthorisationApi {
             log.debug("responseEntity {} is null or is not a redirection", responseEntity);
         }
         return responseEntity;
-    }
-
-    private static boolean hasQueryParamIdToken(ResponseEntity responseEntity) {
-        if (responseEntity == null) {
-            return false;
-        }
-        if (responseEntity.getStatusCode() != HttpStatus.FOUND) {
-            return false;
-        }
-        if (responseEntity.getHeaders().getLocation() == null) {
-            return false;
-        }
-        log.debug("Location {}", responseEntity.getHeaders().getLocation());
-        if (responseEntity.getHeaders().getLocation().getQuery() == null) {
-            return false;
-        }
-        return responseEntity.getHeaders().getLocation().getQuery().contains("error_description");
-    }
-
-    private static boolean hasFragmentIdToken(ResponseEntity responseEntity) {
-        if (responseEntity == null) {
-            return false;
-        }
-        if (responseEntity.getStatusCode() != HttpStatus.FOUND) {
-            return false;
-        }
-        if (responseEntity.getHeaders().getLocation() == null) {
-            return false;
-        }
-        log.debug("Location {}", responseEntity.getHeaders().getLocation());
-        if (responseEntity.getHeaders().getLocation().getFragment() == null) {
-            return false;
-        }
-
-        if (!responseEntity.getHeaders().getLocation().getFragment().contains("id_token")) {
-            log.debug("Fragment {} doesn't contains id_token", responseEntity.getHeaders().getLocation().getFragment());
-            return false;
-        }
-        return true;
     }
 
     public String getState(String state, SignedJWT requestJwt) throws ParseException {
@@ -271,7 +269,7 @@ public class AuthorisationApiController implements AuthorisationApi {
 
             verifyQueryParameterMatchesRequestParameterClaim(requestParameters, "client_id", clientId);
             Optional<Tpp> byClientId = tppStoreService.findByClientId(clientId);
-            if (!byClientId.isPresent()) {
+            if (byClientId.isEmpty()) {
                 throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_FORMAT_INVALID, "Unknown client id '"
                         + clientId + "'");
             }
@@ -290,7 +288,7 @@ public class AuthorisationApiController implements AuthorisationApi {
                         String jwksKeys = jwk.toString();
                         log.debug("validateRequestParameters() tpp has jwksKeys as part of registraiton. They will be" +
                                 " used to validate the request parameter.");
-                        // ToDo: This throws is the jwt can't be validated. I was checking to see if the return (a
+                        // ToDo: This throws if the jwt can't be validated. I was checking to see if the return (a
                         //  SignedJWT was non-null as well, but it would appear that the API can return a null
                         //  SignedJWT even when the jwt is valid. This seems wrong but I have to stop fixing stuff
                         //  somewhere or I will never get this PR merged!!!
@@ -301,16 +299,16 @@ public class AuthorisationApiController implements AuthorisationApi {
                     }
                 }
 
-                if( validated == false){
+                if (!validated) {
                     String jwks_uri = tpp.getRegistrationResponse().getJwks_uri();
-                    if(jwks_uri == null || jwks_uri.isBlank()){
+                    if (jwks_uri == null || jwks_uri.isBlank()) {
                         log.debug("validateRequestparameters() tpp does no have a jwks_uri in it's registration " +
                                 "details; {}", tpp);
                     } else {
                         log.debug("validateRequestParameter() Validating request parameter using jwks_uri: " +
                                         "requestParametersSerialised: '{}', clientId; '{}', jwks_url: {}",
                                 requestParametersSerialised, clientId, jwks_uri);
-                        // ToDo: This throws is the jwt can't be validated. I was checking to see if the return (a
+                        // ToDo: This throws if the jwt can't be validated. I was checking to see if the return (a
                         //  SignedJWT was non-null as well, but it would appear that the API can return a null
                         //  SignedJWT even when the jwt is valid. This seems wrong but I have to stop fixing stuff
                         //  somewhere or I will never get this PR merged!!!
@@ -322,7 +320,7 @@ public class AuthorisationApiController implements AuthorisationApi {
                 log.error("validateRequestParameter() tpp has no registration response; {}", tpp);
             }
 
-            if(validated == false){
+            if (!validated) {
                 log.debug("validateRequestParameter() failed to validate the request parameter");
                 throw new InvalidTokenException("Failed to validate jwt.");
             }

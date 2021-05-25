@@ -80,7 +80,8 @@ public class AccessTokenApiControllerTest {
     }
 
     @Test
-    public void getAccessToken() throws OBErrorResponseException, OBErrorException, JwtOverridingService.AccessTokenReWriteException {
+    public void successWithClientCredentials_getAccessToken() throws OBErrorResponseException, OBErrorException,
+            JwtOverridingService.AccessTokenReWriteException {
         // Given
         MultiValueMap<String, String> params  = new LinkedMultiValueMap<>();
         params.add(OIDCConstants.OIDCClaim.GRANT_TYPE, OIDCConstants.GrantType.CLIENT_CREDENTIAL.type);
@@ -93,13 +94,14 @@ public class AccessTokenApiControllerTest {
         HttpHeaders  httpHeaders = new HttpHeaders();
         ParameterizedTypeReference<AccessTokenResponse> parameterizedTypeRef =
                 new ParameterizedTypeReference<AccessTokenResponse>() {};
-        ResponseEntity responseEntity = new ResponseEntity(null, httpHeaders, HttpStatus.FOUND);
+        ResponseEntity<Object> responseEntity = new ResponseEntity<>(null, httpHeaders, HttpStatus.FOUND);
         given(amGateway.toAM(request, httpHeaders, parameterizedTypeRef, params)).willReturn(responseEntity);
-        ResponseEntity modifiedResponseEntity = new ResponseEntity(null, httpHeaders, HttpStatus.OK);
+        ResponseEntity<Object> modifiedResponseEntity = new ResponseEntity<>(null, httpHeaders, HttpStatus.OK);
         given(jwtOverridingService.rewriteAccessTokenResponseIdToken(responseEntity)).willReturn(modifiedResponseEntity);
 
         // When
-        ResponseEntity result = this.accessTokenApiController.getAccessToken(params, authorization, principal, request);
+        ResponseEntity result = this.accessTokenApiController.getAccessToken(params, authorization, principal,
+                request);
 
         // Then
         assertThat(result).isNotNull();
@@ -120,8 +122,8 @@ public class AccessTokenApiControllerTest {
         HttpHeaders  httpHeaders = new HttpHeaders();
         ParameterizedTypeReference<AccessTokenResponse> parameterizedTypeRef =
                 new ParameterizedTypeReference<AccessTokenResponse>() {};
-        ResponseEntity responseEntity = new ResponseEntity("{\"error_description\":\"Client authentication failed\"," +
-                "\"error\":\"invalid_client\"}", httpHeaders, HttpStatus.BAD_REQUEST);
+        ResponseEntity<String> responseEntity = new ResponseEntity<>("{\"error_description\":\"Client authentication " +
+                "failed\", \"error\":\"invalid_client\"}", httpHeaders, HttpStatus.BAD_REQUEST);
         given(amGateway.toAM(request, httpHeaders, parameterizedTypeRef, params)).willReturn(responseEntity);
 
 
@@ -156,5 +158,73 @@ public class AccessTokenApiControllerTest {
         assertThat(e).isNotNull();
         assertThat(e.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(e.getCategory()).isEqualTo(OBRIErrorResponseCategory.ACCESS_TOKEN);
+    }
+
+
+    @Test
+    public void successWithHeadlessAuth_getAccessToken() throws OBErrorResponseException, OBErrorException,
+            JwtOverridingService.AccessTokenReWriteException {
+        // Given
+        MultiValueMap<String, String> params  = new LinkedMultiValueMap<>();
+        params.add(OIDCConstants.OIDCClaim.GRANT_TYPE, OIDCConstants.GrantType.HEADLESS_AUTH.type);
+        String authorization = "AuthString";
+        Authentication principal = mock(Authentication.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        PairClientIDAuthMethod pairClientIDAuthMethod = new PairClientIDAuthMethod();
+        OIDCConstants.TokenEndpointAuthMethods clientIdAuthMethod = OIDCConstants.TokenEndpointAuthMethods.CLIENT_SECRET_BASIC;
+        pairClientIDAuthMethod.setAuthMethod(clientIdAuthMethod);
+        given(matlsRequestVerificationService.verifyMATLSMatchesRequest(params, authorization, principal))
+                .willReturn(pairClientIDAuthMethod);
+        HttpHeaders  httpHeaders = new HttpHeaders();
+        ParameterizedTypeReference<AccessTokenResponse> parameterizedTypeRef =
+                new ParameterizedTypeReference<AccessTokenResponse>() {};
+        ResponseEntity<Object> responseEntity = new ResponseEntity<>(null, httpHeaders, HttpStatus.FOUND);
+        given(headLessAccessTokenService.getAccessToken(amGateway, pairClientIDAuthMethod, params, request))
+                .willReturn(responseEntity);
+        ResponseEntity<Object> modifiedResponseEntity = new ResponseEntity<>(null, httpHeaders, HttpStatus.OK);
+        given(jwtOverridingService.rewriteAccessTokenResponseIdToken(responseEntity)).willReturn(modifiedResponseEntity);
+
+        // When
+        ResponseEntity result = this.accessTokenApiController.getAccessToken(params, authorization, principal,
+                request);
+
+        // Then
+        assertThat(result).isNotNull();
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void failsWithHeadlessAuthWhenHeadlessAuthFails_getAccessToken() throws OBErrorResponseException,
+            OBErrorException,
+            JwtOverridingService.AccessTokenReWriteException {
+        // Given
+        MultiValueMap<String, String> params  = new LinkedMultiValueMap<>();
+        params.add(OIDCConstants.OIDCClaim.GRANT_TYPE, OIDCConstants.GrantType.HEADLESS_AUTH.type);
+        String authorization = "AuthString";
+        Authentication principal = mock(Authentication.class);
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        PairClientIDAuthMethod pairClientIDAuthMethod = new PairClientIDAuthMethod();
+        OIDCConstants.TokenEndpointAuthMethods clientIdAuthMethod =
+                OIDCConstants.TokenEndpointAuthMethods.CLIENT_SECRET_BASIC;
+        pairClientIDAuthMethod.setAuthMethod(clientIdAuthMethod);
+        given(matlsRequestVerificationService.verifyMATLSMatchesRequest(params, authorization, principal))
+                .willReturn(pairClientIDAuthMethod);
+        HttpHeaders  httpHeaders = new HttpHeaders();
+        ParameterizedTypeReference<AccessTokenResponse> parameterizedTypeRef =
+                new ParameterizedTypeReference<AccessTokenResponse>() {};
+        ResponseEntity<Object> responseEntity = new ResponseEntity<>("{\"error_description\":\"Client " +
+                "authentication failed\", \"error\":\"invalid_client\"}", httpHeaders, HttpStatus.BAD_REQUEST);
+        given(headLessAccessTokenService.getAccessToken(amGateway, pairClientIDAuthMethod, params, request))
+                .willReturn(responseEntity);
+
+        // When
+        OBErrorResponseException exception =
+                catchThrowableOfType(() -> this.accessTokenApiController.getAccessToken(params,
+                authorization, principal, request), OBErrorResponseException.class);
+
+        // Then
+        assertThat(exception).isNotNull();
+        assertThat(exception.getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(exception.getCategory()).isEqualTo(OBRIErrorResponseCategory.ACCESS_TOKEN);
     }
 }
