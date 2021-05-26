@@ -288,42 +288,33 @@ public class AuthorisationApiController implements AuthorisationApi {
                         String jwksKeys = jwk.toString();
                         log.debug("validateRequestParameters() tpp has jwksKeys as part of registraiton. They will be" +
                                 " used to validate the request parameter.");
-                        // ToDo: This throws if the jwt can't be validated. I was checking to see if the return (a
-                        //  SignedJWT was non-null as well, but it would appear that the API can return a null
-                        //  SignedJWT even when the jwt is valid. This seems wrong but I have to stop fixing stuff
-                        //  somewhere or I will never get this PR merged!!!
                         cryptoApiClient.validateJwsWithJWK(requestParametersSerialised, clientId, jwksKeys);
                         validated = true;
                     } else {
-                        log.error("validateRequestParameter() tpp has no jwkSetKeys; {}", tpp);
+                        log.debug("validateRequestParameter() tpp has no jwkSetKeys; {}", tpp);
                     }
                 }
 
                 if (!validated) {
                     String jwks_uri = tpp.getRegistrationResponse().getJwks_uri();
                     if (jwks_uri == null || jwks_uri.isBlank()) {
-                        log.debug("validateRequestparameters() tpp does no have a jwks_uri in it's registration " +
-                                "details; {}", tpp);
+                        log.error("validateRequestparameters() tpp does no have a jwksKeys, or a jwks_uri in it's " +
+                                "registration details; {}", tpp);
+                        throw new InvalidTokenException("Tpp does no have a jwksKeys, or a jwks_uri in it's " +
+                                "registration details");
                     } else {
                         log.debug("validateRequestParameter() Validating request parameter using jwks_uri: " +
                                         "requestParametersSerialised: '{}', clientId; '{}', jwks_url: {}",
                                 requestParametersSerialised, clientId, jwks_uri);
-                        // ToDo: This throws if the jwt can't be validated. I was checking to see if the return (a
-                        //  SignedJWT was non-null as well, but it would appear that the API can return a null
-                        //  SignedJWT even when the jwt is valid. This seems wrong but I have to stop fixing stuff
-                        //  somewhere or I will never get this PR merged!!!
                         cryptoApiClient.validateJws(requestParametersSerialised, clientId, jwks_uri);
                         validated = true;
                     }
                 }
             } else {
                 log.error("validateRequestParameter() tpp has no registration response; {}", tpp);
+                throw new InvalidTokenException("Tpp is not registered");
             }
 
-            if (!validated) {
-                log.debug("validateRequestParameter() failed to validate the request parameter");
-                throw new InvalidTokenException("Failed to validate jwt.");
-            }
 
             List<String> MANDATORY_CLAIMS = Arrays.asList(
                     OpenBankingConstants.RequestParameterClaim.AUD,
