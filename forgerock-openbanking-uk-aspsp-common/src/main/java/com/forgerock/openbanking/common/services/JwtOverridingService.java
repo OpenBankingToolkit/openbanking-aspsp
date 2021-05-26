@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.common.services;
 
 import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
+import com.forgerock.openbanking.common.error.exception.AccessTokenReWriteException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.oidc.AccessTokenResponse;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -49,20 +50,10 @@ import java.util.regex.Pattern;
 @Slf4j
 public class JwtOverridingService {
 
-    public class AccessTokenReWriteException extends Exception{
-        public  AccessTokenReWriteException(String message){
-            super(message);
-        }
+    private static final Pattern ID_TOKEN_PATTERN = Pattern.compile("id_token=?([^&]+)?");
 
-        public AccessTokenReWriteException(String message, Exception cause){
-            super(message, cause);
-        }
-    };
-
-    private static Pattern ID_TOKEN_PATTERN = Pattern.compile("id_token=?([^&]+)?");
-
-    private CryptoApiClient cryptoApiClient;
-    private AMOpenBankingConfiguration amOpenBankingConfiguration;
+    private final CryptoApiClient cryptoApiClient;
+    private final AMOpenBankingConfiguration amOpenBankingConfiguration;
 
     @Autowired
     public JwtOverridingService(CryptoApiClient cryptoApiClient, AMOpenBankingConfiguration amOpenBankingConfiguration) {
@@ -94,36 +85,36 @@ public class JwtOverridingService {
     public ResponseEntity rewriteAccessTokenResponseIdToken(ResponseEntity responseEntity)
             throws AccessTokenReWriteException {
 
-        if(responseEntity == null){
+        if (responseEntity == null) {
             throw new AccessTokenReWriteException("rewriteAccessTokenResponseIdToken() responseEntity is null");
         }
 
-        if(responseEntity.getStatusCode() != HttpStatus.OK){
+        if (responseEntity.getStatusCode() != HttpStatus.OK) {
             log.debug("rewriteAccessTokenResponseIdToken() responseEntity does not have success status");
             throw new AccessTokenReWriteException("Failed to rewrite access token response's id_token: responseEntity" +
                     " status code was " + responseEntity.getStatusCode() + ". Expected 200 (OK)");
         }
 
         AccessTokenResponse accessTokenResponse = (AccessTokenResponse) responseEntity.getBody();
-        if(accessTokenResponse == null){
+        if (accessTokenResponse == null) {
             log.debug("rewriteAccessTokenResponseIdToken() Expected body in responseEntity '{}'",
-                    responseEntity.toString());
+                    responseEntity);
             throw new AccessTokenReWriteException("Failed to rewrite access token response's id_token; responseEntity" +
                     " has no body");
         }
 
         String id_token = accessTokenResponse.getId_token();
-        if(id_token == null){
+        if (id_token == null) {
             log.debug("rewriteAccessTokenResponseIdToken() responseEntity body contains no id_token; '{}'",
-                    accessTokenResponse.toString());
+                    accessTokenResponse);
             return responseEntity;
         } else {
             try {
                 String rewrittenJWS = rewriteJWS(id_token);
                 if (rewrittenJWS == null || rewrittenJWS.isEmpty() || rewrittenJWS.isBlank()) {
                     log.debug("rewriteAccessTokenResponseIdToken() rewrittenJWS is null or empty.");
-                    throw new AccessTokenReWriteException("Failed to rewrite access token response's id_token; re-written" +
-                            " JWS is null or empty");
+                    throw new AccessTokenReWriteException("Failed to rewrite access token response's id_token; " +
+                            "re-written JWS is null or empty");
 
                 }
                 accessTokenResponse.setId_token(rewrittenJWS);
@@ -134,7 +125,7 @@ public class JwtOverridingService {
             }
 
             ResponseEntity rewrittenResponseEntity = ResponseEntity.status(HttpStatus.OK).body(accessTokenResponse);
-            log.trace("rewriteAccessTokenResponseIdToken() re-written responseEntity is '{}'", responseEntity.toString());
+            log.trace("rewriteAccessTokenResponseIdToken() re-written responseEntity is '{}'", responseEntity);
             return rewrittenResponseEntity;
         }
 
@@ -145,8 +136,8 @@ public class JwtOverridingService {
      * same body, but that is signed by the ASPSP's signing key and contains the correct kid in the jwt header.
      * @param responseEntity
      * @return a new @ResponseEntity
-     * @throws AccessTokenReWriteException if there is no id_token in the Location header fragment that can be replaced, or if
-     * the id_token in that fragment can't be parsed.
+     * @throws AccessTokenReWriteException if there is no id_token in the Location header fragment that can be replaced,
+     * or if the id_token in that fragment can't be parsed.
      */
     public ResponseEntity rewriteIdTokenFragmentInLocationHeader(ResponseEntity responseEntity)
             throws AccessTokenReWriteException {
@@ -174,7 +165,7 @@ public class JwtOverridingService {
         }
 
         String uriFragment = responseEntity.getHeaders().getLocation().getFragment();
-        if ( uriFragment == null || uriFragment.isEmpty() || uriFragment.isBlank() ){
+        if (uriFragment == null || uriFragment.isEmpty() || uriFragment.isBlank()) {
             log.debug("getFragmentIdTokenInLocationHeader(): Location has no fragment");
             throw new AccessTokenReWriteException("Failed to find id_token to re-write: responseEntity's Location has" +
                     " no fragment");
@@ -199,7 +190,7 @@ public class JwtOverridingService {
                             "null or empty");
                 }
             }
-        } catch (ParseException e){
+        } catch (ParseException e) {
             log.error("rewriteIdTokenFragmentInLocationHeader() Could not parse the JWT", e);
             throw new AccessTokenReWriteException("Failed to parse the responseEntity's Location fragment id_token", e);
         }

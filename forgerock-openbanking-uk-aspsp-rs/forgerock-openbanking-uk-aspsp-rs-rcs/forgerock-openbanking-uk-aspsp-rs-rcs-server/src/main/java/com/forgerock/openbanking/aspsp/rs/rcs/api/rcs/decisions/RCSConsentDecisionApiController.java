@@ -28,6 +28,7 @@ import com.forgerock.openbanking.aspsp.rs.rcs.services.RCSErrorService;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.RcsService;
 import com.forgerock.openbanking.common.conf.RcsConfiguration;
 import com.forgerock.openbanking.common.constants.RCSConstants;
+import com.forgerock.openbanking.common.error.exception.AccessTokenReWriteException;
 import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
 import com.forgerock.openbanking.common.model.rcs.consentdecision.ConsentDecision;
 import com.forgerock.openbanking.common.services.JwtOverridingService;
@@ -213,7 +214,7 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
                 try {
                     rewrittenResponseEntity =
                             jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(responseEntity);
-                } catch (JwtOverridingService.AccessTokenReWriteException e){
+                } catch (AccessTokenReWriteException e){
                     log.info("decisionAccountSharing() Failed to re-write id_token", e);
                     throw new OBErrorException(OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE);
                 }

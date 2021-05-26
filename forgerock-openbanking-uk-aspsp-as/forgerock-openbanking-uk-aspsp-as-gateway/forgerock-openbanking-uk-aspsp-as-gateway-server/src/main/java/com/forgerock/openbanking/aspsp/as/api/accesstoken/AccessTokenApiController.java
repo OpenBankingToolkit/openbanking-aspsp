@@ -26,14 +26,17 @@ import com.forgerock.openbanking.am.services.AMGatewayService;
 import com.forgerock.openbanking.aspsp.as.service.MatlsRequestVerificationService;
 import com.forgerock.openbanking.aspsp.as.service.PairClientIDAuthMethod;
 import com.forgerock.openbanking.aspsp.as.service.headless.accesstoken.HeadLessAccessTokenService;
+import com.forgerock.openbanking.common.error.exception.AccessTokenReWriteException;
 import com.forgerock.openbanking.common.services.JwtOverridingService;
 import com.forgerock.openbanking.constants.OIDCConstants;
+import com.forgerock.openbanking.constants.OIDCConstants.GrantType;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.AccessTokenResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -45,6 +48,9 @@ import org.springframework.util.MultiValueMap;
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.UUID;
+
+import static com.forgerock.openbanking.constants.OIDCConstants.OIDCClaim.CLIENT_ASSERTION;
+import static com.forgerock.openbanking.constants.OIDCConstants.TokenEndpointAuthMethods.*;
 
 @Controller
 @Slf4j
@@ -69,7 +75,8 @@ public class AccessTokenApiController implements AccessTokenApi {
     }
 
     @Override
-    public ResponseEntity getAccessToken(MultiValueMap paramMap, String authorization, Principal principal,
+    public ResponseEntity getAccessToken(MultiValueMap<String, String> paramMap, String authorization,
+                                         Principal principal,
                                          HttpServletRequest request) throws OBErrorResponseException, OBErrorException {
         log.debug("getAccessToken(), paramMap {}", paramMap);
         PairClientIDAuthMethod clientIDAuthMethod =
@@ -77,9 +84,9 @@ public class AccessTokenApiController implements AccessTokenApi {
 
         AMGateway amGateway = this.amGateway;
         //The token endpoint can also be used as audience, as per OIDC spec
-        if (clientIDAuthMethod.getAuthMethod() == OIDCConstants.TokenEndpointAuthMethods.PRIVATE_KEY_JWT) {
-            String clientAssertion = (String) paramMap.getFirst(OIDCConstants.OIDCClaim.CLIENT_ASSERTION);
-            if (clientAssertion == null || clientAssertion.isBlank() || clientAssertion.isEmpty()) {
+        if (clientIDAuthMethod.getAuthMethod() == PRIVATE_KEY_JWT) {
+            String clientAssertion = paramMap.getFirst(CLIENT_ASSERTION);
+            if (clientAssertion == null || clientAssertion.isBlank()) {
                 log.debug("getAccessToken() clientAssertion was null or blank");
                 throw new OBErrorResponseException(
                         OBRIErrorType.ACCESS_TOKEN_INVALID.getHttpStatus(),
@@ -91,9 +98,31 @@ public class AccessTokenApiController implements AccessTokenApi {
         }
 
         // can throw a UnsupportedOIDCGrantTypeException
-        OIDCConstants.GrantType grantType =
-                OIDCConstants.GrantType.fromType((String) paramMap.getFirst(OIDCConstants.OIDCClaim.GRANT_TYPE));
+        GrantType grantType = GrantType.fromType(paramMap.getFirst(OIDCConstants.OIDCClaim.GRANT_TYPE));
 
+        ResponseEntity<AccessTokenResponse> responseEntity = getAccessToken(paramMap, request,
+                clientIDAuthMethod, amGateway, grantType);
+
+        try {
+            responseEntity = jwtOverridingService.rewriteAccessTokenResponseIdToken(responseEntity);
+        } catch (AccessTokenReWriteException e) {
+            log.debug("Failed to rewrite the access token response's id_token.", e);
+            String supportUID = UUID.randomUUID().toString();
+            throw new OBErrorResponseException(
+                    OBRIErrorType.ACCESS_TOKEN_INVALID_ID_TOKEN.getHttpStatus(),
+                    OBRIErrorResponseCategory.ACCESS_TOKEN,
+                    OBRIErrorType.ACCESS_TOKEN_INVALID_ID_TOKEN.toOBError1(supportUID));
+        }
+
+        return responseEntity;
+    }
+
+    @NotNull
+    private ResponseEntity<AccessTokenResponse> getAccessToken(MultiValueMap<String, String> paramMap,
+                                                               HttpServletRequest request,
+                                                               PairClientIDAuthMethod clientIDAuthMethod,
+                                                               AMGateway amGateway, GrantType grantType)
+            throws OBErrorResponseException, OBErrorException {
         ResponseEntity<AccessTokenResponse> responseEntity;
         switch (grantType) {
             case HEADLESS_AUTH: {
@@ -137,18 +166,6 @@ public class AccessTokenApiController implements AccessTokenApi {
                 log.debug("getAccessToken() new reponse to return is {}", responseEntity);
             }
         }
-
-        try {
-            responseEntity = jwtOverridingService.rewriteAccessTokenResponseIdToken(responseEntity);
-        } catch (JwtOverridingService.AccessTokenReWriteException e) {
-            log.debug("Failed to rewrite the access token response's id_token.", e);
-            String supportUID = UUID.randomUUID().toString();
-            throw new OBErrorResponseException(
-                    OBRIErrorType.ACCESS_TOKEN_INVALID_ID_TOKEN.getHttpStatus(),
-                    OBRIErrorResponseCategory.ACCESS_TOKEN,
-                    OBRIErrorType.ACCESS_TOKEN_INVALID_ID_TOKEN.toOBError1(supportUID));
-        }
-
         return responseEntity;
     }
 }

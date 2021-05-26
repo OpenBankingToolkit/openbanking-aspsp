@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.common.services;
 
 import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
+import com.forgerock.openbanking.common.error.exception.AccessTokenReWriteException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.oidc.AccessTokenResponse;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -65,7 +66,7 @@ public class JwtOverridingServiceTest {
     }
 
     @Test
-    public void shouldRewriteAccessTokenResponseIdToken() throws JwtOverridingService.AccessTokenReWriteException {
+    public void shouldRewriteAccessTokenResponseIdToken() throws AccessTokenReWriteException {
         // Given
         this.amOpenBankingConfiguration.issuerId = "acme bank Ltd";
         HttpHeaders httpHeaders = new HttpHeaders();
@@ -100,9 +101,9 @@ public class JwtOverridingServiceTest {
 
 
         // Then
-        JwtOverridingService.AccessTokenReWriteException accessTokenReWriteException = catchThrowableOfType(
+        AccessTokenReWriteException accessTokenReWriteException = catchThrowableOfType(
                 ()->this.jwtOverridingService.rewriteAccessTokenResponseIdToken(responseEntity),
-                JwtOverridingService.AccessTokenReWriteException.class);
+                AccessTokenReWriteException.class);
 
         // When
         assertThat(accessTokenReWriteException.getMessage()).contains("Expected 200 (OK)");
@@ -117,9 +118,9 @@ public class JwtOverridingServiceTest {
 
 
         // Then
-        JwtOverridingService.AccessTokenReWriteException accessTokenReWriteException = catchThrowableOfType(
+        AccessTokenReWriteException accessTokenReWriteException = catchThrowableOfType(
                 ()->this.jwtOverridingService.rewriteAccessTokenResponseIdToken(responseEntity),
-                JwtOverridingService.AccessTokenReWriteException.class);
+                AccessTokenReWriteException.class);
 
         // When
         assertThat(accessTokenReWriteException.getMessage()).contains("responseEntity has no body");
@@ -127,7 +128,7 @@ public class JwtOverridingServiceTest {
 
     @Test
     public void shouldReturnOrignialWhenBodyHasNoIdToken_rewriteAccessTokenResponseIdToken() throws
-            JwtOverridingService.AccessTokenReWriteException {
+            AccessTokenReWriteException {
         // Given
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add("Location", "https://location");
@@ -152,16 +153,16 @@ public class JwtOverridingServiceTest {
 
 
         // Then
-        JwtOverridingService.AccessTokenReWriteException accessTokenReWriteException = catchThrowableOfType(
+        AccessTokenReWriteException accessTokenReWriteException = catchThrowableOfType(
                 ()->this.jwtOverridingService.rewriteAccessTokenResponseIdToken(responseEntity),
-                JwtOverridingService.AccessTokenReWriteException.class);
+                AccessTokenReWriteException.class);
 
         // When
         assertThat(accessTokenReWriteException.getMessage()).contains("Could not parse id_token");
     }
 
     @Test
-    public void rewriteIdTokenFragmentInLocationHeader() throws JwtOverridingService.AccessTokenReWriteException,
+    public void rewriteIdTokenFragmentInLocationHeader() throws AccessTokenReWriteException,
             URISyntaxException {
         // Given
         amOpenBankingConfiguration.issuerId = "acme bank Ltd";
@@ -201,9 +202,9 @@ public class JwtOverridingServiceTest {
         ResponseEntity responseEntity = new ResponseEntity(HttpStatus.OK);
 
         // When
-        JwtOverridingService.AccessTokenReWriteException accessTokenReWriteException = catchThrowableOfType(
+        AccessTokenReWriteException accessTokenReWriteException = catchThrowableOfType(
                 ()->this.jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(responseEntity),
-                JwtOverridingService.AccessTokenReWriteException.class );
+                AccessTokenReWriteException.class );
 
         // Then
         assertThat(accessTokenReWriteException.getMessage()).contains("does not have a FOUND http status");

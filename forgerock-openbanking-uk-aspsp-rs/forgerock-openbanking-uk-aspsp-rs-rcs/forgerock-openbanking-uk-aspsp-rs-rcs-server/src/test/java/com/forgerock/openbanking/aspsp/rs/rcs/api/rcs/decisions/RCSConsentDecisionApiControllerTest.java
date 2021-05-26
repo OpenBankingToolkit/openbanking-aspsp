@@ -56,13 +56,15 @@ import static com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.JwtTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class RCSConsentDecisionApiControllerTest {
 
+    private final AMOpenBankingConfiguration amOpenBankingConfiguration = new AMOpenBankingConfiguration();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @Mock
     private CryptoApiClient cryptoApiClient;
     @Mock
@@ -79,41 +81,45 @@ public class RCSConsentDecisionApiControllerTest {
     private TppStoreService tppStoreService;
     @Mock
     private JwtOverridingService jwtOverridingService;
-
-    private final AMOpenBankingConfiguration amOpenBankingConfiguration = new AMOpenBankingConfiguration();
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     // Class under test
     private RCSConsentDecisionApiController consentDecisionApiController;
 
+    private static String toEncodedSignedTestJwt(final String jwtPayloadFilePath) {
+        return utf8FileToString
+                .andThen(jsonStringToClaimsSet)
+                .andThen(claimsSetToRsa256Jwt)
+                .andThen(signJwt)
+                .andThen(serializeJwt)
+                .apply(jwtPayloadFilePath);
+    }
 
     @Before
     public void setUp() throws Exception {
-        this.consentDecisionApiController = new RCSConsentDecisionApiController(cryptoApiClient,rcsService,
-                rcsConfiguration,amOpenBankingConfiguration, rcsErrorService, objectMapper, userProfileService,
+        this.consentDecisionApiController = new RCSConsentDecisionApiController(cryptoApiClient, rcsService,
+                rcsConfiguration, amOpenBankingConfiguration, rcsErrorService, objectMapper, userProfileService,
                 intentTypeService, tppStoreService, jwtOverridingService);
 
         SinglePaymentConsentDecisionDelegate singlePaymentConsentDecisionDelegate =
                 mock(SinglePaymentConsentDecisionDelegate.class);
-        when(intentTypeService.getConsentDecision(anyString())).thenReturn(singlePaymentConsentDecisionDelegate);
-        when(singlePaymentConsentDecisionDelegate.getTppIdBehindConsent()).thenReturn("TppId");
-        when(singlePaymentConsentDecisionDelegate.getUserIDBehindConsent()).thenReturn("username");
+        given(intentTypeService.getConsentDecision(anyString())).willReturn(singlePaymentConsentDecisionDelegate);
+        given(singlePaymentConsentDecisionDelegate.getTppIdBehindConsent()).willReturn("TppId");
+        given(singlePaymentConsentDecisionDelegate.getUserIDBehindConsent()).willReturn("username");
 
         Tpp tpp = mock(Tpp.class);
         Optional<Tpp> isTpp = Optional.of(tpp);
-        when(this.tppStoreService.findById(anyString())).thenReturn(isTpp);
-        when(tpp.getClientId()).thenReturn("98311305-1c4f-4ffb-8af4-90c9b220e365");
+        given(this.tppStoreService.findById(anyString())).willReturn(isTpp);
+        given(tpp.getClientId()).willReturn("98311305-1c4f-4ffb-8af4-90c9b220e365");
 
         amOpenBankingConfiguration.userProfileId = "username";
         amOpenBankingConfiguration.endpointUserProfile = "endpointUserProfile";
         amOpenBankingConfiguration.cookieName = "cookieName";
         Map<String, String> profile = new HashMap<String, String>();
         profile.put(amOpenBankingConfiguration.userProfileId, "username");
-        when(this.userProfileService.getProfile(anyString(), anyString(), anyString())).thenReturn(profile);
+        given(this.userProfileService.getProfile(anyString(), anyString(), anyString())).willReturn(profile);
 
         ResponseEntity responseEntity = mock(ResponseEntity.class);
-        when(this.rcsService.sendRCSResponseToAM(anyString(), any(RedirectionAction.class))).thenReturn(responseEntity);
-        when(responseEntity.getStatusCode()).thenReturn(HttpStatus.FOUND);
+        given(this.rcsService.sendRCSResponseToAM(anyString(), any(RedirectionAction.class))).willReturn(responseEntity);
+        given(responseEntity.getStatusCode()).willReturn(HttpStatus.FOUND);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "https://www.google.com#code=oq62Wr-V0E7cnuIl5rDSwscCyVo&id_token" +
                 "=eyJ0eXAiOiJKV1QiLCJraWQiOiJzUUhYOHlnT3JGcHBsZ09ZZkxpQUNTNzJOMG89IiwiYWxnIjoiUFMyNTYifQ.eyJzdWIiOiJ" +
@@ -131,15 +137,11 @@ public class RCSConsentDecisionApiControllerTest {
                 "vsZ6FVGx6YGHUN-BDIFssy6hpD53Dp2HGbCxZ0unBU50Q9N3w&state=10d260bf-a7d9-444a-92d9-7b7a5f088208");
         URI rewrittenUri = new URI("https://www.google.com#code=oq62Wr-V0E7cnuIl5rDSwscCyVo&id_token" +
                 "=re-writtenIdToken");
-
         HttpHeaders rewrittenHeaders = new HttpHeaders();
-        rewrittenHeaders.add("Location", "https://www.google.com#code=oq62Wr-V0E7cnuIl5rDSwscCyVo&id_token=re" +
-                        "-writtenIdToken");
+        rewrittenHeaders.setLocation(rewrittenUri);
         ResponseEntity rewrittenResponseEntity = new ResponseEntity(null, rewrittenHeaders, HttpStatus.FOUND);
-        when(jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(any(ResponseEntity.class)))
-                .thenReturn(rewrittenResponseEntity);
-
-
+        given(jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(any(ResponseEntity.class)))
+                .willReturn(rewrittenResponseEntity);
     }
 
     @After
@@ -168,14 +170,5 @@ public class RCSConsentDecisionApiControllerTest {
         RedirectionAction redirectAction = (RedirectionAction) responseEntity.getBody();
         assertThat(redirectAction).isNotNull();
         assertThat(redirectAction.getRedirectUri()).contains("re-writtenIdToken");
-    }
-
-    private static String toEncodedSignedTestJwt(final String jwtPayloadFilePath) {
-        return utf8FileToString
-                .andThen(jsonStringToClaimsSet)
-                .andThen(claimsSetToRsa256Jwt)
-                .andThen(signJwt)
-                .andThen(serializeJwt)
-                .apply(jwtPayloadFilePath);
     }
 }

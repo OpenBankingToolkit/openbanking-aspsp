@@ -18,13 +18,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.as.service;
+package com.forgerock.openbanking.common.error.exception;
 
-import com.forgerock.openbanking.constants.OIDCConstants.TokenEndpointAuthMethods;
-import lombok.Data;
+public class AccessTokenReWriteException extends Exception {
+    public AccessTokenReWriteException(String message) {
+        super(message);
+    }
 
-@Data
-public class PairClientIDAuthMethod {
-    public String clientId;
-    public TokenEndpointAuthMethods authMethod;
+    public AccessTokenReWriteException(String message, Exception cause) {
+        super(message, cause);
+    }
 }

@@ -26,6 +26,7 @@ import com.forgerock.openbanking.analytics.model.entries.TokenUsage;
 import com.forgerock.openbanking.analytics.services.TokenUsageService;
 import com.forgerock.openbanking.aspsp.as.api.oauth2.discovery.DiscoveryConfig;
 import com.forgerock.openbanking.aspsp.as.service.headless.authorisation.HeadLessAuthorisationService;
+import com.forgerock.openbanking.common.error.exception.AccessTokenReWriteException;
 import com.forgerock.openbanking.common.services.JwtOverridingService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
@@ -215,7 +216,7 @@ public class AuthorisationApiController implements AuthorisationApi {
             try {
                 responseEntity = this.jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(responseEntity);
                 tokenUsageService.incrementTokenUsage(TokenUsage.ID_TOKEN);
-            } catch (JwtOverridingService.AccessTokenReWriteException e) {
+            } catch (AccessTokenReWriteException e) {
                 String supportUID = UUID.randomUUID().toString();
                 log.info("getAuthorisation() Failed to re-write the id_token", e);
                 throw new OBErrorResponseException(
@@ -276,7 +277,6 @@ public class AuthorisationApiController implements AuthorisationApi {
             Tpp tpp = byClientId.get();
 
             log.debug("Validate the request parameter signature");
-            SignedJWT validatedJwt = null;
             boolean validated = false;
             OIDCRegistrationResponse registrationResponse = tpp.getRegistrationResponse();
             if (registrationResponse != null) {

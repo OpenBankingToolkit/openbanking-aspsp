@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.as.api.authorisation;
 
+import com.forgerock.openbanking.am.gateway.AMGateway;
 import com.forgerock.openbanking.am.services.AMGatewayService;
 import com.forgerock.openbanking.analytics.services.TokenUsageService;
 import com.forgerock.openbanking.aspsp.as.api.authorisation.redirect.AuthorisationApiController;
@@ -32,6 +33,7 @@ import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.Tpp;
+import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jwt.SignedJWT;
 import org.junit.Before;
@@ -76,16 +78,18 @@ public class AuthorisationApiControllerTest {
     private TokenUsageService tokenUsageService;
 
     private AuthorisationApiController authorisationApiController ;
+    private String clientId = "98e119f6-196f-4296-98d4-f1a2f445bca2";
+
 
     @Before
-    public void setUp() throws Exception{
+    public void setUp(){
         this.authorisationApiController = new AuthorisationApiController(this.headLessAuthorisationService,
                 this.cryptoApiClient, this.tppStoreService, "cookieName", false, this.amGatewayService,
                 this.jwtOverridingService, this.tokenUsageService, this.discoveryConfig);
     }
 
     @Test
-    public void shouldNotThrowExceptionWhenContainAllScopes() throws OBErrorException, OBErrorResponseException,
+    public void shouldGetAuthorisationGivenAllScopes() throws OBErrorException, OBErrorResponseException,
             InvalidTokenException, ParseException, IOException {
         // Given
         String clientId = "98e119f6-196f-4296-98d4-f1a2f445bca2";
@@ -99,12 +103,20 @@ public class AuthorisationApiControllerTest {
         given(tppStoreService.findByClientId(clientId)).willReturn(Optional.of(tpp));
         SignedJWT signedJwt = mock(SignedJWT.class);
         given(cryptoApiClient.validateJws(anyString(), anyString(), anyString() )).willReturn(signedJwt);
+        AMGateway amGateway = mock(AMGateway.class);
+        given(amGatewayService.getAmGateway(jwt)).willReturn(amGateway);
+        String state =  "10d260bf-a7d9-444a-92d9-7b7a5f088208";
+        String scopes = "openid accounts payments";
+        given(headLessAuthorisationService.getAuthorisation(amGateway, responseTypes.get(0), clientId, state, null,
+                scopes, null, jwt, null, null)).willReturn(new ResponseEntity(HttpStatus.FOUND));
 
         // When
-        authorisationApiController.getAuthorisation(responseTypes.get(0), clientId, null,
-                null, "openid accounts payments", null, jwt, true, null, null, null, null, null);
+        ResponseEntity responseEntity = authorisationApiController.getAuthorisation(responseTypes.get(0), clientId,
+                null, null, scopes, null, jwt, true, null, null, null, null, null);
 
         // Then no exception
+        assertThat(responseEntity).isNotNull();
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
     }
 
     @Test
@@ -153,7 +165,7 @@ public class AuthorisationApiControllerTest {
         // Then no exception
     }
 
-    @Test(expected = OBErrorException.class)
+    @Test
     public void shouldThrowExceptionWhenJwtScopesDoNotMatchQueryParamScope()
             throws OBErrorException, OBErrorResponseException {
         // Given
@@ -162,12 +174,20 @@ public class AuthorisationApiControllerTest {
         String jwt = toEncodedSignedTestJwt("jwt/authorisation.jwt");
         OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
         registrationResponse.setJwks_uri("url");
+        Tpp tpp = new Tpp();
+        tpp.setRegistrationResponse(registrationResponse);
+        given(tppStoreService.findByClientId(this.clientId)).willReturn(Optional.of(tpp));
+
 
         // When
-        authorisationApiController.getAuthorisation(responseTypes.get(0), "98e119f6-196f-4296-98d4-f1a2f445bca2", null,
-                null, "openid accounts", null, jwt, true, null, null, null, null, null);
+        OBErrorException exception =
+                catchThrowableOfType(() ->authorisationApiController.getAuthorisation(responseTypes.get(0),
+                        "98e119f6-196f-4296-98d4-f1a2f445bca2", null, null, "openid accounts", null, jwt, true, null,
+                        null, null, null, null), OBErrorException.class);
 
         // Then exception
+        assertThat(exception).isNotNull();
+        assertThat(exception.getObriErrorType()).isEqualTo(OBRIErrorType.REQUEST_PARAMETER_QUERY_PARAM_DIFF_CLAIM);
     }
 
     @Test
