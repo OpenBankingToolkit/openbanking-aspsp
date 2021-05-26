@@ -18,21 +18,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.rcs.consentdecision;
+package com.forgerock.openbanking.common.error.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public class AccessTokenReWriteException extends Exception {
+    public AccessTokenReWriteException(String message) {
+        super(message);
+    }
 
-/**
- * Accounts consent decision bean to send the user decision on they accounts to the server side.
- */
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class ConsentDecision {
-    private String consentJwt;
-    private String decision;
+    public AccessTokenReWriteException(String message, Exception cause) {
+        super(message, cause);
+    }
 }

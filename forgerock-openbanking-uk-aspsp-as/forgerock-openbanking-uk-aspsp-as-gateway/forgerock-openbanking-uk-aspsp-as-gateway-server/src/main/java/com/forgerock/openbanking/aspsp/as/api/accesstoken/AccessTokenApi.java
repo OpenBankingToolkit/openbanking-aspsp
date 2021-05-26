@@ -52,7 +52,7 @@ public interface AccessTokenApi {
     )
     @PreAuthorize("hasAnyAuthority('ROLE_PISP', 'ROLE_AISP', 'ROLE_CBPII')")
     ResponseEntity getAccessToken(
-            @RequestBody MultiValueMap paramMap,
+            @RequestBody MultiValueMap<String, String> paramMap,
 
             @ApiParam(value = "Authorization header")
             @RequestHeader(value = "Authorization", required = false) String authorization,

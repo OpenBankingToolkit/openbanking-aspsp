@@ -20,26 +20,11 @@
  */
 package com.forgerock.openbanking.aspsp.as.service;
 
-import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
-import com.forgerock.openbanking.jwt.services.CryptoApiClient;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.forgerock.openbanking.constants.OIDCConstants.TokenEndpointAuthMethods;
+import lombok.Data;
 
-import java.text.ParseException;
-
-@Service
-public class JwtOverridingService {
-
-    @Autowired
-    private CryptoApiClient cryptoApiClient;
-    @Autowired
-    private AMOpenBankingConfiguration amOpenBankingConfiguration;
-
-    public String rewriteJWS(String jws) throws ParseException {
-
-        JWTClaimsSet jwtClaimsSet = SignedJWT.parse(jws).getJWTClaimsSet();
-        return cryptoApiClient.signClaims(amOpenBankingConfiguration.getIssuerID(), jwtClaimsSet, false);
-    }
+@Data
+public class PairClientIDAuthMethod {
+    public String clientId;
+    public TokenEndpointAuthMethods authMethod;
 }

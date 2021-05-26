@@ -1,107 +1,52 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
-### GitHub [#391](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/391) 32: Bumped version of parent pom to pull in minor fix to datamodel
-[0e5b86be2bf47ae](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0e5b86be2bf47ae) Matt Wills *2021-05-13 10:34:21*
-32: Bumped version of parent pom to pull in minor fix to datamodel (#391)
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
-### GitHub [#392](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/392) 742: token endpoint 500 error improvements
-[d1c2a4ea43d7d45](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d1c2a4ea43d7d45) Jorge Sanchez Perez *2021-05-14 07:38:05*
-742: token endpoint 500 error improvements (#392)
-
-- Bumped starter parent version 1.1.97
-- Bumped common version 1.1.4
-- Bumped clients version 1.1.4
-- Bumped jwkms version 1.1.83
-- Bumped auth version 1.0.71
-- Added support to build module independently avoiding license error.
-- Added UnsupportedOIDCAuthMethodsException and UnsupportedOIDCGrantTypeException in custom handler
-Issue: https://github.com/ForgeCloud/ob-deploy/issues/742
-### GitHub [#397](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/397) Release/1.3.4
-[92492510eba8e77](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92492510eba8e77) Jorge Sanchez Perez *2021-05-14 08:05:45*
-Release/1.3.4 (#397)
-
-* changelog
-
-* Release candidate: prepare release 1.3.4
-
-* Release candidate: prepare for next development iteration
-### GitHub [#404](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/404) Release/1.4.0
-[e56fad339682b16](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e56fad339682b16) Jorge Sanchez Perez *2021-05-17 10:31:59*
-Release/1.4.0 (#404)
-
-* Release 1.4.0
-- Bumped common version 1.2.0
-- Bumped clients version 1.2.0
-- Bumped jwkms version 1.2.0
-- Bumped auth version 1.1.0
-- Upgrade aspsp version to 1.4.0
-
-* Release candidate: prepare release 1.4.0
-
-* Release candidate: prepare for next development iteration
-
-* changelog
-### GitHub [#406](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/406) Release/1.4.1
-[c20afa490c34de8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c20afa490c34de8) Jorge Sanchez Perez *2021-05-18 14:33:09*
-Release/1.4.1 (#406)
-
-* changelog
-
-* Release candidate: prepare release 1.4.1
-
-* Release candidate: prepare for next development iteration
-[75f094eb79dcb7c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/75f094eb79dcb7c) Matt Wills *2021-05-24 13:36:57*
-33: v3.1.8 of Events and Funds Confirmation APIs
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/33
-[ff6bd0672f383d6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ff6bd0672f383d6) Matt Wills *2021-05-24 13:25:28*
-33: v3.1.8 of Accounts API gateway controllers and interfaces
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/33
-[0a1b7f53da3cc34](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0a1b7f53da3cc34) Matt Wills *2021-05-24 12:54:37*
-33: v3.1.8 of Payment API controllers and interfaces
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/33
-[492016f2f9a6054](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/492016f2f9a6054) Matt Wills *2021-05-21 14:27:18*
-76: Migrated to v3.1.8 of uk-datamodel
-
-- Fixed compilation errors after moving to consolidated enums
-- Fixes prior to new v3.1.8 controller classes and interfaces
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/76
-[9f3308ce4919304](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f3308ce4919304) Matt Wills *2021-05-18 10:12:41*
-32: Removed accidental import of org.bouncycastle.asn1.x500.style.RFC4519Style.postalAddress
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
-[764b09728e0b43b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/764b09728e0b43b) Matt Wills *2021-05-17 09:59:54*
-32: v3.1.7 Discovery config
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
-[708ca312a764b16](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/708ca312a764b16) Matt Wills *2021-05-14 10:31:10*
-32: Bumped version of parent pom to include v3.1.7 of Events/Funds datamodel
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
-[7e7eac2b578b928](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7e7eac2b578b928) Matt Wills *2021-05-14 09:14:32*
-32: v3.1.7 of Events and Funds API
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
-[6891d6ec4fbeb64](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6891d6ec4fbeb64) Matt Wills *2021-05-12 11:54:03*
-32: Bumped parent pom to release version
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
-[9daa4c020e616a9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9daa4c020e616a9) Matt Wills *2021-05-12 11:53:24*
-32: Additional changes after regeneration of v3.1.7 datamodel (using Open API spec)
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
-[0336d2691fa87ce](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0336d2691fa87ce) Matt Wills *2021-05-12 11:53:24*
-32: v3.1.7 of Payments API controllers
-
-Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
-[79073ae9e7c4814](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/79073ae9e7c4814) JamieB *2021-05-11 08:02:35*
+[82f8ccbff075bf2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/82f8ccbff075bf2) Matt Wills *2021-05-24 14:43:50*
 Release candidate: prepare for next development iteration
-## 1.3.3
+## 1.4.2
+### GitHub [#342](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/342) Release/1.1.118
+[141816573d0231d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/141816573d0231d) Jorge Sanchez Perez *2021-02-22 15:07:48*
+Release/1.1.118 (#342)
+
+* Bumped versions
+- Bumped starter parent version 1.1.86
+- Bumped clients version 1.0.45
+- Bumped common version 1.0.90
+- Bumped auth version 1.0.66
+- Bumped jwkms version 1.1.77
+
+* Release candidate: prepare release 1.1.118
+
+* Release candidate: prepare for next development iteration
+### GitHub [#346](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/346) 201: Analytics empty data
+[c0e3227e4ed0b8c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c0e3227e4ed0b8c) Jorge Sanchez Perez *2021-03-11 08:46:35*
+201: Analytics empty data (#346)
+
+* 201: Analytics empty data
+- Bumped `ob-common` version 1.1.0
+- Added new dependency `ob-common-annotations`
+- Refactorisation of classes to use the new origin of annotation `OpenBankingAPI`
+- Bumped `ob-clients` version 1.1.0
+- Bumped `ob-auth` version 1.0.67
+- Bumped `ob-jwkms` version 1.1.78
+- Upgrade minor version to 1.2.0-SNAPSHOT
+- Prepare for the next release
+
+* Changelog updated
+### GitHub [#350](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/350) Release/1.2.0
+[32efab6fcf30f25](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/32efab6fcf30f25) Jorge Sanchez Perez *2021-03-11 09:18:43*
+Release/1.2.0 (#350)
+
+* Release candidate: prepare release 1.2.0
+
+* Release candidate: prepare for next development iteration
+### GitHub [#354](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/354) Release/1.2.1
+[8e85606d358c96d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8e85606d358c96d) Jorge Sanchez Perez *2021-03-18 09:49:29*
+Release/1.2.1 (#354)
+
+* Release candidate: prepare release 1.2.1
+
+* Release candidate: prepare for next development iteration
 ### GitHub [#356](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/356) 16: Switched to GenericOBDiscoveryAPILinks in uk-datamodel
 [47a5dac51797c70](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/47a5dac51797c70) Matt Wills *2021-03-25 11:09:09*
 Revert "Merge pull request #356 from OpenBankingToolkit/issue/16-discovery-serialization"
@@ -251,10 +196,108 @@ Release/1.3.2 (#380)
 * Release candidate: prepare release 1.3.2
 
 * Release candidate: prepare for next development iteration
-[fd3ba6bccc88d73](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fd3ba6bccc88d73) JamieB *2021-05-11 08:02:28*
-Release candidate: prepare release 1.3.3
-[c4f059c5d87c7c3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c4f059c5d87c7c3) JamieB *2021-05-11 07:39:18*
-34: Empty commit to force codefresh build
+### GitHub [#391](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/391) 32: Bumped version of parent pom to pull in minor fix to datamodel
+[0e5b86be2bf47ae](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0e5b86be2bf47ae) Matt Wills *2021-05-13 10:34:21*
+32: Bumped version of parent pom to pull in minor fix to datamodel (#391)
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
+### GitHub [#392](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/392) 742: token endpoint 500 error improvements
+[d1c2a4ea43d7d45](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d1c2a4ea43d7d45) Jorge Sanchez Perez *2021-05-14 07:38:05*
+742: token endpoint 500 error improvements (#392)
+
+- Bumped starter parent version 1.1.97
+- Bumped common version 1.1.4
+- Bumped clients version 1.1.4
+- Bumped jwkms version 1.1.83
+- Bumped auth version 1.0.71
+- Added support to build module independently avoiding license error.
+- Added UnsupportedOIDCAuthMethodsException and UnsupportedOIDCGrantTypeException in custom handler
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/742
+### GitHub [#397](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/397) Release/1.3.4
+[92492510eba8e77](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92492510eba8e77) Jorge Sanchez Perez *2021-05-14 08:05:45*
+Release/1.3.4 (#397)
+
+* changelog
+
+* Release candidate: prepare release 1.3.4
+
+* Release candidate: prepare for next development iteration
+### GitHub [#404](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/404) Release/1.4.0
+[e56fad339682b16](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e56fad339682b16) Jorge Sanchez Perez *2021-05-17 10:31:59*
+Release/1.4.0 (#404)
+
+* Release 1.4.0
+- Bumped common version 1.2.0
+- Bumped clients version 1.2.0
+- Bumped jwkms version 1.2.0
+- Bumped auth version 1.1.0
+- Upgrade aspsp version to 1.4.0
+
+* Release candidate: prepare release 1.4.0
+
+* Release candidate: prepare for next development iteration
+
+* changelog
+### GitHub [#406](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/406) Release/1.4.1
+[c20afa490c34de8](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c20afa490c34de8) Jorge Sanchez Perez *2021-05-18 14:33:09*
+Release/1.4.1 (#406)
+
+* changelog
+
+* Release candidate: prepare release 1.4.1
+
+* Release candidate: prepare for next development iteration
+[8fc3878e3b83fa2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8fc3878e3b83fa2) Matt Wills *2021-05-24 14:42:15*
+Release candidate: prepare release 1.4.2
+[75f094eb79dcb7c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/75f094eb79dcb7c) Matt Wills *2021-05-24 13:36:57*
+33: v3.1.8 of Events and Funds Confirmation APIs
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/33
+[ff6bd0672f383d6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ff6bd0672f383d6) Matt Wills *2021-05-24 13:25:28*
+33: v3.1.8 of Accounts API gateway controllers and interfaces
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/33
+[0a1b7f53da3cc34](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0a1b7f53da3cc34) Matt Wills *2021-05-24 12:54:37*
+33: v3.1.8 of Payment API controllers and interfaces
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/33
+[492016f2f9a6054](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/492016f2f9a6054) Matt Wills *2021-05-21 14:27:18*
+76: Migrated to v3.1.8 of uk-datamodel
+
+- Fixed compilation errors after moving to consolidated enums
+- Fixes prior to new v3.1.8 controller classes and interfaces
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/76
+[9f3308ce4919304](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9f3308ce4919304) Matt Wills *2021-05-18 10:12:41*
+32: Removed accidental import of org.bouncycastle.asn1.x500.style.RFC4519Style.postalAddress
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
+[764b09728e0b43b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/764b09728e0b43b) Matt Wills *2021-05-17 09:59:54*
+32: v3.1.7 Discovery config
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
+[708ca312a764b16](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/708ca312a764b16) Matt Wills *2021-05-14 10:31:10*
+32: Bumped version of parent pom to include v3.1.7 of Events/Funds datamodel
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
+[7e7eac2b578b928](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7e7eac2b578b928) Matt Wills *2021-05-14 09:14:32*
+32: v3.1.7 of Events and Funds API
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
+[6891d6ec4fbeb64](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6891d6ec4fbeb64) Matt Wills *2021-05-12 11:54:03*
+32: Bumped parent pom to release version
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
+[9daa4c020e616a9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9daa4c020e616a9) Matt Wills *2021-05-12 11:53:24*
+32: Additional changes after regeneration of v3.1.7 datamodel (using Open API spec)
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
+[0336d2691fa87ce](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0336d2691fa87ce) Matt Wills *2021-05-12 11:53:24*
+32: v3.1.7 of Payments API controllers
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
+[79073ae9e7c4814](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/79073ae9e7c4814) JamieB *2021-05-11 08:02:35*
+Release candidate: prepare for next development iteration
 [d46d7cb97ca4a0c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d46d7cb97ca4a0c) JamieB *2021-05-11 07:23:52*
 34: Use forgerock spring-security-multi-auth
 
@@ -275,61 +318,6 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/32
 Issue: https://github.com/OpenBankingToolkit/openbanking-uk-datamodel/issues/16
 [8fed42b0aaa563e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8fed42b0aaa563e) JamieB *2021-03-18 17:34:43*
 Release candidate: prepare for next development iteration
-## 1.2.2
-### GitHub [#342](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/342) Release/1.1.118
-[141816573d0231d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/141816573d0231d) Jorge Sanchez Perez *2021-02-22 15:07:48*
-Release/1.1.118 (#342)
-
-* Bumped versions
-- Bumped starter parent version 1.1.86
-- Bumped clients version 1.0.45
-- Bumped common version 1.0.90
-- Bumped auth version 1.0.66
-- Bumped jwkms version 1.1.77
-
-* Release candidate: prepare release 1.1.118
-
-* Release candidate: prepare for next development iteration
-### GitHub [#346](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/346) 201: Analytics empty data
-[c0e3227e4ed0b8c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c0e3227e4ed0b8c) Jorge Sanchez Perez *2021-03-11 08:46:35*
-201: Analytics empty data (#346)
-
-* 201: Analytics empty data
-- Bumped `ob-common` version 1.1.0
-- Added new dependency `ob-common-annotations`
-- Refactorisation of classes to use the new origin of annotation `OpenBankingAPI`
-- Bumped `ob-clients` version 1.1.0
-- Bumped `ob-auth` version 1.0.67
-- Bumped `ob-jwkms` version 1.1.78
-- Upgrade minor version to 1.2.0-SNAPSHOT
-- Prepare for the next release
-
-* Changelog updated
-### GitHub [#350](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/350) Release/1.2.0
-[32efab6fcf30f25](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/32efab6fcf30f25) Jorge Sanchez Perez *2021-03-11 09:18:43*
-Release/1.2.0 (#350)
-
-* Release candidate: prepare release 1.2.0
-
-* Release candidate: prepare for next development iteration
-### GitHub [#354](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/354) Release/1.2.1
-[8e85606d358c96d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8e85606d358c96d) Jorge Sanchez Perez *2021-03-18 09:49:29*
-Release/1.2.1 (#354)
-
-* Release candidate: prepare release 1.2.1
-
-* Release candidate: prepare for next development iteration
-[d24b7341d82295e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d24b7341d82295e) JamieB *2021-03-18 17:34:37*
-Release candidate: prepare release 1.2.2
-[49c8d51b3ae697f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/49c8d51b3ae697f) JamieB *2021-03-18 17:12:30*
-721: Need a default spring value for all spring config
-
-So that this can run even if no spring config server is available the
-rs.data.upload.limit.documents spring config value. This was causing
-failure of integration tests in the obri project when no spring config
-was available.
-
-Issue: https://github.com/ForgeCloud/ob-deploy/issues/721
 [b78ec6751ee3bc4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b78ec6751ee3bc4) jorgesanchezperez *2021-03-17 17:31:18*
 Deleted application.yml file from rs-mock-store-server library
 [0049d9050fa579c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0049d9050fa579c) jorgesanchezperez *2021-03-17 17:29:06*
@@ -353,6 +341,23 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/20
 296 - Minor fixes and corrections
 [1e18b5080b61311](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1e18b5080b61311) jorgesanchezperez *2021-02-17 15:20:00*
 Release candidate: prepare for next development iteration
+## 1.3.3
+[fd3ba6bccc88d73](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/fd3ba6bccc88d73) JamieB *2021-05-11 08:02:28*
+Release candidate: prepare release 1.3.3
+[c4f059c5d87c7c3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c4f059c5d87c7c3) JamieB *2021-05-11 07:39:18*
+34: Empty commit to force codefresh build
+## 1.2.2
+[d24b7341d82295e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d24b7341d82295e) JamieB *2021-03-18 17:34:37*
+Release candidate: prepare release 1.2.2
+[49c8d51b3ae697f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/49c8d51b3ae697f) JamieB *2021-03-18 17:12:30*
+721: Need a default spring value for all spring config
+
+So that this can run even if no spring config server is available the
+rs.data.upload.limit.documents spring config value. This was causing
+failure of integration tests in the obri project when no spring config
+was available.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/721
 ## 1.1.117
 ### GitHub [#314](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/314) 14: payment refunds - Domestic payments
 [7990cc32fc3f982](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7990cc32fc3f982) Jorge Sanchez Perez *2021-01-11 10:09:45*

@@ -21,8 +21,8 @@
 package com.forgerock.openbanking.aspsp.as.service.headless.accesstoken;
 
 import com.forgerock.openbanking.am.gateway.AMGateway;
-import com.forgerock.openbanking.aspsp.as.api.accesstoken.AccessTokenApiController;
 import com.forgerock.openbanking.aspsp.as.api.authorisation.redirect.AuthorisationApi;
+import com.forgerock.openbanking.aspsp.as.service.PairClientIDAuthMethod;
 import com.forgerock.openbanking.aspsp.as.service.headless.ParseUriUtils;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -33,53 +33,85 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
+
+import static com.forgerock.openbanking.constants.OIDCConstants.OIDCClaim;
 
 @Service
 @Slf4j
 public class HeadLessAccessTokenService {
 
-    @Autowired
-    private AuthorisationApi authorisationApi;
+    private final AuthorisationApi authorisationApi;
 
-    public ResponseEntity getAccessToken(AMGateway amGateway,  AccessTokenApiController.PairClientIDAuthMethod clientIDAuthMethod,
-                                         MultiValueMap paramMap, HttpServletRequest request
-    ) throws OBErrorResponseException, OBErrorException {
+    @Autowired
+    public HeadLessAccessTokenService(AuthorisationApi authorisationApi) {
+        this.authorisationApi = authorisationApi;
+    }
+
+
+    public ResponseEntity<AccessTokenResponse> getAccessToken(AMGateway amGateway,  PairClientIDAuthMethod clientIDAuthMethod,
+                                         MultiValueMap<String, String> paramMap, HttpServletRequest request)
+            throws OBErrorResponseException, OBErrorException {
         ResponseEntity authorisation = authorisationApi.getAuthorisation(
-                (String) paramMap.getFirst("response_type"),
-                (String) paramMap.getFirst("client_id"),
-                (String) paramMap.getFirst("state"),
-                (String) paramMap.getFirst("nonce"),
-                (String) paramMap.getFirst("scope"),
-                (String) paramMap.getFirst("redirect_uri"),
-                (String) paramMap.getFirst("request"),
+                paramMap.getFirst(OIDCClaim.RESPONSE_TYPE),
+                paramMap.getFirst(OIDCClaim.CLIENT_ID),
+                paramMap.getFirst(OIDCClaim.STATE),
+                paramMap.getFirst(OIDCClaim.NONCE),
+                paramMap.getFirst(OIDCClaim.SCOPE),
+                paramMap.getFirst(OIDCClaim.REDIRECT_URI),
+                paramMap.getFirst(OIDCClaim.REQUEST),
                 true,
-                (String) paramMap.getFirst("username"),
-                (String) paramMap.getFirst("password"),
+                paramMap.getFirst(OIDCClaim.USERNAME),
+                paramMap.getFirst(OIDCClaim.PASSWORD),
                 "",
                 null,
                 request
         );
 
-        String location = authorisation.getHeaders().getFirst(org.apache.http.HttpHeaders.LOCATION);
-        String code = getCode(location);
+        HttpStatus statusCode = authorisation.getStatusCode();
+        if(!statusCode.is3xxRedirection() && !statusCode.is2xxSuccessful()){
+            log.warn("getAccessToken() authorisation failed. Response was '{}' ", authorisation);
+            throw new OBErrorResponseException(
+                    OBRIErrorType.HEAD_LESS_AUTH_AS_ERROR_RECEIVED.getHttpStatus(),
+                    OBRIErrorResponseCategory.HEADLESS_AUTH,
+                    OBRIErrorType.HEAD_LESS_AUTH_AS_ERROR_RECEIVED.toOBError1(
+                            authorisation.getStatusCode(), authorisation.getBody(), authorisation.getHeaders()));
+        }
 
-        return exchangeCode(amGateway, clientIDAuthMethod, paramMap, request, code);
+        String location = authorisation.getHeaders().getFirst(org.apache.http.HttpHeaders.LOCATION);
+        if(location == null || location.isBlank()){
+            throw new OBErrorResponseException(
+                    OBRIErrorType.HEAD_LESS_AUTH_TPP_URI_INCORRECT.getHttpStatus(),
+                    OBRIErrorResponseCategory.HEADLESS_AUTH,
+                    OBRIErrorType.HEAD_LESS_AUTH_TPP_URI_INCORRECT.toOBError1(location));
+        }
+        String code = getAuthorizationCode(location);
+
+        return exchangeAuthorizationCodeForAccessToken(amGateway, clientIDAuthMethod, paramMap, request, code);
     }
 
-    private String getCode(String location) throws OBErrorResponseException {
+    /**
+     * Get the authorizationCode from the location header. This method expects to find the code in the URL fragment
+     * of the location header.
+     * @param location the location parameter of the OAuth2 redirect from the auth server to the client
+     * @return the Authorization Code or null if this can't be obtained from the location string passed in
+     * @throws OBErrorResponseException If the location doesn't contain a valid code fragment
+     */
+    private String getAuthorizationCode(String location) throws OBErrorResponseException {
         try {
             URL url = new URL(location);
             if (url.getRef() == null) {
+                log.error("getAuthorizationCode() The location '{}' doesn't have an anchor fragment", location);
                 //We received an error.
                 // Ex: https://www.google.com?error_description=JWT%20invalid.%20Expiration%20time%20incorrect.&state=10d260bf-a7d9-444a-92d9-7b7a5f088208&error=invalid_request_object
                 Map<String, String> query = ParseUriUtils.parseQueryOrFragment(url.getQuery());
@@ -90,14 +122,16 @@ public class HeadLessAccessTokenService {
                                 query.get("error"), query.get("error_description"), query.get("state")));
             }
             Map<String, String> fragment = ParseUriUtils.parseQueryOrFragment(url.getRef());
-            if (!fragment.containsKey("code")) {
-                log.error("The location '{}' doesn't have an code", location);
+            String authCode = fragment.get("code");
+            if ( authCode == null || authCode.isBlank()) {
+                log.error("getAuthorizationCode() The location '{}' doesn't have a code value in the fragment",
+                        location);
                 throw new OBErrorResponseException(
                         OBRIErrorType.HEAD_LESS_AUTH_TPP_URI_NO_CODE.getHttpStatus(),
                         OBRIErrorResponseCategory.HEADLESS_AUTH,
                         OBRIErrorType.HEAD_LESS_AUTH_TPP_URI_NO_CODE.toOBError1(location));
             }
-            return fragment.get("code");
+            return authCode;
         } catch (MalformedURLException e) {
             log.error("The location '{}' to the TPP, returned by AM, is not an URL", location, e);
             throw new OBErrorResponseException(
@@ -107,9 +141,12 @@ public class HeadLessAccessTokenService {
         }
     }
 
-    private ResponseEntity exchangeCode(AMGateway amGateway, AccessTokenApiController.PairClientIDAuthMethod tokenEndpointAuthMethods, MultiValueMap paramMap, HttpServletRequest request, String code) throws OBErrorResponseException {
-        StringBuilder body = new StringBuilder();
-        body.append("grant_type=authorization_code");
+    private ResponseEntity<AccessTokenResponse> exchangeAuthorizationCodeForAccessToken(AMGateway amGateway,
+                                                                   PairClientIDAuthMethod tokenEndpointAuthMethods,
+                                                                   MultiValueMap paramMap, HttpServletRequest request,
+                                                                   String code) throws OBErrorResponseException {
+        StringBuilder requestBody = new StringBuilder();
+        requestBody.append("grant_type=authorization_code");
 
         Map<String, String> parameters = paramMap.toSingleValueMap();
         switch (tokenEndpointAuthMethods.authMethod) {
@@ -117,39 +154,55 @@ public class HeadLessAccessTokenService {
                 //Would be in the request header already
                 break;
             case TLS_CLIENT_AUTH:
-                body.append("&client_id=" + encode(parameters.get("client_id")));
+                requestBody.append("&client_id=").append(encode(parameters.get("client_id")));
                 break;
             case CLIENT_SECRET_POST:
-                body.append("&client_id=" + encode(parameters.get("client_id")));
-                body.append("&client_secret=" + encode(parameters.get("client_secret")));
+                requestBody.append("&client_id=").append(encode(parameters.get("client_id")));
+                requestBody.append("&client_secret=").append(encode(parameters.get("client_secret")));
                 break;
             case CLIENT_SECRET_JWT:
                 throw new RuntimeException("Not Implemented");
             case PRIVATE_KEY_JWT:
-                body.append("&client_assertion_type=" + encode(parameters.get("client_assertion_type")));
-                body.append("&client_assertion=" + encode(parameters.get("client_assertion")));
+                requestBody.append("&client_assertion_type=").append(encode(parameters.get("client_assertion_type")));
+                requestBody.append("&client_assertion=").append(encode(parameters.get("client_assertion")));
                 break;
         }
 
-        body.append("&redirect_uri=" + encode(parameters.get("redirect_uri")));
-        body.append("&code=" + encode(code));
+        requestBody.append("&redirect_uri=").append(encode(parameters.get("redirect_uri")));
+        requestBody.append("&code=").append(encode(code));
 
         HttpHeaders httpHeaders = new HttpHeaders();
         //httpHeaders.add("Content-Type", "application/x-www-form-urlencoded");
         ResponseEntity responseFromAM = amGateway.toAM(request, httpHeaders,
-                new ParameterizedTypeReference<AccessTokenResponse>() {}, body.toString());
-        return ResponseEntity.status(responseFromAM.getStatusCode()).body(responseFromAM.getBody());
+                new ParameterizedTypeReference<AccessTokenResponse>() {}, requestBody.toString());
+        HttpStatus statusCode = responseFromAM.getStatusCode();
+
+        if (!statusCode.is2xxSuccessful() && !statusCode.is3xxRedirection()) {
+            log.warn("getAccessToken() unsuccessful call to headlessAuthTokenService. StatusCode: {}, body: {}",
+                    statusCode, responseFromAM.getBody());
+            throw new OBErrorResponseException(
+                    OBRIErrorType.ACCESS_TOKEN_INVALID.getHttpStatus(),
+                    OBRIErrorResponseCategory.ACCESS_TOKEN,
+                    OBRIErrorType.ACCESS_TOKEN_INVALID.toOBError1(responseFromAM.getBody())
+            );
+        }
+
+        Object responseBody = responseFromAM.getBody();
+        if( responseBody instanceof AccessTokenResponse){
+            ResponseEntity<AccessTokenResponse> responseEntity =
+                    new ResponseEntity<>((AccessTokenResponse)responseFromAM.getBody(),
+                            responseFromAM.getStatusCode());
+            return responseEntity;
+        } else {
+            throw new OBErrorResponseException(
+                    OBRIErrorType.ACCESS_TOKEN_INVALID.getHttpStatus(),
+                    OBRIErrorResponseCategory.ACCESS_TOKEN,
+                    OBRIErrorType.ACCESS_TOKEN_INVALID.toOBError1(responseFromAM.getBody())
+            );
+        }
     }
 
-    private String encode(String value) throws OBErrorResponseException {
-        try {
-            return URLEncoder.encode(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            log.error("Couldn't encode the body parameter '{}'", value, e);
-            throw new OBErrorResponseException(
-                    OBRIErrorType.HEAD_LESS_AUTH_EXCHANGE_CODE_BODY_ERROR.getHttpStatus(),
-                    OBRIErrorResponseCategory.HEADLESS_AUTH,
-                    OBRIErrorType.HEAD_LESS_AUTH_EXCHANGE_CODE_BODY_ERROR.toOBError1(value));
-        }
+    private String encode(String value) {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8);
     }
 }

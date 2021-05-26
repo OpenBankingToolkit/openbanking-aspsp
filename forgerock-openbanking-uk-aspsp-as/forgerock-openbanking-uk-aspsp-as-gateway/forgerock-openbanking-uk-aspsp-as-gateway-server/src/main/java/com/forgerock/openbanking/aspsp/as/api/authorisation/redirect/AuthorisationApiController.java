@@ -25,8 +25,9 @@ import com.forgerock.openbanking.am.services.AMGatewayService;
 import com.forgerock.openbanking.analytics.model.entries.TokenUsage;
 import com.forgerock.openbanking.analytics.services.TokenUsageService;
 import com.forgerock.openbanking.aspsp.as.api.oauth2.discovery.DiscoveryConfig;
-import com.forgerock.openbanking.aspsp.as.service.JwtOverridingService;
 import com.forgerock.openbanking.aspsp.as.service.headless.authorisation.HeadLessAuthorisationService;
+import com.forgerock.openbanking.common.error.exception.AccessTokenReWriteException;
+import com.forgerock.openbanking.common.services.JwtOverridingService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
@@ -39,12 +40,14 @@ import com.forgerock.openbanking.model.claim.Claim;
 import com.forgerock.openbanking.model.claim.Claims;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
+import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jose.JOSEException;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.EncryptedJWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,10 +57,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -65,84 +64,117 @@ import java.io.IOException;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
 @Controller
 @Slf4j
+/**
+ * Spring Controller that handles OAuth2 Authorization and implements the /authorize endpoint.
+ */
 public class AuthorisationApiController implements AuthorisationApi {
 
-    @Autowired
-    private HeadLessAuthorisationService headLessAuthorisationService;
-    @Autowired
-    private CryptoApiClient cryptoApiClient;
-    @Autowired
-    private TppStoreService tppStoreService;
-    @Value("${am.cookie.name}")
-    private String cookieName;
-    @Value("${as.headless.always-enable}")
-    private boolean isHeadlessAlwaysEnabled;
-    @Autowired
-    private AMGatewayService amGatewayService;
-    @Autowired
-    private JwtOverridingService jwtOverridingService;
-    @Autowired
-    private TokenUsageService tokenUsageService;
-    @Autowired
-    private DiscoveryConfig discoveryConfig;
+    private static final Pattern ID_TOKEN_PATTERN = Pattern.compile("id_token=?([^&]+)?");
+    private final HeadLessAuthorisationService headLessAuthorisationService;
+    private final CryptoApiClient cryptoApiClient;
+    private final TppStoreService tppStoreService;
+    private final String cookieName;
+    private final boolean isHeadlessAlwaysEnabled;
+    private final AMGatewayService amGatewayService;
+    private final JwtOverridingService jwtOverridingService;
+    private final TokenUsageService tokenUsageService;
+    private final DiscoveryConfig discoveryConfig;
 
-    private static Pattern ID_TOKEN_PATTERN = Pattern.compile("id_token=?([^&]+)?");
+    @Autowired
+    public AuthorisationApiController(HeadLessAuthorisationService headLessAuthorisationService,
+                                      CryptoApiClient cryptoApiClient, TppStoreService tppStoreService,
+                                      @Value("${am.cookie.name}") String cookieName,
+                                      @Value("${as.headless.always-enable}") boolean isHeadlessAlwaysEnabled,
+                                      AMGatewayService amGatewayService, JwtOverridingService jwtOverridingService,
+                                      TokenUsageService tokenUsageService, DiscoveryConfig discoveryConfig) {
+        this.headLessAuthorisationService = headLessAuthorisationService;
+        this.cryptoApiClient = cryptoApiClient;
+        this.tppStoreService = tppStoreService;
+        this.cookieName = cookieName;
+        this.isHeadlessAlwaysEnabled = isHeadlessAlwaysEnabled;
+        this.amGatewayService = amGatewayService;
+        this.jwtOverridingService = jwtOverridingService;
+        this.tokenUsageService = tokenUsageService;
+        this.discoveryConfig = discoveryConfig;
+    }
 
+    private static boolean hasQueryParamIdToken(ResponseEntity responseEntity) {
+        if (hasNoLocationHeader(responseEntity)) return false;
+        if (responseEntity.getHeaders().getLocation().getQuery() == null) {
+            return false;
+        }
+        return responseEntity.getHeaders().getLocation().getQuery().contains("error_description");
+    }
+
+
+    private static boolean hasFragmentIdToken(ResponseEntity responseEntity) {
+        if (hasNoLocationHeader(responseEntity)) return false;
+        if (responseEntity.getHeaders().getLocation().getFragment() == null) {
+            return false;
+        }
+
+        if (!responseEntity.getHeaders().getLocation().getFragment().contains("id_token")) {
+            log.debug("Fragment {} doesn't contains id_token", responseEntity.getHeaders().getLocation().getFragment());
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean hasNoLocationHeader(ResponseEntity responseEntity) {
+        if (responseEntity == null) {
+            return true;
+        }
+        if (responseEntity.getStatusCode() != HttpStatus.FOUND) {
+            return true;
+        }
+        if (responseEntity.getHeaders().getLocation() == null) {
+            return true;
+        }
+        log.debug("Location {}", responseEntity.getHeaders().getLocation());
+        return false;
+    }
+
+    /**
+     * getAuthorisation - Implementation of the /authorize OIDC Connect endpoint.
+     * @param responseType required = true
+     * @param clientId required = true
+     * @param state required = false
+     * @param nonce required = false
+     * @param scopes required = false
+     * @param redirectUri required = false,
+     * @param requestParametersSerialised required = true)
+     * @param isHeadlessEnabled required = false, defaultValue = "false"
+     * @param username required = false, defaultValue = ""
+     * @param password required = false, defaultValue = ""
+     * @param ssoToken (required = false)
+     * @param body required = false
+     * @return A <code>ResponseEntity</code> containing the result of authorization request
+     * @throws OBErrorResponseException or OBErrorException when errors occur that prevent authorization
+     */
     @Override
     public ResponseEntity getAuthorisation(
-            @ApiParam(value = "OpenID response type")
-            @RequestParam(value = "response_type", required = true) String responseType,
-
-            @ApiParam(value = "OpenID Client ID")
-            @RequestParam(value = "client_id", required = true) String clientId,
-
-            @ApiParam(value = "OpenID state")
-            @RequestParam(value = "state", required = false) String state,
-
-            @ApiParam(value = "OpenID nonce")
-            @RequestParam(value = "nonce", required = false) String nonce,
-
-            @ApiParam(value = "OpenID scopes")
-            @RequestParam(value = "scope", required = false) String scopes,
-
-            @ApiParam(value = "OpenID redirect_uri")
-            @RequestParam(value = "redirect_uri", required = false) String redirectUri,
-
-            @ApiParam(value = "OpenID request parameters")
-            @RequestParam(value = "request", required = true) String requestParametersSerialised,
-
-            @ApiParam(value = "Default username for the headless authentication")
-            @RequestHeader(value = "X_HEADLESS_AUTH_ENABLED", required = false, defaultValue = "false") boolean isHeadlessEnabled,
-
-            @ApiParam(value = "Default username for the headless authentication")
-            @RequestHeader(value = "X_HEADLESS_AUTH_USERNAME", required = false, defaultValue = "") String username,
-
-            @ApiParam(value = "Default username password for the headless authentication")
-            @RequestHeader(value = "X_HEADLESS_AUTH_PASSWORD", required = false, defaultValue = "") String password,
-
-            @ApiParam(value = "Cookie containing the user session", required = false)
-            @CookieValue(value = "${am.cookie.name}", required = false) String ssoToken,
-
-            @RequestBody(required = false) MultiValueMap body,
-
-            HttpServletRequest request
+            String responseType, String clientId, String state, String nonce, String scopes, String redirectUri,
+            String requestParametersSerialised, boolean isHeadlessEnabled, String username, String password,
+            String ssoToken, MultiValueMap body, HttpServletRequest request
     ) throws OBErrorResponseException, OBErrorException {
         // FAPI compliant ('code id_token'): https://github.com/ForgeCloud/ob-deploy/issues/674
-        if(!discoveryConfig.getSupportedResponseTypes().contains(responseType)){
-            log.error("The response types requested '" + responseType + "' don't match with the response types supported '"
-                    + discoveryConfig.getSupportedResponseTypes() + "' by as-api");
+        if (!discoveryConfig.getSupportedResponseTypes().contains(responseType)) {
+            log.error("The response types requested '" + responseType + "' don't match with the response types " +
+                    "supported '" + discoveryConfig.getSupportedResponseTypes() + "' by as-api");
             throw new OBErrorResponseException(
                     OBRIErrorType.REQUEST_RESPONSE_TYPE_MISMATCH.getHttpStatus(),
                     OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.REQUEST_RESPONSE_TYPE_MISMATCH.toOBError1(responseType, discoveryConfig.getSupportedResponseTypes().toString()));
+                    OBRIErrorType.REQUEST_RESPONSE_TYPE_MISMATCH.toOBError1(responseType,
+                            discoveryConfig.getSupportedResponseTypes().toString()));
         }
-        SignedJWT requestParameterJwt = validateRequestParameter(responseType, clientId, state, nonce, scopes, redirectUri, requestParametersSerialised);
+        SignedJWT requestParameterJwt = validateRequestParameter(responseType, clientId, state, nonce, scopes,
+                redirectUri, requestParametersSerialised);
+
         requestParametersSerialised = requestParameterJwt.serialize();
         try {
             state = getState(state, requestParameterJwt);
@@ -157,78 +189,45 @@ public class AuthorisationApiController implements AuthorisationApi {
 
         ResponseEntity responseEntity;
         if (isHeadlessAlwaysEnabled || isHeadlessEnabled) {
-            responseEntity = headLessAuthorisationService.getAuthorisation(amGateway, responseType, clientId, state, nonce, scopes, redirectUri, requestParametersSerialised, username, password);
+            log.debug("getAuthorisation() performing headless authorisation");
+            responseEntity = headLessAuthorisationService.getAuthorisation(amGateway, responseType, clientId, state,
+                    nonce, scopes, redirectUri, requestParametersSerialised, username, password);
         } else {
+            log.debug("getAuthorisation() delegating authorisation to AM");
             HashMap<String, String> queryParameters = new HashMap<>();
             queryParameters.put("request", requestParametersSerialised);
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add("Cookie", cookieName + "=" + ssoToken);
-            responseEntity = amGateway.toAM(request, httpHeaders, queryParameters, new ParameterizedTypeReference<String>() {
-            }, body);
+            responseEntity = amGateway.toAM(request, httpHeaders, queryParameters,
+                    new ParameterizedTypeReference<String>() {
+                    }, body);
         }
-        log.debug("responseEntity {}", responseEntity);
+        log.debug("getAuthorisation() responseEntity {}", responseEntity);
 
-        //Rewriting the response as we need to re-sign the id token
+        // The id_token should be in the URL fragment, not as a query parameter. If it appears as a query parameter
+        // re-write it to appear as a fragment
+        if (hasQueryParamIdToken(responseEntity)) {
+            responseEntity = convertQueryToFragment(responseEntity.getHeaders().getLocation(),
+                    responseEntity.getHeaders(), state);
+        }
+
+        //Rewriting the response as we need to re-sign the id token. We can assume the id_token will exist as a fragment
         if (hasFragmentIdToken(responseEntity)) {
             try {
-                HttpHeaders writableHttpHeaders = HttpHeaders.writableHttpHeaders(responseEntity.getHeaders());
-                writableHttpHeaders.set(HttpHeaders.LOCATION, replaceIdToken(responseEntity.getHeaders().getLocation()));
-                responseEntity = new ResponseEntity(null, writableHttpHeaders, HttpStatus.FOUND);
+                responseEntity = this.jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(responseEntity);
                 tokenUsageService.incrementTokenUsage(TokenUsage.ID_TOKEN);
-            } catch (ParseException e) {
+            } catch (AccessTokenReWriteException e) {
                 String supportUID = UUID.randomUUID().toString();
-                log.error("Error when parsing ID token from fragment {}. Support UID {}", responseEntity.getHeaders().getLocation().getFragment(), supportUID, e);
+                log.info("getAuthorisation() Failed to re-write the id_token", e);
                 throw new OBErrorResponseException(
                         OBRIErrorType.AUTHORIZE_INVALID_ID_TOKEN.getHttpStatus(),
                         OBRIErrorResponseCategory.ACCESS_TOKEN,
                         OBRIErrorType.AUTHORIZE_INVALID_ID_TOKEN.toOBError1(supportUID));
             }
-        } else if (hasQueryParamIdToken(responseEntity)) {
-            responseEntity = convertQueryToFragment(responseEntity.getHeaders().getLocation(), responseEntity.getHeaders(), state);
-            tokenUsageService.incrementTokenUsage(TokenUsage.ID_TOKEN);
         } else {
             log.debug("responseEntity {} is null or is not a redirection", responseEntity);
         }
         return responseEntity;
-    }
-
-    private static boolean hasQueryParamIdToken(ResponseEntity responseEntity) {
-        if (responseEntity == null) {
-            return false;
-        }
-        if (responseEntity.getStatusCode() != HttpStatus.FOUND) {
-            return false;
-        }
-        if (responseEntity.getHeaders().getLocation() == null) {
-            return false;
-        }
-        log.debug("Location {}", responseEntity.getHeaders().getLocation());
-        if (responseEntity.getHeaders().getLocation().getQuery() == null) {
-            return false;
-        }
-        return responseEntity.getHeaders().getLocation().getQuery().contains("error_description");
-    }
-
-    private static boolean hasFragmentIdToken(ResponseEntity responseEntity) {
-        if (responseEntity == null) {
-            return false;
-        }
-        if (responseEntity.getStatusCode() != HttpStatus.FOUND) {
-            return false;
-        }
-        if (responseEntity.getHeaders().getLocation() == null) {
-            return false;
-        }
-        log.debug("Location {}", responseEntity.getHeaders().getLocation());
-        if (responseEntity.getHeaders().getLocation().getFragment() == null) {
-            return false;
-        }
-
-        if (!responseEntity.getHeaders().getLocation().getFragment().contains("id_token")) {
-            log.debug("Fragment {} doesn't contains id_token", responseEntity.getHeaders().getLocation().getFragment());
-            return false;
-        }
-        return true;
     }
 
     public String getState(String state, SignedJWT requestJwt) throws ParseException {
@@ -252,7 +251,9 @@ public class AuthorisationApiController implements AuthorisationApi {
         return new ResponseEntity(null, writableHttpHeaders, HttpStatus.FOUND);
     }
 
-    private SignedJWT validateRequestParameter(String responseType, String clientId, String state, String nonce, String scopes, String redirectUri, String requestParametersSerialised) throws OBErrorException {
+    private SignedJWT validateRequestParameter(String responseType, String clientId, String state, String nonce,
+                                               String scopes, String redirectUri, String requestParametersSerialised)
+            throws OBErrorException {
         SignedJWT requestParameters;
         try {
             try {
@@ -269,17 +270,52 @@ public class AuthorisationApiController implements AuthorisationApi {
 
             verifyQueryParameterMatchesRequestParameterClaim(requestParameters, "client_id", clientId);
             Optional<Tpp> byClientId = tppStoreService.findByClientId(clientId);
-            if (!byClientId.isPresent()) {
-                throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_FORMAT_INVALID, "Unknown client id '" + clientId + "'");
+            if (byClientId.isEmpty()) {
+                throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_FORMAT_INVALID, "Unknown client id '"
+                        + clientId + "'");
             }
             Tpp tpp = byClientId.get();
 
-            log.debug("Validate the request parameter");
-            if (tpp.getRegistrationResponse().getJwks() != null) {
-                cryptoApiClient.validateJwsWithJWK(requestParametersSerialised, clientId, tpp.getRegistrationResponse().getJwks().getKeys().get(0).toJSONString());
+            log.debug("Validate the request parameter signature");
+            boolean validated = false;
+            OIDCRegistrationResponse registrationResponse = tpp.getRegistrationResponse();
+            if (registrationResponse != null) {
+                JWKSet jwkSet = registrationResponse.getJwks();
+                if (jwkSet != null) {
+                    List<JWK> jwkSetKeys = jwkSet.getKeys();
+                    if (jwkSetKeys != null && !jwkSetKeys.isEmpty()) {
+                        JWK jwk = jwkSetKeys.get(0);
+                        String jwksKeys = jwk.toString();
+                        log.debug("validateRequestParameters() tpp has jwksKeys as part of registraiton. They will be" +
+                                " used to validate the request parameter.");
+                        cryptoApiClient.validateJwsWithJWK(requestParametersSerialised, clientId, jwksKeys);
+                        validated = true;
+                    } else {
+                        log.debug("validateRequestParameter() tpp has no jwkSetKeys; {}", tpp);
+                    }
+                }
+
+                if (!validated) {
+                    String jwks_uri = tpp.getRegistrationResponse().getJwks_uri();
+                    if (jwks_uri == null || jwks_uri.isBlank()) {
+                        log.error("validateRequestparameters() tpp does no have a jwksKeys, or a jwks_uri in it's " +
+                                "registration details; {}", tpp);
+                        throw new InvalidTokenException("Tpp does no have a jwksKeys, or a jwks_uri in it's " +
+                                "registration details");
+                    } else {
+                        log.debug("validateRequestParameter() Validating request parameter using jwks_uri: " +
+                                        "requestParametersSerialised: '{}', clientId; '{}', jwks_url: {}",
+                                requestParametersSerialised, clientId, jwks_uri);
+                        cryptoApiClient.validateJws(requestParametersSerialised, clientId, jwks_uri);
+                        validated = true;
+                    }
+                }
             } else {
-                cryptoApiClient.validateJws(requestParametersSerialised, clientId, tpp.getRegistrationResponse().getJwks_uri());
+                log.error("validateRequestParameter() tpp has no registration response; {}", tpp);
+                throw new InvalidTokenException("Tpp is not registered");
             }
+
+
             List<String> MANDATORY_CLAIMS = Arrays.asList(
                     OpenBankingConstants.RequestParameterClaim.AUD,
                     OpenBankingConstants.RequestParameterClaim.SCOPE,
@@ -314,14 +350,16 @@ public class AuthorisationApiController implements AuthorisationApi {
         return requestParameters;
     }
 
-    private void verifyScopeQueryParameterMatchesRequestParameterClaim(SignedJWT requestParameters, String value) throws ParseException, OBErrorException {
+    private void verifyScopeQueryParameterMatchesRequestParameterClaim(SignedJWT requestParameters, String value)
+            throws ParseException, OBErrorException {
         if (value == null) {
             return;
         }
         String scope = "scope";
         List<String> requestParamScopes = Arrays.asList(value.split(" "));
         String jwtScopeString = requestParameters.getJWTClaimsSet().getStringClaim(scope);
-        List<String> jwtScopes = jwtScopeString == null ? Collections.emptyList() : Arrays.asList(jwtScopeString.split(" "));
+        List<String> jwtScopes = jwtScopeString == null ? Collections.emptyList() :
+                Arrays.asList(jwtScopeString.split(" "));
 
         if (!requestParamScopes.containsAll(jwtScopes)) {
             log.error("Query parameter '{} : {}' was expected to match value in JWT Claim: {}", scope, value, jwtScopes);
@@ -329,10 +367,13 @@ public class AuthorisationApiController implements AuthorisationApi {
         }
     }
 
-    private void verifyQueryParameterMatchesRequestParameterClaim(SignedJWT requestParameters, String name, String value) throws ParseException, OBErrorException {
+    private void verifyQueryParameterMatchesRequestParameterClaim(SignedJWT requestParameters, String name,
+                                                                  String value)
+            throws ParseException, OBErrorException {
         if (value != null
                 && !value.equals(requestParameters.getJWTClaimsSet().getStringClaim(name))) {
-            log.error("Query parameter '{} : {}' was expected to match value in JWT Claim: {}", name, value, requestParameters.getJWTClaimsSet().getStringClaim(name));
+            log.error("Query parameter '{} : {}' was expected to match value in JWT Claim: {}", name, value,
+                    requestParameters.getJWTClaimsSet().getStringClaim(name));
             throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_QUERY_PARAM_DIFF_CLAIM, name, name);
         }
     }
@@ -352,7 +393,8 @@ public class AuthorisationApiController implements AuthorisationApi {
     }
 
     private void validateUserInfo(JSONObject claims, Map<String, Claim> idTokenClaims) throws OBErrorException {
-        Map<String, Claim> userInfoClaims = Claims.parseClaimsFrom(OpenBankingConstants.RequestParameterClaim.USERINFO, claims);
+        Map<String, Claim> userInfoClaims = Claims.parseClaimsFrom(OpenBankingConstants.RequestParameterClaim.USERINFO,
+                claims);
         if (userInfoClaims.isEmpty()) {
             return;
         }
@@ -366,7 +408,8 @@ public class AuthorisationApiController implements AuthorisationApi {
     }
 
     private Map<String, Claim> validateIdToken(JSONObject claims) throws OBErrorException {
-        Map<String, Claim> idTokenClaims = Claims.parseClaimsFrom(OpenBankingConstants.RequestParameterClaim.ID_TOKEN, claims);
+        Map<String, Claim> idTokenClaims = Claims.parseClaimsFrom(OpenBankingConstants.RequestParameterClaim.ID_TOKEN,
+                claims);
 
         if (!idTokenClaims.containsKey(OpenBankingConstants.IdTokenClaim.INTENT_ID)) {
             throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID,
@@ -378,23 +421,13 @@ public class AuthorisationApiController implements AuthorisationApi {
                     "'" + OpenBankingConstants.IdTokenClaim.INTENT_ID + "' should be essential");
         }
 
-//      Disabling mandatory ACR security check as the conformance tests is being lenient to help OB adoption. We may need to make ACR mandatory sometime in the future
+//      Disabling mandatory ACR security check as the conformance tests is being lenient to help OB adoption. We may
+//      need to make ACR mandatory sometime in the future
         if (idTokenClaims.containsKey(OpenBankingConstants.IdTokenClaim.ACR)
                 && !idTokenClaims.get(OpenBankingConstants.IdTokenClaim.ACR).isEssential()) {
             throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID,
                     "'" + OpenBankingConstants.IdTokenClaim.ACR + "' should be essential");
         }
         return idTokenClaims;
-    }
-
-    private String replaceIdToken(URI uri) throws ParseException {
-        String uriSerialised = uri.toString();
-        Matcher matcher = ID_TOKEN_PATTERN.matcher(uriSerialised);
-        while (matcher.find()) {
-            String oldIdToken = matcher.group(1);
-            String newIdToken = jwtOverridingService.rewriteJWS(oldIdToken);
-            uriSerialised = uriSerialised.replaceAll(oldIdToken, newIdToken);
-        }
-        return uriSerialised;
     }
 }

@@ -63,22 +63,32 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 public class AutodecisionsApiController implements AutodecisionsApi {
 
+    private final RcsService rcsService;
+    private final  RcsConfiguration rcsConfiguration;
+    private final  AMOpenBankingConfiguration amOpenBankingConfiguration;
+    private final  RCSErrorService rcsErrorService;
+    private final  UserProfileService userProfileService;
+    private final  IntentTypeService intentTypeService;
+    private final  AccountStoreService accountsService;
+    private final  UserDataService userDataService;
+
     @Autowired
-    private RcsService rcsService;
-    @Autowired
-    private RcsConfiguration rcsConfiguration;
-    @Autowired
-    private AMOpenBankingConfiguration amOpenBankingConfiguration;
-    @Autowired
-    private RCSErrorService rcsErrorService;
-    @Autowired
-    private UserProfileService userProfileService;
-    @Autowired
-    private IntentTypeService intentTypeService;
-    @Autowired
-    private AccountStoreService accountsService;
-    @Autowired
-    private UserDataService userDataService;
+    public AutodecisionsApiController(RcsService rcsService, RcsConfiguration rcsConfiguration,
+                                      AMOpenBankingConfiguration amOpenBankingConfiguration,
+                                      RCSErrorService rcsErrorService, UserProfileService userProfileService,
+                                      IntentTypeService intentTypeService, AccountStoreService accountsService,
+                                      UserDataService userDataService) {
+        this.rcsService = rcsService;
+        this.rcsConfiguration = rcsConfiguration;
+        this.amOpenBankingConfiguration = amOpenBankingConfiguration;
+        this.rcsErrorService = rcsErrorService;
+        this.userProfileService = userProfileService;
+        this.intentTypeService = intentTypeService;
+        this.accountsService = accountsService;
+        this.userDataService = userDataService;
+    }
+
+
 
     @Override
     public ResponseEntity<RedirectionAction> autoAccept(
@@ -129,6 +139,7 @@ public class AutodecisionsApiController implements AutodecisionsApi {
                 throw new OBErrorException(OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE);
             }
 
+            // TODO: Determine if the id_token needs re-writing!
             String location = responseEntity.getHeaders().getFirst(HttpHeaders.LOCATION);
             log.debug("The redirection to the consent page should be in the location '{}'", location);
 
