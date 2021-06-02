@@ -75,7 +75,8 @@ public interface AuthorisationApi {
             @RequestParam(value = "request", required = true) String requestParameters,
 
             @ApiParam(value = "Default username for the headless authentication")
-            @RequestHeader(value = "X_HEADLESS_AUTH_ENABLED", required = false, defaultValue = "") boolean isHeadlessEnabled,
+            @RequestHeader(value = "X_HEADLESS_AUTH_ENABLED", required = false, defaultValue = "false")
+                    boolean isHeadlessEnabled,
 
             @ApiParam(value = "OpenID request parameters")
             @RequestHeader(value = "X_HEADLESS_AUTH_USERNAME", required = false, defaultValue = "") String username,

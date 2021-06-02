@@ -1,6 +1,19 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[715919c227dde22](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/715919c227dde22) JamieB *2021-05-26 15:02:43*
+745: Addressed more comments
+[674b30928f499b0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/674b30928f499b0) JamieB *2021-05-26 13:53:57*
+745: Address review comments
+[488ac7ed3b94abf](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/488ac7ed3b94abf) JamieB *2021-05-25 10:20:17*
+Address PR Comments
+[0e0ba07ec78a002](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0e0ba07ec78a002) JamieB *2021-05-25 08:13:49*
+745: Make hybrid flow redirect uri's id_token verifiable
+
+Re-sign the id token that get's passed to the redirect URI after consent
+has been given via the hybrid flow.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/745
 [82f8ccbff075bf2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/82f8ccbff075bf2) Matt Wills *2021-05-24 14:43:50*
 Release candidate: prepare for next development iteration
 ## 1.4.2
