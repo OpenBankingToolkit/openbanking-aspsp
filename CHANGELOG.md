@@ -1,9 +1,25 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+<<<<<<< HEAD
 [4833a4411f2b7f9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4833a4411f2b7f9) JamieB *2021-11-26 09:45:58*
 Release candidate: prepare for next development iteration
 ## 1.5.6
+=======
+[b0704b02d1c8154](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0704b02d1c8154) JamieB *2021-06-02 13:53:21*
+Release candidate: prepare for next development iteration
+## 1.4.4
+[41f8db04407bd5d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/41f8db04407bd5d) JamieB *2021-06-02 13:53:15*
+Release candidate: prepare release 1.4.4
+[431a39cb7f64e75](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/431a39cb7f64e75) JamieB *2021-06-02 13:48:15*
+749: set dev version to 1.4.4-SNAPSHOT before creating release
+
+Something odd has happened with the aspsp versions. We're using 1.4.3
+currently in openbanking-reference-implementation, but master has
+1.4.3-SNAPSHOT in the poms!!!
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/749
+>>>>>>> cc8df318 (36: Initial controllers and their interfaces for VRPs)
 ### GitHub [#456](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/456) 794: UI redirection customer experience
 [eb58e6dccb7cb99](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eb58e6dccb7cb99) Jorge Sanchez Perez *2021-11-16 16:04:23*
 794: UI redirection customer experience (#456)
