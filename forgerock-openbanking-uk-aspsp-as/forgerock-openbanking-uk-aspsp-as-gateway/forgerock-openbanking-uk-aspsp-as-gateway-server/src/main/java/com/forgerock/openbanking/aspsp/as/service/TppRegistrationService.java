@@ -276,7 +276,7 @@ public class TppRegistrationService {
                 .directoryId(directoryId)
                 .build();
 
-        pushTppEntry(tpp, false);
+        updateTppMetrics(tpp, false);
 
         return tppStoreService.createTpp(tpp);
     }
@@ -307,7 +307,7 @@ public class TppRegistrationService {
                 .directoryId(directoryId)
                 .build();
 
-        pushTppEntry(tpp, false);
+        updateTppMetrics(tpp, false);
 
         return tppStoreService.save(updatedTpp);
     }
@@ -379,7 +379,10 @@ public class TppRegistrationService {
         }
     }
 
-    private void pushTppEntry(Tpp tpp, boolean isDeleted) {
+
+    private void updateTppMetrics(Tpp tpp, boolean isDeleted) {
+        log.debug("updateTppMetrics() creating metrics for Tpp {}. Is being {}", tpp.getClientId(), isDeleted?
+                "deleted":"created");
         TppEntry.TppEntryBuilder tppEntryBuilder = TppEntry.builder()
                 .created(new DateTime(tpp.getCreated()))
                 .deleted(isDeleted ? DateTime.now() : null)
@@ -480,8 +483,13 @@ public class TppRegistrationService {
         log.debug("Unregister TPP {}", tpp);
 
         log.debug("Delete in AM");
-        amoidcRegistrationService.deleteOIDCClient(token, tpp.getClientId());
-        pushTppEntry(tpp, true);
+        try {
+            amoidcRegistrationService.deleteOIDCClient(token, tpp.getClientId());
+        } catch (Exception e){
+            log.debug("unregisterTpp() - Failed to delete OIDCClient from AM. Error was ", e);
+        }
+
+        updateTppMetrics(tpp, true);
 
         log.debug("Delete in rs store");
         tppStoreService.deleteTPP(tpp);

@@ -22,6 +22,7 @@ package com.forgerock.openbanking.common.error;
 
 import brave.Tracer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.openbanking.common.error.exception.oauth2.*;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
@@ -36,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -371,13 +373,16 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         log.debug("HTTP client error exception from rs store", ex);
         try {
             /*
-             * Quick way to handle the OB rs-store errors in rs-api with minimal impact on code. Currently, when a legitimate validation error is found in rs-store, an OBErrorException is thrown.
-             * However, this gets wrapped into an HttpClientErrorException by Spring Rest client meaning JSON error format is lost and error code comes out of rs-api as 500.
-             * This handler code attempts to parse the HttpClientErrorException message as an OBError so it can be returned as a HTTP Response.
+             * Quick way to handle the OB rs-store errors in rs-api with minimal impact on code. Currently, when a
+             * legitimate validation error is found in rs-store, an OBErrorException is thrown.
+             * However, this gets wrapped into an HttpClientErrorException by Spring Rest client meaning JSON error
+             * format is lost and error code comes out of rs-api as 500.
+             * This handler code attempts to parse the HttpClientErrorException message as an OBError so it can be
+             * returned as a HTTP Response.
              * If there exception message is not an OBErrorResponse then it will be parsed as a generic 4xx response
              */
             OBErrorResponse1 obErrorResponse1 = new ObjectMapper().readValue(ex.getStatusText(), OBErrorResponse1.class);
-            log.debug("Parsed OBErrorResponse: {} from HttpClientErrorException message", ex);
+            log.debug("Parsed OBErrorResponse: {} from HttpClientErrorException message", obErrorResponse1, ex);
             return ResponseEntity.status(ex.getStatusCode()).body(obErrorResponse1);
         } catch (Exception e) {
             log.debug("HttpClientErrorException is not an OBErrorResponse1.");
@@ -386,6 +391,26 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
             Therefore we can just rethrow it and will be handled as before. */
             throw ex;
         }
+    }
+
+    @ExceptionHandler
+    protected ResponseEntity<OAuth2ErrorResponseBody> handleOAuth2MissingAuthInfoException(
+            OAuth2Exception ex, WebRequest request){
+        return ResponseEntity.status(ex.getHttpStatusCode()).body(new OAuth2ErrorResponseBody(ex));
+    }
+
+    @ExceptionHandler
+    protected ResponseEntity<OAuth2ErrorAdviceResponseBody> handleOAuth2BearerTokenUsageException(
+            OAuth2BearerTokenUsageException ex, WebRequest request){
+        HttpHeaders httpHeaders = new HttpHeaders();
+        String wwwAuthenticateHeaderValue = ex.getWwwAuthenticateResponseHeaderValue();
+        if(StringUtils.isEmpty(wwwAuthenticateHeaderValue)) {
+            httpHeaders.set(OAuth2Constants.OAUTH2_WWW_AUTHENTICATE_HEADER_NAME, wwwAuthenticateHeaderValue);
+        }
+
+        OAuth2ErrorAdviceResponseBody responseBody =
+                new OAuth2BearerTokenUsageErrorResponseBody(ex.getErrorCode().toString(), ex.getMessage());
+        return ResponseEntity.status(ex.getHttpStatusCode()).headers(httpHeaders).body(responseBody);
     }
 
 }

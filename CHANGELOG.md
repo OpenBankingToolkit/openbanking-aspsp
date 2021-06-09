@@ -1,6 +1,32 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[b0704b02d1c8154](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0704b02d1c8154) JamieB *2021-06-02 13:53:21*
+Release candidate: prepare for next development iteration
+## 1.4.4
+[41f8db04407bd5d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/41f8db04407bd5d) JamieB *2021-06-02 13:53:15*
+Release candidate: prepare release 1.4.4
+[431a39cb7f64e75](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/431a39cb7f64e75) JamieB *2021-06-02 13:48:15*
+749: set dev version to 1.4.4-SNAPSHOT before creating release
+
+Something odd has happened with the aspsp versions. We're using 1.4.3
+currently in openbanking-reference-implementation, but master has
+1.4.3-SNAPSHOT in the poms!!!
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/749
+[dc53032d15bc9f4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/dc53032d15bc9f4) JamieB *2021-06-02 13:09:25*
+Release candidate: rollback the release of 1.4.3
+[857948eaae36fee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/857948eaae36fee) JamieB *2021-06-02 12:54:46*
+Release candidate: prepare release 1.4.3
+[c9b2efe15b39437](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c9b2efe15b39437) JamieB *2021-06-02 12:43:55*
+749: make x-headless-auth-enabled false default /authorize
+
+During refactoring for issue
+https://github.com/ForgeCloud/ob-deploy/issues/745 I inadvertantly
+removed the default value for the X_HEADLESS_AUTH_ENABLED setting. It
+should be false by default.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/749
 [715919c227dde22](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/715919c227dde22) JamieB *2021-05-26 15:02:43*
 745: Addressed more comments
 [674b30928f499b0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/674b30928f499b0) JamieB *2021-05-26 13:53:57*
