@@ -31,12 +31,12 @@ import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(tags = "V3.1.8-Direct-Debits", description = "the direct-debits API")
+@Api(tags = "v3.1.8-Direct-Debits", description = "the direct-debits API")
 @OpenBankingAPI(
         obVersion = "3.1.8",
         obGroupName = OBGroupName.AISP,
         obReference = OBReference.DIRECT_DEBITS
 )
-@RequestMapping(value = "/open-banking/V3.1.8/aisp")
+@RequestMapping(value = "/open-banking/v3.1.8/aisp")
 public interface DirectDebitsApi extends com.forgerock.openbanking.aspsp.rs.api.account.v3_1_7.directdebits.DirectDebitsApi {
 }
