@@ -1,0 +1,250 @@
+logging:
+  level:
+    root: DEBUG
+
+spring:
+  application:
+    name: as-gateway-api
+  cloud:
+    config:
+      enabled: false
+  main:
+    allow-bean-definition-overriding: true
+  data:
+    mongodb:
+      # force SpringBoot tests to use a random port for mongo
+      port: 0
+
+dns.hosts.root: dev-ob.forgerock.financial
+
+server:
+  hostname: ${dns.hosts.root}
+  ssl:
+    enabled: false
+    trust-store: classpath:keystore/truststore.jks
+    trust-store-password: changeit
+    key-store: classpath:keystore/keystore.jks
+    key-store-password: changeit
+    key-password: ${server.ssl.key-store-password}
+    client-certs-key-alias: ${server.hostname}
+    jwk-key-store: classpath:keystore/jwksstore.pfx
+    jwk-key-store-password: changeit
+    self-signed:
+      ca-alias: obri-internal-ca
+  port: 9443
+
+#RCS
+rcs:
+  port: 91443
+  internal-port: 91443
+  issuerid: forgerock-rcs
+  endpoint:
+    url: https://rs-rcs:${rcs.internal-port}/api/rcs
+    consentInfo: /consent/details/
+    aispConsentResponse: /consent/decision/aisp
+    pispConsentResponse: /consent/decision/pisp
+  jwks_uri: https://rcs.aspsp.${dns.hosts.root}:${rcs.port}/api/jwk/jwk_uri
+
+#RS-Simulator
+rs-simulator:
+  port: 443
+  internal-port: 8443
+  issuerid: forgerock-rs-simulation
+  jwks_uri: https://rs-simulator:${rs-simulator.internal-port}/api/jwk/jwk_uri
+
+#doc
+doc:
+  port: 443
+  errors: https://docs.${dns.hosts.root}:${doc.port}/errors
+
+##AS
+as:
+  headless:
+    always-enable: false
+    header-enable: false
+    default-psu:
+      username: test
+      password: changeit
+
+dynamic-registration:
+  enable: true
+  supported-token-endpoint-auth-method: "client_secret_post,private_key_jwt,client_secret_basic,tls_client_auth"
+
+user-info.enable: true
+introspection.enable: true
+grant-types.supported: "refresh_token,client_credentials,authorization_code"
+
+response-types.supported: "code id_token"
+
+request-uri-parameter.supported: true
+
+request_object_encryption_alg_values.enabled: true
+request_object_encryption_enc_values.enabled: true
+id_token_encryption_alg_values.enabled: true
+id_token_encryption_enc_values.enabled: true
+
+manual-onboarding:
+  registration-request-base: classpath:registrationrequest.json
+
+
+#Authentication
+jwt-auth:
+  jwk-uri: "https://am.${dns.hosts.root}:${am.port}/oauth2/realms/root/realms/auth/connect/jwk_uri"
+  ob-user-info: "https://as.aspsp.${dns.hosts.root}/oauth2/realms/root/realms/openbanking/userinfo"
+  auth-user-info: "https://am.${dns.hosts.root}/oauth2/realms/root/realms/auth/userinfo"
+
+ob:
+  auth:
+    session:
+      token-lifetime: 7 #days
+      issuer-id: ${spring.application.name}
+      cookie:
+        domains: ${session.cookie.domains}
+    oidc:
+      idp:
+        issuerid: "https://am.${dns.hosts.root}/oauth2/realms/root/realms/auth"
+        jwk-uri:  ${jwt-auth.jwk-uri}
+        authorize: "https://am.${dns.hosts.root}/oauth2/realms/root/realms/auth/authorize"
+      client:
+        client-id:  ${spring.application.name}
+        redirect-uri: "https://${dns.hosts.root}/redirectOpenId"
+      acr: # Empty value for optional
+
+gateway:
+  client-jwk-header: X-Client-Jwk
+
+#RS discovery configuration
+rs:
+  detached-signature:
+    enable: true
+  tan: openbanking.org.uk
+  issuerid: forgerock-rcs
+  financial_id: 0015800001041REAAY
+  jwks_uri: https://matls.rs.aspsp.${dns.hosts.root}:${rcs.port}/api/jwk/jwk_uri
+
+rs-discovery:
+  hostname: matls.rs.aspsp.${dns.hosts.root}
+  base-url: https://${rs-discovery.hostname}
+
+#Open Banking Directory info
+openbankingdirectory:
+  id: "OpenBanking"
+  issuerid: "OpenBanking Ltd"
+  jwks_uri: https://keystore.openbankingtest.org.uk/keystore/openbanking.jwks
+  ocsp: http://ob.trustis.com/ocsp
+  certificates:
+    ob:
+      root: classpath:obCertificates/OpenBankingRootCA.cer
+      issuing: classpath:obCertificates/OpenBankingIssuingCA.cer
+  certificate:
+    o: OpenBanking
+    l:
+    st:
+    c: GB
+  mit:
+    enabled: true
+    id: "OpenBankingMIT"
+    issuerid: "OpenBanking Ltd"
+    jwks_uri: https://keystore.mit.openbanking.qa/keystore/openbanking.jwks
+    ocsp: http://obtest.trustis.com/ocsp
+    certificates:
+      ob:
+        root: classpath:obCertificates/obtestrootca.cer
+        issuing: classpath:obCertificates/obtestissuingca.cer
+
+#ForgeRock directory info
+forgerockdirectory:
+  port: 443
+  id: "ForgeRock"
+  jwks_uri: https://service.directory.${dns.hosts.root}:${forgerockdirectory.port}/api/directory/keys/jwk_uri
+  certificate:
+    o: ForgeRock
+    l: Bristol
+    st: Avon
+    c: UK
+
+#RS store discovery endpoints
+rs-store:
+  internal-port: 92443
+  base-url: https://rs-store:${rs-store.internal-port}
+
+#JKWMS configuration
+jwkms:
+  root: https://${server.hostname}:${server.port}
+  tan: openbanking.org.uk
+  certificate:
+    ou: forgerock.financial
+    o: ForgeRock
+    l: Bristol
+    st: Avon
+    c: UK
+  jwkMsId: jwkms
+  app-auth-header: X-APP
+  rotationScheduler: "0 0 1 * * *"
+  keysCleanup: "0 0 1 * * *"
+  transport:
+    algorithm: PS256
+  signing:
+    algorithm: PS256
+  encryption:
+    algorithm: RSA-OAEP-256
+  encryptionMethod: A128CBC_HS256
+  ExpirationWindowInMillis: 7200
+  rotation:
+    transport: 7776000000
+    keys: 7776000000
+  internalCAAlias: obri-internal-ca
+  defaultCAAlias: obri-external-ca
+  forgerock-applications:
+    - name: aspsp
+      group: as.aspsp.${dns.hosts.root}, rs.aspsp.${dns.hosts.root}, rcs.aspsp.${dns.hosts.root}, simulator.rs.${dns.hosts.root}, service.bank.${dns.hosts.root}, rs-store.aspsp.${dns.hosts.root}
+
+scgw:
+  port: 8074
+
+am:
+  trusted-header-certificate: ebJ8Qo7p9MpAIVenixCsNiDySmWEKb
+  port: 443
+  internal-port: 8443
+  hostname: as.aspsp.${dns.hosts.root}
+  matls-hostname: matls.as.aspsp.${dns.hosts.root}
+  root: https://${am.hostname}
+  authentication:
+    chain: urn:openbanking:psd2:sca
+  cookie:
+    name: iPlanetDirectoryPro
+  endpoint:
+    login: ${am.root}/login
+    logout: ${am.root}/logout
+    userprofile: ${am.root}/json/users?_action=idFromSession
+    users: ${am.root}/json/realms/root/realms/openbanking/users/
+    registration: ${am.root}/json/realms/root/realms/openbanking/selfservice/userRegistration?_action=submitRequirements
+  oidc:
+    endpoint:
+      accesstoken: ${am.internal.root}/oauth2/realms/root/realms/openbanking/access_token
+      authorization: ${am.internal.root}/oauth2/realms/root/realms/openbanking/authorize
+      userinfo: ${am.internal.root}/oauth2/realms/root/realms/openbanking/userinfo
+      registration: ${am.internal.root}/oauth2/realms/root/realms/openbanking/register
+    issuerid: ${am.root}/oauth2
+    audiences: https://${am.matls-hostname}/oauth2, ${am.root}/oauth2, https://${am.matls-hostname}/oauth2/access_token"
+    jwksuri: ${am.internal.root}/oauth2/realms/root/realms/openbanking/connect/jwk_uri
+  userprofile:
+    id: id
+  realm:
+    auth:
+      hostname: am.${dns.hosts.root}
+      oidc:
+        issuerid: https://${am.realm.auth.hostname}/oauth2/realms/root/realms/auth
+        jwk_uri: https://${am.realm.auth.hostname}/oauth2/realms/root/realms/auth/connect/jwk_uri
+        authorize: https://${am.realm.auth.hostname}/oauth2/realms/root/realms/auth/authorize
+  internal:
+    root: https://am.dev-ob.forgerock.financial:443
+    oidc:
+      issuerid: ${am.internal.root}/oauth2/auth
+      endpoint:
+        accesstoken: ${am.internal.root}/oauth2/realms/root/realms/auth/access_token
+    endpoint:
+      oidc-client: ${am.internal.root}/json/realms/root/realms/openbanking/realm-config/agents/OAuth2Client
+      authentication: ${am.internal.root}/json/authenticate
+    credential:
+      amadmin: sy95jyiquqvjbbquq845gncysh13eax6 # TODO this is a default that shouldn't need to be here. All apps need it but may not use it.#obri
