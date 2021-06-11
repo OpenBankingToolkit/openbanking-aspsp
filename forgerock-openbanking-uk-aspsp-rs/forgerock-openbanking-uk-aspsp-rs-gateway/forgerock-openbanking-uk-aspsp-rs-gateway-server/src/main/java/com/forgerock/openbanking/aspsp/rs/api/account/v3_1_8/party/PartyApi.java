@@ -31,12 +31,12 @@ import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(tags = "V3.1.8-Party", description = "the party API")
+@Api(tags = "v3.1.8-Party", description = "the party API")
 @OpenBankingAPI(
         obVersion = "3.1.8",
         obGroupName = OBGroupName.AISP,
         obReference = OBReference.PARTY
 )
-@RequestMapping(value = "/open-banking/V3.1.8/aisp")
+@RequestMapping(value = "/open-banking/v3.1.8/aisp")
 public interface PartyApi extends com.forgerock.openbanking.aspsp.rs.api.account.v3_1_7.party.PartyApi {
 }

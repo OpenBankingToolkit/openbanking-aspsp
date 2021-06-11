@@ -151,6 +151,14 @@
             <groupId>de.codecentric</groupId>
             <artifactId>spring-boot-admin-starter-client</artifactId>
         </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>com.forgerock.openbanking.uk</groupId>
+            <artifactId>openbanking-uk-datamodel</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.forgerock.openbanking.clients</groupId>
             <artifactId>forgerock-openbanking-analytics-webclient</artifactId>

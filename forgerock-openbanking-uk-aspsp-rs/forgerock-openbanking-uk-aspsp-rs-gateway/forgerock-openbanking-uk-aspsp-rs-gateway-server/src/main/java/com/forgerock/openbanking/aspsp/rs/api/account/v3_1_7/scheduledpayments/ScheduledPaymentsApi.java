@@ -31,12 +31,12 @@ import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(tags = "V3.1.7-Scheduled-Payments", description = "the scheduled-payments API")
+@Api(tags = "v3.1.7-Scheduled-Payments", description = "the scheduled-payments API")
 @OpenBankingAPI(
         obVersion = "3.1.7",
         obGroupName = OBGroupName.AISP,
         obReference = OBReference.SCHEDULED_PAYMENTS
 )
-@RequestMapping(value = "/open-banking/V3.1.7/aisp")
+@RequestMapping(value = "/open-banking/v3.1.7/aisp")
 public interface ScheduledPaymentsApi extends com.forgerock.openbanking.aspsp.rs.api.account.v3_1_6.scheduledpayments.ScheduledPaymentsApi {
 }

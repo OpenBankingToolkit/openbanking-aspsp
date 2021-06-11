@@ -31,12 +31,12 @@ import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Api(tags = "V3.1.8-Beneficiaries", description = "the beneficiaries API")
+@Api(tags = "v3.1.8-Beneficiaries", description = "the beneficiaries API")
 @OpenBankingAPI(
         obVersion = "3.1.8",
         obGroupName = OBGroupName.AISP,
         obReference = OBReference.BENEFICIARIES
 )
-@RequestMapping(value = "/open-banking/V3.1.8/aisp")
+@RequestMapping(value = "/open-banking/v3.1.8/aisp")
 public interface BeneficiariesApi extends com.forgerock.openbanking.aspsp.rs.api.account.v3_1_7.beneficiaries.BeneficiariesApi {
 }
