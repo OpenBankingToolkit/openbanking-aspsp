@@ -1,14 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { catchError, retry } from 'rxjs/operators';
-import { Observable, throwError } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {ActivatedRoute} from '@angular/router';
+import {catchError, retry} from 'rxjs/operators';
+import {Observable, throwError} from 'rxjs';
+import {HttpErrorResponse} from '@angular/common/http';
 import _get from 'lodash-es/get';
 
-import { ApiService } from 'bank/src/app/services/api.service';
-import { ApiResponses } from 'bank/src/app/types/api';
-import { ForgerockMessagesService } from '@forgerock/openbanking-ngx-common/services/forgerock-messages';
-import { IConsentEventEmitter } from '../../types/consentItem';
+import {ApiService} from 'bank/src/app/services/api.service';
+import {ApiResponses} from 'bank/src/app/types/api';
+import {ForgerockMessagesService} from '@forgerock/openbanking-ngx-common/services/forgerock-messages';
+import {IConsentEventEmitter} from '../../types/consentItem';
 
 @Component({
   selector: 'app-consent',
@@ -29,6 +29,7 @@ export class ConsentComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.log("consent component")
     const { consent_request: consentRequest } = this.route.snapshot.queryParams;
 
     if (!consentRequest) {
@@ -77,17 +78,25 @@ export class ConsentComponent implements OnInit {
     if (!this.response || !this.response.decisionAPIUri) return;
     this.loading = true;
 
-    this.api
-      .postConsentDecision(this.response.decisionAPIUri, requestBody)
-      .pipe(withErrorHandling)
-      .subscribe(
-        (data: any) => {
-          window.location.href = data.redirectUri;
-        },
-        (er: any) => {
-          this.displayError(er);
-        }
-      );
+    if(requestBody.decision === 'deny'){
+      console.log(`User cancels intentType: ${this.response.intentType}`)
+      this.response.canceledByUser = true;
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    } else {
+      this.api
+        .postConsentDecision(this.response.decisionAPIUri, requestBody)
+        .pipe(withErrorHandling)
+        .subscribe(
+          (data: any) => {
+            window.location.href = data.redirectUri;
+          },
+          (er: any) => {
+            this.displayError(er);
+          }
+        );
+    }
   }
 }
 

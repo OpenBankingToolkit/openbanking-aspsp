@@ -23,6 +23,7 @@ export module ApiResponses {
     merchantName: string;
     aispName: string;
     // optional
+    canceledByUser?: boolean;
     permissions?: OBAccountPermissions[];
     expiredDate?: string;
     fromTransaction?: string;

@@ -1,5 +1,8 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {FormGroup} from '@angular/forms';
+import {ForgerockConfirmDialogComponent} from "@forgerock/openbanking-ngx-common/components/forgerock-confirm-dialog";
+import {MatDialog} from "@angular/material/dialog";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-submit-box',
@@ -16,7 +19,24 @@ export class SubmitBoxComponent implements OnInit {
   @Output() accept = new EventEmitter<any>();
   @Output() deny = new EventEmitter<any>();
 
-  constructor() {}
+  constructor(
+    public dialog: MatDialog,
+    private translate: TranslateService) {
+  }
 
   ngOnInit() {}
+
+  cancel(e: Event) {
+    e.stopPropagation();
+    const dialogRef = this.dialog.open(ForgerockConfirmDialogComponent, {
+      data: {
+        text: this.translate.instant('COMPONENT.CANCEL.CONFIRM')
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.deny.emit();
+      }
+    });
+  }
 }

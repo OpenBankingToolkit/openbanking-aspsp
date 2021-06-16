@@ -6,6 +6,25 @@
   "SIGNOUT": "Sign out",
   "SIGNED_OUT": "You have been signed out",
   "CREATE_ACCOUNT": "Create Account",
+  "COMPONENT": {
+    "CANCEL": {
+      "APPLICATION": "Application requesting access",
+      "CONFIRM": "Are you sure you want to cancel?",
+      "CANCEL_CONFIRMATION": "Canceled by user: {{username}}",
+      "CONSENTS": {
+        "ACCOUNT_ACCESS_CONSENT": "Account sharing",
+        "PAYMENT_SINGLE_REQUEST": "Single payment",
+        "PAYMENT_DOMESTIC_CONSENT": "Domestic payment",
+        "PAYMENT_DOMESTIC_SCHEDULED_CONSENT": "Domestic scheduled payment",
+        "PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT": "Domestic standing orders",
+        "PAYMENT_INTERNATIONAL_CONSENT": "International payment",
+        "PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT": "International scheduled payment",
+        "PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT": "International standing orders",
+        "PAYMENT_FILE_CONSENT": "File payment",
+        "FUNDS_CONFIRMATION_CONSENT": "Funds confirmation"
+      }
+    }
+  },
   "GDPR": {
     "TITLE": "Access denied",
     "TEXT": "In order to use this application, you must comply with our cookie policy."
