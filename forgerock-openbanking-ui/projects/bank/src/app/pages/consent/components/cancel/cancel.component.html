@@ -1,0 +1,12 @@
+<mat-card *ngIf="response">
+  <forgerock-customer-logo></forgerock-customer-logo>
+  <h1 [translate]="'COMPONENT.CANCEL.CONSENTS.'+response.intentType"></h1>
+  <div class="consent-box" fxLayout="row">
+    <div fxFlex [translate]="'COMPONENT.CANCEL.CANCEL_CONFIRMATION'"
+         [translateParams]="{username: response.username}"></div>
+  </div>
+  <div *ngIf="response.logo" class="merchant-logo">
+    <img src="{{ response.logo }}" onerror="this.style.display='none'"/>
+  </div>
+  <app-consent-box [items]="items"></app-consent-box>
+</mat-card>

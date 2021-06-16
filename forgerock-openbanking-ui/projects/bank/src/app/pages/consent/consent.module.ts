@@ -16,6 +16,7 @@ import { DomesticStandingOrderComponent } from 'bank/src/app/pages/consent/domes
 import { InternationalPaymentComponent } from 'bank/src/app/pages/consent/international-payment/international-payment.component';
 import { FundsConfirmationComponent } from 'bank/src/app/pages/consent/funds-confirmation/funds-confirmation.component';
 import { FilePaymentComponent } from 'bank/src/app/pages/consent/file-payment/file-payment.component';
+import { CancelComponent } from "bank/src/app/pages/consent/components/cancel/cancel.component";
 
 import { InternationalSchedulePaymentComponent } from 'bank/src/app/pages/consent/international-schedule-payment/international-schedule-payment.component';
 import { InternationalStandingOrderComponent } from 'bank/src/app/pages/consent/international-standing-order/international-standing-order.component';
@@ -51,7 +52,8 @@ import { AccountCheckboxModule } from './components/account-checkbox/account-che
     FundsConfirmationComponent,
     FilePaymentComponent,
     DynamicComponent,
-    PermissionsComponent
+    PermissionsComponent,
+    CancelComponent
   ],
   entryComponents: [
     SinglePaymentComponent,
@@ -63,7 +65,8 @@ import { AccountCheckboxModule } from './components/account-checkbox/account-che
     InternationalSchedulePaymentComponent,
     InternationalStandingOrderComponent,
     FundsConfirmationComponent,
-    FilePaymentComponent
+    FilePaymentComponent,
+    CancelComponent
   ],
   exports: [
     ConsentComponent,
@@ -78,7 +81,8 @@ import { AccountCheckboxModule } from './components/account-checkbox/account-che
     FundsConfirmationComponent,
     FilePaymentComponent,
     DynamicComponent,
-    PermissionsComponent
+    PermissionsComponent,
+    CancelComponent
   ]
 })
 export class ConsentModule {}

@@ -3,7 +3,7 @@
 
   <div fxLayout="row">
     <div fxFlex class="paymentButton">
-      <button mat-stroked-button (click)="deny.emit()">{{ cancelLabel | translate }}</button>
+      <button mat-stroked-button (click)="cancel($event)">{{ cancelLabel | translate }}</button>
     </div>
     <div fxFlex class="paymentButton">
       <button

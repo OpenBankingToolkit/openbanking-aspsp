@@ -6,9 +6,10 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { SubmitBoxComponent } from './submit-box.component';
+import {MatSharedModule} from "bank/src/app/mat-shared.module";
 
 @NgModule({
-  imports: [CommonModule, TranslateModule, FlexLayoutModule, MatButtonModule, MatProgressSpinnerModule],
+  imports: [CommonModule, TranslateModule, FlexLayoutModule, MatButtonModule, MatProgressSpinnerModule, MatSharedModule],
   declarations: [SubmitBoxComponent],
   exports: [SubmitBoxComponent]
 })
