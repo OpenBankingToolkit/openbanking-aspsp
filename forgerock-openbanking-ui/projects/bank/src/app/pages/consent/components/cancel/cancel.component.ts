@@ -1,8 +1,6 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormGroup} from "@angular/forms";
-import {IConsentEventEmitter, Item, ItemType} from "bank/src/app/types/consentItem";
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {Item, ItemType} from "bank/src/app/types/consentItem";
 import {ApiResponses} from "bank/src/app/types/api";
-import {Location} from '@angular/common';
 
 @Component({
   selector: 'app-cancel',
