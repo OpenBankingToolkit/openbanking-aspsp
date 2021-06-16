@@ -63,7 +63,7 @@ public class FundsConfirmationConsentApiEndpointWrapper extends RSEndpointWrappe
 
         verifyAccessToken(Collections.singletonList(OpenBankingConstants.Scope.FUNDS_CONFIRMATIONS),
                 Arrays.asList(
-                        OIDCConstants.GrantType.CLIENT_CREDENTIAL
+                        OIDCConstants.GrantType.AUTHORIZATION_CODE
                 )
         );
 
