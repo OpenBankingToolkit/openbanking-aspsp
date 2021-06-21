@@ -156,7 +156,7 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
             List<String> scopes = (List<String>) accessToken.getJWTClaimsSet().getClaim(OBConstants.OIDCClaim.SCOPE);
 
             if (!scopes.containsAll(expectedScopes)) {
-                log.warn("The access token {} doesn't contain the scope {}", authorization, OpenBankingConstants.Scope.ACCOUNTS);
+                log.warn("The access token {} doesn't contain the scope {}", authorization, expectedScopes);
                 throw new OBErrorException(OBRIErrorType.ACCESS_TOKEN_INVALID_SCOPE,
                         expectedScopes
                 );
