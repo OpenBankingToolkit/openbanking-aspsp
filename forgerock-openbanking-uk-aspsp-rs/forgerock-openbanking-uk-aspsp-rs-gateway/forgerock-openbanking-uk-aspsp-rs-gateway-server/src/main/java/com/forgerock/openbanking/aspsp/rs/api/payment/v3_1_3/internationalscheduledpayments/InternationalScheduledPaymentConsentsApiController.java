@@ -148,6 +148,7 @@ public class InternationalScheduledPaymentConsentsApiController implements Inter
                 .payment(payment)
                 .principal(principal)
                 .obVersion(getOBVersion(request.getRequestURI()))
+                .isFundsConfirmationRequest(true)
                 .filters(f -> {
                     f.verifyConsentStatusForConfirmationOfFund();
                 })

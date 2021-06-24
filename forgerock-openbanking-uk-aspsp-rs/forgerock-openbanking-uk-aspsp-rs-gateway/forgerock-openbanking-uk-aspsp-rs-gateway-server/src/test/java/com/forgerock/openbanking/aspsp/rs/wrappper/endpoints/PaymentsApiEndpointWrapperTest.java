@@ -20,44 +20,166 @@
  */
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
+import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
+import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
+import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.services.openbanking.OBHeaderCheckerService;
+import com.forgerock.openbanking.constants.OIDCConstants;
+import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
+import com.forgerock.openbanking.integration.test.support.SupportConstants;
+import com.forgerock.openbanking.jwt.services.CryptoApiClient;
+import com.forgerock.spring.security.multiauth.model.authentication.PasswordLessUserNameAuthentication;
+import com.nimbusds.jwt.JWTParser;
+import com.nimbusds.jwt.SignedJWT;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.ResponseEntity;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
+
+import java.util.Collections;
+
+import static com.forgerock.openbanking.integration.test.support.JWT.jws;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
 public class PaymentsApiEndpointWrapperTest {
 
-    private PaymentsApiEndpointWrapper endpointWrapper;
+    @Mock(name = "cryptoApiClient")
+    private CryptoApiClient cryptoApiClient;
+
+    @Mock(name = "amOpenBankingConfiguration")
+    private AMOpenBankingConfiguration amOpenBankingConfiguration;
+
+    @Mock(name = "amResourceServerService")
+    private AMResourceServerService amResourceServerService;
+
+    @Mock(name = "rsConfiguration")
+    RSConfiguration rsConfiguration;
+
+    @Mock(name = "obHeaderCheckerService")
+    OBHeaderCheckerService obHeaderCheckerService;
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
 
     @Test
     public void validatePaymentCodeContext_throwsException() throws OBErrorException {
+        // given
         expectedEx.expect(OBErrorException.class);
         expectedEx.expectMessage("The 'OBRisk1.PaymentCodeContext' field must be set and be valid");
         OBRisk1Validator riskValidator = new OBRisk1Validator(true);
-        endpointWrapper = new PaymentsApiEndpointWrapper(null, null, null, null, riskValidator);
-
         OBWriteDomesticConsent2 consent = new OBWriteDomesticConsent2();
-        endpointWrapper.validateRisk(consent.getRisk());
+
+        // then
+        getEndpointWrapper(riskValidator).validateRisk(consent.getRisk());
     }
 
 
     @Test
     public void validatePaymentCodeContext_no_validator() throws OBErrorException {
+        // given
         expectedEx.expect(NullPointerException.class);
         expectedEx.expectMessage("validatePaymentCodeContext called but no validator present");
-        OBRisk1Validator riskValidator = new OBRisk1Validator(true);
-        endpointWrapper = new PaymentsApiEndpointWrapper(null, null, null, null, null);
-
         OBWriteDomesticConsent2 consent = new OBWriteDomesticConsent2();
-        endpointWrapper.validateRisk(consent.getRisk());
+
+        // then
+        getEndpointWrapper(null).validateRisk(consent.getRisk());
+    }
+
+    @Test
+    public void verifyAccessToken_grantType_payment() throws Exception {
+        // given
+        String jws = jws(OpenBankingConstants.Scope.PAYMENTS, OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        when(amResourceServerService.verifyAccessToken(SupportConstants.BEARER_PREFIX + jws)).thenReturn((SignedJWT) JWTParser.parse(jws));
+        when(obHeaderCheckerService.verifyFinancialIdHeader(any())).thenReturn(true);
+
+        // then
+        assertThatCode(() -> {
+            getEndpointWrapper(null)
+                    .principal(new PasswordLessUserNameAuthentication(SupportConstants.USER_AUDIENCE, Collections.EMPTY_LIST))
+                    .authorization(SupportConstants.BEARER_PREFIX + jws)
+                    .applyFilters();
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void verifyAccessToken_grantType_fundsConfirmation() throws Exception {
+        // given
+        String jws = jws(OpenBankingConstants.Scope.PAYMENTS, OIDCConstants.GrantType.AUTHORIZATION_CODE);
+        when(amResourceServerService.verifyAccessToken(SupportConstants.BEARER_PREFIX + jws)).thenReturn((SignedJWT) JWTParser.parse(jws));
+        when(obHeaderCheckerService.verifyFinancialIdHeader(any())).thenReturn(true);
+
+        // then
+        assertThatCode(() -> {
+            getEndpointWrapper(null)
+                    .principal(new PasswordLessUserNameAuthentication(SupportConstants.USER_AUDIENCE, Collections.EMPTY_LIST))
+                    .authorization(SupportConstants.BEARER_PREFIX + jws)
+                    .isFundsConfirmationRequest(true)
+                    .applyFilters();
+        }).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void verifyAccessToken_wrong_grantType() throws Exception {
+        // given
+        expectedEx.expect(OBErrorException.class);
+        expectedEx.expectMessage("The access token grant type AUTHORIZATION_CODE doesn't match one of the expected grant types");
+        String jws = jws(OpenBankingConstants.Scope.PAYMENTS, OIDCConstants.GrantType.AUTHORIZATION_CODE);
+        when(amResourceServerService.verifyAccessToken(SupportConstants.BEARER_PREFIX + jws)).thenReturn((SignedJWT) JWTParser.parse(jws));
+        when(obHeaderCheckerService.verifyFinancialIdHeader(any())).thenReturn(true);
+
+        // then
+        getEndpointWrapper(null)
+                .principal(new PasswordLessUserNameAuthentication(SupportConstants.USER_AUDIENCE, Collections.EMPTY_LIST))
+                .authorization(SupportConstants.BEARER_PREFIX + jws)
+                .applyFilters();
+    }
+
+    private PaymentsApiEndpointWrapper getEndpointWrapper(OBRisk1Validator riskValidator) {
+
+        RSEndpointWrapperService rsEndpointWrapperService = new RSEndpointWrapperService(
+                obHeaderCheckerService,
+                cryptoApiClient,
+                null,
+                null,
+                rsConfiguration,
+                null,
+                null,
+                false,
+                null,
+                rsConfiguration.financialId,
+                amOpenBankingConfiguration,
+                null,
+                null,
+                null,
+                amResourceServerService,
+                null,
+                null,
+                null,
+                null);
+
+        return new PaymentsApiEndpointWrapper(
+                rsEndpointWrapperService,
+                null,
+                null,
+                null,
+                riskValidator) {
+
+            @Override
+            protected ResponseEntity run(PaymentRestEndpointContent main) throws OBErrorException {
+                return super.run(main);
+            }
+
+        };
     }
 }

@@ -144,6 +144,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 .payment(payment)
                 .principal(principal)
                 .obVersion(getOBVersion(request.getRequestURI()))
+                .isFundsConfirmationRequest(true)
                 .filters(f -> {
                     f.verifyConsentStatusForConfirmationOfFund();
                 })

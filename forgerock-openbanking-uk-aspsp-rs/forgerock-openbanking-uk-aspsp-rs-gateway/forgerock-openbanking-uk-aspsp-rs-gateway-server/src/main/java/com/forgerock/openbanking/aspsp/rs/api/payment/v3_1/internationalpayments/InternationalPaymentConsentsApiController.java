@@ -208,6 +208,7 @@ public class InternationalPaymentConsentsApiController implements InternationalP
                 .xFapiFinancialId(xFapiFinancialId)
                 .payment(payment)
                 .principal(principal)
+                .isFundsConfirmationRequest(true)
                 .filters(f -> {
                     f.verifyConsentStatusForConfirmationOfFund();
                 })
