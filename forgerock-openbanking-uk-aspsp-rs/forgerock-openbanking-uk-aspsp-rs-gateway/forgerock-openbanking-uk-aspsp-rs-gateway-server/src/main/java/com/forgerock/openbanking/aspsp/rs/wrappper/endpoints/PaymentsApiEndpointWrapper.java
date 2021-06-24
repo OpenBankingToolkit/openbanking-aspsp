@@ -38,6 +38,7 @@ import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent2;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEndpointWrapper, PaymentsApiEndpointWrapper.PaymentRestEndpointContent> {
@@ -47,6 +48,7 @@ public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEnd
     private final MoneyTransferPaymentValidator moneyTransferPaymentValidator;
     private final PaymPaymentValidator paymPaymentValidator;
     private final OBRisk1Validator riskValidator;
+    private boolean isFundsConfirmationRequest;
 
     public PaymentsApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
                                       BalanceTransferPaymentValidator balanceTransferPaymentValidator,
@@ -58,10 +60,16 @@ public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEnd
         this.moneyTransferPaymentValidator = moneyTransferPaymentValidator;
         this.paymPaymentValidator = paymPaymentValidator;
         this.riskValidator = riskValidator;
+        this.isFundsConfirmationRequest = false;
     }
 
     public PaymentsApiEndpointWrapper payment(PaymentConsent payment) {
         this.payment = payment;
+        return this;
+    }
+
+    public PaymentsApiEndpointWrapper isFundsConfirmationRequest(boolean isFundsConfirmationRequest){
+        this.isFundsConfirmationRequest = isFundsConfirmationRequest;
         return this;
     }
 
@@ -87,13 +95,14 @@ public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEnd
     @Override
     protected void applyFilters() throws OBErrorException {
         super.applyFilters();
-
-        verifyAccessToken(Arrays.asList(OpenBankingConstants.Scope.PAYMENTS),
-                Arrays.asList(
-                        OIDCConstants.GrantType.CLIENT_CREDENTIAL
-                )
-        );
-
+        List grantTypes = Arrays.asList(OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        // the grant type for funds confirmation endpoint is different than the others payment endpoints
+        if (isFundsConfirmationRequest) {
+            grantTypes = Arrays.asList(
+                    OIDCConstants.GrantType.AUTHORIZATION_CODE
+            );
+        }
+        verifyAccessToken(Arrays.asList(OpenBankingConstants.Scope.PAYMENTS), grantTypes);
         verifyMatlsFromAccessToken();
     }
 
