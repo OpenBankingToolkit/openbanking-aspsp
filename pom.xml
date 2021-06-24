@@ -27,7 +27,7 @@
     <name>ForgeRock OpenBanking Reference Implementation - ASPSP</name>
     <groupId>com.forgerock.openbanking.aspsp</groupId>
     <artifactId>forgerock-openbanking-aspsp</artifactId>
-    <version>1.4.5-SNAPSHOT</version>
+    <version>1.4.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -44,10 +44,10 @@
     <url>http://www.forgerock.org</url>
 
     <properties>
-        <ob-common.version>1.2.0</ob-common.version>
-        <ob-clients.version>1.2.0</ob-clients.version>
-        <ob-jwkms.version>1.2.0</ob-jwkms.version>
-        <ob-auth.version>1.1.0</ob-auth.version>
+        <ob-common.version>1.2.1</ob-common.version>
+        <ob-clients.version>1.2.1</ob-clients.version>
+        <ob-jwkms.version>1.2.1</ob-jwkms.version>
+        <ob-auth.version>1.1.1</ob-auth.version>
         <maven-release-plugin.version>3.0.0-M1</maven-release-plugin.version>
         <main.basedir.license>${project.basedir}</main.basedir.license>
     </properties>
