@@ -27,6 +27,16 @@ Issue: https://github.com/ForgeCloud/ob-deploy/issues/766
 * Added expected Grant type
 
 * fix log expected scopes
+### GitHub [#436](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/436) 434-766: funds confirmation payments grant type fix
+[b1551ef78a12a8c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b1551ef78a12a8c) Jorge Sanchez Perez *2021-06-24 10:29:20*
+766: funds confirmation payments grant type fix (#436)
+
+- Rollback grant type change for funds confirmations API
+- Grant type fixed for payments/funds confirmation endpoints
+- Fix applied on: Domestic payments, international payments and international scheduled payments
+Issues:
+- https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/434
+- https://github.com/ForgeCloud/ob-deploy/issues/766
 [c281da384dabbba](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c281da384dabbba) Matt Wills *2021-06-10 13:10:39*
 32: Version prefix in v3.1.7 and v3.1.8 Accounts API
 
