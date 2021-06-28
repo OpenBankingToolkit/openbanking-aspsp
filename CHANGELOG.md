@@ -37,6 +37,19 @@ Issue: https://github.com/ForgeCloud/ob-deploy/issues/766
 Issues:
 - https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/434
 - https://github.com/ForgeCloud/ob-deploy/issues/766
+### GitHub [#437](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/437) Release/1.4.5
+[f9a11b9d03ac7a2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f9a11b9d03ac7a2) Jorge Sanchez Perez *2021-06-24 12:23:12*
+Release/1.4.5 (#437)
+
+* Release 1.4.5
+- Bumped common 1.2.1
+- Bumped clients 1.2.1
+- Bumped jwkms 1.2.1
+- Bumped auth 1.1.1
+
+* Release candidate: prepare release 1.4.5
+
+* Release candidate: prepare for next development iteration
 [c281da384dabbba](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c281da384dabbba) Matt Wills *2021-06-10 13:10:39*
 32: Version prefix in v3.1.7 and v3.1.8 Accounts API
 
