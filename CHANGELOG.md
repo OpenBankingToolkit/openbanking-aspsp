@@ -50,6 +50,12 @@ Release/1.4.5 (#437)
 * Release candidate: prepare release 1.4.5
 
 * Release candidate: prepare for next development iteration
+### GitHub [#438](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/438) 433: improve loggin /access_token endpoint (Matls verification)
+[8f150496bf8fb46](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8f150496bf8fb46) Jorge Sanchez Perez *2021-06-28 14:35:05*
+433: improve loggin /access_token endpoint (Matls verification) (#438)
+
+- Improved loggin Matls Request Verification Service
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/433
 [c281da384dabbba](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c281da384dabbba) Matt Wills *2021-06-10 13:10:39*
 32: Version prefix in v3.1.7 and v3.1.8 Accounts API
 
