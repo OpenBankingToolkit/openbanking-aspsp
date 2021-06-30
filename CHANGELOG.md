@@ -1,6 +1,69 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+
+### GitHub [#428](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/428) 426: [bank UI] Confirmation page when user Cancel the consent
+[bc8074b917f395a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bc8074b917f395a) Jorge Sanchez Perez *2021-06-16 14:49:06*
+426: [bank UI] Confirmation page when user Cancel the consent (#428)
+
+* 426: Confirmation page when user Cancel the consent
+- Cancel component added
+- Cancel component integrated
+- Confirmation window when user cancels the consent
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/426
+
+* delete comented source
+
+* delete cancel test, not necessary for simple component
+
+* delete imports declared but never used to pass lint
+### GitHub [#429](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/429) 766: funds confirmation consent grant type
+[2564c3325ee278c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2564c3325ee278c) Jorge Sanchez Perez *2021-06-21 11:27:56*
+766: funds confirmation consent grant type (#429)
+
+* 766: funds confirmation consent grant type
+- Fix gran type for funds confirmation consents
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/766
+
+* Added expected Grant type
+
+* fix log expected scopes
+### GitHub [#436](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/436) 434-766: funds confirmation payments grant type fix
+[b1551ef78a12a8c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b1551ef78a12a8c) Jorge Sanchez Perez *2021-06-24 10:29:20*
+766: funds confirmation payments grant type fix (#436)
+
+- Rollback grant type change for funds confirmations API
+- Grant type fixed for payments/funds confirmation endpoints
+- Fix applied on: Domestic payments, international payments and international scheduled payments
+Issues:
+- https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/434
+- https://github.com/ForgeCloud/ob-deploy/issues/766
+### GitHub [#437](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/437) Release/1.4.5
+[f9a11b9d03ac7a2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f9a11b9d03ac7a2) Jorge Sanchez Perez *2021-06-24 12:23:12*
+Release/1.4.5 (#437)
+
+* Release 1.4.5
+- Bumped common 1.2.1
+- Bumped clients 1.2.1
+- Bumped jwkms 1.2.1
+- Bumped auth 1.1.1
+
+* Release candidate: prepare release 1.4.5
+
+* Release candidate: prepare for next development iteration
+### GitHub [#438](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/438) 433: improve loggin /access_token endpoint (Matls verification)
+[8f150496bf8fb46](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8f150496bf8fb46) Jorge Sanchez Perez *2021-06-28 14:35:05*
+433: improve loggin /access_token endpoint (Matls verification) (#438)
+
+- Improved loggin Matls Request Verification Service
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/433
+[c281da384dabbba](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c281da384dabbba) Matt Wills *2021-06-10 13:10:39*
+32: Version prefix in v3.1.7 and v3.1.8 Accounts API
+
+- Fix version prefix (from 'V' to 'v') in v3.1.7 and v3.1.8 Account API URLs
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
+
 [b0704b02d1c8154](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0704b02d1c8154) JamieB *2021-06-02 13:53:21*
 Release candidate: prepare for next development iteration
 ## 1.4.4

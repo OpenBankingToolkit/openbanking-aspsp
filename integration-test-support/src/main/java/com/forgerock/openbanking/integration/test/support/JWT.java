@@ -33,10 +33,7 @@ import com.nimbusds.jwt.SignedJWT;
 import uk.org.openbanking.OBConstants;
 
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.UUID;
+import java.util.*;
 
 public class JWT {
 
@@ -48,15 +45,15 @@ public class JWT {
         JsonObject idTokenClaims = Json.object()
                 .add(OpenBankingConstants.AMAccessTokenClaim.ID_TOKEN, Json.object()
                         .add(OpenBankingConstants.AMAccessTokenClaim.INTENT_ID, Json.object()
-                                .add("value", "test-tpp")));
+                                .add(SupportConstants.LITERAL_VALUE, SupportConstants.USER_AUDIENCE)));
         JWTClaimsSet.Builder builder = new JWTClaimsSet.Builder()
-                .issuer("https://am.dev-ob.forgerock.financial:443/oauth2/auth")
+                .issuer(SupportConstants.ISSUER)
                 .claim(OBConstants.OIDCClaim.GRANT_TYPE, grantType.type)
                 .claim(OBConstants.OIDCClaim.SCOPE, Collections.singleton(scope))
                 .claim(OpenBankingConstants.AMAccessTokenClaim.CLAIMS, idTokenClaims.toString())
                 .expirationTime(Date.from(Instant.now().plusSeconds(300)))
-                .audience("test-tpp");
-        Arrays.stream(authorities).forEach(a -> builder.claim(OpenBankingConstants.SSOClaim.AUTHORITIES, Collections.singletonList("GROUP_FORGEROCK")));
+                .audience(SupportConstants.USER_AUDIENCE);
+        Arrays.stream(authorities).forEach(a -> builder.claim(OpenBankingConstants.SSOClaim.AUTHORITIES, SupportConstants.AUTHORITIES));
         JWTClaimsSet claims = builder.build();
         JWSHeader jwsHeader = new JWSHeader
                 .Builder(JWSAlgorithm.HS256)

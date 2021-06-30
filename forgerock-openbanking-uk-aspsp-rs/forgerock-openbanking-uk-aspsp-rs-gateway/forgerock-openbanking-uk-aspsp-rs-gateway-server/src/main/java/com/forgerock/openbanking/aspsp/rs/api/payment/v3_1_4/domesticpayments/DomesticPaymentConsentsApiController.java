@@ -142,6 +142,7 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
                 .payment(payment)
                 .principal(principal)
                 .obVersion(getOBVersion(request.getRequestURI()))
+                .isFundsConfirmationRequest(true)
                 .filters(f -> {
                     f.verifyConsentStatusForConfirmationOfFund();
                 })
