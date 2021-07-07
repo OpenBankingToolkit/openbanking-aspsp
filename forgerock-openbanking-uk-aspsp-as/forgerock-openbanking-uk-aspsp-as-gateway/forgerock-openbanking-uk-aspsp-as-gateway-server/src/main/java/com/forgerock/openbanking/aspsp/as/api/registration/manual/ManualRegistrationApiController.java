@@ -24,20 +24,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.cert.psd2.Psd2Role;
 import com.forgerock.openbanking.aspsp.as.service.SSAService;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.*;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.SoftwareStatementRole;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
-import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,9 +46,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.client.HttpClientErrorException;
@@ -57,6 +58,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.Principal;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
@@ -76,17 +78,38 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
     public static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
     public static final String END_CERT = "-----END CERTIFICATE-----";
 
-    @Autowired
-    private TppStoreService tppStoreService;
-    @Autowired
-    private ObjectMapper objectMapper;
-    @Autowired
-    private TppRegistrationService tppRegistrationService;
-    @Autowired
-    private SSAService ssaService;
 
-    @Value("${manual-onboarding.registration-request-base}")
-    private Resource registrationRequestFile;
+    private final TppStoreService tppStoreService;
+
+    private final ObjectMapper objectMapper;
+
+    private final TppRegistrationService tppRegistrationService;
+
+    private final SSAService ssaService;
+
+    private final ApiClientIdentityFactory identityFactory;
+
+    private final RegistrationRequestFactory registrationRequestFactory;
+
+    private final Resource registrationRequestFile;
+
+    @Autowired
+    public ManualRegistrationApiController(TppStoreService tppStoreService, ObjectMapper objectMapper,
+                                           TppRegistrationService tppRegistrationService, SSAService ssaService,
+                                           ApiClientIdentityFactory identityFactory,
+                                           RegistrationRequestFactory registrationRequestFactory,
+                                           @Value("${manual-onboarding.registration-request-base}")
+                                                       Resource registrationRequestFile) {
+        this.tppStoreService = tppStoreService;
+        this.objectMapper = objectMapper;
+        this.tppRegistrationService = tppRegistrationService;
+        this.ssaService = ssaService;
+        this.identityFactory = identityFactory;
+        this.registrationRequestFactory = registrationRequestFactory;
+        this.registrationRequestFile = registrationRequestFile;
+    }
+
+
 
     private String registrationRequestFileContent = null;
 
@@ -97,33 +120,49 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
             @RequestBody ManualRegistrationRequest manualRegistrationRequest,
 
             Principal principal
-    ) throws OBErrorException {
+    ) throws OBErrorException, ApiClientException, DynamicClientRegistrationException {
+        ApiClientIdentity currentUser = identityFactory.getApiClientIdentity(principal);
 
-        X509Authentication authentication = (X509Authentication) principal;
-        User currentUser = (User) authentication.getPrincipal();
-        log.debug("User detail: username {} and authorities {}", currentUser.getUsername(), currentUser.getAuthorities());
+        log.debug("User detail: username {} and authorities {}", currentUser.getUsername(),
+                currentUser.getAuthorities());
         try {
             log.debug("Received a manual onboarding registration request {}", manualRegistrationRequest);
 
             //Prepare the request
             String registrationRequestJson = getRegistrationRequest();
-            OIDCRegistrationRequest oidcRegistrationRequest = objectMapper.readValue(registrationRequestJson, OIDCRegistrationRequest.class);
-            oidcRegistrationRequest.setRedirectUris(manualRegistrationRequest.getRedirectUris());
+            RegistrationRequest registrationRequest =
+                    registrationRequestFactory.getRegistrationRequest(registrationRequestJson,
+                            objectMapper);
+            registrationRequest.setRedirectUris(manualRegistrationRequest.getRedirectUris());
 
             String directoryId;
             String ssaSerialised;
-            if (manualRegistrationRequest.getQsealPem() == null
-                    || "".equals(manualRegistrationRequest.getQsealPem())) {
-                directoryId = tppRegistrationService.verifySSA(manualRegistrationRequest.getSoftwareStatementAssertion());
+            String qSealPem = manualRegistrationRequest.getQsealPem();
+            if (StringUtils.isEmpty(qSealPem)) {
+                String ssa = manualRegistrationRequest.getSoftwareStatementAssertion();
+                if (ssa != null) {
+                    log.debug("registerApplication() No SSA provided with Manual Registration Request");
+                    throw new DynamicClientRegistrationException("No SSA provided",
+                            DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
+                }
+
+                directoryId = tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(ssa);
                 ssaSerialised = manualRegistrationRequest.getSoftwareStatementAssertion();
-                oidcRegistrationRequest.setSoftwareStatement(ssaSerialised);
+                registrationRequest.setSoftwareStatement(ssaSerialised);
             } else {
-                JWK jwk = JWK.parse(parseCertificate(manualRegistrationRequest.getQsealPem()));
+                X509Certificate qSealCertificate = parseCertificate(qSealPem);
+                if (qSealCertificate == null) {
+                    log.debug("registerApplication() Could not parse qSealPem provided; {}", qSealPem);
+                    throw new DynamicClientRegistrationException("Could not obtain qSeal certificate",
+                            DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
+                }
+
+                JWK jwk = JWK.parse(qSealCertificate);
                 ssaSerialised = ssaService.generateSSAForEIDAS(
                         manualRegistrationRequest.getAppId(),
                         manualRegistrationRequest.getOrganisationId(),
-                        Stream.of( manualRegistrationRequest.getPsd2Roles().split(","))
-                                .map (r -> Psd2Role.valueOf(r))
+                        Stream.of(manualRegistrationRequest.getPsd2Roles().split(","))
+                                .map(r -> Psd2Role.valueOf(r))
                                 .collect(Collectors.toList()),
                         jwk,
                         manualRegistrationRequest.getRedirectUris());
@@ -136,24 +175,24 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
             JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
             //Verify the SSA
             JSONObject ssaJwsJson = new JSONObject(ssaClaims.toJSONObject());
-
-            Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims, oidcRegistrationRequest, authentication);
+            registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(currentUser);
+            Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims,
+                    registrationRequest, currentUser);
 
             log.debug("The SSA was verified successfully");
 
-            log.debug("The OIDC registration request we are going to send to AM {}", oidcRegistrationRequest);
+            log.debug("The OIDC registration request we are going to send to AM {}", registrationRequest);
 
             //Register the TPP
-            Tpp tpp = tppRegistrationService.registerTpp(tppRegistrationService.getCNFromSSA(directoryId, ssaClaims),
-                    registrationRequestJson, ssaClaims,
-                    ssaJwsJson, oidcRegistrationRequest, directoryId, types);
-            log.debug("Successfully onboard! the tpp resulting: {}", tpp);
+            String tppIdentifier = tppRegistrationService.getCNFromSSA(directoryId, ssaClaims);
+            Tpp tpp = tppRegistrationService.registerTpp(tppIdentifier, registrationRequest, directoryId);
+            log.debug("Successfully performed manual onboarding! the tpp resulting: {}", tpp);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(tpp.getRegistrationResponse());
         } catch (HttpClientErrorException e) {
             log.error("An error happened in the AS '{}'", e.getResponseBodyAsString(), e);
             throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_OIDC_CLIENT_REGISTRATION_ISSUE, e.getMessage());
-        } catch (ParseException | IOException e) {
+        } catch (ParseException e) {
             log.error("Couldn't parse registration request", e);
             throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_INVALID_FORMAT);
         } catch (JOSEException e) {
@@ -172,7 +211,9 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
     ) {
         Optional<Tpp> isTpp = tppStoreService.findByClientId(clientId);
         if (isTpp.isPresent()) {
-            tppRegistrationService.unregisterTpp(isTpp.get().getRegistrationResponse().getRegistrationAccessToken(), isTpp.get());
+            Tpp tpp = isTpp.get();
+            tppRegistrationService.unregisterTpp(tpp.getRegistrationResponse().getRegistrationAccessToken(),
+                    tpp);
         }
         return ResponseEntity.ok(true);
     }
@@ -180,7 +221,8 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
     public String getRegistrationRequest() {
         if (registrationRequestFileContent == null) {
             try {
-                registrationRequestFileContent =  StreamUtils.copyToString(registrationRequestFile.getInputStream(), Charset.defaultCharset());
+                registrationRequestFileContent = StreamUtils.copyToString(registrationRequestFile.getInputStream(),
+                        Charset.defaultCharset());
             } catch (IOException e) {
                 log.error("Can't read registration request resource", e);
                 throw new RuntimeException(e);
@@ -190,21 +232,38 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
     }
 
     private X509Certificate parseCertificate(String certStr) {
-        //before decoding we need to get rod off the prefix and suffix
         log.debug("Client certificate as PEM format: \n {}", certStr);
-
         try {
+            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+            ByteArrayInputStream inputStream = stripAndDecodePemCert(certStr);
+            Certificate certificate = certificateFactory.generateCertificate(inputStream);
+            if(certificate instanceof X509Certificate){
+                return (X509Certificate) certificate;
+            } else {
+                log.debug("Provided cert was not an X509Certificate; ", certStr);
+            }
 
-            byte [] decoded = Base64.getDecoder()
-                    .decode(
-                            certStr
-                                    .replaceAll("\n", "")
-                                    .replaceAll(BEGIN_CERT, "")
-                                    .replaceAll(END_CERT, ""));
-            return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(decoded));
         } catch (CertificateException e) {
             log.error("Can't initialise certificate factory", e);
         }
         return null;
+    }
+
+    private ByteArrayInputStream stripAndDecodePemCert(String pemFormatCert){
+        String strippedCert = stripCertPrefixAndSuffix(pemFormatCert);
+        byte[] decoded =  base64Decode(strippedCert);
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(decoded);
+        return inputStream;
+    }
+
+    private String stripCertPrefixAndSuffix(String certStr) {
+        return certStr.replaceAll("\n", "")
+               .replaceAll(BEGIN_CERT, "")
+               .replaceAll(END_CERT, "");
+    }
+
+    private byte[] base64Decode(String encodedString){
+        byte[] decoded = Base64.getDecoder().decode(encodedString);
+        return decoded;
     }
 }

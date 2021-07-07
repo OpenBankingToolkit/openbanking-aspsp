@@ -25,6 +25,8 @@
  */
 package com.forgerock.openbanking.aspsp.as.api.registration.manual;
 
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -74,7 +76,7 @@ public interface ManualRegistrationApi {
             @RequestBody ManualRegistrationRequest manualRegistrationRequest,
 
             Principal principal
-    ) throws OBErrorResponseException, OBErrorException;
+    ) throws OBErrorResponseException, OBErrorException, ApiClientException, DynamicClientRegistrationException;
 
     @PreAuthorize("hasAuthority('ROLE_FORGEROCK_INTERNAL_APP')")
     @RequestMapping(

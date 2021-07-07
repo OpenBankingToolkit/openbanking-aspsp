@@ -26,6 +26,8 @@
 package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
 
 import com.forgerock.openbanking.aspsp.as.service.OIDCException;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageInvalidTokenException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageMissingAuthInfoException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
@@ -151,7 +153,7 @@ public interface DynamicRegistrationApi {
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorException, OIDCException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException;
+    ) throws OBErrorException, OIDCException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException, DynamicClientRegistrationException, ApiClientException;
 
 
 
@@ -201,7 +203,7 @@ public interface DynamicRegistrationApi {
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorException, OIDCException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException;
+    ) throws OBErrorException, OIDCException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException, DynamicClientRegistrationException;
 
 
     @PreAuthorize("hasAnyAuthority('UNREGISTERED_TPP', 'ROLE_PISP', 'ROLE_AISP', 'ROLE_CBPII', 'ROLE_EIDAS')")
@@ -220,5 +222,5 @@ public interface DynamicRegistrationApi {
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws  OIDCException, OBErrorResponseException;
+    ) throws OIDCException, OBErrorResponseException, OAuth2InvalidClientException, DynamicClientRegistrationException;
 }

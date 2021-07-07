@@ -18,29 +18,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.utils.extractor;
+package com.forgerock.openbanking.aspsp.as.service.apiclient;
 
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Component;
 
+import java.security.cert.X509Certificate;
+
 @Component
-public class JwtHeaderTokenExtractor implements TokenExtractor {
-    public static String HEADER_PREFIX = "Bearer ";
+public class ApiClientCertificateTypeClassifier {
 
-    @Override
-    public String extract(String header) {
-        if ("".equals(header) || header == null) {
-            throw new AuthenticationServiceException("Authorization header cannot be blank!");
-        }
-
-        if (header.length() < HEADER_PREFIX.length()) {
-            throw new AuthenticationServiceException("Invalid authorization header size.");
-        }
-
-        if(!header.trim().startsWith(HEADER_PREFIX)){
-            throw new AuthenticationServiceException("Header should be " + HEADER_PREFIX + " Token");
-        }
-
-        return header.substring(HEADER_PREFIX.length(), header.length());
+    public static ApiClientCertificateType getApiClientCertificateType(X509Certificate[] certChain){
+        ApiClientCertificateType certType = ApiClientCertificateType.INVALID;
+        return certType;
     }
 }

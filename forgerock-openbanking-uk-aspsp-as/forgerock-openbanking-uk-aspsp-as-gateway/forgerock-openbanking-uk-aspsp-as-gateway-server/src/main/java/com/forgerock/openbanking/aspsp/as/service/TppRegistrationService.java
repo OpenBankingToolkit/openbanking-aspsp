@@ -26,10 +26,15 @@ import com.forgerock.openbanking.analytics.services.TppEntriesKPIService;
 import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.dto.RegistrationError;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.RegistrationRequest;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.utils.JwsClaimsUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
+import com.forgerock.openbanking.constants.OpenBankingConstants.SSAClaims;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
@@ -41,7 +46,6 @@ import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.JWTClaimsSet;
-import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -84,32 +88,32 @@ public class TppRegistrationService {
         this.tppEntriesKPIService = tppEntriesKPIService;
     }
 
-    public String verifySSA(String ssaSerialised) {
+    public String validateSsaAgainstIssuingDirectoryJwksUri(String ssaSerialised) {
         if (ssaSerialised == null) {
             return null;
         }
         try {
-            log.debug("Verify the SSA against OB directory");
+            log.debug("verifySsaAgainstIssuingDirectoryJwksUri() Verify the SSA against OB directory");
             cryptoApiClient.validateJws(ssaSerialised, openBankingDirectoryConfiguration.getIssuerID(),
                     openBankingDirectoryConfiguration.jwksUri);
             return openBankingDirectoryConfiguration.id;
         } catch (InvalidTokenException | HttpClientErrorException | ParseException | IOException e) {
-            log.debug("Invalid SSA signature from OB directory", e);
+            log.debug("verifySsaAgainstIssuingDirectoryJwksUri() Invalid SSA signature from OB directory", e);
         }
 
         try {
-            log.debug("Verify the SSA against ForgeRock directory");
+            log.debug("verifySsaAgainstIssuingDirectoryJwksUri() Verify the SSA against ForgeRock directory");
             cryptoApiClient.validateJws(ssaSerialised, null,
                     forgeRockDirectoryConfiguration.jwksUri);
             return forgeRockDirectoryConfiguration.id;
         } catch (InvalidTokenException | ParseException | IOException e) {
-            log.debug("Invalid SSA signature from ForgeRock directory", e);
+            log.debug("verifySsaAgainstIssuingDirectoryJwksUri() Invalid SSA signature from ForgeRock directory", e);
         }
         return null;
     }
 
     public String getCNFromSSA(String directoryId, JWTClaimsSet ssaClaims) throws ParseException {
-        return ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_ID);
+        return ssaClaims.getStringClaim(SSAClaims.SOFTWARE_ID);
     }
 
     public void verifySSASoftwareIDAgainstTransportCert(String softwareIdFromSSA, String softwareIdFromMatls) throws OBErrorException {
@@ -128,31 +132,34 @@ public class TppRegistrationService {
                 this.getClass().getSimpleName());
     }
 
-    public void verifyTPPRegistrationRequestSignature(String registrationRequestJwtSerialised, String softwareClientId, JWTClaimsSet ssaClaims) throws OBErrorException, ParseException {
+    public void verifyTPPRegistrationRequestSignature(String registrationRequestJwtSerialised, String softwareClientId,
+                                                      JWTClaimsSet ssaClaims) throws DynamicClientRegistrationException {
         try {
-            log.debug("Validate the TPP registration request");
-            String softwareJWKUri = ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_JWKS_ENDPOINT);
+            log.debug("verifyTPPRegistrationRequestSignature() Validate the TPP registration request");
+            String softwareJWKUri = ssaClaims.getStringClaim(SSAClaims.SOFTWARE_JWKS_ENDPOINT);
             if (softwareJWKUri != null) {
+                log.debug("verifyTPPRegistrationRequestSignature() validating against jwks_uri; '{}'", softwareJWKUri);
                 cryptoApiClient.validateJws(registrationRequestJwtSerialised, softwareClientId, softwareJWKUri);
                 return;
             }
-            String jwk = ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_SIGINING_JWK);
+            String jwk = ssaClaims.getStringClaim(SSAClaims.SOFTWARE_SIGINING_JWK);
             if (jwk != null) {
+                log.debug("verifyTPPRegistrationRequestSignature() validating against jwk; '{}'", jwk);
                 cryptoApiClient.validateJwsWithJWK(registrationRequestJwtSerialised, softwareClientId, jwk);
                 return;
             }
             log.error("SSA should have JWK_URI or JWK. SSA {}", ssaClaims.toJSONObject());
-            throw new OBErrorException(OBRIErrorType.SERVER_ERROR, "Couldn't verify registration JWT");
+            throw new DynamicClientRegistrationException("The Software Statement should have a jwks_uri, or a jwk.",
+                    DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
         } catch (InvalidTokenException | ParseException | IOException e) {
             log.error("Invalid TPP registration request token: " + e.getMessage(), e);
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_JWT_INVALID,
-                    e.getMessage()
-            );
+            throw new DynamicClientRegistrationException(e.getMessage(),
+                    DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
         }
     }
 
     public void verifyTPPRegistrationRequestAgainstSSA(OIDCRegistrationRequest oidcRegistrationRequest,
-                                                       JWTClaimsSet ssaClaims) throws OBErrorException, OIDCException {
+                                                       JWTClaimsSet ssaClaims) throws OIDCException, DynamicClientRegistrationException, OBErrorException {
         log.debug("Verify TPP registration request matches the SSA request");
         log.debug("- Verify the software id");
 
@@ -166,7 +173,7 @@ public class TppRegistrationService {
 
         String noSoftwareIdErrorDescription = "Failed to obtain redirect URIs from the software statement";
         // Throws if no claims available. ssaClaimSetSoftwareId will not be null or empty if it returns
-        String ssaClaimSetSoftwareId = getSsaStringClaim(ssaClaims, OpenBankingConstants.SSAClaims.SOFTWARE_ID,
+        String ssaClaimSetSoftwareId = getSsaStringClaim(ssaClaims, SSAClaims.SOFTWARE_ID,
                 noSoftwareIdErrorDescription);
 
         if (StringUtils.isNotBlank(registrationRequestSoftwareId)){
@@ -175,11 +182,8 @@ public class TppRegistrationService {
                         "Software Statement";
                 log.debug(errorDescription + ". ssaClaimSetSoftwareId: '{}', registrationRequestSoftwareId: '{}'",
                         ssaClaimSetSoftwareId, registrationRequestSoftwareId);
-
-                RegistrationError registrationError = new RegistrationError()
-                        .error(RegistrationError.ErrorEnum.INVALID_CLIENT_METADATA)
-                        .errorDescription(errorDescription);
-                throw new OIDCException(registrationError);
+                throw new DynamicClientRegistrationException(errorDescription,
+                        DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
             }
         }
 
@@ -204,7 +208,7 @@ public class TppRegistrationService {
 
         // Throws if no claims available. ssaClaimRedirectUris will not be null or empty if it returns
         List<String> ssaClaimRedirectUris = getSsaStringListClaim(ssaClaims,
-                OpenBankingConstants.SSAClaims.SOFTWARE_REDIRECT_URIS, noRedirectUriErrorDescription);
+                SSAClaims.SOFTWARE_REDIRECT_URIS, noRedirectUriErrorDescription);
 
 
         if (registrationRequestRedirectUris == null || registrationRequestRedirectUris.isEmpty() ) {
@@ -235,7 +239,7 @@ public class TppRegistrationService {
 
     public List<String> parseContacts(JWTClaimsSet ssaClaims) {
         List<String> contacts = new ArrayList<>();
-        JSONArray contactsJsonArray = (JSONArray) ssaClaims.getClaim(OpenBankingConstants.SSAClaims.ORG_CONTACTS);
+        JSONArray contactsJsonArray = (JSONArray) ssaClaims.getClaim(SSAClaims.ORG_CONTACTS);
         if (contactsJsonArray != null) {
             for (Object contactJson : contactsJsonArray) {
                 JSONObject contactJsonObject = ((JSONObject) contactJson);
@@ -250,17 +254,19 @@ public class TppRegistrationService {
         return contacts;
     }
 
-    public Tpp registerTpp(String cn, String registrationRequestJson,
-                           JWTClaimsSet ssaClaims, JSONObject ssaJwsJson,
-                           OIDCRegistrationRequest oidcRegistrationRequest,
-                           String directoryId, Set<SoftwareStatementRole> types) {
+    public Tpp registerTpp(String cn, RegistrationRequest oidcRegistrationRequest,
+                           String directoryId) throws ParseException {
         log.debug("Send the OAuth2 dynamic registration request to the AS");
         OIDCRegistrationResponse oidcRegistrationResponse = amoidcRegistrationService.register(oidcRegistrationRequest);
         log.debug("Response from the AS: {}", oidcRegistrationResponse);
 
         removeSecretIfNeeded(oidcRegistrationResponse);
 
-        String officialName = getOfficialTppName(ssaClaims, oidcRegistrationResponse);
+        String officialName = getOfficialTppName(oidcRegistrationRequest, oidcRegistrationResponse);
+        String softwareStatementAsJsonString =
+                oidcRegistrationRequest.getSoftwareStatementClaimsAsJson().toJSONString();
+
+        // ToDo: Is this just the same as the SoftwareStatement
 
         Tpp tpp = Tpp.builder()
                 .id(oidcRegistrationResponse.getClientId())
@@ -269,9 +275,9 @@ public class TppRegistrationService {
                 .name(oidcRegistrationResponse.getClientName())
                 .officialName(officialName)
                 .clientId(oidcRegistrationResponse.getClientId())
-                .types(types)
-                .ssa(ssaJwsJson.toJSONString())
-                .tppRequest(registrationRequestJson)
+                .types(oidcRegistrationRequest.getSoftwareStatementRoles())
+                .ssa(softwareStatementAsJsonString)
+                .tppRequest(oidcRegistrationRequest.toJson())
                 .registrationResponse(oidcRegistrationResponse)
                 .directoryId(directoryId)
                 .build();
@@ -283,7 +289,7 @@ public class TppRegistrationService {
 
     public Tpp updateTpp(Tpp tpp, String token, String registrationRequestJson,
                          JWTClaimsSet ssaClaims, JSONObject ssaJwsJson,
-                         OIDCRegistrationRequest oidcRegistrationRequest,
+                         RegistrationRequest oidcRegistrationRequest,
                          String directoryId, Set<SoftwareStatementRole> types) {
         log.debug("Send the OAuth2 dynamic registration request to the AS");
         OIDCRegistrationResponse oidcRegistrationResponse = amoidcRegistrationService.updateOIDCClient(token, oidcRegistrationRequest, tpp.getClientId());
@@ -291,7 +297,7 @@ public class TppRegistrationService {
 
         removeSecretIfNeeded(oidcRegistrationResponse);
 
-        String officialName = getOfficialTppName(ssaClaims, oidcRegistrationResponse);
+        String officialName = getOfficialTppName(oidcRegistrationRequest, oidcRegistrationResponse);
 
         Tpp updatedTpp = Tpp.builder()
                 .created(tpp.getCreated())
@@ -394,11 +400,11 @@ public class TppRegistrationService {
 
         try {
             JWTClaimsSet ssaClaim = tpp.getSsaClaim();
-            tppEntryBuilder.softwareId(ssaClaim.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_ID))
-                    .organisationId(ssaClaim.getStringClaim(OpenBankingConstants.SSAClaims.ORG_ID))
-                    .organisationName(ssaClaim.getStringClaim(OpenBankingConstants.SSAClaims.ORG_NAME));
+            tppEntryBuilder.softwareId(ssaClaim.getStringClaim(SSAClaims.SOFTWARE_ID))
+                    .organisationId(ssaClaim.getStringClaim(SSAClaims.ORG_ID))
+                    .organisationName(ssaClaim.getStringClaim(SSAClaims.ORG_NAME));
         } catch (ParseException e) {
-            log.warn("Couldn't read TPP SSA, skipping SSA claims population to TPP entry for this TPP {}", e, tpp);
+            log.warn("Couldn't read TPP SSA, skipping SSA claims population to TPP entry for this TPP {}", tpp, e);
         }
 
 
@@ -421,14 +427,16 @@ public class TppRegistrationService {
         }
     }
 
-    private String getOfficialTppName(JWTClaimsSet ssaClaims, OIDCRegistrationResponse oidcRegistrationResponse) {
-        String officialName = oidcRegistrationResponse.getClientName();
+    private String getOfficialTppName(RegistrationRequest registrationRequest,
+                                      OIDCRegistrationResponse registrationResponse) {
+        String officialName = registrationResponse.getClientName();
         try {
-            String organisationName = ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.ORG_NAME);
-            officialName = organisationName + " - " + oidcRegistrationResponse.getClientName();
+            JWTClaimsSet ssaClaims = registrationRequest.getSoftwareStatementClaims();
+            String organisationName = ssaClaims.getStringClaim(SSAClaims.ORG_NAME);
+            officialName = organisationName + " - " + registrationResponse.getClientName();
         } catch (ParseException e) {
             log.error("Couldn't parse SSA claims. Continue using the TPP name {} instead",
-                    ssaClaims, officialName, e);
+                    registrationResponse, e);
         }
         return officialName;
     }
@@ -437,17 +445,17 @@ public class TppRegistrationService {
     public Set<SoftwareStatementRole> prepareRegistrationRequestWithSSA(
             JWTClaimsSet ssaClaims,
             OIDCRegistrationRequest oidcRegistrationRequest,
-            X509Authentication currentUser
+            ApiClientIdentity clientIdentity
     ) throws ParseException {
         //Import information from the SSA into the registration request, as per the OAuth2 dynamic registration
-        oidcRegistrationRequest.setJwks_uri(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_JWKS_ENDPOINT));
-        oidcRegistrationRequest.setClientName(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_CLIENT_NAME));
-        oidcRegistrationRequest.setLogoUri(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_LOGO_URI));
+        oidcRegistrationRequest.setJwks_uri(ssaClaims.getStringClaim(SSAClaims.SOFTWARE_JWKS_ENDPOINT));
+        oidcRegistrationRequest.setClientName(ssaClaims.getStringClaim(SSAClaims.SOFTWARE_CLIENT_NAME));
+        oidcRegistrationRequest.setLogoUri(ssaClaims.getStringClaim(SSAClaims.SOFTWARE_LOGO_URI));
         oidcRegistrationRequest.setContacts(parseContacts(ssaClaims));
-        oidcRegistrationRequest.setTosUri(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_TOS_URI));
-        oidcRegistrationRequest.setPolicyUri(ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_POLICY_URI));
+        oidcRegistrationRequest.setTosUri(ssaClaims.getStringClaim(SSAClaims.SOFTWARE_TOS_URI));
+        oidcRegistrationRequest.setPolicyUri(ssaClaims.getStringClaim(SSAClaims.SOFTWARE_POLICY_URI));
 
-        List<String> rolesSerialised = ssaClaims.getStringListClaim(OpenBankingConstants.SSAClaims.SOFTWARE_ROLES);
+        List<String> rolesSerialised = ssaClaims.getStringListClaim(SSAClaims.SOFTWARE_ROLES);
         Set<SoftwareStatementRole> types = rolesSerialised.stream().map(role -> SoftwareStatementRole.valueOf(role)).collect(Collectors.toSet());
 
         if (oidcRegistrationRequest.getScope() != null || "".equals(oidcRegistrationRequest.getScope())) {
@@ -470,7 +478,7 @@ public class TppRegistrationService {
         OIDCConstants.TokenEndpointAuthMethods authMethods = OIDCConstants.TokenEndpointAuthMethods.fromType(oidcRegistrationRequest.getTokenEndpointAuthMethod());
 
         if (authMethods == TLS_CLIENT_AUTH) {
-            oidcRegistrationRequest.setTlsClientAuthSubjectDn(currentUser.getCertificateChain()[0].getSubjectDN().toString());
+            oidcRegistrationRequest.setTlsClientAuthSubjectDn(clientIdentity.getTransportCertificate().getSubjectDN().toString());
         }
 
         oidcRegistrationRequest.setScopes(new ArrayList<>(scopes));
