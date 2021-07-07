@@ -1,6 +1,7 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+
 ### GitHub [#428](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/428) 426: [bank UI] Confirmation page when user Cancel the consent
 [bc8074b917f395a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bc8074b917f395a) Jorge Sanchez Perez *2021-06-16 14:49:06*
 426: [bank UI] Confirmation page when user Cancel the consent (#428)
@@ -62,6 +63,7 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/433
 - Fix version prefix (from 'V' to 'v') in v3.1.7 and v3.1.8 Account API URLs
 
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
+
 [b0704b02d1c8154](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0704b02d1c8154) JamieB *2021-06-02 13:53:21*
 Release candidate: prepare for next development iteration
 ## 1.4.4
