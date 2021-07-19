@@ -21,24 +21,22 @@
 package com.forgerock.openbanking.aspsp.as.api.registration.manual;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.cert.psd2.Psd2Role;
+import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.SSAService;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
-import com.forgerock.openbanking.aspsp.as.service.apiclient.*;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
-import com.forgerock.openbanking.exceptions.OBErrorException;
-import com.forgerock.openbanking.model.SoftwareStatementRole;
 import com.forgerock.openbanking.model.Tpp;
-import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.shaded.json.JSONObject;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +46,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
@@ -62,14 +58,8 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.text.ParseException;
 import java.util.Base64;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static com.forgerock.openbanking.aspsp.as.api.registration.dynamic.DynamicRegistrationApiController.ORIGIN_ID_EIDAS;
 
 @Controller
 @Slf4j
@@ -120,85 +110,52 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
             @RequestBody ManualRegistrationRequest manualRegistrationRequest,
 
             Principal principal
-    ) throws OBErrorException, ApiClientException, DynamicClientRegistrationException {
-        ApiClientIdentity currentUser = identityFactory.getApiClientIdentity(principal);
+    ) throws ApiClientException, DynamicClientRegistrationException, OAuth2InvalidClientException {
+        log.debug("registerApplication() Received a manual onboarding registration request {}",
+                manualRegistrationRequest);
 
-        log.debug("User detail: username {} and authorities {}", currentUser.getUsername(),
-                currentUser.getAuthorities());
-        try {
-            log.debug("Received a manual onboarding registration request {}", manualRegistrationRequest);
+        ApiClientIdentity apiClientIdentity = identityFactory.getApiClientIdentity(principal);
+        log.debug("User detail: username {} and authorities {}", apiClientIdentity.getUsername(),
+                apiClientIdentity.getAuthorities());
 
-            //Prepare the request
-            String registrationRequestJson = getRegistrationRequest();
-            RegistrationRequest registrationRequest =
-                    registrationRequestFactory.getRegistrationRequest(registrationRequestJson,
-                            objectMapper);
-            registrationRequest.setRedirectUris(manualRegistrationRequest.getRedirectUris());
+        //Prepare the request
+        String registrationRequestDefaultJsonClaims = getRegistrationRequestDefaultJsonClaims();
+        RegistrationRequest registrationRequest =
+                registrationRequestFactory.getRegistrationRequestFromManualRegistrationJson(
+                        registrationRequestDefaultJsonClaims, manualRegistrationRequest, objectMapper);
 
-            String directoryId;
-            String ssaSerialised;
-            String qSealPem = manualRegistrationRequest.getQsealPem();
-            if (StringUtils.isEmpty(qSealPem)) {
-                String ssa = manualRegistrationRequest.getSoftwareStatementAssertion();
-                if (ssa != null) {
-                    log.debug("registerApplication() No SSA provided with Manual Registration Request");
-                    throw new DynamicClientRegistrationException("No SSA provided",
-                            DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
-                }
+        String directoryId = registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri();
 
-                directoryId = tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(ssa);
-                ssaSerialised = manualRegistrationRequest.getSoftwareStatementAssertion();
-                registrationRequest.setSoftwareStatement(ssaSerialised);
-            } else {
-                X509Certificate qSealCertificate = parseCertificate(qSealPem);
-                if (qSealCertificate == null) {
-                    log.debug("registerApplication() Could not parse qSealPem provided; {}", qSealPem);
-                    throw new DynamicClientRegistrationException("Could not obtain qSeal certificate",
-                            DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
-                }
+        registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
+        log.debug("The OIDC registration request we are going to send to AM {}", registrationRequest);
 
-                JWK jwk = JWK.parse(qSealCertificate);
-                ssaSerialised = ssaService.generateSSAForEIDAS(
-                        manualRegistrationRequest.getAppId(),
-                        manualRegistrationRequest.getOrganisationId(),
-                        Stream.of(manualRegistrationRequest.getPsd2Roles().split(","))
-                                .map(r -> Psd2Role.valueOf(r))
-                                .collect(Collectors.toList()),
-                        jwk,
-                        manualRegistrationRequest.getRedirectUris());
-                directoryId = ORIGIN_ID_EIDAS;
-            }
+        //Register the TPP
+        String tppIdentifier = registrationRequest.getSoftwareIdFromSSA();
+        Tpp tpp = tppRegistrationService.registerTpp(apiClientIdentity, registrationRequest);
+        log.debug("Successfully performed manual onboarding! the tpp resulting: {}", tpp);
 
-            SignedJWT ssaJws = SignedJWT.parse(ssaSerialised);
+        return ResponseEntity.status(HttpStatus.CREATED).body(tpp.getRegistrationResponse());
+    }
 
-            //Convert in json for conveniency
-            JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
-            //Verify the SSA
-            JSONObject ssaJwsJson = new JSONObject(ssaClaims.toJSONObject());
-            registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(currentUser);
-            Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(ssaClaims,
-                    registrationRequest, currentUser);
 
-            log.debug("The SSA was verified successfully");
-
-            log.debug("The OIDC registration request we are going to send to AM {}", registrationRequest);
-
-            //Register the TPP
-            String tppIdentifier = tppRegistrationService.getCNFromSSA(directoryId, ssaClaims);
-            Tpp tpp = tppRegistrationService.registerTpp(tppIdentifier, registrationRequest, directoryId);
-            log.debug("Successfully performed manual onboarding! the tpp resulting: {}", tpp);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(tpp.getRegistrationResponse());
-        } catch (HttpClientErrorException e) {
-            log.error("An error happened in the AS '{}'", e.getResponseBodyAsString(), e);
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_OIDC_CLIENT_REGISTRATION_ISSUE, e.getMessage());
-        } catch (ParseException e) {
-            log.error("Couldn't parse registration request", e);
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_INVALID_FORMAT);
-        } catch (JOSEException e) {
-            log.error("QSEAL pem is not in the right format", e);
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_INVALID_FORMAT);
+    private JWK parseQwacPem(String qWacPem) throws DynamicClientRegistrationException {
+        X509Certificate qSealCertificate = parseCertificate(qWacPem);
+        if (qSealCertificate == null) {
+            log.debug("registerApplication() Could not parse qWacPem provided; {}", qWacPem);
+            throw new DynamicClientRegistrationException("Could not obtain qSeal certificate",
+                    DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
         }
+
+        JWK jwk = null;
+        try {
+            jwk = JWK.parse(qSealCertificate);
+        } catch (JOSEException e) {
+            String errorMessage = "Failed to parse the transport certificate provided.";
+            log.debug("parseQwacPem() {}", errorMessage, e);
+            throw new DynamicClientRegistrationException(errorMessage,
+                    DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
+        }
+        return jwk;
     }
 
     @Override
@@ -218,7 +175,7 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
         return ResponseEntity.ok(true);
     }
 
-    public String getRegistrationRequest() {
+    public String getRegistrationRequestDefaultJsonClaims() {
         if (registrationRequestFileContent == null) {
             try {
                 registrationRequestFileContent = StreamUtils.copyToString(registrationRequestFile.getInputStream(),

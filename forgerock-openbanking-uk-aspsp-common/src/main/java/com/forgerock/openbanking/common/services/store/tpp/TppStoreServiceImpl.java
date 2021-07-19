@@ -132,10 +132,12 @@ public class TppStoreServiceImpl implements TppStoreService {
 
     @Override
     public void deleteTPP(Tpp tpp) {
+        LOGGER.debug("deleteTpp() deleting '{}'", tpp.getClientId());
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/tpps/" + tpp.getId());
         URI uri = builder.build().encode().toUri();
-        LOGGER.debug("Delete TPP", tpp);
+
         restTemplate.exchange(uri, HttpMethod.DELETE, null, String.class);
+        LOGGER.debug("Deleted Tpp '{}'", tpp.getClientId());
     }
 
     @Override

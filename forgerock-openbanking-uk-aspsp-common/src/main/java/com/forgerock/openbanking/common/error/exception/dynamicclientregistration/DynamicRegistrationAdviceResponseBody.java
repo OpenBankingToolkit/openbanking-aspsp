@@ -18,14 +18,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.as.service.apiclient;
+package com.forgerock.openbanking.common.error.exception.dynamicclientregistration;
 
-import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
-import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authentication;
+import lombok.Data;
 
-public class ApiClientIdentityOBWac extends ApiClientIdentityPsd2 {
+@Data
+public class DynamicRegistrationAdviceResponseBody {
+    private String error;
+    private String error_description;
 
-    protected ApiClientIdentityOBWac(PSD2Authentication authentication) throws OAuth2InvalidClientException {
-        super(authentication);
+    public DynamicRegistrationAdviceResponseBody(String error, String error_description){
+        this.error = error;
+        this.error_description = error_description;
     }
 }

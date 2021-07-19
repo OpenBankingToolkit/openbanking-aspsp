@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.as.service.apiclient;
 import com.forgerock.cert.Psd2CertInfo;
 import com.forgerock.cert.eidas.EidasCertType;
 import com.forgerock.cert.exception.InvalidEidasCertType;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authentication;
 import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
 import lombok.extern.slf4j.Slf4j;
@@ -41,44 +42,51 @@ public class ApiClientIdentityFactory {
 
     private final String OBIE_ISSUER_NAME = "CN=OpenBanking Pre-Production Issuing CA,O=OpenBanking,C=GB";
 
-    public ApiClientIdentity getApiClientIdentity(Principal principal) throws ApiClientException {
+    public ApiClientIdentity getApiClientIdentity(Principal principal) throws ApiClientException, OAuth2InvalidClientException {
 
         ApiClientIdentity apiClientIdentity = null;
         if (principal instanceof PSD2Authentication) {
             PSD2Authentication authentication = (PSD2Authentication) principal;
-            ApiClientCertificateType certType = getApiClientCertificateTypeFromPSD2(authentication);
-            switch (certType) {
-                case FR_TRANSPORT:
-                    apiClientIdentity = new ApiClientIdentityFRTransport(authentication);
-                    break;
-                case OBWAC:
-                    apiClientIdentity = new ApiClientIdentityOBWac(authentication);
-                    break;
-                case QWAC:
-                    apiClientIdentity = new ApiClientIdentityQWac(authentication);
-                    break;
-                default:
-                    String errorString = "Client presented an invalid Certificate " +
-                            "Type for use as a Transport certificate. Type presented ': " + certType + "'";
-                    log.debug("getApiClientIdentity() {}", errorString);
-                    throw new ApiClientException(errorString);
+            Psd2CertInfo certInfo = authentication.getPsd2CertInfo();
+            if(certInfo.isPsd2Cert()){
+                ApiClientCertificateType certType = getApiClientCertificateTypeFromPSD2(authentication);
+                switch (certType) {
+                    case FR_TRANSPORT:
+                        apiClientIdentity = new ApiClientIdentityFRTransport(authentication);
+                        break;
+                    case OBWAC:
+                        apiClientIdentity = new ApiClientIdentityOBWac(authentication);
+                        break;
+                    case QWAC:
+                        apiClientIdentity = new ApiClientIdentityQWac(authentication);
+                        break;
+                    default:
+                        String errorString = "Client presented an invalid Certificate " +
+                                "Type for use as a Transport certificate. Type presented ': " + certType + "'";
+                        log.debug("getApiClientIdentity() {}", errorString);
+                        throw new ApiClientException(errorString);
 
+                }
+            } else {
+                apiClientIdentity = createOBTransportIdentity(authentication);
             }
         } else if (principal instanceof X509Authentication){
             X509Authentication authentication = (X509Authentication) principal;
-            ApiClientCertificateType certType = getApiClientCertificateTypeFromX509(authentication);
-            switch (certType){
-                case OB_TRANSPORT:
-                    apiClientIdentity = new ApiClientIdentityOBTransport(authentication);
-                    break;
-                default:
-                    String errorString = "Client presented an invalid Certificate " +
-                            "Type for use as a Transport certificate. Type presented ': " + certType + "'";
-                    log.debug("getApiClientIdentity() {}", errorString);
-                    throw new ApiClientException(errorString);
-            }
+            apiClientIdentity = createOBTransportIdentity(authentication);
         }
         return apiClientIdentity;
+    }
+
+    private ApiClientIdentity createOBTransportIdentity(X509Authentication authentication)
+            throws OAuth2InvalidClientException, ApiClientException {
+        ApiClientCertificateType certType = getApiClientCertificateTypeFromX509(authentication);
+        if (certType == ApiClientCertificateType.OB_TRANSPORT) {
+            return new ApiClientIdentityOBTransport(authentication);
+        }
+        String errorString = "Client presented an invalid Certificate " +
+                "Type for use as a Transport certificate. Type presented ': " + certType + "'";
+        log.debug("getApiClientIdentity() {}", errorString);
+        throw new ApiClientException(errorString);
     }
 
     private ApiClientCertificateType getApiClientCertificateTypeFromX509(X509Authentication authentication)

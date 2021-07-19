@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
+package com.forgerock.openbanking.aspsp.as.api.registration;
 
 import com.forgerock.cert.Psd2CertInfo;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;

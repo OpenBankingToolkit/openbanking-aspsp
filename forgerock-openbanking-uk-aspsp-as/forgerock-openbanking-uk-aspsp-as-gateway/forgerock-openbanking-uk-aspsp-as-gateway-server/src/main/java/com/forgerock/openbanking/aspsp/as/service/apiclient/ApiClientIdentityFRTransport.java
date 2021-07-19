@@ -20,13 +20,14 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.apiclient;
 
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authentication;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ApiClientIdentityFRTransport extends ApiClientIdentityPsd2 {
 
-    public ApiClientIdentityFRTransport(PSD2Authentication authentication){
+    public ApiClientIdentityFRTransport(PSD2Authentication authentication) throws OAuth2InvalidClientException {
         super(authentication);
     }
 

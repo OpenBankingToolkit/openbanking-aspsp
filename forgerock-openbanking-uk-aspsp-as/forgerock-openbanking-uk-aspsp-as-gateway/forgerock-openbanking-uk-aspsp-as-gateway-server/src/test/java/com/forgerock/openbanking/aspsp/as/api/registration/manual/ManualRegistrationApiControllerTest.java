@@ -1,21 +1,47 @@
+/**
+ * Copyright 2019 ForgeRock AS.
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 package com.forgerock.openbanking.aspsp.as.api.registration.manual;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.cert.Psd2CertInfo;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
 import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
+import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.SSAService;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
-import com.forgerock.openbanking.aspsp.as.service.apiclient.RegistrationRequestFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
-import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authentication;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,11 +60,16 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -78,6 +109,8 @@ public class ManualRegistrationApiControllerTest {
         manualRegistrationApiController = new ManualRegistrationApiController(tppStoreService, objectMapper,
                 tppRegistrationService, ssaService, apiClientIdentityFactory, registrationRequestFactory,
                 registrationRequestResource);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
     }
 
     @After
@@ -86,15 +119,25 @@ public class ManualRegistrationApiControllerTest {
     }
 
     @Test
-    public void registerApplication() throws ApiClientException, DynamicClientRegistrationException, OBErrorException,
-            CertificateException, IOException, InvalidPsd2EidasCertificate {
+    public void registerApplication() throws ApiClientException, DynamicClientRegistrationException,
+            CertificateException, IOException, InvalidPsd2EidasCertificate, ParseException, OAuth2InvalidClientException {
         // Given
+        String directoryId = "ForgeRock";
+        String tppIdentifier  = "TestTppIdentifier";
         ManualRegistrationRequest manualRegistrationRequest = getValidManualRegistrationRequest();
         X509Certificate[] certsChain = TestHelperFunctions.getCertChainFromFile("src/test/resources/certificates" +
                 "/OBWac.pem");
-        Collection<? extends GrantedAuthority> authorities = new ArrayList<>(List.of(OBRIRole.UNKNOWN_CERTIFICATE)); ;
+        Collection<? extends GrantedAuthority> authorities = new ArrayList<>(List.of(OBRIRole.UNREGISTERED_TPP)); ;
         PSD2Authentication authentication = new PSD2Authentication("testname",authorities, certsChain ,
                 new Psd2CertInfo(certsChain));
+        ApiClientIdentity clientIdentity = apiClientIdentityFactory.getApiClientIdentity(authentication);
+        Tpp tpp = new Tpp();
+        tpp.setRegistrationResponse(new OIDCRegistrationResponse());
+        given(tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(eq(manualRegistrationRequest
+                .getSoftwareStatementAssertion()), eq("OpenBanking Ltd"))).willReturn(directoryId);
+        given(tppRegistrationService.registerTpp(any(ApiClientIdentity.class), any(RegistrationRequest.class)))
+                .willReturn(tpp);
+
         // When
         ResponseEntity<OIDCRegistrationResponse> response = manualRegistrationApiController.registerApplication(
                 manualRegistrationRequest, authentication);
@@ -140,6 +183,7 @@ public class ManualRegistrationApiControllerTest {
         manualRegistrationRequest.setAppId("Manual Registration Test Application");
         manualRegistrationRequest.setApplicationDescription("description");
         manualRegistrationRequest.setSoftwareStatementAssertion(validSSA);
+        manualRegistrationRequest.setRedirectUris(Collections.singletonList("https://google.co.uk/"));
         return manualRegistrationRequest;
     }
 
@@ -149,5 +193,11 @@ public class ManualRegistrationApiControllerTest {
 
     @Test
     public void getRegistrationRequest() {
+    }
+
+    private JWTClaimsSet getJWTClaimSetFromSSA(String softwareStatement) throws ParseException {
+        SignedJWT ssaJws = SignedJWT.parse(softwareStatement);
+        JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
+        return ssaClaims;
     }
 }

@@ -18,11 +18,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.as.service.apiclient;
+package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import org.junit.Before;
@@ -33,6 +35,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowableOfType;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -49,7 +52,7 @@ public class RegistrationRequestTest {
         this.objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         RegistrationRequestFactory registrationRequestFactory = new RegistrationRequestFactory(this.tppRegistrationService);
         String serialisedRegistrationRequestJWT = getValidRegistrationRequestJWTSerialised();
-        this.registrationRequest = registrationRequestFactory.getRegistrationRequest(serialisedRegistrationRequestJWT,
+        this.registrationRequest = registrationRequestFactory.getRegistrationRequestFromJwt(serialisedRegistrationRequestJWT,
                 objectMapper);
     }
 
@@ -57,7 +60,7 @@ public class RegistrationRequestTest {
     public void validateSsaAgainstIssuingDirectoryJwksUri_succeeds() throws DynamicClientRegistrationException {
         // given
         given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(
-                this.registrationRequest.getSoftwareStatement())).willReturn("ForgeRock");
+                eq(this.registrationRequest.getSoftwareStatement()), eq("ForgeRock"))).willReturn("ForgeRock");
         // When
         String issuingDirectory = this.registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri();
 
@@ -69,7 +72,7 @@ public class RegistrationRequestTest {
             throws DynamicClientRegistrationException {
         // given
         given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(
-                this.registrationRequest.getSoftwareStatement())).willReturn(null);
+                eq(this.registrationRequest.getSoftwareStatement()), eq("ForgeRock"))).willReturn(null);
         // When
         DynamicClientRegistrationException dce =
                 catchThrowableOfType( () -> this.registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri(),

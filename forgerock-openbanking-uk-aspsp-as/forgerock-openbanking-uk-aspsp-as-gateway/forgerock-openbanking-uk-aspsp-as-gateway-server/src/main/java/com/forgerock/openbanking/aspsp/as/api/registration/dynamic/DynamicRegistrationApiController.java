@@ -21,9 +21,11 @@
 package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.as.service.OIDCException;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
-import com.forgerock.openbanking.aspsp.as.service.apiclient.*;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageInvalidTokenException;
@@ -33,17 +35,9 @@ import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.utils.extractor.TokenExtractor;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import com.forgerock.openbanking.model.OBRIRole;
-import com.forgerock.openbanking.model.SoftwareStatementRole;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
-import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
-import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
-import com.nimbusds.jose.shaded.json.JSONObject;
-import com.nimbusds.jose.util.JSONObjectUtils;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,27 +45,18 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.annotation.Nullable;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.IOException;
 import java.security.Principal;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-
-import static com.forgerock.openbanking.constants.OpenBankingConstants.RegistrationTppRequestClaims;
-import static com.forgerock.openbanking.constants.OpenBankingConstants.SSAClaims;
 
 /**
  *
@@ -162,6 +147,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         
         Tpp tpp = getTpp(principal);
         ensureTppOwnsOidcRegistration(tpp, clientId);
+
         String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
 
         tppRegistrationService.unregisterTpp(accessToken, tpp);
@@ -227,90 +213,58 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorException, OIDCException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException, DynamicClientRegistrationException {
+    ) throws OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException, DynamicClientRegistrationException {
         return updateClient(null, authorization, registrationRequestJwtSerialised, principal);
     }
 
+    /**
+     * Update the information relating to an existing OAuth2 client registration
+     * @param clientId the client_id of the OAuth2 client registration that the ApiClient wishes to update
+     * @param authorization An Authorisation Token as per https://tools.ietf.org/html/rfc6750
+     * @param registrationRequestJwtSerialised A request to register a Software Statement Assertion with an ASPSP
+     * @param principal - the principal identity that is making the request
+     * @return
+     * @throws OAuth2InvalidClientException
+     * @throws OAuth2BearerTokenUsageInvalidTokenException
+     * @throws OAuth2BearerTokenUsageMissingAuthInfoException
+     * @throws DynamicClientRegistrationException
+     */
     @Override
     public ResponseEntity<OIDCRegistrationResponse> updateClient(
-            @ApiParam(value = "The client ID",required=false)
-            @PathVariable("ClientId") String clientId,
-
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
-
-            @ApiParam(value = "A request to register a Software Statement Assertion with an ASPSP"  )
-            @Valid
-            @RequestBody String registrationRequestJwtSerialised,
-
+            String clientId,
+            String authorization,
+            String registrationRequestJwtSerialised,
             Principal principal
-    ) throws OBErrorException, OIDCException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException,
+    ) throws OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException,
             OAuth2BearerTokenUsageMissingAuthInfoException, DynamicClientRegistrationException {
 
         try {
-            //RequesterIdentity apiClientIdentity = RequesterIdentity.getUserDecorator(principal);
             ApiClientIdentity apiClientIdentity = this.apiClientIdentityFactory.getApiClientIdentity(principal);
+            apiClientIdentity.throwIfTppNotOnboarded();
+            RegistrationRequest registrationRequest =
+                    registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised,
+                            this.objectMapper);
+
 
             Tpp tpp = getTpp(principal);
             ensureTppOwnsOidcRegistration(tpp, clientId);
             String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
 
-            SignedJWT registrationRequestJws = SignedJWT.parse(registrationRequestJwtSerialised);
-            String ssaSerialised = registrationRequestJws.getJWTClaimsSet()
-                    .getStringClaim(RegistrationTppRequestClaims.SOFTWARE_STATEMENT);
-
-            if(ssaSerialised == null){
-                log.debug("No SSA provided in registationJWT");
-                throw  new OBErrorException(OBRIErrorType.TPP_REGISTRATION_SSA_INVALID);
-            }
-
-            //Convert in json for convenience
-            String registrationRequestJson =
-                    JSONObjectUtils.toJSONString(registrationRequestJws.getJWTClaimsSet().toJSONObject());
-
-            RegistrationRequest oidcRegistrationRequest = objectMapper.readValue(
-                    registrationRequestJson, RegistrationRequest.class);
-
             //Override client ID
-            oidcRegistrationRequest.setClientId(clientId);
+            registrationRequest.setClientId(clientId);
+            registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri();
 
-            log.debug("TPP request json payload {}", registrationRequestJson);
+            verifyRegistrationRequest(apiClientIdentity, registrationRequest);
+            registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
 
-            String directoryId = tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(ssaSerialised);
-            if (directoryId == null) {
-                log.debug("None of the directories signed this SSA {}", ssaSerialised);
-                throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_SSA_INVALID);
-            }
-
-            SignedJWT ssaJws = SignedJWT.parse(ssaSerialised);
-            JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
-            JSONObject ssaJwsJson = new JSONObject(ssaClaims.toJSONObject());
-            boolean isEidasCert = apiClientIdentity.getAuthorities().contains(OBRIRole.ROLE_EIDAS);
-            log.debug("isEidasCert {}", isEidasCert);
-            log.debug("SSA {}", ssaSerialised);
-            log.debug("SSA json payload {}", ssaJwsJson.toJSONString());
-
-            verifyRegistrationRequest(apiClientIdentity, registrationRequestJwtSerialised, oidcRegistrationRequest);
-
-            Set<SoftwareStatementRole> types = tppRegistrationService.prepareRegistrationRequestWithSSA(
-                    ssaClaims, oidcRegistrationRequest, apiClientIdentity);
-
-            tpp = tppRegistrationService.updateTpp(tpp, accessToken, registrationRequestJson, ssaClaims, ssaJwsJson, oidcRegistrationRequest,
-                    directoryId, types);
+            tpp = tppRegistrationService.updateTpp(tpp, accessToken, registrationRequest);
 
             return ResponseEntity.status(HttpStatus.OK).body(tpp.getRegistrationResponse());
-        } catch (HttpClientErrorException e) {
-            log.error("An error happened in the AS '{}'", e.getResponseBodyAsString(), e);
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_OIDC_CLIENT_REGISTRATION_ISSUE, e.getMessage());
-        } catch (ParseException | IOException e) {
-            log.error("Couldn't parse registration request", e);
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_INVALID_FORMAT);
         } catch (ApiClientException e) {
             log.error("updateClient() Caught ApiClientException", e);
             throw new OAuth2InvalidClientException(e.getMessage());
         }
     }
-
 
     @Override
     public ResponseEntity<OIDCRegistrationResponse> register(
@@ -318,83 +272,43 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             @Valid
             @RequestBody String registrationRequestJwtSerialised,
             Principal principal
-    ) throws OIDCException, OAuth2InvalidClientException, DynamicClientRegistrationException {
+    ) throws OAuth2InvalidClientException, DynamicClientRegistrationException {
         log.debug("register TPP: request {}", registrationRequestJwtSerialised);
 
         try {
+            ApiClientIdentity apiClientIdentity = this.apiClientIdentityFactory.getApiClientIdentity(principal);
+            apiClientIdentity.throwIfTppAlreadyOnboarded();
+            String tppIdentifier = apiClientIdentity.getTransportCertificateCn();
 
-            RequesterIdentity requesterIdentity = RequesterIdentity.getUserDecorator(principal);
-            requesterIdentity.throwIfCertificateAuthorityUnknown();
-            requesterIdentity.throwIfTppAlreadyOnboarded();
-            ApiClientIdentity clientIdentity = this.apiClientIdentityFactory.getApiClientIdentity(principal);
-            String tppIdentifier = clientIdentity.getTppIdentifier();
-
-            if(clientIdentity.isUnregistered()){
-                try {
+            if(apiClientIdentity.isUnregistered()){
                     RegistrationRequest registrationRequest =
-                            registrationRequestFactory.getRegistrationRequest(registrationRequestJwtSerialised,
+                            registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised,
                                     objectMapper);
-                    String ssaIssuer = registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri();
-                    log.debug("SSA is valid and issued by {}", ssaIssuer);
+
+                    registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri();
+                    //log.debug("SSA is valid and issued by {}", ssaIssuer);
 
                     //delete client ID
                     registrationRequest.setClientId(null);
+                    verifyRegistrationRequest(apiClientIdentity, registrationRequest);
+                    registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
 
-                    verifyRegistrationRequest(clientIdentity, registrationRequestJwtSerialised, registrationRequest);
-                    registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(clientIdentity);
-
-                    Set<SoftwareStatementRole> roles = registrationRequest.getSoftwareStatementRoles();
-                    Tpp tpp = tppRegistrationService.registerTpp(tppIdentifier, registrationRequest, ssaIssuer);
+                    Tpp tpp = tppRegistrationService.registerTpp(apiClientIdentity, registrationRequest);
 
                     return ResponseEntity.status(HttpStatus.CREATED).body(tpp.getRegistrationResponse());
-                } catch (HttpClientErrorException e) {
-                    log.error("An error happened in the AS '{}'", e.getResponseBodyAsString(), e);
-                    throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_OIDC_CLIENT_REGISTRATION_ISSUE, e.getMessage());
-                } catch (ParseException e) {
-                    log.error("Couldn't parse registration request", e);
-                    throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_INVALID_FORMAT);
-                }
+            } else {
+                log.debug("register() Tpp is not unregistered.");
+                throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_UNKNOWN_TRANSPORT_CERTIFICATE, tppIdentifier);
             }
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_UNKNOWN_TRANSPORT_CERTIFICATE,
-                    requesterIdentity.getUsername()
-            );
         }  catch (OBErrorException  e) {
             throw new DynamicClientRegistrationException(e.getMessage(),
                     DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
-        } catch (OAuth2InvalidClientException e){
-            throw e;
         } catch (ApiClientException e) {
             log.debug("register() caught ApiClientException.", e);
             log.debug("register() caught ApiClientException.", e.getStackTrace());
             throw new OAuth2InvalidClientException("Invalid certificate present. Client's must use an OBWac for MATLS" +
                     " when registering.");
         }
-    }
-
-    private void throwIfCertificateAuthorityUnknown(User currentUser) throws OBErrorException {
-        if (currentUser.getAuthorities().contains(OBRIRole.UNKNOWN_CERTIFICATE)) {
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_UNKNOWN_TRANSPORT_CERTIFICATE,
-                    currentUser.getUsername()
-            );
-        }
-    }
-
-    private void throwIfTppAlreadyOnboarded(User currentUser) throws OBErrorException {
-        log.debug("User detail: username {} and authorities {}", currentUser.getUsername(),
-                currentUser.getAuthorities());
-        if (currentUser.getAuthorities().contains(OBRIRole.ROLE_AISP)
-                || currentUser.getAuthorities().contains(OBRIRole.ROLE_PISP)
-                || currentUser.getAuthorities().contains(OBRIRole.ROLE_CBPII)) {
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_ALREADY_REGISTERED,
-                    currentUser.getUsername()
-            );
-        }
-    }
-
-    private User getUserFromPrincipal(Principal principal) {
-        X509Authentication authentication = (X509Authentication) principal;
-        User currentUser = (User) authentication.getPrincipal();
-        return currentUser;
     }
 
 
@@ -429,14 +343,18 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
     private void checkAuthArgsContainValidInformation(Principal principal, String authorization)
             throws OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2InvalidClientException {
         if(getPrincipalName(principal).equalsIgnoreCase("anonymous")){
-            throw new OAuth2InvalidClientException("Mutual TLS failed - no principal found from request. This " +
+            String errorMessage = "Mutual TLS failed - no principal found from request. This " +
                     "endpoint must be called using SSL using an OBWac certificate which will be used by the ASPSP for" +
-                    " Mutual Authentication TLS");
+                    " Mutual Authentication TLS";
+            log.debug("checkAuthArgsContainValidInformation() {}", errorMessage);
+            throw new OAuth2InvalidClientException(errorMessage);
         }
         if(StringUtils.isEmpty(authorization)){
-            throw new OAuth2BearerTokenUsageMissingAuthInfoException("No valid Bearer authorization header. " +
+            String errorMessage = "No valid Bearer authorization header. " +
                     "This should be set to the registration_access_token found in the response when you successfully " +
-                    "used the /register endpoint to perform dynamic client registration.");
+                    "used the /register endpoint to perform dynamic client registration.";
+            log.debug("checkAuthArgsContainValidInformation() {}", errorMessage);
+            throw new OAuth2BearerTokenUsageMissingAuthInfoException(errorMessage);
         }
     }
 
@@ -456,28 +374,37 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         return "Anonymous";
     }
 
+    /**
+     * checks software id from SSA matches cn from old OB Transport certs.
+     * calls verifyTppRegistrationRequestSignature on tppRegistrationService - checks the actual registration request
+     * jwt is signed by a valid party
+     * Checks the registration request against the ssa
+     * @param clientIdentity - The identity of the TPP that made the request as presented to the API via spring
+     *                       security principal.
+     * @param registrationRequest - the registration request parsed into an object
+     * @throws DynamicClientRegistrationException
+     * @throws OAuth2InvalidClientException
+     */
     private void verifyRegistrationRequest(
             ApiClientIdentity clientIdentity,
-            String registrationRequestJwtSerialised,
-            RegistrationRequest oidcRegistrationRequest
-    ) throws OBErrorException, ParseException, OIDCException, DynamicClientRegistrationException {
+            RegistrationRequest registrationRequest
+    ) throws DynamicClientRegistrationException, OAuth2InvalidClientException {
         log.trace("verifyRegistrationRequest()");
         //Verify request
-        JWTClaimsSet ssaClaims = oidcRegistrationRequest.getSoftwareStatementClaims();
-        String softwareId = ssaClaims.getStringClaim(SSAClaims.SOFTWARE_ID);
+        String softwareId = registrationRequest.getSoftwareIdFromSSA();
 
         // eIDAS certificates only identify the TPP, NOT the Software Statement. So if we have an eIDAS certificate we
         // won't find the softwareId anywhere in the certificate DN.
         if(!clientIdentity.isPSD2Certificate()) {
-            tppRegistrationService.verifySSASoftwareIDAgainstTransportCert(softwareId, clientIdentity.getTppIdentifier());
+            tppRegistrationService.verifySSASoftwareIDMatchesMatlsTransportCertSoftwareId(softwareId,
+                    clientIdentity.getTransportCertificateCn());
         }
 
-        String softwareClientId = ssaClaims.getStringClaim(SSAClaims.SOFTWARE_CLIENT_ID);
-        tppRegistrationService.verifyTPPRegistrationRequestSignature(registrationRequestJwtSerialised, softwareClientId,
-                ssaClaims);
-        tppRegistrationService.verifyTPPRegistrationRequestAgainstSSA(oidcRegistrationRequest, ssaClaims);
-        verifyAuthenticationMethodSupported(oidcRegistrationRequest);
-        log.trace("{}:verifyRegistrationRequest() registration request is valid", this.getClass().getSimpleName());
+
+        tppRegistrationService.verifyTPPRegistrationRequestSignature(registrationRequest);
+        tppRegistrationService.verifyTPPRegistrationRequestAgainstSSA(registrationRequest);
+        verifyAuthenticationMethodSupported(registrationRequest);
+        log.trace("verifyRegistrationRequest() registration request is valid");
     }
 
     /**
@@ -486,33 +413,50 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
      * method can test if the clientID for which the registration request is being made (taken from the request URL
      * path for example) is the same clientId issued when the Tpp onboarded.
      * @param tpp - The tpp that made the request as identified by MATLS, cookie etc.
-     * @param oidcClientIdFromRequest the OIDC clientId specified in the request (e.g. as a URI path element)
+     * @param clientIdFromRequest the OIDC clientId specified in the request (e.g. as a URI path element)
      * @throws OBErrorResponseException - if the oidcClientIDFromRequest does not match the client Id registered when
      * the TPP onboarded.
      */
-    private void ensureTppOwnsOidcRegistration(Tpp tpp, String oidcClientIdFromRequest)
+    private void ensureTppOwnsOidcRegistration(@NotNull Tpp tpp, String clientIdFromRequest)
             throws OAuth2InvalidClientException {
-        log.debug("ensureTppOwnsOidcRegistration() tpp is '{}', oidcClientIdFromRequest is '{}'",
-                tpp==null?"tpp is null!":tpp.toString(),oidcClientIdFromRequest);
+        log.debug("ensureTppOwnsOidcRegistration() stored tpp clientId is '{}', clientIdFromRequest is '{}'",
+                tpp==null?"tpp is null!":tpp.getClientId(),clientIdFromRequest);
 
-
-        if (oidcClientIdFromRequest == null || tpp == null || !tpp.getClientId().equals(oidcClientIdFromRequest)) {
-            log.info("ensureTppOwnsOidcRegistration() the tpp's clientId '{}' does not match the "
-                            + "oidcClientIdFromRequest '{}'", tpp == null?"tpp is null":tpp.getClientId(),
-                            oidcClientIdFromRequest);
-            throw new OAuth2InvalidClientException("ClientId specified in the request url was {}. The ClientId " +
-                    "of the Tpp associated with your MATLS certificate used in this call was {}. Please use a " +
-                    "certificate associated with the Tpp that performed the registration.");
+        Optional<String> clientIdFromTpp = getTppClientId(tpp);
+        if (clientIdFromRequest != null && clientIdFromTpp.isPresent() && !clientIdFromTpp.get().equals(clientIdFromRequest)) {
+            String errorMessage = "ClientId specified in the request url was '" + clientIdFromRequest + "'. The " +
+                    "ClientId of the Tpp associated with your MATLS certificate used in this call was '" +
+                    tpp.getClientId() + "  Please use a certificate associated with the Tpp that performed the  " +
+                    "registration.";
+            log.debug("ensureTppOwnsOidcRegistration() {}",errorMessage);
+            throw new OAuth2InvalidClientException(errorMessage);
         }
-        log.debug("ensureTppOwnsOidcRegistration() - clientIds match");
+        log.debug("ensureTppOwnsOidcRegistration() - success - TPP owns the clientId specified in request URL");
     }
 
-    private void verifyAuthenticationMethodSupported(OIDCRegistrationRequest oidcRegistrationRequest)
-            throws OBErrorException {
-        if (!supportedAuthMethod.contains(oidcRegistrationRequest.getTokenEndpointAuthMethod())) {
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_INVALID_AUTH_METHOD,
-                    oidcRegistrationRequest.getTokenEndpointAuthMethod()
-            );
+    private Optional<String> getTppClientId(Tpp tpp){
+        if(tpp == null){
+            return Optional.empty();
+        } else {
+            return Optional.ofNullable(tpp.getClientId());
+        }
+    }
+
+    private void verifyAuthenticationMethodSupported(RegistrationRequest registrationRequest)
+            throws DynamicClientRegistrationException {
+        String requestedTokenEndpointAuthMethod = registrationRequest.getTokenEndpointAuthMethod();
+        if(requestedTokenEndpointAuthMethod == null){
+            String errorString = "The registration request must contain a token_endpoint_auth_method";
+            log.debug("verifyAuthenticationMethodSupported() {}", errorString);
+            throw new DynamicClientRegistrationException(errorString, DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
+        } else {
+            if (!supportedAuthMethod.contains(requestedTokenEndpointAuthMethod)) {
+                String errorString =
+                        "The requested token endpoint authentication method " + requestedTokenEndpointAuthMethod
+                                + " is not supported";
+                log.debug("verifyAuthenticationMethodSupported() {}", errorString);
+                throw new DynamicClientRegistrationException(errorString, DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
+            }
         }
     }
 
@@ -523,18 +467,20 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
      * OAuth2InvalidClientException
      * @throws OAuth2InvalidClientException
      */
-    private Tpp getTpp( Principal principal) throws OAuth2InvalidClientException {
+    private @NotNull Tpp getTpp( Principal principal) throws OAuth2InvalidClientException {
         //Todo: this next line looks odd. findByClientId but passing the principal.getName which I would think would
         // return the name pulled from the MATLS certificate?
         Optional<Tpp> optionalTpp = tppStoreService.findByClientId(principal.getName());
-        if (!optionalTpp.isPresent()) {
-            log.info("getTpp() no tpp found for principal '{}'", principal==null?"Principal is null":
-                    principal.getName());
-            throw new OAuth2InvalidClientException("No tpp associated with the MATLS certificate used in the request." +
+        if (optionalTpp.isEmpty()) {
+            String errorMessage = "No tpp associated with the MATLS certificate used in the request." +
                     " The certificate is associated with OrganisationId " + principal.getName() +". This Tpp is not " +
-                    "currently onboarded");
+                    "currently onboarded";
+            log.info("getTpp() {}", errorMessage);
+            throw new OAuth2InvalidClientException(errorMessage);
         }
-        return optionalTpp.get();
+        Tpp tpp = optionalTpp.get();
+        log.debug("getTpp(): Tpp is {}", tpp);
+        return tpp;
     }
 
     /**
@@ -543,11 +489,13 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
      *            NotNull: true
      * @param authorization - the Authorization header value from the request
      * @return the access token if valid
-     * @throws OBErrorResponseException
+     * @throws OAuth2BearerTokenUsageMissingAuthInfoException
+     * @throws OAuth2BearerTokenUsageInvalidTokenException
      */
     private String validateAccessTokenIsValidForOidcRegistration(@NotNull Tpp tpp, String authorization)
             throws OAuth2BearerTokenUsageMissingAuthInfoException,OAuth2BearerTokenUsageInvalidTokenException {
-        log.debug("validateAccessTokenIsValidForOidcRegistration() tpp is '{}', authorization is '{}'", tpp==null?"null":tpp.toString(),
+        log.debug("validateAccessTokenIsValidForOidcRegistration() tpp is '{}', authorization is '{}'", tpp==null?
+                        "null":tpp.getClientId(),
                 authorization);
         // Told you tpp must not be null!
         Objects.requireNonNull(tpp);
@@ -564,8 +512,9 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             throws OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2BearerTokenUsageInvalidTokenException {
         String accessToken = null;
         if(StringUtils.isEmpty(authorization)){
-            throw new OAuth2BearerTokenUsageMissingAuthInfoException("AuthorizationHeader is empty. It should " +
-                    "contain a Bearer OAuth2 token. See rfc-6750");
+            String errorMessage = "AuthorizationHeader is empty. It should contain a Bearer OAuth2 token. See rfc-6750";
+            log.info("getAccessTokenFromAuthHeaderValue() {}", errorMessage);
+            throw new OAuth2BearerTokenUsageMissingAuthInfoException(errorMessage);
         } else {
             try {
                 accessToken = tokenExtractor.extract(authorization);
@@ -573,10 +522,11 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                 String errorMessage = String.format("Failed to extract Bearer token from authorization header: " +
                                 "'%s'. Error was %s. Authorization header should contain an OAuth2 Bearer token. " +
                                 "See rfc-6750", authorization, re.getMessage());
-                log.debug("validateAccessTokenIsValidForOidcRegistration() {}}", errorMessage);
+                log.debug("validateAccessTokenIsValidForOidcRegistration() {}", errorMessage);
                 throw new OAuth2BearerTokenUsageInvalidTokenException(errorMessage);
             }
         }
+        log.debug("getAccessTokenFromAuthHeaderValue() got access token");
         return accessToken;
     }
 
@@ -584,6 +534,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             throws OAuth2BearerTokenUsageInvalidTokenException {
         // Told you tpp must not be null!
         Objects.requireNonNull(tpp);
+        log.debug("validateBearerTokenBelongsToTpp() validate access token in request belongs to {}",
+                tpp.getClientId());
 
         boolean accessTokenBelongsToTpp = false;
         Optional<String> registrationAccessToken = tpp.getRegistrationAccessToken();
@@ -597,6 +549,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                     " endpoint. i.e. When you succesfully performed dynamic client registration.";
             log.debug("validateAccessTokenIsValidForOidcRegistration() {}", errorMessage);
             throw new OAuth2BearerTokenUsageInvalidTokenException(errorMessage);
+        } else {
+            log.debug("validateBearerTokenBelongsToTpp() access token does belong to Tpp");
         }
     }
 }

@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.as.service.apiclient;
 import com.forgerock.cert.Psd2CertInfo;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
 import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authentication;
 import org.junit.Test;
@@ -43,14 +44,14 @@ public class ApiClientIdentityFactoryTest {
 
     @Test
     public void returnsApiClientFRTransport_getApiClientIdentity() throws CertificateException, IOException,
-            ApiClientException, InvalidPsd2EidasCertificate {
+            ApiClientException, InvalidPsd2EidasCertificate, OAuth2InvalidClientException {
         // given
         X509Certificate[] certificatesChain = TestHelperFunctions.getCertChainFromFile(
                 "src/test/resources/certificates/fr-transport.pem");
         Psd2CertInfo certInfo = new Psd2CertInfo(certificatesChain);
         String tppName = "TestTppName";
         Collection<OBRIRole> authorities = new ArrayList<>();
-        authorities.add(OBRIRole.ROLE_PISP);
+        authorities.add(OBRIRole.UNREGISTERED_TPP);
         PSD2Authentication authentication = new PSD2Authentication(tppName, authorities,certificatesChain, certInfo);
         ApiClientIdentityFactory identityFactory = new ApiClientIdentityFactory();
 
@@ -63,14 +64,14 @@ public class ApiClientIdentityFactoryTest {
 
     @Test
     public void returnsApiClientOBWac_getApiClientIdentity() throws CertificateException, IOException,
-            ApiClientException, InvalidPsd2EidasCertificate {
+            ApiClientException, InvalidPsd2EidasCertificate, OAuth2InvalidClientException {
         // given
         X509Certificate[] certificatesChain = TestHelperFunctions.getCertChainFromFile(
                 "src/test/resources/certificates/OBWac.pem");
         Psd2CertInfo certInfo = new Psd2CertInfo(certificatesChain);
         String tppName = "TestTppName";
         Collection<OBRIRole> authorities = new ArrayList<>();
-        authorities.add(OBRIRole.ROLE_PISP);
+        authorities.add(OBRIRole.UNREGISTERED_TPP);
         PSD2Authentication authentication = new PSD2Authentication(tppName, authorities,certificatesChain, certInfo);
         ApiClientIdentityFactory identityFactory = new ApiClientIdentityFactory();
 
@@ -83,14 +84,14 @@ public class ApiClientIdentityFactoryTest {
 
     @Test
     public void returnsApiClientQWac_getApiClientIdentity() throws CertificateException, IOException,
-            InvalidPsd2EidasCertificate, ApiClientException {
+            InvalidPsd2EidasCertificate, ApiClientException, OAuth2InvalidClientException {
         // given
         X509Certificate[] certificatesChain = TestHelperFunctions.getCertChainFromFile(
                 "src/test/resources/certificates/QWac.pem");
         Psd2CertInfo certInfo = new Psd2CertInfo(certificatesChain);
         String tppName = "TestTppName";
         Collection<OBRIRole> authorities = new ArrayList<>();
-        authorities.add(OBRIRole.ROLE_PISP);
+        authorities.add(OBRIRole.UNREGISTERED_TPP);
         PSD2Authentication authentication = new PSD2Authentication(tppName, authorities,certificatesChain, certInfo);
         ApiClientIdentityFactory identityFactory = new ApiClientIdentityFactory();
 
@@ -100,7 +101,5 @@ public class ApiClientIdentityFactoryTest {
         // then
         assertThat(identity).isInstanceOf(ApiClientIdentityQWac.class);
     }
-
-
 
 }

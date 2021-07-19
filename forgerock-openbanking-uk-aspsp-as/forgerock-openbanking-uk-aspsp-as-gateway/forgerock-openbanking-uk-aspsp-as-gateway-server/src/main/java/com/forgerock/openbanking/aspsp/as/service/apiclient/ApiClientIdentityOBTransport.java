@@ -20,11 +20,13 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.apiclient;
 
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
 
 public class ApiClientIdentityOBTransport extends ApiClientIdentity {
 
-    public ApiClientIdentityOBTransport(X509Authentication certificateAuthentication) {
+    public ApiClientIdentityOBTransport(X509Authentication certificateAuthentication)
+            throws OAuth2InvalidClientException {
         super(certificateAuthentication);
     }
 

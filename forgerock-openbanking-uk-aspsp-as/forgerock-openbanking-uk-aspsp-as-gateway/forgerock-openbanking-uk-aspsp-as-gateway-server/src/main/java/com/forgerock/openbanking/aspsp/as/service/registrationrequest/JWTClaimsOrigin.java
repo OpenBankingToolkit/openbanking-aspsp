@@ -18,14 +18,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.as.service.apiclient;
+package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
-import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
-import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authentication;
-
-public class ApiClientIdentityOBWac extends ApiClientIdentityPsd2 {
-
-    protected ApiClientIdentityOBWac(PSD2Authentication authentication) throws OAuth2InvalidClientException {
-        super(authentication);
-    }
+public enum JWTClaimsOrigin {
+    REGISTRATION_REQUEST_JWT, SOFTWARE_STATEMENT_ASSERTION;
 }
