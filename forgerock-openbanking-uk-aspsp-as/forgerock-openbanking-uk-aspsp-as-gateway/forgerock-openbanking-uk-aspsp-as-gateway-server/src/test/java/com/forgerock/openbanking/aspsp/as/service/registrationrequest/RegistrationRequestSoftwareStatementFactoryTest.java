@@ -20,80 +20,62 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
-import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
-import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import java.text.ParseException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class RegistrationRequestFactoryTest {
+public class RegistrationRequestSoftwareStatementFactoryTest {
 
-    @Mock
-    private TppRegistrationService tppRegistrationService;
+    RegistrationRequestSoftwareStatementFactory softwareStatementFactory;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private RegistrationRequestFactory registrationRequestFactory;
-
-    @Autowired
-    private RegistrationRequestSoftwareStatementFactory softwareStatementFactory;
 
     @Before
-    public void setUp() throws Exception {
+    public void setup(){
         OpenBankingDirectoryConfiguration openbankingDirectoryConfiguration = new OpenBankingDirectoryConfiguration();
-        openbankingDirectoryConfiguration.issuerId = "OpenBanking";
+        openbankingDirectoryConfiguration.issuerId = "OpenBanking Ltd";
         ForgeRockDirectoryConfiguration forgerockDirectoryConfiguration = new ForgeRockDirectoryConfiguration();
         forgerockDirectoryConfiguration.id = "ForgeRock";
-
         this.softwareStatementFactory =
                 new RegistrationRequestSoftwareStatementFactory(openbankingDirectoryConfiguration,
                         forgerockDirectoryConfiguration);
-
-        this.registrationRequestFactory = new RegistrationRequestFactory(this.tppRegistrationService,
-                this.softwareStatementFactory, this.objectMapper);
-//        this.objectMapper = new ObjectMapper();
-//        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
     @Test
-    public void getRegistrationRequestFromJwt() throws DynamicClientRegistrationException {
+    public void getSoftwareStatement() throws ParseException, DynamicClientRegistrationException {
         // Given
-        String registrationRequestJWT = TestHelperFunctions.getValidRegistrationRequestJWTSerialised();
+        String registrationRequestJwtSerialised = TestHelperFunctions.getValidOBSsaSerialised();
+        SignedJWT signedRegistrationRequestJwt = SignedJWT.parse(registrationRequestJwtSerialised);
+        JWTClaimsSet registrationRequestClaimsSet = signedRegistrationRequestJwt.getJWTClaimsSet();
+        RegistrationRequestJWTClaims registrationRequestJWTClaims =
+                new RegistrationRequestJWTClaims(registrationRequestClaimsSet,
+                        JWTClaimsOrigin.REGISTRATION_REQUEST_JWT);
+
+        String ssaSerialised = TestHelperFunctions.getValidSsaSerialised();
+        SignedJWT registrationRequestJws = SignedJWT.parse(registrationRequestJwtSerialised);
+        JWTClaimsSet ssaJwtClaims = registrationRequestJws.getJWTClaimsSet();
+        RegistrationRequestJWTClaims ssaJWTClaims =
+                new RegistrationRequestJWTClaims(ssaJwtClaims,
+                        JWTClaimsOrigin.REGISTRATION_REQUEST_JWT);
 
         // When
-        RegistrationRequest regRequest =
-                registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJWT);
+        RegistrationRequestSoftwareStatement statement = softwareStatementFactory.getSoftwareStatement(ssaJWTClaims);
 
         // Then
-        assertThat(regRequest).isNotNull();
-    }
-
-    @Test
-    public void failIfSsaIsInvalid_getRegistrationRequestFromManualRegistrationJson()
-            throws DynamicClientRegistrationException {
-
-        // Given
-        String registrationRequestJwtSerialised = TestHelperFunctions.getValidRegistrationRequestJWTSerialised();
+        assertThat(statement).isNotNull();
 
 
-        // When
-        RegistrationRequest regRequest =
-                registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
-
-        // Then
-        assertThat(regRequest).isNotNull();
     }
 }

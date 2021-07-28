@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -116,8 +117,69 @@ public class RegistrationRequestJWTClaims {
     }
 
     private boolean stringListClaimsAreValid(Optional<List<String>> values) {
-         return values.isPresent() && !values.get().isEmpty();
+        return values.isPresent() && !values.get().isEmpty();
     }
+
+    public long getRequiredLongValue(String claimName) throws DynamicClientRegistrationException {
+        Optional<Long> value = getOptionalLongValue(claimName);
+        if (value.isEmpty()){
+            String errorString = "Claim '" + claimName + "' was not set in " + claimsOrigin + ". This claim " +
+                    "is required";
+            log.debug("getRequiredLongValue() {}", errorString);
+            throw new DynamicClientRegistrationException(errorString, getErrorType(claimName));
+        }
+        return value.get();
+    }
+
+
+    public Optional<Long> getOptionalLongValue(String claimName) throws DynamicClientRegistrationException {
+        try {
+            return Optional.ofNullable(this.claimsSet.getLongClaim(claimName));
+        } catch (ParseException pe){
+            String errorString =
+                    "Failed to parse claim '" + claimName + "' from claim set in " + claimsOrigin.toString();
+            log.debug("getOptionalLongValue() {}", errorString, pe);
+            throw new DynamicClientRegistrationException(errorString, getErrorType(claimName));
+        }
+    }
+
+    public Date getRequiredDateValue(String claimName) throws DynamicClientRegistrationException {
+        Optional<Date> value = getOptionalDateValue(claimName);
+        if (value.isEmpty()){
+            String errorString = "Claim '" + claimName + "' was not set in " + claimsOrigin + ". This claim " +
+                    "is required";
+            log.debug("getRequiredLongValue() {}", errorString);
+            throw new DynamicClientRegistrationException(errorString, getErrorType(claimName));
+        }
+        return value.get();
+    }
+
+    public Optional<Date> getOptionalDateValue(String claimName) throws DynamicClientRegistrationException {
+        return Optional.ofNullable((Date) this.claimsSet.getClaim(claimName));
+    }
+
+    public Double getRequiredDoubleClaim(String claimName) throws DynamicClientRegistrationException {
+        Optional<Double> value = getOptionalDoubleValue(claimName);
+        if(value.isEmpty()){
+            String errorString = "Claim '" + claimName + "' was not set in " + claimsOrigin + ". This claims is " +
+                    "required.";
+            log.debug("getRequiredDoubleClaim() {}", errorString);
+            throw new DynamicClientRegistrationException(errorString, getErrorType(claimName));
+        }
+        return value.get();
+    }
+
+    public Optional<Double> getOptionalDoubleValue(String claimName) throws DynamicClientRegistrationException {
+        try {
+            return Optional.ofNullable(this.claimsSet.getDoubleClaim(claimName));
+        } catch (ParseException pe){
+            String errorString =
+                    "Failed to parse claim '" + claimName + "' from claim set in " + claimsOrigin.toString();
+            log.debug("getOptionalLongValue() {}", errorString, pe);
+            throw new DynamicClientRegistrationException(errorString, getErrorType(claimName));
+        }
+    }
+
 
     public Optional<List<String>> getOptionalStringListValues(String claimName) throws DynamicClientRegistrationException {
         try{

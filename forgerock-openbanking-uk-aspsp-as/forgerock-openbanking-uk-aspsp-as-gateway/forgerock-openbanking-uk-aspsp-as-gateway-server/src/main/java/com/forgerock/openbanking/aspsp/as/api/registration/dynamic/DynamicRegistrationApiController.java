@@ -242,8 +242,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             ApiClientIdentity apiClientIdentity = this.apiClientIdentityFactory.getApiClientIdentity(principal);
             apiClientIdentity.throwIfTppNotOnboarded();
             RegistrationRequest registrationRequest =
-                    registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised,
-                            this.objectMapper);
+                    registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
 
 
             Tpp tpp = getTpp(principal);
@@ -282,8 +281,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
 
             if(apiClientIdentity.isUnregistered()){
                     RegistrationRequest registrationRequest =
-                            registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised,
-                                    objectMapper);
+                            registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
 
                     registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri();
                     //log.debug("SSA is valid and issued by {}", ssaIssuer);
@@ -401,7 +399,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         }
 
 
-        tppRegistrationService.verifyTPPRegistrationRequestSignature(registrationRequest);
+        //tppRegistrationService.verifyTPPRegistrationRequestSignature(registrationRequest);
         tppRegistrationService.verifyTPPRegistrationRequestAgainstSSA(registrationRequest);
         verifyAuthenticationMethodSupported(registrationRequest);
         log.trace("verifyRegistrationRequest() registration request is valid");

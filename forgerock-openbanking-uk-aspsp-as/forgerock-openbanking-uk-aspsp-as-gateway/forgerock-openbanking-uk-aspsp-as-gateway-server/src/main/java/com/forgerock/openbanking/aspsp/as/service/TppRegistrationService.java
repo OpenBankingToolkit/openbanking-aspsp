@@ -83,7 +83,7 @@ public class TppRegistrationService {
 
     public String validateSsaAgainstIssuingDirectoryJwksUri(String ssaSerialised, String issuer)
             throws DynamicClientRegistrationException {
-        log.debug("validateSsaAgainstIssuingDirectoryJwksUri(): issuer is ", issuer);
+        log.debug("validateSsaAgainstIssuingDirectoryJwksUri(): issuer is {}", issuer);
         if (ssaSerialised == null) {
             return null;
         }
@@ -125,7 +125,7 @@ public class TppRegistrationService {
         if (!softwareIdFromMatls.equals(softwareIdFromSSA)) {
             log.info("SSA software ID '{}' doesn't match the Certificate CN '{}'", softwareIdFromSSA,
                     softwareIdFromMatls);
-            log.trace("verifySSASoftwareIdAgainstTransportCert() verification failed", this.getClass().getSimpleName());
+            log.trace("verifySSASoftwareIdAgainstTransportCert() verification failed");
             throw new OAuth2InvalidClientException("Legacy OBTransport certificate used did not refer to the same " +
                     "softwareId as the SSA provided.");
         }
@@ -133,28 +133,14 @@ public class TppRegistrationService {
                 this.getClass().getSimpleName());
     }
 
-    public void verifyTPPRegistrationRequestSignature(RegistrationRequest registrationRequest)
+    public void verifyTPPRegistrationRequestSignature(String registrationRequestJwsSerialised, String ssaSoftwareClientId,
+                                                      String jwks_uri)
             throws DynamicClientRegistrationException {
         try {
-            log.debug("verifyTPPRegistrationRequestSignature() Validate the TPP registration request");
-            String registrationRequestJwtSerialised = registrationRequest.getRegistrationRequestJWTSerialized();
-            String ssaSoftwareClientId = registrationRequest.getSoftwareClientIdFromSSA();
-            Optional<String> softwareJWKUri = registrationRequest.getSsaJKSEndpointClaim();
-            if (softwareJWKUri.isPresent() && !StringUtils.isEmpty(softwareJWKUri.get())) {
-                log.debug("verifyTPPRegistrationRequestSignature() validating against jwks_uri; '{}'", softwareJWKUri);
-                cryptoApiClient.validateJws(registrationRequestJwtSerialised, ssaSoftwareClientId, softwareJWKUri.get());
-                return;
-            }
+            log.debug("verifyTPPRegistrationRequestSignature() validating against jwks_uri; '{}'", jwks_uri);
 
-            Optional<String> jwk = registrationRequest.getSsaSoftwareSigningJWKClaim();
-            if (jwk.isPresent() && !StringUtils.isEmpty(jwk.get())) {
-                log.debug("verifyTPPRegistrationRequestSignature() validating against jwk; '{}'", jwk);
-                cryptoApiClient.validateJwsWithJWK(registrationRequestJwtSerialised, ssaSoftwareClientId, jwk.get());
-                return;
-            }
-            log.error("SSA should have JWK_URI or JWK. SSA");
-            throw new DynamicClientRegistrationException("The Software Statement should have a jwks_uri, or a jwk.",
-                    DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
+            cryptoApiClient.validateJws(registrationRequestJwsSerialised, ssaSoftwareClientId, jwks_uri);
+            return;
         } catch (InvalidTokenException | ParseException | IOException e) {
             log.error("Invalid TPP registration request token: " + e.getMessage(), e);
             throw new DynamicClientRegistrationException(e.getMessage(),

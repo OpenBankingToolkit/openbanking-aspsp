@@ -26,12 +26,12 @@ import com.forgerock.cert.Psd2CertInfo;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
 import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
 import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.RegistrationRequest;
-import com.forgerock.openbanking.aspsp.as.service.SSAService;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestSoftwareStatementFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
@@ -48,6 +48,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -83,13 +84,15 @@ public class ManualRegistrationApiControllerTest {
     @Mock
     private TppStoreService tppStoreService;
 
-    @Mock
-    SSAService ssaService;
 
     ApiClientIdentityFactory apiClientIdentityFactory;
 
     RegistrationRequestFactory registrationRequestFactory;
 
+    @Autowired
+    RegistrationRequestSoftwareStatementFactory softwareStatementFactory;
+
+    @Autowired
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
@@ -105,9 +108,10 @@ public class ManualRegistrationApiControllerTest {
         InputStream stream = new ByteArrayInputStream(registrationRequest.getBytes(StandardCharsets.UTF_8));
         Resource registrationRequestResource = new InputStreamResource(stream);
         apiClientIdentityFactory = new ApiClientIdentityFactory();
-        registrationRequestFactory = new RegistrationRequestFactory(this.tppRegistrationService);
+        registrationRequestFactory = new RegistrationRequestFactory(this.tppRegistrationService,
+                this.softwareStatementFactory, objectMapper);
         manualRegistrationApiController = new ManualRegistrationApiController(tppStoreService, objectMapper,
-                tppRegistrationService, ssaService, apiClientIdentityFactory, registrationRequestFactory,
+                tppRegistrationService, apiClientIdentityFactory, registrationRequestFactory,
                 registrationRequestResource);
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 

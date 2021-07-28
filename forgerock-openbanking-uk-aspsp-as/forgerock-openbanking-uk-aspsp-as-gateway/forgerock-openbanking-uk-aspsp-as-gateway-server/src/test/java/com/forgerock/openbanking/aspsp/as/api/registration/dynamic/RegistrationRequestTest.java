@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestSoftwareStatementFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import org.junit.Before;
@@ -32,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowableOfType;
@@ -44,16 +46,18 @@ public class RegistrationRequestTest {
 
     @Mock
     private TppRegistrationService tppRegistrationService;
+    @Autowired
+    private RegistrationRequestSoftwareStatementFactory softwareStatementFactory;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private RegistrationRequest registrationRequest;
 
     @Before
     public void setUp() throws DynamicClientRegistrationException {
         this.objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-        RegistrationRequestFactory registrationRequestFactory = new RegistrationRequestFactory(this.tppRegistrationService);
+        RegistrationRequestFactory registrationRequestFactory =
+                new RegistrationRequestFactory(this.tppRegistrationService, this.softwareStatementFactory, objectMapper);
         String serialisedRegistrationRequestJWT = getValidRegistrationRequestJWTSerialised();
-        this.registrationRequest = registrationRequestFactory.getRegistrationRequestFromJwt(serialisedRegistrationRequestJWT,
-                objectMapper);
+        this.registrationRequest = registrationRequestFactory.getRegistrationRequestFromJwt(serialisedRegistrationRequestJWT);
     }
 
     @Test

@@ -22,7 +22,6 @@ package com.forgerock.openbanking.aspsp.as.api.registration.manual;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.RegistrationRequest;
-import com.forgerock.openbanking.aspsp.as.service.SSAService;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
@@ -75,7 +74,6 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
 
     private final TppRegistrationService tppRegistrationService;
 
-    private final SSAService ssaService;
 
     private final ApiClientIdentityFactory identityFactory;
 
@@ -85,7 +83,7 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
 
     @Autowired
     public ManualRegistrationApiController(TppStoreService tppStoreService, ObjectMapper objectMapper,
-                                           TppRegistrationService tppRegistrationService, SSAService ssaService,
+                                           TppRegistrationService tppRegistrationService,
                                            ApiClientIdentityFactory identityFactory,
                                            RegistrationRequestFactory registrationRequestFactory,
                                            @Value("${manual-onboarding.registration-request-base}")
@@ -93,7 +91,6 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
         this.tppStoreService = tppStoreService;
         this.objectMapper = objectMapper;
         this.tppRegistrationService = tppRegistrationService;
-        this.ssaService = ssaService;
         this.identityFactory = identityFactory;
         this.registrationRequestFactory = registrationRequestFactory;
         this.registrationRequestFile = registrationRequestFile;

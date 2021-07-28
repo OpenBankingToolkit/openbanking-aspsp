@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
 import com.forgerock.cert.psd2.Psd2Role;
@@ -34,6 +33,7 @@ import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestJWTClaims;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestSoftwareStatementFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.*;
@@ -52,6 +52,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -97,10 +98,14 @@ public class DynamicRegistrationApiControllerTest {
     @Mock
     TppStoreService tppStoreService;
 
+    @Autowired
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     TokenExtractor tokenExtractor;
+
+    @Autowired
+    RegistrationRequestSoftwareStatementFactory softwareStatementFactory;
 
     @Mock
     TppRegistrationService tppRegistrationService;
@@ -123,10 +128,11 @@ public class DynamicRegistrationApiControllerTest {
     @Before
     public void setUp(){
         this.closeMocks = openMocks(this);
-        registrationRequestFactory = new RegistrationRequestFactory(tppRegistrationService);
+        registrationRequestFactory = new RegistrationRequestFactory(tppRegistrationService,
+                 softwareStatementFactory, objectMapper);
         dynamicRegistrationApiController = new DynamicRegistrationApiController(tppStoreService, objectMapper,
                 tokenExtractor, tppRegistrationService, supportedAuthMethod, this.identityFactory, registrationRequestFactory);
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        //objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         this.registrationRequestJwtSerialised = TestHelperFunctions.getValidRegistrationRequestJWTSerialised();
     }
 
@@ -385,17 +391,17 @@ public class DynamicRegistrationApiControllerTest {
                 OBRIRole.UNREGISTERED_TPP, OBRIRole.ROLE_EIDAS));
         X509Authentication principal = testSpec.getPrincipal(authorities);
         RegistrationRequest regRequest =
-                registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised, this.objectMapper);
+                registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
 
         String directoryName = "ForgeRock";
         given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(anyString(), eq("ForgeRock")))
                 .willReturn(directoryName);
         String softwareClientId = regRequest.getSoftwareClientIdFromSSA();
         RegistrationRequestJWTClaims claimSet = regRequest.getSoftwareStatementClaims();
-        Mockito.doThrow(new DynamicClientRegistrationException("blah",
-                DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT))
-                .when(this.tppRegistrationService)
-                .verifyTPPRegistrationRequestSignature(regRequest);
+//        Mockito.doThrow(new DynamicClientRegistrationException("blah",
+//                DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT))
+//                .when(this.tppRegistrationService)
+//                .verifyTPPRegistrationRequestSignature(regRequest);
 
         // when
         DynamicClientRegistrationException  exception = catchThrowableOfType( () ->
@@ -414,7 +420,7 @@ public class DynamicRegistrationApiControllerTest {
                 , OBRIRole.ROLE_EIDAS));
         X509Authentication principal = testSpec.getPrincipal(authorities);
         RegistrationRequest regRequest =
-                registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised, this.objectMapper);
+                registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
         String directoryName = "ForgeRock";
         given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(anyString(), eq("ForgeRock")))
                 .willReturn(directoryName);
@@ -445,7 +451,7 @@ public class DynamicRegistrationApiControllerTest {
         given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(anyString(), eq("ForgeRock")))
                 .willReturn(directoryName);
         RegistrationRequest regRequest =
-                registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised, this.objectMapper);
+                registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
 
         Tpp tpp = new Tpp();
         tpp.setRegistrationResponse(new OIDCRegistrationResponse());
