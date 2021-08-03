@@ -20,6 +20,31 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
-public interface RegistrationRequestSoftwareStatement {
+import com.forgerock.openbanking.model.SoftwareStatementRole;
+
+import java.util.List;
+
+public interface DirectorySoftwareStatement {
+
     String getSoftware_jwks_endpoint();
+
+    List<String> getSoftware_redirect_uris();
+
+    String getIss();
+
+    String getSoftware_client_id();
+
+    String getOrg_name();
+
+    String getSoftware_logo_uri();
+
+    String getSoftware_tos_uri();
+
+    String getSoftware_policy_uri();
+
+    List<String> getSoftware_roles();
+
+    boolean hasRole(SoftwareStatementRole role);
+
+    List<OrganisationContact> getOrg_contacts();
 }

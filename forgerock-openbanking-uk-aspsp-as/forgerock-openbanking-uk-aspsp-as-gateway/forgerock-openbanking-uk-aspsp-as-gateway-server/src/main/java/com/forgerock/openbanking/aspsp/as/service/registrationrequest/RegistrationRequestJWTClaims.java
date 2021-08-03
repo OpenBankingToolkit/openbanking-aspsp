@@ -105,7 +105,7 @@ public class RegistrationRequestJWTClaims {
      * empty.
      */
     public List<String> getRequiredStringListClaims(String claimName) throws DynamicClientRegistrationException {
-            Optional<List<String>> values = getOptionalStringListValues(claimName);
+            Optional<List<String>> values = getOptionalStringListClaims(claimName);
             if (!stringListClaimsAreValid(values)) {
                 String errorString = "Claim '" + claimName + "' was not set in " + claimsOrigin + ". This claim " +
                         "is required";
@@ -159,7 +159,7 @@ public class RegistrationRequestJWTClaims {
     }
 
     public Double getRequiredDoubleClaim(String claimName) throws DynamicClientRegistrationException {
-        Optional<Double> value = getOptionalDoubleValue(claimName);
+        Optional<Double> value = getOptionalDoubleClaim(claimName);
         if(value.isEmpty()){
             String errorString = "Claim '" + claimName + "' was not set in " + claimsOrigin + ". This claims is " +
                     "required.";
@@ -169,7 +169,7 @@ public class RegistrationRequestJWTClaims {
         return value.get();
     }
 
-    public Optional<Double> getOptionalDoubleValue(String claimName) throws DynamicClientRegistrationException {
+    public Optional<Double> getOptionalDoubleClaim(String claimName) throws DynamicClientRegistrationException {
         try {
             return Optional.ofNullable(this.claimsSet.getDoubleClaim(claimName));
         } catch (ParseException pe){
@@ -181,7 +181,7 @@ public class RegistrationRequestJWTClaims {
     }
 
 
-    public Optional<List<String>> getOptionalStringListValues(String claimName) throws DynamicClientRegistrationException {
+    public Optional<List<String>> getOptionalStringListClaims(String claimName) throws DynamicClientRegistrationException {
         try{
             return Optional.ofNullable(claimsSet.getStringListClaim(claimName));
         } catch (ParseException e){

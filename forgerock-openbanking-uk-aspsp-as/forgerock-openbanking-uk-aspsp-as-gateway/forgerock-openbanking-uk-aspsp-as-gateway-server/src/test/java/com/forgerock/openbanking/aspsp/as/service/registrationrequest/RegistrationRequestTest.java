@@ -18,27 +18,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
+package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestSoftwareStatementFactory;
-import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.catchThrowableOfType;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,45 +40,22 @@ public class RegistrationRequestTest {
 
     @Mock
     private TppRegistrationService tppRegistrationService;
-    @Autowired
-    private RegistrationRequestSoftwareStatementFactory softwareStatementFactory;
+    private DirectorySoftwareStatementFactory softwareStatementFactory;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private RegistrationRequest registrationRequest;
 
     @Before
     public void setUp() throws DynamicClientRegistrationException {
         this.objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        OpenBankingDirectoryConfiguration obDirectoryConfig = new OpenBankingDirectoryConfiguration();
+        obDirectoryConfig.issuerId = "OpenBanking Ltd";
+        this.softwareStatementFactory = new DirectorySoftwareStatementFactory(obDirectoryConfig);
         RegistrationRequestFactory registrationRequestFactory =
                 new RegistrationRequestFactory(this.tppRegistrationService, this.softwareStatementFactory, objectMapper);
         String serialisedRegistrationRequestJWT = getValidRegistrationRequestJWTSerialised();
         this.registrationRequest = registrationRequestFactory.getRegistrationRequestFromJwt(serialisedRegistrationRequestJWT);
     }
 
-    @Test
-    public void validateSsaAgainstIssuingDirectoryJwksUri_succeeds() throws DynamicClientRegistrationException {
-        // given
-        given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(
-                eq(this.registrationRequest.getSoftwareStatement()), eq("ForgeRock"))).willReturn("ForgeRock");
-        // When
-        String issuingDirectory = this.registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri();
-
-        assertThat(issuingDirectory).isEqualTo("ForgeRock");
-    }
-
-    @Test
-    public void validateSsaAgainstIssuingDirectoryJwksUri_failsWhenUnregognisedSigningDirectory()
-            throws DynamicClientRegistrationException {
-        // given
-        given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(
-                eq(this.registrationRequest.getSoftwareStatement()), eq("ForgeRock"))).willReturn(null);
-        // When
-        DynamicClientRegistrationException dce =
-                catchThrowableOfType( () -> this.registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri(),
-                DynamicClientRegistrationException.class);
-
-        assertThat(dce.getErrorType()).isEqualTo(DynamicClientRegistrationErrorType.UNAPPROVED_SOFTWARE_STATEMENT);
-
-    }
 
     @Test
     public void overwriteRegistrationRequestFieldsFromSSAClaims() throws DynamicClientRegistrationException {

@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
+import com.forgerock.openbanking.model.SoftwareStatementRole;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -30,7 +31,7 @@ import java.util.List;
 @Builder
 @Data
 @EqualsAndHashCode(callSuper=false)
-public class OpenBankingSoftwareStatement implements RegistrationRequestSoftwareStatement {
+public class DirectorySoftwareStatementOpenBanking implements DirectorySoftwareStatement {
     String iss;
     Date iat;
     String jti;
@@ -57,4 +58,9 @@ public class OpenBankingSoftwareStatement implements RegistrationRequestSoftware
     String software_policy_uri;
     String software_tos_uri;
     String software_on_behalf_of_org;
+
+    @Override
+    public boolean hasRole(SoftwareStatementRole role) {
+        return software_roles.contains(role.name());
+    }
 }

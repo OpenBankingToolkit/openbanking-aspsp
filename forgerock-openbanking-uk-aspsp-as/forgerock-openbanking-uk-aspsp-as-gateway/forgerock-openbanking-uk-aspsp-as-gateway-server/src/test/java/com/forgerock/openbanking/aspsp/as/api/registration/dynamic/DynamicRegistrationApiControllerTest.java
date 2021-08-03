@@ -20,20 +20,22 @@
  */
 package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
 import com.forgerock.cert.psd2.Psd2Role;
 import com.forgerock.cert.psd2.RoleOfPsp;
 import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
 import com.forgerock.openbanking.aspsp.as.api.registration.CertificateTestSpec;
+import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.service.OIDCException;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestJWTClaims;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestSoftwareStatementFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.*;
@@ -52,7 +54,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -98,14 +99,12 @@ public class DynamicRegistrationApiControllerTest {
     @Mock
     TppStoreService tppStoreService;
 
-    @Autowired
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Mock
     TokenExtractor tokenExtractor;
 
-    @Autowired
-    RegistrationRequestSoftwareStatementFactory softwareStatementFactory;
+    DirectorySoftwareStatementFactory softwareStatementFactory;
 
     @Mock
     TppRegistrationService tppRegistrationService;
@@ -128,11 +127,14 @@ public class DynamicRegistrationApiControllerTest {
     @Before
     public void setUp(){
         this.closeMocks = openMocks(this);
+        OpenBankingDirectoryConfiguration obDirectoryConfig = new OpenBankingDirectoryConfiguration();
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        obDirectoryConfig.issuerId = "OpenBanking Ltd";
+        this.softwareStatementFactory = new DirectorySoftwareStatementFactory(obDirectoryConfig);
         registrationRequestFactory = new RegistrationRequestFactory(tppRegistrationService,
                  softwareStatementFactory, objectMapper);
         dynamicRegistrationApiController = new DynamicRegistrationApiController(tppStoreService, objectMapper,
                 tokenExtractor, tppRegistrationService, supportedAuthMethod, this.identityFactory, registrationRequestFactory);
-        //objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         this.registrationRequestJwtSerialised = TestHelperFunctions.getValidRegistrationRequestJWTSerialised();
     }
 
@@ -373,7 +375,7 @@ public class DynamicRegistrationApiControllerTest {
                 OBRIRole.UNREGISTERED_TPP,OBRIRole.ROLE_EIDAS));
         X509Authentication principal = testSpec.getPrincipal(authorities);
         given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(anyString(), eq("ForgeRock")))
-                .willReturn(null);
+                .willThrow(new DynamicClientRegistrationException("Test throw", UNAPPROVED_SOFTWARE_STATEMENT));
 
         // when
         DynamicClientRegistrationException  exception = catchThrowableOfType( () ->
@@ -382,34 +384,6 @@ public class DynamicRegistrationApiControllerTest {
 
         assertThat(exception.getErrorType()).isEqualTo(
                 UNAPPROVED_SOFTWARE_STATEMENT);
-    }
-
-    @Test
-    public void failIfSsaIsInvalid_register() throws DynamicClientRegistrationException, InvalidPsd2EidasCertificate {
-        
-        Collection<OBRIRole> authorities = new ArrayList<>(List.of(OBRIRole.ROLE_ANONYMOUS,
-                OBRIRole.UNREGISTERED_TPP, OBRIRole.ROLE_EIDAS));
-        X509Authentication principal = testSpec.getPrincipal(authorities);
-        RegistrationRequest regRequest =
-                registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
-
-        String directoryName = "ForgeRock";
-        given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(anyString(), eq("ForgeRock")))
-                .willReturn(directoryName);
-        String softwareClientId = regRequest.getSoftwareClientIdFromSSA();
-        RegistrationRequestJWTClaims claimSet = regRequest.getSoftwareStatementClaims();
-//        Mockito.doThrow(new DynamicClientRegistrationException("blah",
-//                DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT))
-//                .when(this.tppRegistrationService)
-//                .verifyTPPRegistrationRequestSignature(regRequest);
-
-        // when
-        DynamicClientRegistrationException  exception = catchThrowableOfType( () ->
-                dynamicRegistrationApiController.register(registrationRequestJwtSerialised,
-                        principal), DynamicClientRegistrationException.class);
-
-        assertThat(exception.getErrorType()).isEqualTo(
-                DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
     }
 
     @Test

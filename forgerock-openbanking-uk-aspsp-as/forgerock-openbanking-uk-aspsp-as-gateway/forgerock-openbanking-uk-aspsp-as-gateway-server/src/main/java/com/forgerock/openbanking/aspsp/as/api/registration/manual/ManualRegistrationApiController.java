@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.as.api.registration.manual;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.RegistrationRequest;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
@@ -120,8 +120,6 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
         RegistrationRequest registrationRequest =
                 registrationRequestFactory.getRegistrationRequestFromManualRegistrationJson(
                         registrationRequestDefaultJsonClaims, manualRegistrationRequest, objectMapper);
-
-        String directoryId = registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri();
 
         registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
         log.debug("The OIDC registration request we are going to send to AM {}", registrationRequest);

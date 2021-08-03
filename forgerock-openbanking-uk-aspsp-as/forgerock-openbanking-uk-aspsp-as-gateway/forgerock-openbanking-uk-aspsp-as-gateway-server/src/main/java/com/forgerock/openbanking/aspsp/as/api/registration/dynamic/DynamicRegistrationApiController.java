@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
@@ -251,7 +252,6 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
 
             //Override client ID
             registrationRequest.setClientId(clientId);
-            registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri();
 
             verifyRegistrationRequest(apiClientIdentity, registrationRequest);
             registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
@@ -282,9 +282,6 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             if(apiClientIdentity.isUnregistered()){
                     RegistrationRequest registrationRequest =
                             registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
-
-                    registrationRequest.validateSsaAgainstIssuingDirectoryJwksUri();
-                    //log.debug("SSA is valid and issued by {}", ssaIssuer);
 
                     //delete client ID
                     registrationRequest.setClientId(null);
@@ -398,8 +395,6 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                     clientIdentity.getTransportCertificateCn());
         }
 
-
-        //tppRegistrationService.verifyTPPRegistrationRequestSignature(registrationRequest);
         tppRegistrationService.verifyTPPRegistrationRequestAgainstSSA(registrationRequest);
         verifyAuthenticationMethodSupported(registrationRequest);
         log.trace("verifyRegistrationRequest() registration request is valid");

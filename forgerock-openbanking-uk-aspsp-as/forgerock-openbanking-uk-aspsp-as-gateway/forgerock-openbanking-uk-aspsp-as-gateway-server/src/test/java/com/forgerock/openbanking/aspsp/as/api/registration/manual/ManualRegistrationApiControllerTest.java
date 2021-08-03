@@ -25,13 +25,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.cert.Psd2CertInfo;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
 import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
-import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.RegistrationRequest;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestSoftwareStatementFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
@@ -89,8 +89,7 @@ public class ManualRegistrationApiControllerTest {
 
     RegistrationRequestFactory registrationRequestFactory;
 
-    @Autowired
-    RegistrationRequestSoftwareStatementFactory softwareStatementFactory;
+    DirectorySoftwareStatementFactory softwareStatementFactory;
 
     @Autowired
     ObjectMapper objectMapper = new ObjectMapper();
@@ -108,6 +107,7 @@ public class ManualRegistrationApiControllerTest {
         InputStream stream = new ByteArrayInputStream(registrationRequest.getBytes(StandardCharsets.UTF_8));
         Resource registrationRequestResource = new InputStreamResource(stream);
         apiClientIdentityFactory = new ApiClientIdentityFactory();
+        softwareStatementFactory = TestHelperFunctions.getValidSoftwareStatementFactory();
         registrationRequestFactory = new RegistrationRequestFactory(this.tppRegistrationService,
                 this.softwareStatementFactory, objectMapper);
         manualRegistrationApiController = new ManualRegistrationApiController(tppStoreService, objectMapper,

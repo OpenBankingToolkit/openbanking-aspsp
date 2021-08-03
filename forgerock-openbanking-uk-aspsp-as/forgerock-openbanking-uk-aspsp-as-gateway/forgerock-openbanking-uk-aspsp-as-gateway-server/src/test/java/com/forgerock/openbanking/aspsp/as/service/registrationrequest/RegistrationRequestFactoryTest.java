@@ -20,21 +20,25 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
-import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.RegistrationRequest;
-import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,29 +47,19 @@ public class RegistrationRequestFactoryTest {
     @Mock
     private TppRegistrationService tppRegistrationService;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     private RegistrationRequestFactory registrationRequestFactory;
-
-    @Autowired
-    private RegistrationRequestSoftwareStatementFactory softwareStatementFactory;
 
     @Before
     public void setUp() throws Exception {
         OpenBankingDirectoryConfiguration openbankingDirectoryConfiguration = new OpenBankingDirectoryConfiguration();
         openbankingDirectoryConfiguration.issuerId = "OpenBanking";
-        ForgeRockDirectoryConfiguration forgerockDirectoryConfiguration = new ForgeRockDirectoryConfiguration();
-        forgerockDirectoryConfiguration.id = "ForgeRock";
 
-        this.softwareStatementFactory =
-                new RegistrationRequestSoftwareStatementFactory(openbankingDirectoryConfiguration,
-                        forgerockDirectoryConfiguration);
-
+        DirectorySoftwareStatementFactory softwareStatementFactory = new DirectorySoftwareStatementFactory(openbankingDirectoryConfiguration);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         this.registrationRequestFactory = new RegistrationRequestFactory(this.tppRegistrationService,
-                this.softwareStatementFactory, this.objectMapper);
-//        this.objectMapper = new ObjectMapper();
-//        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+                softwareStatementFactory, objectMapper);
+
     }
 
     @Test
@@ -73,12 +67,14 @@ public class RegistrationRequestFactoryTest {
         // Given
         String registrationRequestJWT = TestHelperFunctions.getValidRegistrationRequestJWTSerialised();
 
+
         // When
         RegistrationRequest regRequest =
                 registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJWT);
 
         // Then
         assertThat(regRequest).isNotNull();
+        assertThat(regRequest.getSoftwareStatement()).isNotNull();
     }
 
     @Test
@@ -95,5 +91,24 @@ public class RegistrationRequestFactoryTest {
 
         // Then
         assertThat(regRequest).isNotNull();
+    }
+
+    @Test
+    public void failIfDynamicRegistrationJWTIsInvalid_getRegRequestFromManualRegistrationJson() throws DynamicClientRegistrationException {
+        // Given
+        String registrationRequestJwtSerialised = TestHelperFunctions.getValidRegistrationRequestJWTSerialised();
+        String registrationRequestJWKUri = "https://service.directory.dev-ob.forgerock" +
+                ".financial:8074/api/software-statement/60c75ba3c450450011efa679/application/jwk_uri";
+        Mockito.doThrow(new DynamicClientRegistrationException("blah",
+                        DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT))
+                .when(this.tppRegistrationService)
+                .verifyTPPRegistrationRequestSignature(anyString(), eq("60c75ba3c450450011efa679"), eq(registrationRequestJWKUri));
+
+        // When
+        DynamicClientRegistrationException  exception =
+                catchThrowableOfType( () -> registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised), DynamicClientRegistrationException.class);
+
+        Assertions.assertThat(exception.getErrorType()).isEqualTo(
+                DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
     }
 }

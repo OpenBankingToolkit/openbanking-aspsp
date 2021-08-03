@@ -21,7 +21,6 @@
 package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
@@ -46,12 +45,12 @@ import static com.forgerock.openbanking.constants.OpenBankingConstants.Registrat
 public class RegistrationRequestFactory {
 
     TppRegistrationService tppRegistrationService;
-    RegistrationRequestSoftwareStatementFactory softwareStatementFactory;
+    DirectorySoftwareStatementFactory softwareStatementFactory;
     ObjectMapper objectMapper;
 
     @Autowired
     public RegistrationRequestFactory(TppRegistrationService tppRegistrationService,
-                                      RegistrationRequestSoftwareStatementFactory softwareStatementFactory,
+                                      DirectorySoftwareStatementFactory softwareStatementFactory,
                                       ObjectMapper objectMapper){
         this.tppRegistrationService = tppRegistrationService;
         this.softwareStatementFactory = softwareStatementFactory;
@@ -61,26 +60,30 @@ public class RegistrationRequestFactory {
     public RegistrationRequest getRegistrationRequestFromJwt(String registrationRequestJwtSerialised)  throws DynamicClientRegistrationException {
 
         try {
-            RegistrationRequestJWTClaims registrationRequestJWTClaims = getJwtClaimsSet(registrationRequestJwtSerialised);
-            String ssaSerialised =
+            RegistrationRequestJWTClaims registrationRequestJWTClaims =
+                    getJwtClaimsSet(registrationRequestJwtSerialised, JWTClaimsOrigin.REGISTRATION_REQUEST_JWT);
+            String ssaJwtSerialised =
                     registrationRequestJWTClaims.getRequiredStringClaim(RegistrationTppRequestClaims.SOFTWARE_STATEMENT);
-            RegistrationRequestJWTClaims ssaJwtClaims = getJwtClaimsSet(ssaSerialised);
+            RegistrationRequestJWTClaims ssaJwtClaims = getJwtClaimsSet(ssaJwtSerialised,
+                    JWTClaimsOrigin.SOFTWARE_STATEMENT_ASSERTION);
             String issuer = ssaJwtClaims.getRequiredStringClaim(OpenBankingConstants.SSAClaims.ISSUER);
-            tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(ssaSerialised, issuer);
-            RegistrationRequestSoftwareStatement regRequestSoftwareStatement =
+
+            tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(ssaJwtSerialised, issuer);
+            DirectorySoftwareStatement regRequestSoftwareStatement =
                     softwareStatementFactory.getSoftwareStatement(ssaJwtClaims);
 
             String softwareJwkUri = regRequestSoftwareStatement.getSoftware_jwks_endpoint();
+            String softwareClientId =
+                    ssaJwtClaims.getRequiredStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_CLIENT_ID);
             tppRegistrationService.verifyTPPRegistrationRequestSignature(registrationRequestJwtSerialised,
-                    softwareJwkUri, issuer);
+                    softwareClientId, softwareJwkUri);
             Map<String, Object> registrationRequestClaimsAsJson = registrationRequestJWTClaims.toJSONObject();
             String registrationRequestJson = JSONObjectUtils.toJSONString(registrationRequestClaimsAsJson);
 
             try {
                 RegistrationRequest request = objectMapper.readValue(registrationRequestJson, RegistrationRequest.class);
                 request.setJson(registrationRequestJson);
-                request.setTppRegistrationService(tppRegistrationService);
-                request.setRegistrationRequestJWTSerialized(registrationRequestJwtSerialised);
+                request.setDirectorySoftwareStatement(regRequestSoftwareStatement);
                 return request;
             } catch (IOException ioe){
 
@@ -95,7 +98,9 @@ public class RegistrationRequestFactory {
         }
     }
 
-    private RegistrationRequestJWTClaims getJwtClaimsSet(String registrationRequestJwtSerialised) throws ParseException,
+
+    private RegistrationRequestJWTClaims getJwtClaimsSet(String registrationRequestJwtSerialised,
+                                                         JWTClaimsOrigin origin) throws ParseException,
             DynamicClientRegistrationException {
         SignedJWT registrationRequestJws = SignedJWT.parse(registrationRequestJwtSerialised);
         JWTClaimsSet registrationRequestClaimsSet = registrationRequestJws.getJWTClaimsSet();
@@ -107,7 +112,7 @@ public class RegistrationRequestFactory {
         }
         RegistrationRequestJWTClaims registrationRequestJWTClaims =
                 new RegistrationRequestJWTClaims(registrationRequestClaimsSet,
-                        JWTClaimsOrigin.REGISTRATION_REQUEST_JWT);
+                        origin);
         return registrationRequestJWTClaims;
     }
 
@@ -120,16 +125,31 @@ public class RegistrationRequestFactory {
             request.setRedirectUris(manualRegistrationRequest.getRedirectUris());
             String softwareStatementAssertion = manualRegistrationRequest.getSoftwareStatementAssertion();
             if (StringUtils.isEmpty(softwareStatementAssertion)){
-                throw new DynamicClientRegistrationException("Request did not contain a valid software statement",
+                String errorMessage = "Manual Request did not contain a valid software statement";
+                log.info("getRegistrationRequestFromManualregistrationJson() {}", errorMessage);
+                throw new DynamicClientRegistrationException(errorMessage,
                         DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
             }
             request.setSoftwareStatement(softwareStatementAssertion);
             request.setJson(registrationRequestJson);
-            request.setTppRegistrationService(tppRegistrationService);
+
+            String ssaJwtSerialised = request.getSoftwareStatement();
+            RegistrationRequestJWTClaims softwareStatementClaims = getJwtClaimsSet(ssaJwtSerialised,
+                    JWTClaimsOrigin.SOFTWARE_STATEMENT_ASSERTION);
+            String issuer = softwareStatementClaims.getRequiredStringClaim(OpenBankingConstants.SSAClaims.ISSUER);
+            tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(ssaJwtSerialised, issuer);
+            DirectorySoftwareStatement regRequestSoftwareStatement =
+                    softwareStatementFactory.getSoftwareStatement(softwareStatementClaims);
+
+
+
+
+            request.setDirectorySoftwareStatement(regRequestSoftwareStatement);
 
             return request;
-        } catch (IOException ioe){
-
+        } catch (IOException | ParseException ioe){
+            String errorMessage = "Could not map Manual Registration Request JWT fields to internal object";
+            log.info("getRegistrationRequestFromManualRegistrationJson() {}", errorMessage, ioe);
             throw new DynamicClientRegistrationException("Could not map registration request jwt fields to " +
                     "internal object " + ioe.getMessage(), DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
         }

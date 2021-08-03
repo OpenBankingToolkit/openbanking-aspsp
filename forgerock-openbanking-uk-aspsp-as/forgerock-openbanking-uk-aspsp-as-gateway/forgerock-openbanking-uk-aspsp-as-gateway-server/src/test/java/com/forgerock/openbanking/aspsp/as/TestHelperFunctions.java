@@ -20,11 +20,22 @@
  */
 package com.forgerock.openbanking.aspsp.as;
 
+import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatement;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementOpenBanking;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementOpenBanking.DirectorySoftwareStatementOpenBankingBuilder;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.OrganisationContact;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementFactory;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 public class TestHelperFunctions {
 
@@ -54,4 +65,48 @@ public class TestHelperFunctions {
                 "eyJhbGciOiJQUzI1NiIsImtpZCI6Imo4SFdZMDBhSUJtS0ExT1c3WW50dnRLVU0ycnVueDdvQWdiS2hJRE1IM0k9IiwidHlwIjoiSldUIn0.eyJpc3MiOiJPcGVuQmFua2luZyBMdGQiLCJpYXQiOjE2MjczOTQyNjAsImp0aSI6ImIyZDRkNzdkZmFjYTRhMWEiLCJzb2Z0d2FyZV9lbnZpcm9ubWVudCI6InNhbmRib3giLCJzb2Z0d2FyZV9tb2RlIjoiVGVzdCIsInNvZnR3YXJlX2lkIjoiT1g2c0o4RXYyUnJyeWxNV1FLaUplSiIsInNvZnR3YXJlX2NsaWVudF9pZCI6Ik9YNnNKOEV2MlJycnlsTVdRS2lKZUoiLCJzb2Z0d2FyZV9jbGllbnRfbmFtZSI6InRlc3QiLCJzb2Z0d2FyZV9jbGllbnRfZGVzY3JpcHRpb24iOiJodHRwczovL3Rlc3QuY29tIiwic29mdHdhcmVfdmVyc2lvbiI6MS4xLCJzb2Z0d2FyZV9jbGllbnRfdXJpIjoiaHR0cHM6Ly90ZXN0LmNvbSIsInNvZnR3YXJlX3JlZGlyZWN0X3VyaXMiOlsiaHR0cHM6Ly90ZXN0LmNvbSJdLCJzb2Z0d2FyZV9yb2xlcyI6WyJBSVNQIiwiUElTUCJdLCJvcmdhbmlzYXRpb25fY29tcGV0ZW50X2F1dGhvcml0eV9jbGFpbXMiOnsiYXV0aG9yaXR5X2lkIjoiT0JHQlIiLCJyZWdpc3RyYXRpb25faWQiOiJVbmtub3duMDAxNTgwMDAwMTA0MVJFQUFZIiwic3RhdHVzIjoiQWN0aXZlIiwiYXV0aG9yaXNhdGlvbnMiOlt7Im1lbWJlcl9zdGF0ZSI6IkdCIiwicm9sZXMiOlsiUElTUCIsIkFJU1AiLCJBU1BTUCJdfSx7Im1lbWJlcl9zdGF0ZSI6IklFIiwicm9sZXMiOlsiQVNQU1AiLCJBSVNQIiwiUElTUCJdfSx7Im1lbWJlcl9zdGF0ZSI6Ik5MIiwicm9sZXMiOlsiQVNQU1AiLCJQSVNQIiwiQUlTUCJdfV19LCJzb2Z0d2FyZV9sb2dvX3VyaSI6Imh0dHBzOi8vdGVzdC5jb20iLCJvcmdfc3RhdHVzIjoiQWN0aXZlIiwib3JnX2lkIjoiMDAxNTgwMDAwMTA0MVJFQUFZIiwib3JnX25hbWUiOiJGT1JHRVJPQ0sgTElNSVRFRCIsIm9yZ19jb250YWN0cyI6W3sibmFtZSI6IlRlY2huaWNhbCIsImVtYWlsIjoiamFtaWUuYm93ZW5AZm9yZ2Vyb2NrLmNvbSIsInBob25lIjoiNDQ3NzY1MTA5NTI3IiwidHlwZSI6IlRlY2huaWNhbCJ9LHsibmFtZSI6IkJ1c2luZXNzIiwiZW1haWwiOiJqb2huLnByb3VkZm9vdEBmb3JnZXJvY2suY29tIiwicGhvbmUiOiI0NDc3MTAzNTAyNjYiLCJ0eXBlIjoiQnVzaW5lc3MifV0sIm9yZ19qd2tzX2VuZHBvaW50IjoiaHR0cHM6Ly9rZXlzdG9yZS5vcGVuYmFua2luZ3Rlc3Qub3JnLnVrLzAwMTU4MDAwMDEwNDFSRUFBWS8wMDE1ODAwMDAxMDQxUkVBQVkuandrcyIsIm9yZ19qd2tzX3Jldm9rZWRfZW5kcG9pbnQiOiJodHRwczovL2tleXN0b3JlLm9wZW5iYW5raW5ndGVzdC5vcmcudWsvMDAxNTgwMDAwMTA0MVJFQUFZL3Jldm9rZWQvMDAxNTgwMDAwMTA0MVJFQUFZLmp3a3MiLCJzb2Z0d2FyZV9qd2tzX2VuZHBvaW50IjoiaHR0cHM6Ly9rZXlzdG9yZS5vcGVuYmFua2luZ3Rlc3Qub3JnLnVrLzAwMTU4MDAwMDEwNDFSRUFBWS9PWDZzSjhFdjJScnJ5bE1XUUtpSmVKLmp3a3MiLCJzb2Z0d2FyZV9qd2tzX3Jldm9rZWRfZW5kcG9pbnQiOiJodHRwczovL2tleXN0b3JlLm9wZW5iYW5raW5ndGVzdC5vcmcudWsvMDAxNTgwMDAwMTA0MVJFQUFZL3Jldm9rZWQvT1g2c0o4RXYyUnJyeWxNV1FLaUplSi5qd2tzIiwic29mdHdhcmVfcG9saWN5X3VyaSI6Imh0dHBzOi8vdGVzdC5jb20iLCJzb2Z0d2FyZV90b3NfdXJpIjoiaHR0cHM6Ly90ZXN0LmNvbSIsInNvZnR3YXJlX29uX2JlaGFsZl9vZl9vcmciOm51bGx9.geGFe0EcYQtpwG847TuC6tFRh35_25lhBss5jReTiet9tipqpqzQqtLCh_3ZJvV17KHtr8xbvyvhUhyNYtJPbYA60Jj2XZUTLk7dcQ8LHqH5IGH4gaV-41Qlv0S09fTkfca4i4K2-XF3noL7ijQtPOgl5uNQY6ljkwBiWesvwnRFgoNUl-iQc3E3PGtL1FTgBKEcjT6p192oZS37YbnPNkxbgyfYXSBYNQ6jviIb5PcZCxNw9n2OT0-RjZ1A1FLRZLOZqFyCkwuzrwM8hnPba-raBbYbTDY8PC_B3nfBfaRJCTKeTBGlfA-a6KtDv_hElFuK-53R1hLEheto4zcPgw";
     }
 
+    public static DirectorySoftwareStatementFactory getValidSoftwareStatementFactory(){
+        OpenBankingDirectoryConfiguration openbankingDirectoryConfiguration = new OpenBankingDirectoryConfiguration();
+        openbankingDirectoryConfiguration.issuerId = "OpenBanking ltd";
+        return new DirectorySoftwareStatementFactory(openbankingDirectoryConfiguration);
+    }
+
+    public static DirectorySoftwareStatement getValidFRDirectorySoftwareStatement() {
+        List<String> roles = new ArrayList<String>(Arrays.asList("AISP", "PISP"));
+
+        OrganisationContact orgContact = OrganisationContact.builder()
+                .email("fred.blogs@acme.com")
+                .name("Fred Blogs")
+                .phone("099849388548")
+                .type("primary").build();
+        List<OrganisationContact> contacts = new ArrayList<OrganisationContact>();
+        contacts.add(orgContact);
+
+        orgContact.setEmail("fred.blogs@acme.com");
+
+        List<String> redirectUris = new ArrayList<>(Arrays.asList("https://google.com", "https://acme.com/redir"));
+
+        DirectorySoftwareStatementOpenBankingBuilder builder = DirectorySoftwareStatementOpenBanking.builder();
+        builder.iss("ForgeRock")
+                .software_logo_uri("https://forgerock.com/")
+                .iat(new Date())
+                .org_contacts(contacts)
+                .org_id("343234324")
+                .jti("34325454")
+                .org_jwks_endpoint("https://directory.master.forgerock.financial/jwkms")
+                .software_id("softwareId")
+                .org_status("Active")
+                .org_jwks_revoked_endpoint("https://directory.master.forgerock.financial/jwkms/revoked")
+                .org_name("Acme inc.")
+                .software_client_description("Access your financial info...")
+                .software_client_id("software clientId")
+                .software_client_name("Acme financial app")
+                .software_client_uri("https://acme.com/financial-app")
+                .software_environment("Test")
+                .software_mode("Test")
+                .software_jwks_endpoint("https://service.directory.master.forgerock.financial:443/api/software-statement/61026060452223001501d78a/application/jwk_uri")
+                .software_roles(roles)
+                .software_redirect_uris(redirectUris);
+        return builder.build();
+    }
 }

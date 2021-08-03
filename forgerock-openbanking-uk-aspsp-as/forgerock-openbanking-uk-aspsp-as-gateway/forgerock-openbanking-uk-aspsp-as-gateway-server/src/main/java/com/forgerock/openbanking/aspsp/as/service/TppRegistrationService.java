@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.as.service;
 import com.forgerock.openbanking.am.services.AMOIDCRegistrationService;
 import com.forgerock.openbanking.analytics.model.entries.TppEntry;
 import com.forgerock.openbanking.analytics.services.TppEntriesKPIService;
-import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.RegistrationRequest;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
@@ -90,21 +90,21 @@ public class TppRegistrationService {
 
         if(issuer.equals(openBankingDirectoryConfiguration.issuerId)) {
             try {
-                log.debug("verifySsaAgainstIssuingDirectoryJwksUri() Verify the SSA against OB directory");
+                log.debug("validateSsaAgainstIssuingDirectoryJwksUri() Verify the SSA against OB directory");
                 cryptoApiClient.validateJws(ssaSerialised, openBankingDirectoryConfiguration.getIssuerID(),
                         openBankingDirectoryConfiguration.jwksUri);
                 return openBankingDirectoryConfiguration.id;
             } catch (InvalidTokenException | HttpClientErrorException | ParseException | IOException e) {
-                log.debug("verifySsaAgainstIssuingDirectoryJwksUri() Invalid SSA signature from OB directory", e);
+                log.debug("validateSsaAgainstIssuingDirectoryJwksUri() Invalid SSA signature from OB directory", e);
             }
         } else if(issuer.equals(forgeRockDirectoryConfiguration.getIssuerID())) {
             try {
-                log.debug("verifySsaAgainstIssuingDirectoryJwksUri() Verify the SSA against ForgeRock directory");
+                log.debug("validateSsaAgainstIssuingDirectoryJwksUri() Verify the SSA against ForgeRock directory");
                 cryptoApiClient.validateJws(ssaSerialised, null,
                         forgeRockDirectoryConfiguration.jwksUri);
                 return forgeRockDirectoryConfiguration.id;
             } catch (InvalidTokenException | ParseException | IOException e) {
-                log.debug("verifySsaAgainstIssuingDirectoryJwksUri() Invalid SSA signature from ForgeRock directory", e);
+                log.debug("validateSsaAgainstIssuingDirectoryJwksUri() Invalid SSA signature from ForgeRock directory", e);
             }
         } else {
             String errorMessage = "Unrecognised ssa. Issuer is '" + issuer + "'. Please use an Open Banking issued " +
@@ -212,7 +212,15 @@ public class TppRegistrationService {
             } else {
                 log.debug("verifyTPPRegistrationRequestAgainstSSA() The redirect uris were not set in the " +
                         "registration request. Setting them to be the same as those set in the ssa.");
-                ssaClaimRedirectUris.ifPresent(registrationRequest::setRedirectUris);
+                if(ssaClaimRedirectUris.isPresent()) {
+                    registrationRequest.setRedirectUris(ssaClaimRedirectUris.get());
+                }
+                /*else {
+                    String errorMessage = "The Software Statement contains no redirect_uris";
+                    log.info("verifyTPPRegistrationRequestAgainstSSA() {}", errorMessage);
+                    throw new DynamicClientRegistrationException(errorMessage,
+                            DynamicClientRegistrationErrorType.INVALID_REDIRECT_URI);
+                };*/
             }
         } else if (ssaClaimRedirectUris.isPresent() && ssaClaimRedirectUris.get().containsAll(registrationRequestRedirectUris)) {
             log.warn("Redirect Uri in the request doesn't match the redirect URI in the SSA");
@@ -262,7 +270,7 @@ public class TppRegistrationService {
 
         String officialName = getOrgSoftwareCombinedTppName(oidcRegistrationRequest, oidcRegistrationResponse);
         String softwareStatementAsJsonString =
-                oidcRegistrationRequest.getSoftwareStatementClaimsAsJson().toJSONString();
+                oidcRegistrationRequest.getSoftwareStatementClaimsAsJsonString();
 
         // ToDo: Is this just the same as the SoftwareStatement
 
@@ -316,7 +324,7 @@ public class TppRegistrationService {
 
         String officialName = getOrgSoftwareCombinedTppName(oidcRegistrationRequest, oidcRegistrationResponse);
         String softwareStatementAsJsonString =
-                oidcRegistrationRequest.getSoftwareStatementClaimsAsJson().toJSONString();
+                oidcRegistrationRequest.getSoftwareStatementClaimsAsJsonString();
 
         Tpp updatedTpp = Tpp.builder()
                 .created(tpp.getCreated())
