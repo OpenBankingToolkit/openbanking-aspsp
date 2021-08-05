@@ -69,11 +69,12 @@ public abstract class ApiClientIdentity {
                 String cnString = IETFUtils.valueToString(cn.getFirst().getValue());
                 return cnString;
             } else {
-                log.debug("getTppIdentifier() No certificates available from request");
-                throw new ApiClientException("No certificates available from request Principal");
+                log.info("getTppIdentifier() No certificates available from authentication; '{}'", authentication);
+                throw new ApiClientException("No certificates available from request");
             }
         } catch (CertificateEncodingException | ApiClientException e) {
-            log.debug("getTransportCertificateCn() failed to get CN from transport certificate.", e);
+            log.info("getTransportCertificateCn() failed to get CN from transport certificate. X509Authentication; {}",
+                    authentication, e);
             return null;
         }
     }
@@ -87,6 +88,7 @@ public abstract class ApiClientIdentity {
         if(certificateChain != null && certificateChain.length >= 1){
             return certificateChain[0];
         } else {
+            log.info("Failed to get transport certificate. X509Authentication is '{}'", authentication);
             return null;
         }
     }
@@ -124,6 +126,7 @@ public abstract class ApiClientIdentity {
                     helpString += " '" + principal + "'";
                 }
             }
+            log.info("throwIfNotValidCertAuthority() {}. X509Authentication; {}", helpString, this.authentication);
             throw new OAuth2InvalidClientException(helpString);
         }
     }
@@ -138,7 +141,7 @@ public abstract class ApiClientIdentity {
                 || this.getAuthorities().contains(OBRIRole.ROLE_PISP)
                 || this.getAuthorities().contains(OBRIRole.ROLE_CBPII)) {
             String errorMessage = "A software statement has already been registered with this transport certificate.";
-            log.debug("throwIfTppAlreadyOnboarded() {}", errorMessage);
+            log.info("throwIfTppAlreadyOnboarded() {}", errorMessage);
             throw new OAuth2InvalidClientException(errorMessage);
         }
     }
@@ -149,7 +152,7 @@ public abstract class ApiClientIdentity {
         Collection<? extends GrantedAuthority> authorities = this.getAuthorities();
         if(authorities.contains(OBRIRole.UNREGISTERED_TPP)){
             String errorString = "Tpp is not onboarded.";
-            log.debug("throwIfTppNotOnboarded() {}", errorString);
+            log.info("throwIfTppNotOnboarded() {}, X509Authentication; {}", errorString, this.authentication);
             throw new OAuth2InvalidClientException(errorString);
         }
     }
