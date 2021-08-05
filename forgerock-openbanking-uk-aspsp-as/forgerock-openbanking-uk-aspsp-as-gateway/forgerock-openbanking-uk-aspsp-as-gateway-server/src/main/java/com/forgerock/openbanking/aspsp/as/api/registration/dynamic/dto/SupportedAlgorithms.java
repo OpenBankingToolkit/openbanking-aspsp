@@ -20,13 +20,8 @@
  */
 package com.forgerock.openbanking.aspsp.as.api.registration.dynamic.dto;
 
-import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonValue;
-import org.springframework.validation.annotation.Validated;
-import javax.validation.Valid;
-import javax.validation.constraints.*;
-
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Gets or Sets SupportedAlgorithms
@@ -39,7 +34,7 @@ public enum SupportedAlgorithms {
   
   ES256("ES256");
 
-  private String value;
+  private final String value;
 
   SupportedAlgorithms(String value) {
     this.value = value;

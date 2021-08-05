@@ -1,7 +1,6 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
-
 ### GitHub [#428](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/428) 426: [bank UI] Confirmation page when user Cancel the consent
 [bc8074b917f395a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bc8074b917f395a) Jorge Sanchez Perez *2021-06-16 14:49:06*
 426: [bank UI] Confirmation page when user Cancel the consent (#428)
@@ -57,13 +56,33 @@ Release/1.4.5 (#437)
 
 - Improved loggin Matls Request Verification Service
 Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/433
+### GitHub [#439](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/439) Release/1.4.6
+[7fb583a5a91c0c1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7fb583a5a91c0c1) Jorge Sanchez Perez *2021-06-28 14:54:32*
+Release/1.4.6 (#439)
+
+* Release candidate: prepare release 1.4.6
+
+* Release candidate: prepare for next development iteration
+
+* chnagelog updated
+[87ca9e69439dcf0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/87ca9e69439dcf0) JamieB *2021-06-18 15:36:39*
+422: Improve DELETE /register logging and error handling
+
+And general tidy and refactor. These Dynamic Client Registration
+endpoints were returning Open Banking errors, when they should be
+returning errors inline with teh OAuth2 specifications. Also I have
+added a test_facility_advice field to the response to help reduce
+support tickets for both our customers, and as a result, ourselves.
+
+Still a long way to go on this.
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/422
 [c281da384dabbba](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c281da384dabbba) Matt Wills *2021-06-10 13:10:39*
 32: Version prefix in v3.1.7 and v3.1.8 Accounts API
 
 - Fix version prefix (from 'V' to 'v') in v3.1.7 and v3.1.8 Account API URLs
 
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
-
 [b0704b02d1c8154](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0704b02d1c8154) JamieB *2021-06-02 13:53:21*
 Release candidate: prepare for next development iteration
 ## 1.4.4

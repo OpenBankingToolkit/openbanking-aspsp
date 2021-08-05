@@ -37,7 +37,7 @@ public class JwtHeaderTokenExtractor implements TokenExtractor {
             throw new AuthenticationServiceException("Invalid authorization header size.");
         }
 
-        if(!header.contains(HEADER_PREFIX)){
+        if(!header.trim().startsWith(HEADER_PREFIX)){
             throw new AuthenticationServiceException("Header should be " + HEADER_PREFIX + " Token");
         }
 

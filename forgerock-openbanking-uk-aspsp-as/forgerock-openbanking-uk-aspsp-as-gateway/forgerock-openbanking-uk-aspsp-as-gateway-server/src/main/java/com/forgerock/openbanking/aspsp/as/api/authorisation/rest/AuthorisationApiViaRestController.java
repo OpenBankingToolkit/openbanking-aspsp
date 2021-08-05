@@ -112,9 +112,9 @@ public class AuthorisationApiViaRestController implements AuthorisationApiViaRes
         ERROR
     }
 
-    private Pattern amLocat = Pattern.compile("https\\:\\/\\/as\\.aspsp.*");
-    private Pattern bankLoginLocat = Pattern.compile("https\\:\\/\\/bank.*\\/login.*");
-    private Pattern bankConsentLocat = Pattern.compile("https\\:\\/\\/bank.*\\/consent.*");
+    private final Pattern amLocat = Pattern.compile("https\\:\\/\\/as\\.aspsp.*");
+    private final Pattern bankLoginLocat = Pattern.compile("https\\:\\/\\/bank.*\\/login.*");
+    private final Pattern bankConsentLocat = Pattern.compile("https\\:\\/\\/bank.*\\/consent.*");
 
     public Stage getStage(String location) {
         Matcher bankLoginMatcher = bankLoginLocat.matcher(location);

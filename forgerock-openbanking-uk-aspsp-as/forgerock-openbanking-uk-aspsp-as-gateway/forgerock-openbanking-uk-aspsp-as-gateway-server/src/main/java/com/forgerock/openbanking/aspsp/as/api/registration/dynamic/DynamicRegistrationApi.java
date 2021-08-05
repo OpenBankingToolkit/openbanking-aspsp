@@ -25,12 +25,11 @@
  */
 package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
 
-import com.forgerock.openbanking.aspsp.as.service.OIDCException;
+import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageInvalidTokenException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageMissingAuthInfoException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
-import com.forgerock.openbanking.exceptions.OBErrorException;
-import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -67,13 +66,14 @@ public interface DynamicRegistrationApi {
             @ApiResponse(code = 405, message = "The client does not have permission to read, update or delete the Client")})
     @RequestMapping(value = "/",
             method = RequestMethod.DELETE)
-    ResponseEntity<Void> unregister(
+    ResponseEntity<Void> deleteRegistration(
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = false)
             String authorization,
             Principal principal
 
-    ) throws  OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException;
+    ) throws  OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2InvalidClientException,
+            OAuth2BearerTokenUsageInvalidTokenException;
 
     @PreAuthorize("hasAnyAuthority('ROLE_PISP', 'ROLE_AISP', 'ROLE_CBPII', 'ROLE_EIDAS')")
     @ApiOperation(
@@ -87,7 +87,7 @@ public interface DynamicRegistrationApi {
             @ApiResponse(code = 405, message = "The client does not have permission to read, update or delete the Client")})
     @RequestMapping(value = "/{ClientId}",
             method = RequestMethod.DELETE)
-    ResponseEntity<Void> unregister(
+    ResponseEntity<Void> deleteRegistration(
             @ApiParam(value = "The client ID", required = true)
             @PathVariable("ClientId")
             String clientId,
@@ -112,7 +112,7 @@ public interface DynamicRegistrationApi {
     @RequestMapping(value = "/{ClientId}",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    ResponseEntity<OIDCRegistrationResponse> getRegisterResult(
+    ResponseEntity<OIDCRegistrationResponse> getRegistration(
             @ApiParam(value = "The client ID", required = true)
             @PathVariable("ClientId") String clientId,
 
@@ -139,7 +139,7 @@ public interface DynamicRegistrationApi {
             produces = {"application/json"},
             consumes = {"application/jwt"},
             method = RequestMethod.PUT)
-    ResponseEntity<OIDCRegistrationResponse> updateClient(
+    ResponseEntity<OIDCRegistrationResponse> updateRegistration(
             @ApiParam(value = "The client ID", required = true)
             @PathVariable("ClientId") String clientId,
 
@@ -151,7 +151,7 @@ public interface DynamicRegistrationApi {
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorException, OIDCException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException;
+    ) throws OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException, DynamicClientRegistrationException, ApiClientException;
 
 
 
@@ -168,7 +168,7 @@ public interface DynamicRegistrationApi {
     @RequestMapping(value = "/",
             produces = {"application/json"},
             method = RequestMethod.GET)
-    ResponseEntity<OIDCRegistrationResponse> getRegisterResult(
+    ResponseEntity<OIDCRegistrationResponse> getRegistration(
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -192,7 +192,7 @@ public interface DynamicRegistrationApi {
             produces = {"application/json"},
             consumes = {"application/jwt"},
             method = RequestMethod.PUT)
-    ResponseEntity<OIDCRegistrationResponse> updateClient(
+    ResponseEntity<OIDCRegistrationResponse> updateRegistration(
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
@@ -201,7 +201,7 @@ public interface DynamicRegistrationApi {
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws OBErrorException, OIDCException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException;
+    ) throws OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException, DynamicClientRegistrationException;
 
 
     @PreAuthorize("hasAnyAuthority('UNREGISTERED_TPP', 'ROLE_PISP', 'ROLE_AISP', 'ROLE_CBPII', 'ROLE_EIDAS')")
@@ -220,5 +220,5 @@ public interface DynamicRegistrationApi {
             @RequestBody String registrationRequestJwtSerialised,
 
             Principal principal
-    ) throws  OIDCException, OBErrorResponseException;
+    ) throws OAuth2InvalidClientException, DynamicClientRegistrationException;
 }

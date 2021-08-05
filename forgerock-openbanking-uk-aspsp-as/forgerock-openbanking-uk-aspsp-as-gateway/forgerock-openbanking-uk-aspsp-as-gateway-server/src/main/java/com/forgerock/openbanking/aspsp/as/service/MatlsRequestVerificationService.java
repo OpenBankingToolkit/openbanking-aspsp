@@ -37,7 +37,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.text.ParseException;
 import java.util.Base64;
@@ -55,7 +55,7 @@ public class MatlsRequestVerificationService {
     private static final String BASIC = "Basic";
 
     public MatlsRequestVerificationService(TppStoreService tppStoreService) {
-        this.tppStoreService = tppStoreService;
+        MatlsRequestVerificationService.tppStoreService = tppStoreService;
     }
 
     public PairClientIDAuthMethod verifyMATLSMatchesRequest(MultiValueMap paramMap, String authorization,
@@ -183,7 +183,7 @@ public class MatlsRequestVerificationService {
             // Authorization: Basic base64credentials
             String base64Credentials = authorization.substring(BASIC.length()).trim();
             String credentials = new String(Base64.getDecoder().decode(base64Credentials),
-                    Charset.forName("UTF-8"));
+                    StandardCharsets.UTF_8);
             // credentials = username:password
             final String[] values = credentials.split(":", 2);
             return values[0];

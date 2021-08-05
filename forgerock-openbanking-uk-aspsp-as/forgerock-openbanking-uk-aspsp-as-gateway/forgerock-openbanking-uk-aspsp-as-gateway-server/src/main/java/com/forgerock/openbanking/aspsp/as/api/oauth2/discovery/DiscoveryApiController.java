@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -41,12 +40,12 @@ import java.util.Objects;
 @Slf4j
 public class DiscoveryApiController implements DiscoveryApi {
 
-    private AMASPSPGateway amGateway;
-    private String dnsHostRoot;
-    private String readWriteApiVersion;
-    private String clientRegistrationApiVersion;
-    private String scgwPort;
-    private DiscoveryConfig discoveryConfig;
+    private final AMASPSPGateway amGateway;
+    private final String dnsHostRoot;
+    private final String readWriteApiVersion;
+    private final String clientRegistrationApiVersion;
+    private final String scgwPort;
+    private final DiscoveryConfig discoveryConfig;
 
     public DiscoveryApiController(AMASPSPGateway amGateway,
                                   DiscoveryConfig discoveryConfig,

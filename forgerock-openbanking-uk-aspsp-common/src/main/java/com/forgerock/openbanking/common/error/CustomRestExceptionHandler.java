@@ -22,6 +22,8 @@ package com.forgerock.openbanking.common.error;
 
 import brave.Tracer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicRegistrationAdviceResponseBody;
 import com.forgerock.openbanking.common.error.exception.oauth2.*;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -413,4 +415,11 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(ex.getHttpStatusCode()).headers(httpHeaders).body(responseBody);
     }
 
+    @ExceptionHandler
+    protected ResponseEntity<DynamicRegistrationAdviceResponseBody> handleDynamicClientRegistrationException(
+            DynamicClientRegistrationException exception, WebRequest request){
+        DynamicRegistrationAdviceResponseBody response =
+                new DynamicRegistrationAdviceResponseBody(exception.getErrorType().toString(), exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }

@@ -37,6 +37,7 @@ import org.springframework.hateoas.Resources;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -132,10 +133,22 @@ public class TppStoreServiceImpl implements TppStoreService {
 
     @Override
     public void deleteTPP(Tpp tpp) {
+        String methodName = "deleteTpp()";
+        String clientId = tpp.getClientId();
+        LOGGER.debug("{} deleting '{}'", methodName, clientId);
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(rsStoreRoot + "/tpps/" + tpp.getId());
         URI uri = builder.build().encode().toUri();
-        LOGGER.debug("Delete TPP", tpp);
-        restTemplate.exchange(uri, HttpMethod.DELETE, null, String.class);
+
+        try {
+            ResponseEntity<String> result = restTemplate.exchange(uri, HttpMethod.DELETE, null, String.class);
+            if(!result.getStatusCode().is2xxSuccessful()){
+                LOGGER.info("{} Failed to delete TPP record. result was {}", methodName, result);
+            } else {
+                LOGGER.debug("{} Successfully deleted tpp with clientId of {}", methodName, clientId);
+            }
+        } catch (RestClientException rce){
+            LOGGER.error("deleteTpp() Failed to delete tpp with OIDC ClientID of {}", clientId, rce);
+        }
     }
 
     @Override

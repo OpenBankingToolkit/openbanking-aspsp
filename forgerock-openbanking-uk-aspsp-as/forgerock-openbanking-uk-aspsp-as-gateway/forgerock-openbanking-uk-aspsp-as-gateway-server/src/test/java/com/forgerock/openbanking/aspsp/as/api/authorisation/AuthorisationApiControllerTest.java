@@ -78,7 +78,7 @@ public class AuthorisationApiControllerTest {
     private TokenUsageService tokenUsageService;
 
     private AuthorisationApiController authorisationApiController ;
-    private String clientId = "98e119f6-196f-4296-98d4-f1a2f445bca2";
+    private final String clientId = "98e119f6-196f-4296-98d4-f1a2f445bca2";
 
 
     @Before

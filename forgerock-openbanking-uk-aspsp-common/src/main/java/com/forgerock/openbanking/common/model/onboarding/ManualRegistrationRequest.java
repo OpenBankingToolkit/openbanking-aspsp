@@ -38,7 +38,7 @@ public class ManualRegistrationRequest {
     public String applicationDescription;
     public List<String> redirectUris;
     public String softwareStatementAssertion;
-    public String qsealPem;
+    public String qWacPem;
     public String appId;
     public String psd2Roles;
 

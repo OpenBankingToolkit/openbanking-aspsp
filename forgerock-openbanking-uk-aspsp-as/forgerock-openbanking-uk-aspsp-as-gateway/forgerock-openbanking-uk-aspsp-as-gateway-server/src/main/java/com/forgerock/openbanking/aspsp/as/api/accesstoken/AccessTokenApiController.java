@@ -50,7 +50,7 @@ import java.security.Principal;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.constants.OIDCConstants.OIDCClaim.CLIENT_ASSERTION;
-import static com.forgerock.openbanking.constants.OIDCConstants.TokenEndpointAuthMethods.*;
+import static com.forgerock.openbanking.constants.OIDCConstants.TokenEndpointAuthMethods.PRIVATE_KEY_JWT;
 
 @Controller
 @Slf4j
