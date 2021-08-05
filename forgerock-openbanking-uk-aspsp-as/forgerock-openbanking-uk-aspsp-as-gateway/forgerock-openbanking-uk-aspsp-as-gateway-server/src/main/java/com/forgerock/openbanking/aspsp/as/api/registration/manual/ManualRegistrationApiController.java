@@ -162,10 +162,10 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
             Principal principal
     ) {
         Optional<Tpp> isTpp = tppStoreService.findByClientId(clientId);
+        isTpp.ifPresent(tppRegistrationService::deleteOAuth2RegistrationAndTppRecord);
         if (isTpp.isPresent()) {
             Tpp tpp = isTpp.get();
-            tppRegistrationService.deleteOAuth2RegistrationAndTppRecord(tpp.getRegistrationResponse().getRegistrationAccessToken(),
-                    tpp);
+            tppRegistrationService.deleteOAuth2RegistrationAndTppRecord(tpp);
         }
         return ResponseEntity.ok(true);
     }

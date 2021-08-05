@@ -392,11 +392,12 @@ public class TppRegistrationService {
         return officialName;
     }
 
-    public void deleteOAuth2RegistrationAndTppRecord(String token, Tpp tpp) {
+    public void deleteOAuth2RegistrationAndTppRecord(Tpp tpp) {
         String methodName = "deleteOAuth2RegistrationAndTppRecord()";
         String clientId = tpp.getClientId();
         log.debug("{}; called for OIDC Registration client Id {}", methodName, clientId);
-        deleteOAuth2ClientFromAm(token, tpp);
+        Optional<String> accessTokenOpt = tpp.getRegistrationAccessToken();
+        accessTokenOpt.ifPresent(accessToken -> deleteOAuth2ClientFromAm(accessToken, tpp));
         log.debug("{} Deleting {} from rs store", methodName, clientId);
         tppStoreService.deleteTPP(tpp);
     }

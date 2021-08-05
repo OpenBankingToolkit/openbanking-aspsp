@@ -149,7 +149,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
 
         String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
 
-        tppRegistrationService.deleteOAuth2RegistrationAndTppRecord(accessToken, tpp);
+        tppRegistrationService.deleteOAuth2RegistrationAndTppRecord(tpp);
         log.info("{} Unregistered ClientId '{}'", methodName, clientId);
         return ResponseEntity.ok().build();
     }
