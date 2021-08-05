@@ -21,5 +21,5 @@
 package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
 public enum JWTClaimsOrigin {
-    REGISTRATION_REQUEST_JWT, SOFTWARE_STATEMENT_ASSERTION;
+    REGISTRATION_REQUEST_JWT, SOFTWARE_STATEMENT_ASSERTION
 }

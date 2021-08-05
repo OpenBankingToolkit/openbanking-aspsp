@@ -25,7 +25,7 @@ import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authenti
 
 public abstract class ApiClientIdentityPsd2 extends ApiClientIdentity {
 
-    private PSD2Authentication authentication;
+    private final PSD2Authentication authentication;
 
     protected ApiClientIdentityPsd2(PSD2Authentication authentication) throws OAuth2InvalidClientException {
         super(authentication);

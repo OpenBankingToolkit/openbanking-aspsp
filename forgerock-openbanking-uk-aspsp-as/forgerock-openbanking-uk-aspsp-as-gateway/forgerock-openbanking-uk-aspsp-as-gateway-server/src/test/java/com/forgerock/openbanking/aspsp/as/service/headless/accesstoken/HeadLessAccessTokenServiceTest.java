@@ -187,7 +187,7 @@ public class HeadLessAccessTokenServiceTest {
 
     private MultiValueMap<String, String> getParamsMap(GrantType grantType) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add(OIDCClaim.RESPONSE_TYPE, ResponseType.CODE.toString());
+        params.add(OIDCClaim.RESPONSE_TYPE, ResponseType.CODE);
         params.add(OIDCClaim.CLIENT_ID, "test_client_id");
         params.add(OIDCClaim.STATE, "test_state");
         params.add(OIDCClaim.NONCE, "test_nonce");

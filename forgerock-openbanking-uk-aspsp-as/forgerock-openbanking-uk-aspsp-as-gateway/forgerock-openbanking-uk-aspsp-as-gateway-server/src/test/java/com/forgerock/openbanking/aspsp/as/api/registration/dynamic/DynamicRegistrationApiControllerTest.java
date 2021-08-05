@@ -33,9 +33,9 @@ import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementFactory;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.*;
@@ -90,7 +90,7 @@ public class DynamicRegistrationApiControllerTest {
         return testCerts;
     }
 
-    private CertificateTestSpec testSpec;
+    private final CertificateTestSpec testSpec;
 
     public DynamicRegistrationApiControllerTest(CertificateTestSpec testSpec){
         this.testSpec = testSpec;
@@ -152,7 +152,7 @@ public class DynamicRegistrationApiControllerTest {
 
         // when
         OAuth2BearerTokenUsageMissingAuthInfoException exception = catchThrowableOfType(()->
-                dynamicRegistrationApiController.unregister(clientId, null,
+                dynamicRegistrationApiController.deleteRegistration(clientId, null,
                         principal), OAuth2BearerTokenUsageMissingAuthInfoException.class);
         // then
         assertThat(exception).isNotNull();
@@ -168,7 +168,7 @@ public class DynamicRegistrationApiControllerTest {
 
         // when
         OAuth2InvalidClientException exception = catchThrowableOfType(()->
-                dynamicRegistrationApiController.unregister(clientId, authorizationString,
+                dynamicRegistrationApiController.deleteRegistration(clientId, authorizationString,
                 null), OAuth2InvalidClientException.class);
         // then
         assertThat(exception).isNotNull();
@@ -186,7 +186,7 @@ public class DynamicRegistrationApiControllerTest {
 //
 //        // when
 //        OAuth2InvalidClientException exception = catchThrowableOfType(()->
-//                dynamicRegistrationApiController.unregister(clientId, this.authorizationString,
+//                dynamicRegistrationApiController.deleteRegistration(clientId, this.authorizationString,
 //                        principal), OAuth2InvalidClientException.class);
 //        // then
 //        assertThat(exception).isNotNull();
@@ -204,7 +204,7 @@ public class DynamicRegistrationApiControllerTest {
 
         // when
         OAuth2InvalidClientException exception = catchThrowableOfType(()->
-                dynamicRegistrationApiController.unregister(clientId, this.authorizationString, principal),
+                dynamicRegistrationApiController.deleteRegistration(clientId, this.authorizationString, principal),
                 OAuth2InvalidClientException.class);
         // then
         assertThat(exception).isNotNull();
@@ -223,7 +223,7 @@ public class DynamicRegistrationApiControllerTest {
 
         // when
         OAuth2BearerTokenUsageInvalidTokenException exception = catchThrowableOfType(()->
-                        dynamicRegistrationApiController.unregister(clientId, this.authorizationString, principal),
+                        dynamicRegistrationApiController.deleteRegistration(clientId, this.authorizationString, principal),
                 OAuth2BearerTokenUsageInvalidTokenException.class);
         // then
         assertThat(exception).isNotNull();
@@ -249,7 +249,7 @@ public class DynamicRegistrationApiControllerTest {
 
         // when
         OAuth2BearerTokenUsageInvalidTokenException exception = catchThrowableOfType(()->
-                        dynamicRegistrationApiController.unregister(clientId, this.authorizationString, principal),
+                        dynamicRegistrationApiController.deleteRegistration(clientId, this.authorizationString, principal),
                 OAuth2BearerTokenUsageInvalidTokenException.class);
         // then
         assertThat(exception).isNotNull();
@@ -276,7 +276,7 @@ public class DynamicRegistrationApiControllerTest {
 
         // when
 
-        ResponseEntity<?> unregisterResponse = dynamicRegistrationApiController.unregister(clientId,
+        ResponseEntity<?> unregisterResponse = dynamicRegistrationApiController.deleteRegistration(clientId,
                 this.authorizationString, principal);
         // thenobjectMapper
         assertThat(unregisterResponse).isNotNull();
@@ -322,7 +322,7 @@ public class DynamicRegistrationApiControllerTest {
 
         // when
         ResponseEntity<OIDCRegistrationResponse> response =
-                dynamicRegistrationApiController.updateClient(clientId, authTokenHeaderValue,
+                dynamicRegistrationApiController.updateRegistration(clientId, authTokenHeaderValue,
                         registrationRequestJwtSerialised,
                 principal);
 

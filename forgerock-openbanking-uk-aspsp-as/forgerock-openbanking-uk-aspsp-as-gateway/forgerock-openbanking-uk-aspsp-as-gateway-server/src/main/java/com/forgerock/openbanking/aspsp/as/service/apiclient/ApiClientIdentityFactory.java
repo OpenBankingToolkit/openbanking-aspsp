@@ -41,6 +41,8 @@ import java.util.Optional;
 public class ApiClientIdentityFactory {
 
     private final String OBIE_ISSUER_NAME = "CN=OpenBanking Pre-Production Issuing CA,O=OpenBanking,C=GB";
+    private final String FORGEROCK_ISSUER_NAME = "CN=obri-external-ca,OU=forgerock.financial,O=ForgeRock,L=Bristol," +
+            "ST=Avon,C=UK";
 
     public ApiClientIdentity getApiClientIdentity(Principal principal) throws ApiClientException, OAuth2InvalidClientException {
 
@@ -63,7 +65,7 @@ public class ApiClientIdentityFactory {
                     default:
                         String errorString = "Client presented an invalid Certificate " +
                                 "Type for use as a Transport certificate. Type presented ': " + certType + "'";
-                        log.debug("getApiClientIdentity() {}", errorString);
+                        log.info("getApiClientIdentity() {}", errorString);
                         throw new ApiClientException(errorString);
 
                 }
@@ -85,16 +87,18 @@ public class ApiClientIdentityFactory {
         }
         String errorString = "Client presented an invalid Certificate " +
                 "Type for use as a Transport certificate. Type presented ': " + certType + "'";
-        log.debug("getApiClientIdentity() {}", errorString);
+        log.info("getApiClientIdentity() {}", errorString);
         throw new ApiClientException(errorString);
     }
 
     private ApiClientCertificateType getApiClientCertificateTypeFromX509(X509Authentication authentication)
             throws ApiClientException {
+        String methodName = "getApiClientcertificateFromX509()";
+        log.debug("{}}, authentication is '{}'", methodName, authentication.toString());
         ApiClientCertificateType type;
         X509Certificate[] certChain = authentication.getCertificateChain();
         String issuer = getTransportCertificateIssuer(certChain);
-        log.debug("getApiClientCertificateType() certificate issuer is '{}'", issuer);
+        log.debug("{} certificate issuer is '{}'", methodName, issuer);
         if(issuer.equalsIgnoreCase(OBIE_ISSUER_NAME)){
             List<String> certUsage = getTransportCertificateUsage(certChain);
             if(certUsage.contains(CertificateUsageOIDs.SIGNER_OF_DOCUMENTS)){
@@ -102,14 +106,15 @@ public class ApiClientIdentityFactory {
             } else if (certUsage.contains(CertificateUsageOIDs.CLIENT_AUTH)){
                 type = ApiClientCertificateType.OB_TRANSPORT;
             } else {
-                log.debug("getApiClientCertificateTypeFromX509() did not find expected extended key usage.");
-                throw new ApiClientException("OBIE issued (legacy) X509Certificate did not contain expected extended " +
+                String errorString = "OBIE issued (legacy) X509Certificate did not contain expected extended " +
                         "certificate usage purposes. Contained " + certUsage + ". Expected " +
-                        CertificateUsageOIDs.CLIENT_AUTH + " or " + CertificateUsageOIDs.SIGNER_OF_DOCUMENTS);
+                        CertificateUsageOIDs.CLIENT_AUTH + " or " + CertificateUsageOIDs.SIGNER_OF_DOCUMENTS;
+                log.info("{} {}; authentication; {}", methodName, errorString, authentication);
+                throw new ApiClientException(errorString);
             }
         } else {
             String errorMessage = "Non eIDAS/PSD2 certificate presented, but it is not an OB issued certificate.";
-            log.debug("getApiClientCertificateTypeFromX509() {}", errorMessage);
+            log.info("{} {}", methodName, errorMessage);
             throw new ApiClientException(errorMessage);
         }
         return type;
@@ -118,14 +123,18 @@ public class ApiClientIdentityFactory {
 
     private ApiClientCertificateType getApiClientCertificateTypeFromPSD2(PSD2Authentication authentication)
             throws ApiClientException {
+        String methodName = "getApiClientCertificateTypeFromPSD2()";
+        log.debug("{} called, authentication; '{}'", methodName, authentication);
+
         ApiClientCertificateType type;
-        Psd2CertInfo certInfo = authentication.getPsd2CertInfo();
+
         X509Certificate[] certChain = authentication.getCertificateChain();
         String issuer = getTransportCertificateIssuer(certChain);
-        log.debug("getApiClientCertificateType() certificate issuer is '{}'", issuer);
+        log.debug("{} certificate issuer is '{}'",methodName, issuer);
+
+        Psd2CertInfo certInfo = authentication.getPsd2CertInfo();
         EidasCertType eidasCertType = getEidasCertType(certInfo);
-        String FORGEROCK_ISSUER_NAME = "CN=obri-external-ca,OU=forgerock.financial,O=ForgeRock,L=Bristol,ST=Avon," +
-                "C=UK";
+
         if(issuer.equalsIgnoreCase(FORGEROCK_ISSUER_NAME)){
             switch (eidasCertType){
                 case ESEAL:
@@ -136,10 +145,10 @@ public class ApiClientIdentityFactory {
                     break;
                 case ESIGN: // ESIGN certificates are meant as electronic replacements for signatures for natural people
                 default:
-                    log.debug("getApiClientCertificateType() Unrecognised FR eIdas certificate type: '{}'. Etsi " +
-                            "qcStatements must include field 0.4.0.1862.1.6 indicating qc type.", eidasCertType);
-                    throw new ApiClientException("Unrecognised ForgeRock eidas certificate type: '{}'. Etsi " +
-                            "qcStatements must include field 0.4.0.1862.1.6 indicating qc type.");
+                    String errorMessage = "Unrecognised ForgeRock eidas certificate type: " + eidasCertType + ". Etsi" +
+                            " qcStatements must include field 0.4.0.1862.1.6 indicating qc type.";
+                    log.info("{} {}", methodName, errorMessage);
+                    throw new ApiClientException(errorMessage);
             }
         } else if (issuer.equalsIgnoreCase(OBIE_ISSUER_NAME)){
             switch (eidasCertType){
@@ -151,10 +160,10 @@ public class ApiClientIdentityFactory {
                     break;
                 case ESIGN:
                 default:
-                    log.debug("getApiClientCertificateType() Unrecognised OB eidas certificate type: '{}'. Etsi " +
-                            "qcStatements must include field 0.4.0.1862.1.6 indicating qc type.", eidasCertType);
-                    throw new ApiClientException("Unrecognised OBIE eidas certificate type: '{}'. Etsi qcStatements " +
-                            "must " + "include field 0.4.0.1862.1.6 indicating qc type.");
+                    String errorMessage = "Unrecognised OBIE eidas certificate type: " + eidasCertType + ". Etsi " +
+                        "qcStatements must include field 0.4.0.1862.1.6 indicating qc type.";
+                    log.info("{} {}", methodName, errorMessage);
+                    throw new ApiClientException(errorMessage);
             }
         } else {
             // Must be a QTSP issued eidas certificate??
@@ -167,13 +176,13 @@ public class ApiClientIdentityFactory {
                     break;
                 case ESIGN:
                 default:
-                    log.debug("getApiClientCertificateType() Unrecognised QTSP issued eidas certificate type: '{}'. " +
-                            "Etsi qcStatements must include field 0.4.0.1862.1.6 indicating qc type.", eidasCertType);
-                    throw new ApiClientException("Unrecognised QTSP issued eidas certificate type: '{}'. Etsi  " +
-                            "qcStatements must include field 0.4.0.1862.1.6 indicating qc type.");
+                    String errorMessage = "Unrecognised QTSP issued eidas certificate type: " + eidasCertType + ". " +
+                            "Etsi qcStatements must include field 0.4.0.1862.1.6 indicating qc type.";
+                    log.info("{} {}", methodName, errorMessage);
+                    throw new ApiClientException(errorMessage);
             }
         }
-        log.debug("getApiClientCertificateTypeFromPSD2() type is '{}'", type);
+        log.debug("{} type is '{}'", methodName, type);
         return type;
     }
 
@@ -184,22 +193,23 @@ public class ApiClientIdentityFactory {
     }
 
     private List<String> getTransportCertificateUsage(X509Certificate[] certChain) throws ApiClientException {
+        String methodName = "getTransportCertificateUsage()";
         X509Certificate transportCert = getTransportCertificate(certChain);
         try {
             List<String> extendedKeyUsage = transportCert.getExtendedKeyUsage();
-            log.debug("getTransportCertificateUsage() Key usage is '{}'", extendedKeyUsage);
+            log.debug("{} Key usage is '{}'", methodName, extendedKeyUsage);
             return extendedKeyUsage;
         } catch (CertificateParsingException cpe){
             String errorMessage =
-                    "Could not obtain extendedKeyUsage from certificate. '" + transportCert.toString() + "'";
-            log.debug("getTransportCertificateUsage() {}", errorMessage);
+                    "Could not obtain extendedKeyUsage from certificate. '" + transportCert + "'";
+            log.info("{} {}",methodName, errorMessage);
             throw new ApiClientException(errorMessage, cpe);
         }
     }
 
     private X509Certificate getTransportCertificate(X509Certificate[] certChain) throws ApiClientException {
         if(certChain == null || certChain.length < 1){
-            log.debug("No certificate chain available from the security principal");
+            log.info("getTransportCertificate() No certificate chain available from the security principal");
             throw new ApiClientException("No certificate chain available from the security Principal");
         }
         return certChain[0];
@@ -207,17 +217,23 @@ public class ApiClientIdentityFactory {
 
 
     private EidasCertType getEidasCertType(Psd2CertInfo certInfo) throws ApiClientException {
+        String methodName = "getEidasCertType()";
+        log.debug("{}; certInfo; '{}'", methodName, certInfo);
         Optional<EidasCertType> certTypeOptional;
         try {
             certTypeOptional = certInfo.getEidasCertType();
             if(certTypeOptional.isEmpty()){
-                throw new InvalidEidasCertType("Cert Type was empty.");
+                String errorMessage = "No certificate type available in PSD2 eIDAS certificate";
+                log.info("{}, {}. certInfo; '{}'", methodName, errorMessage, certInfo);
+                throw new InvalidEidasCertType(errorMessage);
             } else {
                 return certTypeOptional.get();
             }
         } catch (InvalidEidasCertType invalidEidasCertType) {
-            throw new ApiClientException("throwIfNotWebTypePSD2Cert() certificate does not have PSD2 certificate type" +
-                    " field", invalidEidasCertType);
+            log.info("{} Could not get Eidas certificate from PSD2 eIDAS certificate; {}", methodName,
+                    invalidEidasCertType.getMessage());
+            throw new ApiClientException("Could not determine PSD2 eIDAS certificate type; "
+                    + invalidEidasCertType.getMessage());
         }
     }
 

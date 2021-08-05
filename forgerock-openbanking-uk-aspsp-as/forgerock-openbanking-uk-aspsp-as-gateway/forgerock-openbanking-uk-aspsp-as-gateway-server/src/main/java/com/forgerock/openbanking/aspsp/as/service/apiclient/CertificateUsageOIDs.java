@@ -21,9 +21,9 @@
 package com.forgerock.openbanking.aspsp.as.service.apiclient;
 
 public interface CertificateUsageOIDs {
-    static final String SERVER_AUTH  = new String("1.3.6.1.5.5.7.3.1");
-    static final String CLIENT_AUTH  = new String("1.3.6.1.5.5.7.3.2");
-    static final String CODE_SIGNING  = new String("1.3.6.1.5.5.7.3.3");
-    static final String EMAIL_PROTECTION = new String("1.3.6.1.5.5.7.3.4");
-    static final String SIGNER_OF_DOCUMENTS = new String("1.3.6.1.4.1.311.10.3.12");
+    String SERVER_AUTH  = "1.3.6.1.5.5.7.3.1";
+    String CLIENT_AUTH  = "1.3.6.1.5.5.7.3.2";
+    String CODE_SIGNING  = "1.3.6.1.5.5.7.3.3";
+    String EMAIL_PROTECTION = "1.3.6.1.5.5.7.3.4";
+    String SIGNER_OF_DOCUMENTS = "1.3.6.1.4.1.311.10.3.12";
 }

@@ -57,9 +57,12 @@ public class RegistrationRequestFactory {
         this.objectMapper = objectMapper;
     }
 
-    public RegistrationRequest getRegistrationRequestFromJwt(String registrationRequestJwtSerialised)  throws DynamicClientRegistrationException {
+    public RegistrationRequest getRegistrationRequestFromJwt(String registrationRequestJwtSerialised)
+            throws DynamicClientRegistrationException {
 
+        String methodName = "getRegistrationRequestFromJwt()";
         try {
+            log.debug("{} called", methodName);
             RegistrationRequestJWTClaims registrationRequestJWTClaims =
                     getJwtClaimsSet(registrationRequestJwtSerialised, JWTClaimsOrigin.REGISTRATION_REQUEST_JWT);
             String ssaJwtSerialised =
@@ -67,12 +70,14 @@ public class RegistrationRequestFactory {
             RegistrationRequestJWTClaims ssaJwtClaims = getJwtClaimsSet(ssaJwtSerialised,
                     JWTClaimsOrigin.SOFTWARE_STATEMENT_ASSERTION);
             String issuer = ssaJwtClaims.getRequiredStringClaim(OpenBankingConstants.SSAClaims.ISSUER);
+            log.debug("{}, SSA issuer is '{}'", methodName, issuer);
 
             tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(ssaJwtSerialised, issuer);
-            DirectorySoftwareStatement regRequestSoftwareStatement =
-                    softwareStatementFactory.getSoftwareStatement(ssaJwtClaims);
+            log.info("{}. SSA is valid and was issued by '{}'", methodName, issuer);
 
-            String softwareJwkUri = regRequestSoftwareStatement.getSoftware_jwks_endpoint();
+            DirectorySoftwareStatement softwareStatement =
+                    softwareStatementFactory.getSoftwareStatement(ssaJwtClaims);
+            String softwareJwkUri = softwareStatement.getSoftware_jwks_endpoint();
             String softwareClientId =
                     ssaJwtClaims.getRequiredStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_CLIENT_ID);
             tppRegistrationService.verifyTPPRegistrationRequestSignature(registrationRequestJwtSerialised,
@@ -83,16 +88,18 @@ public class RegistrationRequestFactory {
             try {
                 RegistrationRequest request = objectMapper.readValue(registrationRequestJson, RegistrationRequest.class);
                 request.setJson(registrationRequestJson);
-                request.setDirectorySoftwareStatement(regRequestSoftwareStatement);
+                request.setDirectorySoftwareStatement(softwareStatement);
                 return request;
             } catch (IOException ioe){
-
-                throw new DynamicClientRegistrationException("Could not map registration request jwt fields to " +
-                        "internal object " + ioe.getMessage(), DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
+                String errorMessage =
+                        "Could not map registration request jwt fields to internal object; " + ioe.getMessage();
+                log.info("{}; {} registrationRequestJson; '{}'", methodName, errorMessage, registrationRequestJson);
+                throw new DynamicClientRegistrationException(errorMessage,
+                        DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
             }
         } catch (ParseException pe){
             String errorMessage = "Could not parse the provided registration JWT";
-            log.debug("getRegistrationRequest() {}", errorMessage, pe);
+            log.info("{}; {} {}", methodName, errorMessage, registrationRequestJwtSerialised, pe);
             throw new DynamicClientRegistrationException(errorMessage,
                     DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA );
         }
@@ -102,17 +109,18 @@ public class RegistrationRequestFactory {
     private RegistrationRequestJWTClaims getJwtClaimsSet(String registrationRequestJwtSerialised,
                                                          JWTClaimsOrigin origin) throws ParseException,
             DynamicClientRegistrationException {
+        String methodName = "getJwtClaimSet()";
+        log.trace("{} called with jwt of type {}", methodName, origin.toString());
         SignedJWT registrationRequestJws = SignedJWT.parse(registrationRequestJwtSerialised);
         JWTClaimsSet registrationRequestClaimsSet = registrationRequestJws.getJWTClaimsSet();
         if(registrationRequestClaimsSet == null){
             String errorString = "Registration Request JWT contained no claims";
-            log.debug("getRegistrationRequestFromJwt() {}", errorString);
+            log.info("{}; {}. jwtSerialised is {}", methodName, errorString, registrationRequestJwtSerialised);
             throw new DynamicClientRegistrationException(errorString,
                     DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
         }
         RegistrationRequestJWTClaims registrationRequestJWTClaims =
-                new RegistrationRequestJWTClaims(registrationRequestClaimsSet,
-                        origin);
+                new RegistrationRequestJWTClaims(registrationRequestClaimsSet, origin);
         return registrationRequestJWTClaims;
     }
 
@@ -120,13 +128,16 @@ public class RegistrationRequestFactory {
                                                                                 ManualRegistrationRequest manualRegistrationRequest,
                                                                                 ObjectMapper objectMapper)
             throws DynamicClientRegistrationException {
+        String methodName = "getRegistrationRequestFromManualRegistrationJson()";
+        log.debug("{} called with regisratrationRequestJson; '{}', manualRegistrationRequest; '{}'", methodName,
+                registrationRequestJson, manualRegistrationRequest);
         try{
             RegistrationRequest request = objectMapper.readValue(registrationRequestJson, RegistrationRequest.class);
             request.setRedirectUris(manualRegistrationRequest.getRedirectUris());
             String softwareStatementAssertion = manualRegistrationRequest.getSoftwareStatementAssertion();
             if (StringUtils.isEmpty(softwareStatementAssertion)){
                 String errorMessage = "Manual Request did not contain a valid software statement";
-                log.info("getRegistrationRequestFromManualregistrationJson() {}", errorMessage);
+                log.info("{} {}. registrationRequestJson is '{}'", methodName, errorMessage, registrationRequestJson);
                 throw new DynamicClientRegistrationException(errorMessage,
                         DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
             }
@@ -141,19 +152,14 @@ public class RegistrationRequestFactory {
             DirectorySoftwareStatement regRequestSoftwareStatement =
                     softwareStatementFactory.getSoftwareStatement(softwareStatementClaims);
 
-
-
-
             request.setDirectorySoftwareStatement(regRequestSoftwareStatement);
-
+            log.debug("{}, returning registrationRequest; '{}'", methodName, request);
             return request;
         } catch (IOException | ParseException ioe){
             String errorMessage = "Could not map Manual Registration Request JWT fields to internal object";
-            log.info("getRegistrationRequestFromManualRegistrationJson() {}", errorMessage, ioe);
+            log.info("{} {}",methodName, errorMessage, ioe);
             throw new DynamicClientRegistrationException("Could not map registration request jwt fields to " +
                     "internal object " + ioe.getMessage(), DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
         }
     }
-
-
 }

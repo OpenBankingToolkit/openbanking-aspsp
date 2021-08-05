@@ -23,23 +23,20 @@ package com.forgerock.openbanking.aspsp.as.service;
 import com.forgerock.openbanking.am.services.AMOIDCRegistrationService;
 import com.forgerock.openbanking.analytics.model.entries.TppEntry;
 import com.forgerock.openbanking.analytics.services.TppEntriesKPIService;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
-import com.forgerock.openbanking.common.utils.JwsClaimsUtils;
 import com.forgerock.openbanking.constants.OIDCConstants.TokenEndpointAuthMethods;
 import com.forgerock.openbanking.constants.OpenBankingConstants.SSAClaims;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
-import com.nimbusds.jose.shaded.json.JSONArray;
-import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
@@ -50,7 +47,6 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -125,7 +121,7 @@ public class TppRegistrationService {
         if (!softwareIdFromMatls.equals(softwareIdFromSSA)) {
             log.info("SSA software ID '{}' doesn't match the Certificate CN '{}'", softwareIdFromSSA,
                     softwareIdFromMatls);
-            log.trace("verifySSASoftwareIdAgainstTransportCert() verification failed");
+            log.debug("verifySSASoftwareIdAgainstTransportCert() verification failed");
             throw new OAuth2InvalidClientException("Legacy OBTransport certificate used did not refer to the same " +
                     "softwareId as the SSA provided.");
         }
@@ -133,25 +129,42 @@ public class TppRegistrationService {
                 this.getClass().getSimpleName());
     }
 
+    /**
+     * Verifies the registration request jwt against the jwks_uri and checks that the ssaSoftwareClient id matches
+     * the software_client_id claim in the software statement provided in the registration request is the same as the
+     * issuer of the registration request jwt.
+     * @param registrationRequestJwsSerialised - the serialised registration request jwt as received in the request
+     * @param ssaSoftwareClientId - the software_client_id claim from the software statement in the registration request
+     * @param jwks_uri - the jwks_uri claim taken from the software statement in the registration request
+     * @throws DynamicClientRegistrationException Thrown if the registration request can't be validated
+     */
     public void verifyTPPRegistrationRequestSignature(String registrationRequestJwsSerialised, String ssaSoftwareClientId,
                                                       String jwks_uri)
             throws DynamicClientRegistrationException {
-        try {
-            log.debug("verifyTPPRegistrationRequestSignature() validating against jwks_uri; '{}'", jwks_uri);
 
+        String methodName = "verifyTPPRegistrationRequestSignature()";
+        try {
+            log.debug("{} validating registration request JWT issued by '{}' against jwks_uri; '{}'",
+                    methodName, ssaSoftwareClientId, jwks_uri);
             cryptoApiClient.validateJws(registrationRequestJwsSerialised, ssaSoftwareClientId, jwks_uri);
-            return;
+            log.info("{} Registration request JWT signature is valid, issuer & ssa's client Id is '{}', jwks_uri; '{}'",
+                    methodName, ssaSoftwareClientId, jwks_uri);
         } catch (InvalidTokenException | ParseException | IOException e) {
-            log.error("Invalid TPP registration request token: " + e.getMessage(), e);
-            throw new DynamicClientRegistrationException(e.getMessage(),
+            String errorMessage = "Invalid TPP registration request JWT. Failed to verify signature of Registration " +
+                    "Request with SSA for software client Id of " + ssaSoftwareClientId + " against jwks_uri '" +
+                    jwks_uri +"'. Error; " + e.getMessage();
+            log.info("{}; {}", methodName, errorMessage, e);
+            throw new DynamicClientRegistrationException(errorMessage,
                     DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
         }
     }
 
     /**
-     *
-     * @param registrationRequest
-     * @throws DynamicClientRegistrationException
+     * There are conditions in the Open Banking DCR 3.3 specifications that need checking. See
+     * <a href=https://openbankinguk.github.io/dcr-docs-pub/v3.3/dynamic-client-registration.html>Open Banking Dynamic
+     * Client Registration v3.3</a> for the specifications
+     * @param registrationRequest the registration request object against which the tests should be made.
+     * @throws DynamicClientRegistrationException if the request does not meet with the specifications
      */
     public void verifyTPPRegistrationRequestAgainstSSA(RegistrationRequest registrationRequest)
             throws DynamicClientRegistrationException {
@@ -236,23 +249,6 @@ public class TppRegistrationService {
     }
 
 
-    public List<String> parseContacts(JWTClaimsSet ssaClaims) {
-        List<String> contacts = new ArrayList<>();
-        JSONArray contactsJsonArray = (JSONArray) ssaClaims.getClaim(SSAClaims.ORG_CONTACTS);
-        if (contactsJsonArray != null) {
-            for (Object contactJson : contactsJsonArray) {
-                JSONObject contactJsonObject = ((JSONObject) contactJson);
-                StringBuilder contact = new StringBuilder();
-                contact.append("email:").append(JwsClaimsUtils.getContactField(contactJsonObject, "email")).append(";");
-                contact.append("name:").append(JwsClaimsUtils.getContactField(contactJsonObject, "name")).append(";");
-                contact.append("phone:").append(JwsClaimsUtils.getContactField(contactJsonObject, "phone")).append(";");
-                contact.append("type:").append(JwsClaimsUtils.getContactField(contactJsonObject, "type")).append(";");
-                contacts.add(contact.toString());
-            }
-        }
-        return contacts;
-    }
-
     public Tpp registerTpp(ApiClientIdentity clientIdentity, RegistrationRequest oidcRegistrationRequest)
             throws DynamicClientRegistrationException {
         log.debug("registerTpp() Send the OAuth2 dynamic registration request to the AS");
@@ -261,7 +257,7 @@ public class TppRegistrationService {
 
         String cn = clientIdentity.getTransportCertificateCn();
         // ToDo: Previously this came from the spring config and was either set to the value found in either
-        //  openBankingDirectoryConfiguration.getIssuerID() or forgeRockDirectoryConfiguration.id()
+        // openBankingDirectoryConfiguration.getIssuerID() or forgeRockDirectoryConfiguration.id()
 
         String ssaIssuer = oidcRegistrationRequest.getSsaIssuer();
         String directoryId = getDirectoryIdFromSsaIssuer(ssaIssuer);
@@ -389,44 +385,36 @@ public class TppRegistrationService {
     }
 
     private String getOrgSoftwareCombinedTppName(RegistrationRequest registrationRequest,
-                                                 OIDCRegistrationResponse registrationResponse)
-            throws DynamicClientRegistrationException  {
-
+                                                 OIDCRegistrationResponse registrationResponse){
         String organisationName = registrationRequest.getOrganisationName();
         String officialName = organisationName + " - " + registrationResponse.getClientName();
+        log.debug("getOrgSoftwareCombinedTppName() returning official name {}", officialName);
         return officialName;
     }
 
-    public void unregisterTpp(String token, Tpp tpp) {
-        log.debug("unregisterTpp() Deleting {} from AM", tpp.getClientId());
-        try {
-            amoidcRegistrationService.deleteOIDCClient(token, tpp.getClientId());
-            log.debug("unregister() deleted {} from AM", tpp.getClientId());
-        } catch (Exception e){
-            log.debug("unregisterTpp() - Failed to delete OIDCClient from AM. Error was ", e);
-        }
-
-        updateTppMetrics(tpp, true);
-
-        log.debug("unregisterTpp() Deleting {} from rs store", tpp.getClientId());
+    public void deleteOAuth2RegistrationAndTppRecord(String token, Tpp tpp) {
+        String methodName = "deleteOAuth2RegistrationAndTppRecord()";
+        String clientId = tpp.getClientId();
+        log.debug("{}; called for OIDC Registration client Id {}", methodName, clientId);
+        deleteOAuth2ClientFromAm(token, tpp);
+        log.debug("{} Deleting {} from rs store", methodName, clientId);
         tppStoreService.deleteTPP(tpp);
     }
 
+    private void deleteOAuth2ClientFromAm(String token, Tpp tpp){
+        log.debug("deleteOAuth2ClientFromAm() Deleting {} from AM", tpp.getClientId());
+        try {
+            amoidcRegistrationService.deleteOIDCClient(token, tpp.getClientId());
+            log.info("deleteOAuth2ClientFromAm() deleted OAuth2 client Id '{}' from AM", tpp.getClientId());
+            updateTppMetrics(tpp, true);
+        } catch (Exception e){
+            log.warn("deleteOAuth2ClientFromAm() - Failed to delete OIDCClient '{}' from AM. Error was ",
+                tpp.getClientId(), e);
+        }
+    }
 
     public OIDCRegistrationResponse getOIDCClient(String token, Tpp tpp) {
         log.debug("Read TPP {} in AM", tpp.getClientId());
         return amoidcRegistrationService.getOIDCClient(token, tpp.getClientId());
-    }
-
-    public String getStringClaim(JWTClaimsSet claimSet, String claimName) throws DynamicClientRegistrationException {
-        try {
-            return claimSet.getStringClaim(claimName);
-        } catch (ParseException pe) {
-            String errorString = "Could not parse the " + claimName + " claim from the software " +
-                    "statement provided in the registration request JWT.";
-            log.debug("getStringClaim() {}, Error was ", errorString, pe);
-            throw new DynamicClientRegistrationException(errorString + " Error was " + pe.getMessage(),
-                    DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
-        }
     }
 }

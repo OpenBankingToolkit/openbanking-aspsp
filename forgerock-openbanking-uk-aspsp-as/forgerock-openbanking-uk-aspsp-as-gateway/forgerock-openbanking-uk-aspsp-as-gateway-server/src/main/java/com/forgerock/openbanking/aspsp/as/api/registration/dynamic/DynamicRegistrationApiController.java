@@ -34,10 +34,8 @@ import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerToken
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.utils.extractor.TokenExtractor;
-import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
-import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +47,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import javax.annotation.Nullable;
 import javax.validation.Valid;
@@ -119,11 +116,11 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
      * @throws OAuth2InvalidClientException
      */
     @Override
-    public ResponseEntity<Void> unregister(String authorization,Principal principal)
+    public ResponseEntity<Void> deleteRegistration(String authorization, Principal principal)
             throws OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2InvalidClientException,
             OAuth2BearerTokenUsageInvalidTokenException {
-        log.debug("unregister() called with no clientId");
-        return unregister(null, authorization, principal);
+        log.debug("deleteRegistration() called with no clientId");
+        return deleteRegistration(null, authorization, principal);
     }
 
     /**
@@ -140,10 +137,11 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
      * @throws OAuth2BearerTokenUsageInvalidTokenException
      */
     @Override
-    public ResponseEntity<Void> unregister(String clientId, String authorization, Principal principal)
+    public ResponseEntity<Void> deleteRegistration(String clientId, String authorization, Principal principal)
             throws OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2InvalidClientException,
             OAuth2BearerTokenUsageInvalidTokenException {
-        log.debug("unregister() called for clientId; '{}'", clientId);
+        String methodName = "deleteRegistration()";
+        log.info("{} called for ClientId '{}'", methodName, clientId);
         checkAuthArgsContainValidInformation(principal, authorization);
         
         Tpp tpp = getTpp(principal);
@@ -151,7 +149,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
 
         String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
 
-        tppRegistrationService.unregisterTpp(accessToken, tpp);
+        tppRegistrationService.deleteOAuth2RegistrationAndTppRecord(accessToken, tpp);
+        log.info("{} Unregistered ClientId '{}'", methodName, clientId);
         return ResponseEntity.ok().build();
     }
 
@@ -167,11 +166,15 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
      * @throws OAuth2BearerTokenUsageMissingAuthInfoException
      */
     @Override
-    public ResponseEntity<OIDCRegistrationResponse> getRegisterResult( String authorization, Principal principal)
+    public ResponseEntity<OIDCRegistrationResponse> getRegistration(String authorization, Principal principal)
             throws OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException,
             OAuth2BearerTokenUsageMissingAuthInfoException {
-
-        return getRegisterResult(null, authorization, principal);
+        log.info("Received a request to get registration information. No ClientId provided");
+        ResponseEntity<OIDCRegistrationResponse> result = getRegistration(null, authorization, principal);
+        if(result.getStatusCode() == HttpStatus.OK){
+            log.info("Successfully returning registration information where no ClientId was provided");
+        }
+        return result;
     }
 
     /**
@@ -190,32 +193,30 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
      * @throws OAuth2BearerTokenUsageMissingAuthInfoException
      */
     @Override
-    public ResponseEntity<OIDCRegistrationResponse> getRegisterResult( String clientId, String authorization,
-                                                                       Principal principal)
+    public ResponseEntity<OIDCRegistrationResponse> getRegistration(String clientId, String authorization,
+                                                                    Principal principal)
             throws OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException,
             OAuth2BearerTokenUsageMissingAuthInfoException {
 
-        log.debug("getRegisterResultCalled for clientId {}, principal is {}", clientId, principal);
+        log.info("Received a request to get registration information for clientId {}, principal is {}", clientId,
+                principal);
         checkAuthArgsContainValidInformation(principal, authorization);
         Tpp tpp = getTpp(principal);
         ensureTppOwnsOidcRegistration(tpp, clientId);
         String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
-
-        return ResponseEntity.ok(tppRegistrationService.getOIDCClient(accessToken, tpp));
+        OIDCRegistrationResponse registrationResponse = tppRegistrationService.getOIDCClient(accessToken, tpp);
+        log.info("Successfully returning registration information for clientId {}", registrationResponse.getClientId());
+        return ResponseEntity.ok(registrationResponse);
     }
 
     @Override
-    public ResponseEntity<OIDCRegistrationResponse> updateClient(
-            @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750" ,required=true)
-            @RequestHeader(value="Authorization", required=true) String authorization,
-
-            @ApiParam(value = "A request to register a Software Statement Assertion with an ASPSP"  )
-            @Valid
-            @RequestBody String registrationRequestJwtSerialised,
-
-            Principal principal
-    ) throws OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException, OAuth2BearerTokenUsageMissingAuthInfoException, DynamicClientRegistrationException {
-        return updateClient(null, authorization, registrationRequestJwtSerialised, principal);
+    public ResponseEntity<OIDCRegistrationResponse> updateRegistration(String authorization,
+                                                                       String registrationRequestJwtSerialised,
+                                                                       Principal principal
+    ) throws OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException,
+            OAuth2BearerTokenUsageMissingAuthInfoException, DynamicClientRegistrationException {
+        log.info("Received a request to update registration information. No client Id provided");
+        return updateRegistration(null, authorization, registrationRequestJwtSerialised, principal);
     }
 
     /**
@@ -224,22 +225,22 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
      * @param authorization An Authorisation Token as per https://tools.ietf.org/html/rfc6750
      * @param registrationRequestJwtSerialised A request to register a Software Statement Assertion with an ASPSP
      * @param principal - the principal identity that is making the request
-     * @return
+     * @return returns a ResponseEntity used to determine if the request was successful and, if so, gain access to any
+     * body returned, headers etc.
      * @throws OAuth2InvalidClientException
      * @throws OAuth2BearerTokenUsageInvalidTokenException
      * @throws OAuth2BearerTokenUsageMissingAuthInfoException
      * @throws DynamicClientRegistrationException
      */
     @Override
-    public ResponseEntity<OIDCRegistrationResponse> updateClient(
-            String clientId,
-            String authorization,
-            String registrationRequestJwtSerialised,
-            Principal principal
-    ) throws OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException,
+    public ResponseEntity<OIDCRegistrationResponse> updateRegistration(String clientId, String authorization,
+                                                                       String registrationRequestJwtSerialised,
+                                                                       Principal principal)
+            throws OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException,
             OAuth2BearerTokenUsageMissingAuthInfoException, DynamicClientRegistrationException {
-
+        String methodName = "updateRegistration()";
         try {
+            log.info("{} called for ClientId '{}'. Princpal is {}", methodName, clientId, principal);
             ApiClientIdentity apiClientIdentity = this.apiClientIdentityFactory.getApiClientIdentity(principal);
             apiClientIdentity.throwIfTppNotOnboarded();
             RegistrationRequest registrationRequest =
@@ -257,11 +258,13 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
 
             tpp = tppRegistrationService.updateTpp(tpp, accessToken, registrationRequest);
-
+            log.info("{} Updated registration information for ClientId {}", methodName, tpp.getClientId());
             return ResponseEntity.status(HttpStatus.OK).body(tpp.getRegistrationResponse());
         } catch (ApiClientException e) {
-            log.error("updateClient() Caught ApiClientException", e);
-            throw new OAuth2InvalidClientException(e.getMessage());
+            String errorMessage =
+                    "Error updating registration for clientId '" + clientId + " Error was: " + e.getMessage();
+            log.info("{} {}", methodName, errorMessage, e);
+            throw new OAuth2InvalidClientException(errorMessage);
         }
     }
 
@@ -272,7 +275,9 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             @RequestBody String registrationRequestJwtSerialised,
             Principal principal
     ) throws OAuth2InvalidClientException, DynamicClientRegistrationException {
-        log.debug("register TPP: request {}", registrationRequestJwtSerialised);
+        String methodName = "register()";
+        log.info("{} Received request to create a new client registration. {}",
+                methodName,  registrationRequestJwtSerialised);
 
         try {
             ApiClientIdentity apiClientIdentity = this.apiClientIdentityFactory.getApiClientIdentity(principal);
@@ -289,20 +294,22 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                     registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
 
                     Tpp tpp = tppRegistrationService.registerTpp(apiClientIdentity, registrationRequest);
-
-                    return ResponseEntity.status(HttpStatus.CREATED).body(tpp.getRegistrationResponse());
+                    OIDCRegistrationResponse registrationResponse = tpp.getRegistrationResponse();
+                    log.info("{} Registration succeeded. tpp {} now has OAuth2 ClientId of {}", methodName,
+                            tppIdentifier, tpp.getClientId());
+                    return ResponseEntity.status(HttpStatus.CREATED).body(registrationResponse);
             } else {
-                log.debug("register() Tpp is not unregistered.");
-                throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_UNKNOWN_TRANSPORT_CERTIFICATE, tppIdentifier);
+                Tpp tpp = getTpp(principal);
+                log.info("{} The ApiClientIdentity is already registered", methodName);
+                log.info("{} Registration request made with certificate that is already associated with a " +
+                                "TPP. '{}'", methodName, tpp);
+                throw new OAuth2InvalidClientException("This client is already registered");
             }
-        }  catch (OBErrorException  e) {
-            throw new DynamicClientRegistrationException(e.getMessage(),
-                    DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
-        } catch (ApiClientException e) {
+        }   catch (ApiClientException e) {
+            log.info("Failed to create new client registration. There was an error related to the client requesting " +
+                            "the registration; '{}'", e.getMessage());
             log.debug("register() caught ApiClientException.", e);
-            log.debug("register() caught ApiClientException.", e.getStackTrace());
-            throw new OAuth2InvalidClientException("Invalid certificate present. Client's must use an OBWac for MATLS" +
-                    " when registering.");
+            throw new OAuth2InvalidClientException("Invalid certificate presented. Error was " + e.getMessage());
         }
     }
 
@@ -341,14 +348,14 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             String errorMessage = "Mutual TLS failed - no principal found from request. This " +
                     "endpoint must be called using SSL using an OBWac certificate which will be used by the ASPSP for" +
                     " Mutual Authentication TLS";
-            log.debug("checkAuthArgsContainValidInformation() {}", errorMessage);
+            log.info("{}; authorization; '{}', principal: '{}'", errorMessage, authorization, principal);
             throw new OAuth2InvalidClientException(errorMessage);
         }
         if(StringUtils.isEmpty(authorization)){
             String errorMessage = "No valid Bearer authorization header. " +
                     "This should be set to the registration_access_token found in the response when you successfully " +
                     "used the /register endpoint to perform dynamic client registration.";
-            log.debug("checkAuthArgsContainValidInformation() {}", errorMessage);
+            log.info("{}; authorization; '{}', principal; '{}'", errorMessage, authorization, principal);
             throw new OAuth2BearerTokenUsageMissingAuthInfoException(errorMessage);
         }
     }
@@ -421,7 +428,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                     "ClientId of the Tpp associated with your MATLS certificate used in this call was '" +
                     tpp.getClientId() + "  Please use a certificate associated with the Tpp that performed the  " +
                     "registration.";
-            log.debug("ensureTppOwnsOidcRegistration() {}",errorMessage);
+            log.info("{}; tpp; '{}', clientIdFromRequest; '{}'", errorMessage, tpp, clientIdFromRequest);
             throw new OAuth2InvalidClientException(errorMessage);
         }
         log.debug("ensureTppOwnsOidcRegistration() - success - TPP owns the clientId specified in request URL");
@@ -447,7 +454,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                 String errorString =
                         "The requested token endpoint authentication method " + requestedTokenEndpointAuthMethod
                                 + " is not supported";
-                log.debug("verifyAuthenticationMethodSupported() {}", errorString);
+                log.info("verifyAuthenticationMethodSupported() {}; registrationRequest; '{}'", errorString, registrationRequest);
                 throw new DynamicClientRegistrationException(errorString, DynamicClientRegistrationErrorType.INVALID_CLIENT_METADATA);
             }
         }
@@ -515,7 +522,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                 String errorMessage = String.format("Failed to extract Bearer token from authorization header: " +
                                 "'%s'. Error was %s. Authorization header should contain an OAuth2 Bearer token. " +
                                 "See rfc-6750", authorization, re.getMessage());
-                log.debug("validateAccessTokenIsValidForOidcRegistration() {}", errorMessage);
+                log.info("validateAccessTokenIsValidForOidcRegistration() {}", errorMessage);
                 throw new OAuth2BearerTokenUsageInvalidTokenException(errorMessage);
             }
         }
@@ -539,8 +546,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             String errorMessage = "Authorization Bearer token is not the bearer token issued to the TPP " +
                     "identified by the MATLS client certificate used to make this request. Please use the " +
                     "registration_access_token that was provided in your successful request to the POST /register" +
-                    " endpoint. i.e. When you succesfully performed dynamic client registration.";
-            log.debug("validateAccessTokenIsValidForOidcRegistration() {}", errorMessage);
+                    " endpoint. i.e. When you successfully performed dynamic client registration.";
+            log.info("validateAccessTokenIsValidForOidcRegistration() {}", errorMessage);
             throw new OAuth2BearerTokenUsageInvalidTokenException(errorMessage);
         } else {
             log.debug("validateBearerTokenBelongsToTpp() access token does belong to Tpp");

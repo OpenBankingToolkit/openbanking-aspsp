@@ -25,13 +25,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.cert.Psd2CertInfo;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
 import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
@@ -131,7 +131,7 @@ public class ManualRegistrationApiControllerTest {
         ManualRegistrationRequest manualRegistrationRequest = getValidManualRegistrationRequest();
         X509Certificate[] certsChain = TestHelperFunctions.getCertChainFromFile("src/test/resources/certificates" +
                 "/OBWac.pem");
-        Collection<? extends GrantedAuthority> authorities = new ArrayList<>(List.of(OBRIRole.UNREGISTERED_TPP)); ;
+        Collection<? extends GrantedAuthority> authorities = new ArrayList<>(List.of(OBRIRole.UNREGISTERED_TPP));
         PSD2Authentication authentication = new PSD2Authentication("testname",authorities, certsChain ,
                 new Psd2CertInfo(certsChain));
         ApiClientIdentity clientIdentity = apiClientIdentityFactory.getApiClientIdentity(authentication);

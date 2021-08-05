@@ -43,7 +43,7 @@ public class CertificateTestSpec {
         this.certsChain = TestHelperFunctions.getCertChainFromFile(filePath);
         this.certType = certType;
         this.isEidas = isEidas;
-    };
+    }
 
     public X509Authentication getPrincipal(Collection<? extends GrantedAuthority> authorities)
             throws InvalidPsd2EidasCertificate {

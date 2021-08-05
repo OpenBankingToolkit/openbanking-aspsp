@@ -126,7 +126,7 @@ public abstract class ApiClientIdentity {
             }
             throw new OAuth2InvalidClientException(helpString);
         }
-    };
+    }
 
     /**
      * Check if the TPP was identified as being already onboarded
@@ -152,5 +152,5 @@ public abstract class ApiClientIdentity {
             log.debug("throwIfTppNotOnboarded() {}", errorString);
             throw new OAuth2InvalidClientException(errorString);
         }
-    };
+    }
 }

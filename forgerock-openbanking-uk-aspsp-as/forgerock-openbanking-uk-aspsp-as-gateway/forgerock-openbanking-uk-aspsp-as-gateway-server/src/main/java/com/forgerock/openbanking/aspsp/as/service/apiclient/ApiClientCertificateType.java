@@ -25,7 +25,7 @@ public enum ApiClientCertificateType {
     FR_TRANSPORT(true), FR_SIGNING(true), OBWAC(true), OBSEAL(true), OB_TRANSPORT(true), OB_SIGNING(true), QWAC(true)
     , QSEAL(true), INVALID(false);
 
-    private boolean isValid;
+    private final boolean isValid;
 
     ApiClientCertificateType(boolean isValid){
         this.isValid = isValid;

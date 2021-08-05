@@ -85,20 +85,20 @@ public class RegistrationRequest extends OIDCRegistrationRequest {
      */
     @JsonIgnore
     public void overwriteRegistrationRequestFieldsFromSSAClaims(ApiClientIdentity clientIdentity) {
+        String methodName = "overwriteRegistrationRequestFieldsFromSSAClaims";
         Optional.ofNullable(this.directorySoftwareStatement.getSoftware_jwks_endpoint()).ifPresent(this::setJwks_uri);
         Optional.ofNullable(this.directorySoftwareStatement.getSoftware_client_id()).ifPresent(this::setClientName);
         Optional.ofNullable(this.directorySoftwareStatement.getSoftware_logo_uri()).ifPresent(this::setLogoUri);
-        //Optional.ofNullable(this.directorySoftwareStatement.getOrg_contacts()).ifPresent(this::setContacts);
         Optional.ofNullable(this.directorySoftwareStatement.getSoftware_tos_uri()).ifPresent(this::setTosUri);
         Optional.ofNullable(this.directorySoftwareStatement.getSoftware_policy_uri()).ifPresent(this::setPolicyUri);
 
         String regRequestScope = this.getScope();
         if (!StringUtils.isEmpty(regRequestScope)) {
-            log.debug("Transfer scope value into registrationRequestScopes");
+            log.debug("{} Transfer scope value into registrationRequestScopes", methodName);
             this.setScopes(Stream.of(regRequestScope.split(" ")).collect(Collectors.toList()));
         }
 
-        log.debug("Adding accounts and payments scope depending of the TPP type");
+        log.debug("{} Adding accounts and payments scope depending of the TPP type", methodName);
         Set<String> registrationRequestScopes = new HashSet<>(this.getScopes());
 
         registrationRequestScopes.add(OpenBankingConstants.Scope.OPENID);

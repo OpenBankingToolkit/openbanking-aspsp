@@ -21,11 +21,11 @@
 package com.forgerock.openbanking.aspsp.as.api.registration.manual;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
@@ -164,7 +164,7 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
         Optional<Tpp> isTpp = tppStoreService.findByClientId(clientId);
         if (isTpp.isPresent()) {
             Tpp tpp = isTpp.get();
-            tppRegistrationService.unregisterTpp(tpp.getRegistrationResponse().getRegistrationAccessToken(),
+            tppRegistrationService.deleteOAuth2RegistrationAndTppRecord(tpp.getRegistrationResponse().getRegistrationAccessToken(),
                     tpp);
         }
         return ResponseEntity.ok(true);
