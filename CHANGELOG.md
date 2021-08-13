@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[963f0b5c1e6cb4f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/963f0b5c1e6cb4f) JamieB *2021-08-05 14:04:30*
+Release candidate: prepare for next development iteration
+## 1.4.7
 ### GitHub [#428](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/428) 426: [bank UI] Confirmation page when user Cancel the consent
 [bc8074b917f395a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/bc8074b917f395a) Jorge Sanchez Perez *2021-06-16 14:49:06*
 426: [bank UI] Confirmation page when user Cancel the consent (#428)
@@ -65,6 +68,58 @@ Release/1.4.6 (#439)
 * Release candidate: prepare for next development iteration
 
 * chnagelog updated
+[4a74a6cef99fc09](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4a74a6cef99fc09) JamieB *2021-08-05 14:04:26*
+Release candidate: prepare release 1.4.7
+[ee20ec5d988dc22](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ee20ec5d988dc22) JamieB *2021-08-05 13:41:01*
+422: Replace the use of lombok
+
+Address another review comment
+
+PR: https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/440/files
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/422
+[7c5d4709577c0fc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7c5d4709577c0fc) JamieB *2021-08-05 13:03:34*
+422: Better log messages with context
+
+Addresses PR Comments
+
+PR: https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/440
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/422
+[5097dab093e3c61](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5097dab093e3c61) JamieB *2021-08-05 12:54:13*
+422: Use ifPresent to handle optional
+
+Addresses a PR Comment
+
+PR: https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/440
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/422
+[911cdd31f0357c5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/911cdd31f0357c5) JamieB *2021-08-05 12:08:03*
+422: Review of log levels and message
+
+Result of PR comments
+
+- Better log message and review of levels.
+- Sorted out imports
+
+PR: https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/440
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/422
+[7663505f1a5d985](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7663505f1a5d985) JamieB *2021-08-03 10:53:30*
+422: Better logging and in spec error handling
+
+As well as some tidying up in preparation for fixing existing Dynamic
+Client Registration issues.
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/440
+[90e77e745250fa5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/90e77e745250fa5) JamieB *2021-07-28 09:26:55*
+intermediate checkin
+[66936ed7da8a0a5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/66936ed7da8a0a5) JamieB *2021-07-19 15:47:33*
+422: Refactoring Dynamic Client Registration
+
+Better log message
+Error handling now as OB spec, using OAuth2 and Dynamic client
+registration error specifications
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/422
+[92e5c7c138df770](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/92e5c7c138df770) JamieB *2021-07-07 15:31:49*
+422: improving registration logging and errors
 [87ca9e69439dcf0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/87ca9e69439dcf0) JamieB *2021-06-18 15:36:39*
 422: Improve DELETE /register logging and error handling
 
@@ -85,17 +140,6 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-aspsp/issues/422
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/32
 [b0704b02d1c8154](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0704b02d1c8154) JamieB *2021-06-02 13:53:21*
 Release candidate: prepare for next development iteration
-## 1.4.4
-[41f8db04407bd5d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/41f8db04407bd5d) JamieB *2021-06-02 13:53:15*
-Release candidate: prepare release 1.4.4
-[431a39cb7f64e75](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/431a39cb7f64e75) JamieB *2021-06-02 13:48:15*
-749: set dev version to 1.4.4-SNAPSHOT before creating release
-
-Something odd has happened with the aspsp versions. We're using 1.4.3
-currently in openbanking-reference-implementation, but master has
-1.4.3-SNAPSHOT in the poms!!!
-
-Issue: https://github.com/ForgeCloud/ob-deploy/issues/749
 [dc53032d15bc9f4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/dc53032d15bc9f4) JamieB *2021-06-02 13:09:25*
 Release candidate: rollback the release of 1.4.3
 [857948eaae36fee](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/857948eaae36fee) JamieB *2021-06-02 12:54:46*
@@ -124,6 +168,17 @@ has been given via the hybrid flow.
 Issue: https://github.com/ForgeCloud/ob-deploy/issues/745
 [82f8ccbff075bf2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/82f8ccbff075bf2) Matt Wills *2021-05-24 14:43:50*
 Release candidate: prepare for next development iteration
+## 1.4.4
+[41f8db04407bd5d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/41f8db04407bd5d) JamieB *2021-06-02 13:53:15*
+Release candidate: prepare release 1.4.4
+[431a39cb7f64e75](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/431a39cb7f64e75) JamieB *2021-06-02 13:48:15*
+749: set dev version to 1.4.4-SNAPSHOT before creating release
+
+Something odd has happened with the aspsp versions. We're using 1.4.3
+currently in openbanking-reference-implementation, but master has
+1.4.3-SNAPSHOT in the poms!!!
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/749
 ## 1.4.2
 ### GitHub [#342](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/342) Release/1.1.118
 [141816573d0231d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/141816573d0231d) Jorge Sanchez Perez *2021-02-22 15:07:48*
