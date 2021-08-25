@@ -33,6 +33,7 @@ import com.nimbusds.jwt.SignedJWT;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,13 +45,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.account.OBReadConsent1;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data;
-import uk.org.openbanking.datamodel.account.OBReadData1;
-import uk.org.openbanking.datamodel.account.OBRisk2;
+import uk.org.openbanking.datamodel.account.*;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -72,9 +67,9 @@ public class AccountAccessConsentsApiControllerIT {
     private int port;
     @Autowired
     private RSConfiguration rsConfiguration;
-    @MockBean(name="cryptoApiClient") // Required to avoid Spring auto-wiring exception
+    @MockBean(name = "cryptoApiClient") // Required to avoid Spring auto-wiring exception
     private CryptoApiClient cryptoApiClient;
-    @MockBean(name="amResourceServerService") // Required to avoid Spring auto-wiring exception
+    @MockBean(name = "amResourceServerService") // Required to avoid Spring auto-wiring exception
     private AMResourceServerService amResourceServerService;
     @MockBean
     private RsStoreGateway rsStoreGateway;
@@ -96,9 +91,10 @@ public class AccountAccessConsentsApiControllerIT {
         mockAccessTokenVerification(jws);
         OBReadConsentResponse1 readConsentResponse = new OBReadConsentResponse1()
                 .data(new OBReadConsentResponse1Data()
-                .consentId("AISP_3980298093280")
-                .status(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION)
-                .permissions(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSBASIC))
+                        .consentId("AISP_3980298093280")
+                        .statusUpdateDateTime(DateTime.now())
+                        .status(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION)
+                        .permissions(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSBASIC))
                 );
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(readConsentResponse));
         final OBReadConsent1 obReadConsent = new OBReadConsent1()

@@ -113,6 +113,7 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
                         .creationDateTime(DateTime.now())
                         .permissions(body.getData().getPermissions())
                         .expirationDateTime(body.getData().getExpirationDateTime())
+                        .statusUpdateDateTime(DateTime.now())
                         .transactionFromDateTime(body.getData().getTransactionFromDateTime())
                         .transactionToDateTime(body.getData().getTransactionToDateTime()))
                 .risk(body.getRisk());
