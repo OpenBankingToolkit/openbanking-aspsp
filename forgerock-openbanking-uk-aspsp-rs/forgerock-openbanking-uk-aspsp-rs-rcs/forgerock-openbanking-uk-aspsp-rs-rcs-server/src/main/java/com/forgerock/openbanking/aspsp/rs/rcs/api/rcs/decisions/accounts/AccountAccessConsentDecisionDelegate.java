@@ -32,6 +32,7 @@ import com.forgerock.openbanking.common.services.store.accountrequest.AccountReq
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.util.List;
@@ -82,10 +83,12 @@ class AccountAccessConsentDecisionDelegate implements ConsentDecisionDelegate {
             }
             accountRequest.setAccountIds(accountConsentDecision.getSharedAccounts());
             accountRequest.setStatus(FRExternalRequestStatusCode.AUTHORISED);
+            accountRequest.setStatusUpdateDateTime(DateTime.now());
             accountRequestStoreService.save(accountRequest);
         } else {
             log.debug("The account request {} has been deny", accountRequest.getId());
             accountRequest.setStatus(FRExternalRequestStatusCode.REJECTED);
+            accountRequest.setStatusUpdateDateTime(DateTime.now());
             accountRequestStoreService.save(accountRequest);
         }
     }
@@ -95,6 +98,7 @@ class AccountAccessConsentDecisionDelegate implements ConsentDecisionDelegate {
         accountRequest.setUserId(username);
         accountRequest.setAccountIds(accounts.stream().map(FRAccount::getId).collect(Collectors.toList()));
         accountRequest.setStatus(FRExternalRequestStatusCode.AUTHORISED);
+        accountRequest.setStatusUpdateDateTime(DateTime.now());
         accountRequestStoreService.save(accountRequest);
     }
 }

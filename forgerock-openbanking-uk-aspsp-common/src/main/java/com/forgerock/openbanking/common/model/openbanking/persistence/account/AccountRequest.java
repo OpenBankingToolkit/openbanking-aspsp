@@ -44,12 +44,15 @@ public interface AccountRequest {
 
     DateTime getTransactionToDateTime();
 
+    DateTime getStatusUpdateDateTime();
+
     void setUserId(String userId);
 
     void setAccountIds(List<String> accountIds);
 
     void setStatus(FRExternalRequestStatusCode code);
 
+    void setStatusUpdateDateTime(DateTime date);
     String getId();
 
     List<String> getAccountIds();

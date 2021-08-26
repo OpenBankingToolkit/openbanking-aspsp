@@ -50,6 +50,7 @@ public class FRReadDataResponse {
     private DateTime creationDateTime;
     private List<FRExternalPermissionsCode> permissions;
     private DateTime expirationDateTime;
+    private DateTime statusUpdateDateTime;
     private DateTime transactionFromDateTime;
     private DateTime transactionToDateTime;
 }

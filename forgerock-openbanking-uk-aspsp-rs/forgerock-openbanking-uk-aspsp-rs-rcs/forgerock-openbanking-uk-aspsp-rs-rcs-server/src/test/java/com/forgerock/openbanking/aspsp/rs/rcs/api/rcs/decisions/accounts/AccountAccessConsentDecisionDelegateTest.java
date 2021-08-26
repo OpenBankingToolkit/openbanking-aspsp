@@ -28,6 +28,7 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.account.FR
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +58,8 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
         consent.setAispId(PISP_ID);
         consent.setUserId(USER_ID);
         consent.setObVersion(OBVersion.v3_1);
-        consent.setAccountAccessConsent(FRReadConsentResponse.builder().data(FRReadConsentResponseData.builder().build()).build());
+        consent.setAccountAccessConsent(FRReadConsentResponse.builder().data(FRReadConsentResponseData.builder()
+                .statusUpdateDateTime(DateTime.now()).build()).build());
 
         decisionDelegate = new AccountAccessConsentDecisionDelegate(
                 getAccountStoreService(),
@@ -84,6 +86,7 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
         // Then
         assertThat(consent.getAccountIds().get(0)).isEqualTo(ACCOUNT_ID);
         assertThat(consent.getStatus()).isEqualTo(FRExternalRequestStatusCode.AUTHORISED);
+        assertThat(consent.getStatusUpdateDateTime()).isNotNull();
         verify(accountRequestStoreService, times(1)).save(any());
     }
     @Test
@@ -94,6 +97,7 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
         // Then
         assertThat(consent.getAccountIds()).isEmpty();
         assertThat(consent.getStatus()).isEqualTo(FRExternalRequestStatusCode.REJECTED);
+        assertThat(consent.getStatusUpdateDateTime()).isNotNull();
         verify(accountRequestStoreService, times(1)).save(any());
     }
 
@@ -141,6 +145,7 @@ public class AccountAccessConsentDecisionDelegateTest extends AbstractDecisionDe
         // Then
         assertThat(consent.getAccountIds().get(0)).isEqualTo(ACCOUNT_ID);
         assertThat(consent.getStatus()).isEqualTo(FRExternalRequestStatusCode.AUTHORISED);
+        assertThat(consent.getStatusUpdateDateTime()).isNotNull();
         verify(accountRequestStoreService, times(1)).save(any());
     }
 
