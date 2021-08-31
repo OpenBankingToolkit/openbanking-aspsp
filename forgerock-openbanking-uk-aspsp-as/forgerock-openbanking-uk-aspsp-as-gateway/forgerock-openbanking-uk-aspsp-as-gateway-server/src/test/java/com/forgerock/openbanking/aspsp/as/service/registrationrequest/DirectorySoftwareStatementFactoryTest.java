@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
 import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
+import com.forgerock.openbanking.model.DirectorySoftwareStatement;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
