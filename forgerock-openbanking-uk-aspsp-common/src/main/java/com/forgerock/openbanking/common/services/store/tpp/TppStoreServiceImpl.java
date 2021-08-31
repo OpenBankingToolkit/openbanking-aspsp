@@ -64,7 +64,7 @@ public class TppStoreServiceImpl implements TppStoreService {
         URI uri = builder.build().encode().toUri();
         LOGGER.debug("Find cn {}", cn);
         try {
-            List<Tpp> tpps =  new ArrayList(restTemplate.exchange(uri, HttpMethod.GET, null,
+            List<Tpp> tpps =  new ArrayList<>(restTemplate.exchange(uri, HttpMethod.GET, null,
                     new ParameterizedTypeReference<Resources<Tpp>>() {}).getBody().getContent());
             if (tpps.isEmpty()) {
                 return Optional.empty();
@@ -74,6 +74,24 @@ public class TppStoreServiceImpl implements TppStoreService {
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
                 return Optional.empty();
+            }
+            throw e;
+        }
+    }
+
+    @Override
+    public List<Tpp> findByOrganisationId(String orgId) {
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl
+                (rsStoreRoot + "/tpps/search/findByOrganisationId");
+        builder.queryParam("organisationId", orgId);
+        URI uri = builder.build().encode().toUri();
+        LOGGER.debug("Find organistationId {}", orgId);
+        try {
+            return new ArrayList<>(restTemplate.exchange(uri, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<Resources<Tpp>>() {}).getBody().getContent());
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                return List.of();
             }
             throw e;
         }

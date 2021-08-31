@@ -20,13 +20,16 @@
  */
 package com.forgerock.openbanking.aspsp.as.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.AMOIDCRegistrationService;
 import com.forgerock.openbanking.analytics.model.entries.TppEntry;
 import com.forgerock.openbanking.analytics.services.TppEntriesKPIService;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatement;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
@@ -39,6 +42,7 @@ import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import com.nimbusds.jwt.JWTClaimsSet;
 import lombok.extern.slf4j.Slf4j;
+import net.bytebuddy.dynamic.loading.ClassInjector.UsingReflection.Dispatcher.Direct;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,6 +65,7 @@ public class TppRegistrationService {
     private final TppStoreService tppStoreService;
     private final AMOIDCRegistrationService amoidcRegistrationService;
     private final TppEntriesKPIService tppEntriesKPIService;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public TppRegistrationService(CryptoApiClient cryptoApiClient,
@@ -68,13 +73,15 @@ public class TppRegistrationService {
                                   ForgeRockDirectoryConfiguration forgeRockDirectoryConfiguration,
                                   TppStoreService tppStoreService,
                                   AMOIDCRegistrationService amoidcRegistrationService,
-                                  TppEntriesKPIService tppEntriesKPIService) {
+                                  TppEntriesKPIService tppEntriesKPIService,
+                                  ObjectMapper objectMapper) {
         this.cryptoApiClient = cryptoApiClient;
         this.openBankingDirectoryConfiguration = openBankingDirectoryConfiguration;
         this.forgeRockDirectoryConfiguration = forgeRockDirectoryConfiguration;
         this.tppStoreService = tppStoreService;
         this.amoidcRegistrationService = amoidcRegistrationService;
         this.tppEntriesKPIService = tppEntriesKPIService;
+        this.objectMapper = objectMapper;
     }
 
     public String validateSsaAgainstIssuingDirectoryJwksUri(String ssaSerialised, String issuer)
@@ -251,6 +258,27 @@ public class TppRegistrationService {
 
     public Tpp registerTpp(ApiClientIdentity clientIdentity, RegistrationRequest oidcRegistrationRequest)
             throws DynamicClientRegistrationException {
+        
+        Optional<DirectorySoftwareStatement> jti = tppStoreService.findByOrganisationId(clientIdentity.getUsername())
+            .stream()
+            .map(Tpp::getSsa)
+            .map(ssa -> {
+                try {
+                    return objectMapper.readValue(ssa, DirectorySoftwareStatement.class);
+                } catch (IOException e) {
+                    log.error("registerTpp() SSA cannot be converted to a DirectorySoftwareStatement", e);
+                }
+            })
+            .filter(dss -> dss.getJti().equals(oidcRegistrationRequest.getJti()))
+            .findAny();
+        
+        if (jti.isPresent()) {
+            log.info("registerTpp() this tpp has already registered with an identical SSA. " +
+              "You can only onboard with a single software statement if you generate a new SSA");
+            return null;
+        }
+            
+
         log.debug("registerTpp() Send the OAuth2 dynamic registration request to the AS");
         OIDCRegistrationResponse oidcRegistrationResponse = amoidcRegistrationService.register(oidcRegistrationRequest);
         log.debug("registerTpp() Response from the AS: {}", oidcRegistrationResponse);

@@ -281,23 +281,21 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
 
         try {
             ApiClientIdentity apiClientIdentity = this.apiClientIdentityFactory.getApiClientIdentity(principal);
-            apiClientIdentity.throwIfTppAlreadyOnboarded();
             String tppIdentifier = apiClientIdentity.getTransportCertificateCn();
 
             if(apiClientIdentity.isUnregistered()){
-                    RegistrationRequest registrationRequest =
-                            registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
+                RegistrationRequest registrationRequest =
+                    registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
+                //delete client ID
+                registrationRequest.setClientId(null);
+                verifyRegistrationRequest(apiClientIdentity, registrationRequest);
+                registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
 
-                    //delete client ID
-                    registrationRequest.setClientId(null);
-                    verifyRegistrationRequest(apiClientIdentity, registrationRequest);
-                    registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
-
-                    Tpp tpp = tppRegistrationService.registerTpp(apiClientIdentity, registrationRequest);
-                    OIDCRegistrationResponse registrationResponse = tpp.getRegistrationResponse();
-                    log.info("{} Registration succeeded. tpp {} now has OAuth2 ClientId of {}", methodName,
-                            tppIdentifier, tpp.getClientId());
-                    return ResponseEntity.status(HttpStatus.CREATED).body(registrationResponse);
+                Tpp tpp = tppRegistrationService.registerTpp(apiClientIdentity, registrationRequest);
+                OIDCRegistrationResponse registrationResponse = tpp.getRegistrationResponse();
+                log.info("{} Registration succeeded. tpp {} now has OAuth2 ClientId of {}", methodName,
+                        tppIdentifier, tpp.getClientId());
+                return ResponseEntity.status(HttpStatus.CREATED).body(registrationResponse);
             } else {
                 Tpp tpp = getTpp(principal);
                 log.info("{} The ApiClientIdentity is already registered", methodName);

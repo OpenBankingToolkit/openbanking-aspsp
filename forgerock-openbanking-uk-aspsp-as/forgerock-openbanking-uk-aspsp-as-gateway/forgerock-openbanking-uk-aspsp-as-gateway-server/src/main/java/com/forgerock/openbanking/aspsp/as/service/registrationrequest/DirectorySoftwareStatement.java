@@ -26,6 +26,8 @@ import java.util.List;
 
 public interface DirectorySoftwareStatement {
 
+    String getJti();
+    
     String getSoftware_jwks_endpoint();
 
     List<String> getSoftware_redirect_uris();

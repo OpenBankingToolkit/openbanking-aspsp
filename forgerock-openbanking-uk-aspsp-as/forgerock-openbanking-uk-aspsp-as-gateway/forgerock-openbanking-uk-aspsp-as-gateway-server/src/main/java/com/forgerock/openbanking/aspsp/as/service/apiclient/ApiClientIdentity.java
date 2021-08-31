@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.apiclient;
 
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
@@ -134,9 +135,11 @@ public abstract class ApiClientIdentity {
     /**
      * Check if the TPP was identified as being already onboarded
      */
-    public void throwIfTppAlreadyOnboarded() throws OAuth2InvalidClientException {
+    public void throwIfTppAlreadyOnboarded(RegistrationRequest registrationRequest) throws OAuth2InvalidClientException {
         log.debug("throwIfTppAlreadyOnboarded() User detail: username: '{}' and authorities: '{}'", this.getUsername(),
                 this.getAuthorities());
+        String ssaId = registrationRequest.getJti();
+        
         if (this.getAuthorities().contains(OBRIRole.ROLE_AISP)
                 || this.getAuthorities().contains(OBRIRole.ROLE_PISP)
                 || this.getAuthorities().contains(OBRIRole.ROLE_CBPII)) {

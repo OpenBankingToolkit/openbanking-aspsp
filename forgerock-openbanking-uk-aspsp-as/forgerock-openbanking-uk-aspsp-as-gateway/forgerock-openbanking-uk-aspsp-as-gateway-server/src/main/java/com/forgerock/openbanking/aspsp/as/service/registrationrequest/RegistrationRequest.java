@@ -156,6 +156,14 @@ public class RegistrationRequest extends OIDCRegistrationRequest {
         return this.directorySoftwareStatement.getIss();
     }
 
+    /**
+    *  Represents the uniqe id of the JWT SSA
+    **/
+    @JsonIgnore
+    public String getJti() {
+        return this.directorySoftwareStatement.getJti();
+    }
+
     @JsonIgnore
     public void setDirectorySoftwareStatement(DirectorySoftwareStatement directorySoftwareStatement){
         this.directorySoftwareStatement = directorySoftwareStatement;
