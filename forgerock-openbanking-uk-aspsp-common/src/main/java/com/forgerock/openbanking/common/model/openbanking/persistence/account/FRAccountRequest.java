@@ -121,6 +121,11 @@ public class FRAccountRequest implements AccountRequest {
         getAccountRequest().getData().setStatus(code);
     }
 
+    @Override
+    public void setStatusUpdateDateTime(DateTime date) {
+        getAccountRequest().getData().setStatusUpdateDateTime(date);
+    }
+
     public String getUserId() {
         return userId;
     }
@@ -147,6 +152,11 @@ public class FRAccountRequest implements AccountRequest {
     @JsonIgnore
     public DateTime getTransactionToDateTime() {
         return getAccountRequest().getData().getTransactionToDateTime();
+    }
+
+    @Override
+    public DateTime getStatusUpdateDateTime() {
+        return getAccountRequest().getData().getStatusUpdateDateTime();
     }
 
     public void setUserId(String userId) {

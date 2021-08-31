@@ -91,6 +91,11 @@ public class FRAccountAccessConsent implements AccountRequest, Persistable<Strin
     }
 
     @Override
+    public void setStatusUpdateDateTime(DateTime date) {
+        getAccountAccessConsent().getData().setStatusUpdateDateTime(date);
+    }
+
+    @Override
     @JsonIgnore
     public List<FRExternalPermissionsCode> getPermissions() {
         return getAccountAccessConsent().getData().getPermissions();
@@ -112,6 +117,11 @@ public class FRAccountAccessConsent implements AccountRequest, Persistable<Strin
     @JsonIgnore
     public DateTime getTransactionToDateTime() {
         return getAccountAccessConsent().getData().getTransactionToDateTime();
+    }
+
+    @Override
+    public DateTime getStatusUpdateDateTime() {
+        return getAccountAccessConsent().getData().getStatusUpdateDateTime();
     }
 
 }
