@@ -80,12 +80,12 @@ public class TppStoreServiceImpl implements TppStoreService {
     }
 
     @Override
-    public List<Tpp> findByOrganisationId(String orgId) {
+    public List<Tpp> findByAuthorisationNumber(String authorisationNumber) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl
-                (rsStoreRoot + "/tpps/search/findByOrganisationId");
-        builder.queryParam("organisationId", orgId);
+                (rsStoreRoot + "/tpps/search/findByAuthorisationNumber");
+        builder.queryParam("authorisationNumber", authorisationNumber);
         URI uri = builder.build().encode().toUri();
-        LOGGER.debug("Find organistationId {}", orgId);
+        LOGGER.debug("Find authorisationNumber {}", authorisationNumber);
         try {
             return new ArrayList<>(restTemplate.exchange(uri, HttpMethod.GET, null,
                     new ParameterizedTypeReference<Resources<Tpp>>() {}).getBody().getContent());

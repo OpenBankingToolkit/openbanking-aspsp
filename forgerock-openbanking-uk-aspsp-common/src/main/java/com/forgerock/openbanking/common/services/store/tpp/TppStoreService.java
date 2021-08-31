@@ -31,7 +31,7 @@ public interface TppStoreService {
 
     Optional<Tpp> findByCn(String cn);
 
-    List<Tpp> findByOrganisationId(String orgId);
+    List<Tpp> findByAuthorisationNumber(String authorisationNumber);
 
     Optional<Tpp> findByClientId(String clientId);
 

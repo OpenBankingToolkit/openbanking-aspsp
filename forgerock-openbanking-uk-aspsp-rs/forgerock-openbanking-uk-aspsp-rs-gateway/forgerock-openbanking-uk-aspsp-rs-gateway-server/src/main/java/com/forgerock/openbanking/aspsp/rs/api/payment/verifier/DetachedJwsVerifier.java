@@ -86,7 +86,7 @@ public class DetachedJwsVerifier {
             }
             UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
             Tpp tpp = tppStoreService.findByClientId(currentUser.getUsername()).get();
-            DirectorySoftwareStatement softwareStatement = tpp.getSsa();
+            DirectorySoftwareStatement softwareStatement = tpp.getDirectorySoftwareStatement();
             String orgId = softwareStatement.getOrg_id();
             String softwareId = softwareStatement.getSoftware_id();
             String expectedIssuer = orgId + "/" + softwareId;

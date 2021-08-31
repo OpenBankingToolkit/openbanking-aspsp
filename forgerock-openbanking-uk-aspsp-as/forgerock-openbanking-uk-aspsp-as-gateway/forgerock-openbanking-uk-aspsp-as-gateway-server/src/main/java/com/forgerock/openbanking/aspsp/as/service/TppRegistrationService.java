@@ -254,9 +254,9 @@ public class TppRegistrationService {
     public Tpp registerTpp(ApiClientIdentity clientIdentity, RegistrationRequest oidcRegistrationRequest)
             throws DynamicClientRegistrationException {
         
-        Optional<DirectorySoftwareStatement> jti = tppStoreService.findByOrganisationId(clientIdentity.getUsername())
+        Optional<DirectorySoftwareStatement> jti = tppStoreService.findByAuthorisationNumber(clientIdentity.getUsername())
             .stream()
-            .map(Tpp::getSsa)
+            .map(Tpp::getDirectorySoftwareStatement)
             .filter(ssa -> ssa.getJti().equals(oidcRegistrationRequest.getJti()))
             .findAny();
         
@@ -292,7 +292,7 @@ public class TppRegistrationService {
                 .officialName(officialName)
                 .clientId(oidcRegistrationResponse.getClientId())
                 .types(oidcRegistrationRequest.getSoftwareStatementRoles())
-                .ssa(oidcRegistrationRequest.getDirectorySoftwareStatement())
+                .directorySoftwareStatement(oidcRegistrationRequest.getDirectorySoftwareStatement())
                 .tppRequest(oidcRegistrationRequest.toJson())
                 .registrationResponse(oidcRegistrationResponse)
                 .directoryId(directoryId)
@@ -342,7 +342,7 @@ public class TppRegistrationService {
                 .officialName(officialName)
                 .clientId(oidcRegistrationResponse.getClientId())
                 .types(oidcRegistrationRequest.getSoftwareStatementRoles())
-                .ssa(oidcRegistrationRequest.getDirectorySoftwareStatement())
+                .directorySoftwareStatement(oidcRegistrationRequest.getDirectorySoftwareStatement())
                 .tppRequest(oidcRegistrationRequest.toJson())
                 .registrationResponse(oidcRegistrationResponse)
                 .directoryId(directoryId)
@@ -367,7 +367,7 @@ public class TppRegistrationService {
                 .types(tpp.getTypes());
 
         try {
-            DirectorySoftwareStatement ssaClaim = tpp.getSsa();
+            DirectorySoftwareStatement ssaClaim = tpp.getDirectorySoftwareStatement();
             tppEntryBuilder.softwareId(ssaClaim.getSoftware_id())
                     .organisationId(ssaClaim.getOrg_id())
                     .organisationName(ssaClaim.getOrg_name());
