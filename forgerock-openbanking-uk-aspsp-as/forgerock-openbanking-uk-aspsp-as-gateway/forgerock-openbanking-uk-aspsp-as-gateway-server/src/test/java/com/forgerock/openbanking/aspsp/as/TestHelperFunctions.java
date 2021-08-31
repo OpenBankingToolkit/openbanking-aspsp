@@ -21,11 +21,11 @@
 package com.forgerock.openbanking.aspsp.as;
 
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatement;
+import com.forgerock.openbanking.model.DirectorySoftwareStatement;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementFactory;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementOpenBanking;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementOpenBanking.DirectorySoftwareStatementOpenBankingBuilder;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.OrganisationContact;
+import com.forgerock.openbanking.model.DirectorySoftwareStatementOpenBanking;
+import com.forgerock.openbanking.model.DirectorySoftwareStatementOpenBanking.DirectorySoftwareStatementOpenBankingBuilder;
+import com.forgerock.openbanking.model.OrganisationContact;
 
 import java.io.FileInputStream;
 import java.io.IOException;

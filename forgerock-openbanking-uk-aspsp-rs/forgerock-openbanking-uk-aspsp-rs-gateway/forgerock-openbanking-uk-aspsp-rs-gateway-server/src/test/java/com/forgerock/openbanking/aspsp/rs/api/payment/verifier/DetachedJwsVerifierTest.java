@@ -20,13 +20,32 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.payment.verifier;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.List;
+import java.util.Optional;
+
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
+
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
+import com.forgerock.openbanking.model.DirectorySoftwareStatement;
+import com.forgerock.openbanking.model.DirectorySoftwareStatementOpenBanking;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -35,20 +54,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.DelegatingServletInputStream;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * A unit test for {@link DetachedJwsVerifier} which does not require a SpringBoot context to fire up.
@@ -180,7 +185,25 @@ public class DetachedJwsVerifierTest {
     }
 
     private void setupMocksForValidJws() throws ParseException, InvalidTokenException, IOException {
-        String ssa = "{\"org_jwks_endpoint\":\"TODO\",\"software_mode\":\"TEST\",\"software_redirect_uris\":[],\"org_status\":\"Active\",\"software_client_id\":\"5f98223fc10e5100103e2c5a\",\"iss\":\"ForgeRock\",\"software_jwks_endpoint\":\"https:\\/\\/service.directory.dev-ob.forgerock.financial:8074\\/api\\/software-statement\\/5f98223fc10e5100103e2c5a\\/application\\/jwk_uri\",\"software_id\":\"5f98223fc10e5100103e2c5a\",\"org_contacts\":[],\"ob_registry_tos\":\"https:\\/\\/directory.dev-ob.forgerock.financial:8074\\/tos\\/\",\"org_id\":\"5f980f21c10e5100103e2c52\",\"software_jwks_revoked_endpoint\":\"TODO\",\"software_roles\":[\"PISP\",\"CBPII\",\"DATA\",\"AISP\"],\"exp\":1604410559,\"org_name\":\"Anonymous\",\"org_jwks_revoked_endpoint\":\"TODO\",\"iat\":1603805759,\"jti\":\"b4934f04-321d-4d85-9cea-ea6015ae4372\"}";
+        // String ssa = "{\"org_jwks_endpoint\":\"TODO\",\"software_mode\":\"TEST\",
+        // \"software_redirect_uris\":[],\"org_status\":\"Active\",\"software_client_id\":\"5f98223fc10e5100103e2c5a\",
+        // \"iss\":\"ForgeRock\",
+        // \"software_jwks_endpoint\":\"https:\\/\\/service.directory.dev-ob.forgerock.financial:8074\\/api\\/software-statement\\/5f98223fc10e5100103e2c5a\\/application\\/jwk_uri\",
+        // \"software_id\":\"5f98223fc10e5100103e2c5a\",\"org_contacts\":[],\"ob_registry_tos\":\"https:\\/\\/directory.dev-ob.forgerock.financial:8074\\/tos\\/\",
+        // \"org_id\":\"5f980f21c10e5100103e2c52\",\"software_jwks_revoked_endpoint\":\"TODO\",\"software_roles\":[\"PISP\",\"CBPII\",\"DATA\",\"AISP\"],\"exp\":1604410559,\"org_name\":\"Anonymous\",\"org_jwks_revoked_endpoint\":\"TODO\",\"iat\":1603805759,\"jti\":\"b4934f04-321d-4d85-9cea-ea6015ae4372\"}";
+        DirectorySoftwareStatement ssa = DirectorySoftwareStatementOpenBanking.builder()
+            .org_jwks_endpoint("TODO")
+            .software_mode("TEST")
+            .software_redirect_uris(List.of())
+            .org_status("Active")
+            .software_client_id("5f98223fc10e5100103e2c5a")
+            .iss("ForgeRock")
+            .software_jwks_endpoint("https://service.directory.dev-ob.forgerock.financial:8074/api/software-statement/5f98223fc10e5100103e2c5a/application/jwk_uri")
+            .software_id("5f98223fc10e5100103e2c5a")
+            .org_contacts(List.of())
+            .build();
+
+
         Tpp tpp = mock(Tpp.class);
         given(tppStoreService.findByClientId(anyString())).willReturn(Optional.of(tpp));
         OIDCRegistrationResponse oidcRegistrationResponse = mock(OIDCRegistrationResponse.class);

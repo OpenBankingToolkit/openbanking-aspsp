@@ -20,6 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.as.service;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.AMOIDCRegistrationService;
 import com.forgerock.openbanking.analytics.model.entries.TppEntry;
@@ -27,33 +33,25 @@ import com.forgerock.openbanking.analytics.services.TppEntriesKPIService;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatement;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants.TokenEndpointAuthMethods;
-import com.forgerock.openbanking.constants.OpenBankingConstants.SSAClaims;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
+import com.forgerock.openbanking.model.DirectorySoftwareStatement;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
-import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.extern.slf4j.Slf4j;
-import net.bytebuddy.dynamic.loading.ClassInjector.UsingReflection.Dispatcher.Direct;
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 
 @Service
 @Slf4j
@@ -65,7 +63,6 @@ public class TppRegistrationService {
     private final TppStoreService tppStoreService;
     private final AMOIDCRegistrationService amoidcRegistrationService;
     private final TppEntriesKPIService tppEntriesKPIService;
-    private final ObjectMapper objectMapper;
 
     @Autowired
     public TppRegistrationService(CryptoApiClient cryptoApiClient,
@@ -73,15 +70,13 @@ public class TppRegistrationService {
                                   ForgeRockDirectoryConfiguration forgeRockDirectoryConfiguration,
                                   TppStoreService tppStoreService,
                                   AMOIDCRegistrationService amoidcRegistrationService,
-                                  TppEntriesKPIService tppEntriesKPIService,
-                                  ObjectMapper objectMapper) {
+                                  TppEntriesKPIService tppEntriesKPIService) {
         this.cryptoApiClient = cryptoApiClient;
         this.openBankingDirectoryConfiguration = openBankingDirectoryConfiguration;
         this.forgeRockDirectoryConfiguration = forgeRockDirectoryConfiguration;
         this.tppStoreService = tppStoreService;
         this.amoidcRegistrationService = amoidcRegistrationService;
         this.tppEntriesKPIService = tppEntriesKPIService;
-        this.objectMapper = objectMapper;
     }
 
     public String validateSsaAgainstIssuingDirectoryJwksUri(String ssaSerialised, String issuer)
@@ -262,14 +257,7 @@ public class TppRegistrationService {
         Optional<DirectorySoftwareStatement> jti = tppStoreService.findByOrganisationId(clientIdentity.getUsername())
             .stream()
             .map(Tpp::getSsa)
-            .map(ssa -> {
-                try {
-                    return objectMapper.readValue(ssa, DirectorySoftwareStatement.class);
-                } catch (IOException e) {
-                    log.error("registerTpp() SSA cannot be converted to a DirectorySoftwareStatement", e);
-                }
-            })
-            .filter(dss -> dss.getJti().equals(oidcRegistrationRequest.getJti()))
+            .filter(ssa -> ssa.getJti().equals(oidcRegistrationRequest.getJti()))
             .findAny();
         
         if (jti.isPresent()) {
@@ -293,8 +281,6 @@ public class TppRegistrationService {
         removeSecretIfNeeded(oidcRegistrationResponse);
 
         String officialName = getOrgSoftwareCombinedTppName(oidcRegistrationRequest, oidcRegistrationResponse);
-        String softwareStatementAsJsonString =
-                oidcRegistrationRequest.getSoftwareStatementClaimsAsJsonString();
 
         // ToDo: Is this just the same as the SoftwareStatement
 
@@ -306,7 +292,7 @@ public class TppRegistrationService {
                 .officialName(officialName)
                 .clientId(oidcRegistrationResponse.getClientId())
                 .types(oidcRegistrationRequest.getSoftwareStatementRoles())
-                .ssa(softwareStatementAsJsonString)
+                .ssa(oidcRegistrationRequest.getDirectorySoftwareStatement())
                 .tppRequest(oidcRegistrationRequest.toJson())
                 .registrationResponse(oidcRegistrationResponse)
                 .directoryId(directoryId)
@@ -347,8 +333,6 @@ public class TppRegistrationService {
         removeSecretIfNeeded(oidcRegistrationResponse);
 
         String officialName = getOrgSoftwareCombinedTppName(oidcRegistrationRequest, oidcRegistrationResponse);
-        String softwareStatementAsJsonString =
-                oidcRegistrationRequest.getSoftwareStatementClaimsAsJsonString();
 
         Tpp updatedTpp = Tpp.builder()
                 .created(tpp.getCreated())
@@ -358,7 +342,7 @@ public class TppRegistrationService {
                 .officialName(officialName)
                 .clientId(oidcRegistrationResponse.getClientId())
                 .types(oidcRegistrationRequest.getSoftwareStatementRoles())
-                .ssa(softwareStatementAsJsonString)
+                .ssa(oidcRegistrationRequest.getDirectorySoftwareStatement())
                 .tppRequest(oidcRegistrationRequest.toJson())
                 .registrationResponse(oidcRegistrationResponse)
                 .directoryId(directoryId)
@@ -383,11 +367,11 @@ public class TppRegistrationService {
                 .types(tpp.getTypes());
 
         try {
-            JWTClaimsSet ssaClaim = tpp.getSsaClaim();
-            tppEntryBuilder.softwareId(ssaClaim.getStringClaim(SSAClaims.SOFTWARE_ID))
-                    .organisationId(ssaClaim.getStringClaim(SSAClaims.ORG_ID))
-                    .organisationName(ssaClaim.getStringClaim(SSAClaims.ORG_NAME));
-        } catch (ParseException e) {
+            DirectorySoftwareStatement ssaClaim = tpp.getSsa();
+            tppEntryBuilder.softwareId(ssaClaim.getSoftware_id())
+                    .organisationId(ssaClaim.getOrg_id())
+                    .organisationName(ssaClaim.getOrg_name());
+        } catch (NullPointerException e) {
             log.warn("Couldn't read TPP SSA, skipping SSA claims population to TPP entry for this TPP {}", tpp, e);
         }
 

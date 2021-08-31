@@ -21,9 +21,14 @@
 package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementOpenBanking.DirectorySoftwareStatementOpenBankingBuilder;
+import com.forgerock.openbanking.model.DirectorySoftwareStatementOpenBanking.DirectorySoftwareStatementOpenBankingBuilder;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.constants.OpenBankingConstants.SSAClaims;
+import com.forgerock.openbanking.model.DirectorySoftwareStatement;
+import com.forgerock.openbanking.model.DirectorySoftwareStatementOpenBanking;
+import com.forgerock.openbanking.model.OrganisationAuthorityClaims;
+import com.forgerock.openbanking.model.OrganisationContact;
+import com.forgerock.openbanking.model.AuthorisationClaim;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jose.util.JSONObjectUtils;
@@ -63,8 +68,7 @@ public class DirectorySoftwareStatementFactory {
         DirectorySoftwareStatement softwareStatement = null;
         String issuer = softwareStatementClaims.getRequiredStringClaim(SSAClaims.ISSUER);
 
-        DirectorySoftwareStatementOpenBankingBuilder softwareStatementBuilder =
-                new DirectorySoftwareStatementOpenBankingBuilder();
+        DirectorySoftwareStatementOpenBankingBuilder softwareStatementBuilder = DirectorySoftwareStatementOpenBanking.builder();
         softwareStatementBuilder
             .software_id(softwareStatementClaims.getRequiredStringClaim(SSAClaims.SOFTWARE_ID))
             .iss(issuer)
@@ -119,7 +123,7 @@ public class DirectorySoftwareStatementFactory {
             RegistrationRequestJWTClaims softwareStatementClaims) throws ParseException {
         JSONObject contactsJsonArray =
                 (JSONObject) softwareStatementClaims.getClaim( SSAClaims.ORGANISATION_COMPETENT_AUTHORITY_CLAIMS);
-        return new OrganisationAuthorityClaims.OrganisationAuthorityClaimsBuilder()
+        return OrganisationAuthorityClaims.builder()
                 .authority_id(JSONObjectUtils.getString(contactsJsonArray, SSAClaims.OCAC_AUTHORITY_ID))
                 .registration_id(JSONObjectUtils.getString(contactsJsonArray, SSAClaims.OCAC_REGISTRATION_ID))
                 .status(JSONObjectUtils.getString(contactsJsonArray, SSAClaims.OCAC_STATUS))
@@ -131,7 +135,7 @@ public class DirectorySoftwareStatementFactory {
         JSONArray authorityClaims = (JSONArray) contactsJsonArray.get(SSAClaims.OCAC_AUTHORISATIONS);
         for (Object authorityClaim : authorityClaims) {
             JSONObject authorityClaimJson = (JSONObject) authorityClaim;
-            AuthorisationClaim authClaim = new AuthorisationClaim.AuthorisationClaimBuilder()
+            AuthorisationClaim authClaim = AuthorisationClaim.builder()
                     .member_state(JSONObjectUtils.getString(authorityClaimJson, SSAClaims.OCAC_MEMBER_STATE))
                     .roles(JSONObjectUtils.getStringList(authorityClaimJson, SSAClaims.OCAC_ROLES)).build();
             authClaims.add(authClaim);
@@ -146,7 +150,7 @@ public class DirectorySoftwareStatementFactory {
             for (Object contactJson : contactsJsonArray) {
                 JSONObject contactJsonObject = ((JSONObject) contactJson);
                 OrganisationContact orgContact =
-                        new OrganisationContact.OrganisationContactBuilder()
+                        OrganisationContact.builder()
                                 .name(getContactField(contactJsonObject, "name"))
                                 .email(getContactField(contactJsonObject, "email"))
                                 .type(getContactField(contactJsonObject, "type"))
