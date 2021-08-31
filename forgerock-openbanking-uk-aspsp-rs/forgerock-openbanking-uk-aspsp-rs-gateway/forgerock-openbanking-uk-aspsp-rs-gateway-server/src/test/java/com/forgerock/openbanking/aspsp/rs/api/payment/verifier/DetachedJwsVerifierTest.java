@@ -202,7 +202,7 @@ public class DetachedJwsVerifierTest {
         given(tppStoreService.findByClientId(anyString())).willReturn(Optional.of(tpp));
         OIDCRegistrationResponse oidcRegistrationResponse = mock(OIDCRegistrationResponse.class);
         given(tpp.getRegistrationResponse()).willReturn(oidcRegistrationResponse);
-        given(tpp.getSsa()).willReturn(ssa);
+        given(tpp.getDirectorySoftwareStatement()).willReturn(ssa);
         given(oidcRegistrationResponse.getJwks()).willReturn(null);
         given(oidcRegistrationResponse.getJwks_uri()).willReturn(null);
         given(cryptoApiClient.validateDetachedJWS(any(), any(), any(), any(), any())).willReturn(null);
