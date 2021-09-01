@@ -257,7 +257,7 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             verifyRegistrationRequest(apiClientIdentity, registrationRequest);
             registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
 
-            tpp = tppRegistrationService.updateTpp(tpp, accessToken, registrationRequest);
+            tpp = tppRegistrationService.updateTpp(apiClientIdentity, tpp, accessToken, registrationRequest);
             log.info("{} Updated registration information for ClientId {}", methodName, tpp.getClientId());
             return ResponseEntity.status(HttpStatus.OK).body(tpp.getRegistrationResponse());
         } catch (ApiClientException e) {
@@ -283,26 +283,18 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             ApiClientIdentity apiClientIdentity = this.apiClientIdentityFactory.getApiClientIdentity(principal);
             String tppIdentifier = apiClientIdentity.getTransportCertificateCn();
 
-            if(apiClientIdentity.isUnregistered()){
-                RegistrationRequest registrationRequest =
-                    registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
-                //delete client ID
-                registrationRequest.setClientId(null);
-                verifyRegistrationRequest(apiClientIdentity, registrationRequest);
-                registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
+            RegistrationRequest registrationRequest =
+                registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
+            //delete client ID
+            registrationRequest.setClientId(null);
+            verifyRegistrationRequest(apiClientIdentity, registrationRequest);
+            registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
 
-                Tpp tpp = tppRegistrationService.registerTpp(apiClientIdentity, registrationRequest);
-                OIDCRegistrationResponse registrationResponse = tpp.getRegistrationResponse();
-                log.info("{} Registration succeeded. tpp {} now has OAuth2 ClientId of {}", methodName,
-                        tppIdentifier, tpp.getClientId());
-                return ResponseEntity.status(HttpStatus.CREATED).body(registrationResponse);
-            } else {
-                Tpp tpp = getTpp(principal);
-                log.info("{} The ApiClientIdentity is already registered", methodName);
-                log.info("{} Registration request made with certificate that is already associated with a " +
-                                "TPP. '{}'", methodName, tpp);
-                throw new OAuth2InvalidClientException("This client is already registered");
-            }
+            Tpp tpp = tppRegistrationService.registerTpp(apiClientIdentity, registrationRequest);
+            OIDCRegistrationResponse registrationResponse = tpp.getRegistrationResponse();
+            log.info("{} Registration succeeded. tpp {} now has OAuth2 ClientId of {}", methodName,
+                    tppIdentifier, tpp.getClientId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(registrationResponse);
         }   catch (ApiClientException e) {
             log.info("Failed to create new client registration. There was an error related to the client requesting " +
                             "the registration; '{}'", e.getMessage());

@@ -292,6 +292,8 @@ public class TppRegistrationService {
                 .officialName(officialName)
                 .clientId(oidcRegistrationResponse.getClientId())
                 .types(oidcRegistrationRequest.getSoftwareStatementRoles())
+                .softwareId(oidcRegistrationRequest.getDirectorySoftwareStatement().getSoftware_id())
+                .authorisationNumber(clientIdentity.getAuthorisationNumber().orElse(null))
                 .directorySoftwareStatement(oidcRegistrationRequest.getDirectorySoftwareStatement())
                 .tppRequest(oidcRegistrationRequest.toJson())
                 .registrationResponse(oidcRegistrationResponse)
@@ -319,7 +321,7 @@ public class TppRegistrationService {
         return directoryId;
     }
 
-    public Tpp updateTpp(Tpp tpp, String token, RegistrationRequest oidcRegistrationRequest)
+    public Tpp updateTpp(ApiClientIdentity clientIdentity, Tpp tpp, String token, RegistrationRequest oidcRegistrationRequest)
             throws DynamicClientRegistrationException {
         log.debug("updateTpp() Updating tpp '{}'", tpp.getClientId());
         log.debug("updateTpp() Sending the OAuth2 dynamic registration request to AM");
@@ -342,6 +344,8 @@ public class TppRegistrationService {
                 .officialName(officialName)
                 .clientId(oidcRegistrationResponse.getClientId())
                 .types(oidcRegistrationRequest.getSoftwareStatementRoles())
+                .softwareId(oidcRegistrationRequest.getDirectorySoftwareStatement().getSoftware_id())
+                .authorisationNumber(clientIdentity.getAuthorisationNumber().orElse(null))
                 .directorySoftwareStatement(oidcRegistrationRequest.getDirectorySoftwareStatement())
                 .tppRequest(oidcRegistrationRequest.toJson())
                 .registrationResponse(oidcRegistrationResponse)

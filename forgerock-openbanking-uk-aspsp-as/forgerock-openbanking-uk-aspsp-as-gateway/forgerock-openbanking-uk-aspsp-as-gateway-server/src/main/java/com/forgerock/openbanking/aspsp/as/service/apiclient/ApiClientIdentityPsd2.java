@@ -20,20 +20,40 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.apiclient;
 
+import java.util.Optional;
+
+import com.forgerock.cert.Psd2CertInfo;
+import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authentication;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public abstract class ApiClientIdentityPsd2 extends ApiClientIdentity {
 
     private final PSD2Authentication authentication;
+    private Psd2CertInfo psd2CertInfo;
 
     protected ApiClientIdentityPsd2(PSD2Authentication authentication) throws OAuth2InvalidClientException {
         super(authentication);
         this.authentication = authentication;
+        try {
+            this.psd2CertInfo = new Psd2CertInfo(authentication.getCertificateChain());
+        } catch (InvalidPsd2EidasCertificate e) {
+            String errorString = "To register you must use a PSD2 eIDAS certificate from a trusted issuer, such as the OpenBanking test directory.";
+            log.info(errorString, e);
+            throw new OAuth2InvalidClientException(errorString);
+        }
+    }
+
+    @Override
+    public Optional<String> getAuthorisationNumber(){
+        return this.psd2CertInfo.getOrganizationId();
     }
 
     @Override
     public boolean isPSD2Certificate() {
-        return true;
+        return this.psd2CertInfo.isPsd2Cert();
     }
 }
