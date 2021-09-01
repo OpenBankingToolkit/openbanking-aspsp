@@ -103,7 +103,7 @@ public class AccountAccessConsentsApiControllerIT {
                 );
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(readConsentResponse));
         Tpp tpp = new Tpp();
-        tpp.setAuthorizationNumber("test-tpp");
+        tpp.setAuthorisationNumber("test-tpp");
         given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
         final OBReadConsent1 obReadConsent = new OBReadConsent1()
                 .data(new OBReadData1().permissions(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSBASIC)))
@@ -135,7 +135,7 @@ public class AccountAccessConsentsApiControllerIT {
         OBReadConsentResponse1 readConsentResponse = new OBReadConsentResponse1();
         given(rsStoreGateway.toRsStore(any(), any(), any())).willReturn(ResponseEntity.ok(readConsentResponse));
         Tpp tpp = new Tpp();
-        tpp.setAuthorizationNumber("test-tpp");
+        tpp.setAuthorisationNumber("test-tpp");
         given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
 
         // When

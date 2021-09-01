@@ -237,7 +237,7 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
             Optional<Tpp> tpp = this.tppStoreService.findByClientId(oauth2ClientId);
             UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
             if(tpp.isPresent()){
-                String authorisationNumberFromTppRecord = tpp.get().getAuthorizationNumber();
+                String authorisationNumberFromTppRecord = tpp.get().getAuthorisationNumber();
                 if (!currentUser.getUsername().equals(authorisationNumberFromTppRecord)) {
                     log.warn("TPP ID from account token {} is not the one associated with the certificate {}",
                             oauth2ClientId, currentUser.getUsername());
