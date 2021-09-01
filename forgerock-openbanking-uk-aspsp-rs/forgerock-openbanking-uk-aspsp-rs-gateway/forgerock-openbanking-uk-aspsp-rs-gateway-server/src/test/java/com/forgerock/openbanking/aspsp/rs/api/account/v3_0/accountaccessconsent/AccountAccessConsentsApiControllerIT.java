@@ -24,11 +24,13 @@ import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.AccountAccessConsentPermittedPermissionsFilter;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.model.Tpp;
 import com.nimbusds.jwt.SignedJWT;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -50,6 +52,7 @@ import uk.org.openbanking.datamodel.account.*;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
@@ -75,6 +78,8 @@ public class AccountAccessConsentsApiControllerIT {
     private RsStoreGateway rsStoreGateway;
     @MockBean
     private AccountAccessConsentPermittedPermissionsFilter accountAccessConsentPermittedPermissionsFilter;
+    @MockBean
+    private TppStoreService tppStoreService;
     @Autowired
     private SpringSecForTest springSecForTest;
 
@@ -97,6 +102,9 @@ public class AccountAccessConsentsApiControllerIT {
                         .permissions(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSBASIC))
                 );
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(readConsentResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorizationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
         final OBReadConsent1 obReadConsent = new OBReadConsent1()
                 .data(new OBReadData1().permissions(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSBASIC)))
                 .risk(new OBRisk2());
@@ -126,6 +134,9 @@ public class AccountAccessConsentsApiControllerIT {
 
         OBReadConsentResponse1 readConsentResponse = new OBReadConsentResponse1();
         given(rsStoreGateway.toRsStore(any(), any(), any())).willReturn(ResponseEntity.ok(readConsentResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorizationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
 
         // When
         HttpResponse<OBReadConsentResponse1> response = Unirest.get("https://rs-api:" + port + "/open-banking/v3.1/aisp/account-access-consents/100000123")

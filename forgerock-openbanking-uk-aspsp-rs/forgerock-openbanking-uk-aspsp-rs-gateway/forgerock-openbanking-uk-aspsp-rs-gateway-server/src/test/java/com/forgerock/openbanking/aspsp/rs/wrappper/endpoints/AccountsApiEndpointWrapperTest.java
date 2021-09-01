@@ -37,7 +37,7 @@ public class AccountsApiEndpointWrapperTest {
 
     @Before
     public void setup() {
-        wrapper = new AccountsApiEndpointWrapper(null) {
+        wrapper = new AccountsApiEndpointWrapper(null, null) {
             @Override
             protected ResponseEntity run(Object main) throws OBErrorException, JsonProcessingException {
                 return null;

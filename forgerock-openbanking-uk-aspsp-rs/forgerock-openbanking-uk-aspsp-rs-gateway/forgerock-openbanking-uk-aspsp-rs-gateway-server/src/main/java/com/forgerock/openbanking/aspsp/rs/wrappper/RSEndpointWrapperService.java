@@ -112,48 +112,49 @@ public class RSEndpointWrapperService {
     }
 
     public AccountsAndTransactionsEndpointWrapper accountAndTransactionEndpoint() {
-        return new AccountsAndTransactionsEndpointWrapper(this);
+        return new AccountsAndTransactionsEndpointWrapper(this, tppStoreService);
     }
 
     public AccountRequestsEndpointWrapper accountRequestEndpoint() {
-        return new AccountRequestsEndpointWrapper(this);
+        return new AccountRequestsEndpointWrapper(this, tppStoreService);
     }
 
     public TransactionsEndpointWrapper transctionsEndpoint() {
-        return new TransactionsEndpointWrapper(this);
+        return new TransactionsEndpointWrapper(this, tppStoreService);
     }
 
     public PaymentsApiEndpointWrapper paymentEndpoint() {
-        return new PaymentsApiEndpointWrapper(this, balanceTransferPaymentValidator, moneyTransferPaymentValidator,
+        return new PaymentsApiEndpointWrapper(this, tppStoreService, balanceTransferPaymentValidator,
+                moneyTransferPaymentValidator,
                 paymPaymentValidator, riskValidator);
     }
 
     public FilePaymentsApiEndpointWrapper filePaymentEndpoint() {
-        return new FilePaymentsApiEndpointWrapper(this);
+        return new FilePaymentsApiEndpointWrapper(this, tppStoreService);
     }
 
     public FundsConfirmationApiEndpointWrapper fundsConfirmationEndpoint() {
-        return new FundsConfirmationApiEndpointWrapper(this);
+        return new FundsConfirmationApiEndpointWrapper(this, tppStoreService);
     }
 
     public FundsConfirmationConsentApiEndpointWrapper fundsConfirmationConsentEndpoint() {
-        return new FundsConfirmationConsentApiEndpointWrapper(this);
+        return new FundsConfirmationConsentApiEndpointWrapper(this, tppStoreService);
     }
 
     public PaymentsSubmissionsEndpointWrapper paymentSubmissionEndpoint() {
-        return new PaymentsSubmissionsEndpointWrapper(this);
+        return new PaymentsSubmissionsEndpointWrapper(this, tppStoreService);
     }
 
     public PaymentsRequestPaymentIdEndpointWrapper paymentsRequestPaymentIdEndpoint() {
-        return new PaymentsRequestPaymentIdEndpointWrapper(this);
+        return new PaymentsRequestPaymentIdEndpointWrapper(this, tppStoreService);
     }
 
     public EventNotificationsApiEndpointWrapper eventNotificationEndpoint() {
-        return new EventNotificationsApiEndpointWrapper(this);
+        return new EventNotificationsApiEndpointWrapper(this, tppStoreService);
     }
 
     public AggregatedPollingApiEndpointWrapper aggregatedPollingEndpoint() {
-        return new AggregatedPollingApiEndpointWrapper(this);
+        return new AggregatedPollingApiEndpointWrapper(this, tppStoreService);
     }
 
     public CryptoApiClient getCryptoApiClient() {

@@ -26,6 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.PaymPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -51,11 +52,12 @@ public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEnd
     private boolean isFundsConfirmationRequest;
 
     public PaymentsApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
+                                      TppStoreService tppStoreService,
                                       BalanceTransferPaymentValidator balanceTransferPaymentValidator,
                                       MoneyTransferPaymentValidator moneyTransferPaymentValidator,
                                       PaymPaymentValidator paymPaymentValidator,
                                       OBRisk1Validator riskValidator) {
-        super(RSEndpointWrapperService);
+        super(RSEndpointWrapperService, tppStoreService);
         this.balanceTransferPaymentValidator = balanceTransferPaymentValidator;
         this.moneyTransferPaymentValidator = moneyTransferPaymentValidator;
         this.paymPaymentValidator = paymPaymentValidator;
@@ -75,7 +77,7 @@ public class PaymentsApiEndpointWrapper extends RSEndpointWrapper<PaymentsApiEnd
 
     @Override
     protected ResponseEntity run(PaymentRestEndpointContent main) throws OBErrorException {
-        return main.run(tppId);
+        return main.run(oAuth2ClientId);
     }
 
     public void verifyConsentStatusForConfirmationOfFund() throws OBErrorException {

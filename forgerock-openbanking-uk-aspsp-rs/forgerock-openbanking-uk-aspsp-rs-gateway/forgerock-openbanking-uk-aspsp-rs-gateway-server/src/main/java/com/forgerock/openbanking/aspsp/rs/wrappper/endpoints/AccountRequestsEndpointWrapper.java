@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -30,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 public class AccountRequestsEndpointWrapper extends AccountsApiEndpointWrapper<AccountRequestsEndpointWrapper, AccountRequestsEndpointWrapper.RestEndpointContent> {
@@ -38,24 +39,23 @@ public class AccountRequestsEndpointWrapper extends AccountsApiEndpointWrapper<A
 
     private String accountRequestId;
 
-    public AccountRequestsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
-        super(RSEndpointWrapperService);
+    public AccountRequestsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService, TppStoreService tppStoreService) {
+        super(RSEndpointWrapperService, tppStoreService);
     }
 
     @Override
     protected ResponseEntity run(RestEndpointContent main) throws OBErrorException {
-        return main.run(tppId);
+        return main.run(oAuth2ClientId);
     }
 
     @Override
     protected void applyFilters() throws OBErrorException {
         super.applyFilters();
 
-        verifyAccessToken(Arrays.asList(OpenBankingConstants.Scope.ACCOUNTS),
-                Arrays.asList(
-                        OIDCConstants.GrantType.CLIENT_CREDENTIAL
-                )
-        );
+        List<String> expectedScopes = List.of(OpenBankingConstants.Scope.ACCOUNTS);
+        List<OIDCConstants.GrantType> expectedGrantTypes = List.of(OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+
+        verifyAccessToken(expectedScopes, expectedGrantTypes);
 
         verifyMatlsFromAccessToken();
 
@@ -65,18 +65,18 @@ public class AccountRequestsEndpointWrapper extends AccountsApiEndpointWrapper<A
     public void verifyAccountRequest() throws OBErrorException {
         if (accountRequestId != null) {
             Optional<AccountRequest> accountRequest = rsEndpointWrapperService.accountRequestStore.get(accountRequestId);
-            if (!accountRequest.isPresent()) {
+            if (accountRequest.isEmpty()) {
                 LOGGER.warn("AISP {} is trying to delete an account request {} that doesn't exist",
-                        tppId, accountRequestId);
+                        oAuth2ClientId, accountRequestId);
                 throw new OBErrorException(OBRIErrorType.ACCOUNT_REQUEST_NOT_FOUND,
                         accountRequestId
                 );
             }
-            if (!accountRequest.get().getClientId().equals(tppId)) {
+            if (!accountRequest.get().getClientId().equals(oAuth2ClientId)) {
                 LOGGER.warn("AISP {} is trying to delete an account request {} that it doesn't own",
-                        tppId, accountRequestId);
+                        oAuth2ClientId, accountRequestId);
                 throw new OBErrorException(OBRIErrorType.ACCESS_TOKEN_INVALID,
-                        "The access token is associated with the TPP ID '" + tppId + "' whereas the " +
+                        "The access token is associated with the TPP ID '" + oAuth2ClientId + "' whereas the " +
                                 "account request is associated with the TPP ID '" + accountRequest.get().getClientId() + "'"
                 );
             }

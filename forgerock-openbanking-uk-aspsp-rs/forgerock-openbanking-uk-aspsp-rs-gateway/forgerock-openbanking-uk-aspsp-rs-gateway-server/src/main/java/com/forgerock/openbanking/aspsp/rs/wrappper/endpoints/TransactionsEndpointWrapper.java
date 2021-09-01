@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.utils.DateTimeUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
@@ -42,8 +43,9 @@ public class TransactionsEndpointWrapper extends AccountsApiEndpointWrapper<Tran
 
 
 
-    public TransactionsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
-        super(RSEndpointWrapperService);
+    public TransactionsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
+                                       TppStoreService tppStoreService) {
+        super(RSEndpointWrapperService, tppStoreService);
     }
 
     @Override
