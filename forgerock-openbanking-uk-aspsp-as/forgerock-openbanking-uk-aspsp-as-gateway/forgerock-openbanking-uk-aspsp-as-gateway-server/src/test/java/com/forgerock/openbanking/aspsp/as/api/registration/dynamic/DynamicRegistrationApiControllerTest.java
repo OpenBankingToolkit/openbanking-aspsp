@@ -316,7 +316,7 @@ public class DynamicRegistrationApiControllerTest {
         registrationResponse.setRegistrationAccessToken(authToken);
         tpp.setRegistrationResponse(registrationResponse);
         given(tppStoreService.findByClientId("testname")).willReturn(Optional.of(tpp));
-        given(this.tppRegistrationService.updateTpp(eq(tpp), eq(authToken),
+        given(this.tppRegistrationService.updateTpp(any(ApiClientIdentity.class), eq(tpp), eq(authToken),
                 any(RegistrationRequest.class))).willReturn(tpp);
         given(tokenExtractor.extract(authTokenHeaderValue)).willReturn(authToken);
 
@@ -352,19 +352,19 @@ public class DynamicRegistrationApiControllerTest {
 
 
     @Test
-    public void failWithInvalidClientIfCertificateIsAlreadyRegistered_register() throws InvalidPsd2EidasCertificate {
+    public void willRegisterIfCertHasBeenUsedToPreviouslyRegister_register() throws InvalidPsd2EidasCertificate, OAuth2InvalidClientException, DynamicClientRegistrationException {
         // given
         
         Collection<OBRIRole> authorities = new ArrayList<>(List.of(OBRIRole.ROLE_AISP, OBRIRole.ROLE_AISP));
         X509Authentication principal = testSpec.getPrincipal(authorities);
 
         // when
-        OAuth2InvalidClientException exception = catchThrowableOfType( () ->
+        ResponseEntity<OIDCRegistrationResponse> response =
                 dynamicRegistrationApiController.register(registrationRequestJwtSerialised,
-                        principal), OAuth2InvalidClientException.class);
+                        principal);
 
         // then
-        assertThat(exception.getRfc6750ErrorCode()).isEqualTo(OAuth2Exception.INVALID_CLIENT);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test

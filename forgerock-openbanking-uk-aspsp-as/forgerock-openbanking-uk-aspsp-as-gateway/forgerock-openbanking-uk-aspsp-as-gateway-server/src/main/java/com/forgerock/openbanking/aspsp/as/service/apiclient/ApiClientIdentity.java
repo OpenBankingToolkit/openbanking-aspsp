@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.apiclient;
 
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
@@ -36,6 +35,7 @@ import javax.security.auth.x500.X500Principal;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
+import java.util.Optional;
 
 @Slf4j
 public abstract class ApiClientIdentity {
@@ -52,6 +52,8 @@ public abstract class ApiClientIdentity {
      * @return true if an PSD2/eIDAS certificate, false otherwise
      * */
     public abstract boolean isPSD2Certificate();
+
+    public abstract Optional<String> getAuthorisationNumber();
 
 
     /**
@@ -129,23 +131,6 @@ public abstract class ApiClientIdentity {
             }
             log.info("throwIfNotValidCertAuthority() {}. X509Authentication; {}", helpString, this.authentication);
             throw new OAuth2InvalidClientException(helpString);
-        }
-    }
-
-    /**
-     * Check if the TPP was identified as being already onboarded
-     */
-    public void throwIfTppAlreadyOnboarded(RegistrationRequest registrationRequest) throws OAuth2InvalidClientException {
-        log.debug("throwIfTppAlreadyOnboarded() User detail: username: '{}' and authorities: '{}'", this.getUsername(),
-                this.getAuthorities());
-        String ssaId = registrationRequest.getJti();
-        
-        if (this.getAuthorities().contains(OBRIRole.ROLE_AISP)
-                || this.getAuthorities().contains(OBRIRole.ROLE_PISP)
-                || this.getAuthorities().contains(OBRIRole.ROLE_CBPII)) {
-            String errorMessage = "A software statement has already been registered with this transport certificate.";
-            log.info("throwIfTppAlreadyOnboarded() {}", errorMessage);
-            throw new OAuth2InvalidClientException(errorMessage);
         }
     }
 
