@@ -358,13 +358,24 @@ public class DynamicRegistrationApiControllerTest {
         Collection<OBRIRole> authorities = new ArrayList<>(List.of(OBRIRole.ROLE_AISP, OBRIRole.ROLE_AISP));
         X509Authentication principal = testSpec.getPrincipal(authorities);
 
+        String authToken = "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiRm9sN0lwZEtlTFptekt0Q0VnaTFMRGhTSXpNPSIsImFsZyI6IkVTMjU2In0.eyJzdWIiOiIzMTA1ZjcwYi1iNDE3LTQyN2UtOTIyZC03YmEwNGQxNjI3OGEiLCJjdHMiOiJPQVVUSDJfU1RBVEVMRVNTX0dSQU5UIiwiYXVkaXRUcmFja2luZ0lkIjoiZTY2MDZiOGYtNDA2Ni00Y2U2LWIxZDAtYTQ1MzM0MDEzYjA5LTIwNTkiLCJpc3MiOiJodHRwczovL2FzLmFzcHNwLmRldi1vYi5mb3JnZXJvY2suZmluYW5jaWFsOjgwNzQvb2F1dGgyIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoiMW9zekR5NTJxNlByUU51anpGVDhOT1U4U1VZIiwiYXVkIjoiMzEwNWY3MGItYjQxNy00MjdlLTkyMmQtN2JhMDRkMTYyNzhhIiwibmJmIjoxNjI2MzUxNzMxLCJzY29wZSI6W10sImF1dGhfdGltZSI6MTYyNjM1MTczMSwicmVhbG0iOiIvb3BlbmJhbmtpbmciLCJleHAiOjE2MjY0MzgxMzEsImlhdCI6MTYyNjM1MTczMSwiZXhwaXJlc19pbiI6ODY0MDAsImp0aSI6IldmYm13OGtkUFk1bEhZSldMa3lDS3RmekZ1NCJ9.vhH9AGDKbxK1R_tnq8_nOkIpPH7se68MxOC8y-Wq4SW4_ffMBj1ChkckU-q2wJ_4hh_l1sgdlCdkom_VQFvN9Q";
+
+        Tpp tpp = new Tpp();
+        tpp.setClientId("3105f70b-b417-427e-922d-7ba04d16278a");
+        OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
+        registrationResponse.setRegistrationAccessToken(authToken);
+        tpp.setRegistrationResponse(registrationResponse);
+        given(tppStoreService.findByClientId("testname")).willReturn(Optional.of(tpp));
+        given(this.tppRegistrationService.registerTpp(any(ApiClientIdentity.class),
+                any(RegistrationRequest.class))).willReturn(tpp);
+
         // when
         ResponseEntity<OIDCRegistrationResponse> response =
                 dynamicRegistrationApiController.register(registrationRequestJwtSerialised,
                         principal);
 
         // then
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     }
 
     @Test
