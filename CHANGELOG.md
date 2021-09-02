@@ -14,6 +14,75 @@ Release/1.4.8 (#443)
 * Release candidate: prepare release 1.4.8
 
 * Release candidate: prepare for next development iteration
+### GitHub [#444](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/444) 789: Missing account consent field statusUpdateDateTime
+[6b6425fef5d164e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6b6425fef5d164e) Jorge Sanchez Perez *2021-08-26 08:25:48*
+789: Missing account consent field statusUpdateDateTime (#444)
+
+- Fix the missing field statusUpdateDateTime across all versions
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/789
+### GitHub [#446](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/446) Release/1.4.9
+[4afeb1a871ab03e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4afeb1a871ab03e) Jorge Sanchez Perez *2021-08-31 13:56:50*
+Release/1.4.9 (#446)
+
+* Change log updated
+
+* Release candidate: prepare release 1.4.9
+
+* Release candidate: prepare for next development iteration
+[36f69a7520a2fc6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/36f69a7520a2fc6) JamieB *2021-09-02 11:03:09*
+775: Fix some IT tests
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/775
+[3568378e7f2c309](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3568378e7f2c309) JamieB *2021-09-01 14:24:47*
+775: Rebased onto multiple-registrations branch
+
+Rebased onto the work John has been doing to move
+DirectorySoftwareStatement into commons and modify the Tpp Class.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/775
+[37a74de1b38eee5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/37a74de1b38eee5) JamieB *2021-09-01 13:20:17*
+755: Fix endpoint authorization matls checks
+
+Matls used to work like this;
+spring-security-multi-auth would look up the tpp using the certificateCN
+(only worked for OB Transport certs), and put the oidc client from teh
+Tpp record into the spring principal name. Then the Endpoint Wrapper
+would look at the access_token and get the oauth2 clientId from there
+and check it was the same as the spring principal name.
+
+However, the presented cert can now not be tied to a specific OAuth2
+client Id. All the spring-security-multi-auth can do is populate the
+principal name with the authorizationNumber taken from the PSD2 eIDAS
+certificate. So, the endpoint wrapper must look for tpp based on the
+OAuth2 Client Id (unique to a Tpp record) and check that the
+authorizationNumber in that TPP record matches the Spring principal
+name. This will ensure that the access_token was issued to an OAuth2
+client that belongs to the TPP as identified in the presented transport
+certificate.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/775
+[5bbcdd6ec827b00](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/5bbcdd6ec827b00) jterryfr *2021-09-01 12:46:04*
+fix failing test
+[ee34b54b5f2613a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ee34b54b5f2613a) jterryfr *2021-09-01 10:39:26*
+migrate the directory software statement to common
+[d9b2e0ca83d7adc](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d9b2e0ca83d7adc) jterryfr *2021-09-01 10:39:26*
+allow string ssa aswell as directorySoftwareStatement
+[a19780e0f6f60ff](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a19780e0f6f60ff) jterryfr *2021-09-01 10:39:26*
+add authorisationNumber code
+[21b1a438d0711ca](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/21b1a438d0711ca) jterryfr *2021-09-01 10:39:26*
+remvoe string ssa
+[e84b2f7ac4d9f65](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e84b2f7ac4d9f65) jterryfr *2021-09-01 10:39:25*
+allow multiple registrations
+[da62eb6032e494e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/da62eb6032e494e) jterryfr *2021-09-01 10:33:34*
+add authorisationNumber code
+[d210704793b3ba5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d210704793b3ba5) jterryfr *2021-08-31 15:50:57*
+allow string ssa aswell as directorySoftwareStatement
+[e652ae7faa2f610](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e652ae7faa2f610) jterryfr *2021-08-31 12:05:02*
+remvoe string ssa
+[c9341d1d80c0027](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/c9341d1d80c0027) jterryfr *2021-08-31 12:03:53*
+migrate the directory software statement to common
+[852a366f5cb7edb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/852a366f5cb7edb) jterryfr *2021-08-31 09:12:31*
+allow multiple registrations
 [963f0b5c1e6cb4f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/963f0b5c1e6cb4f) JamieB *2021-08-05 14:04:30*
 Release candidate: prepare for next development iteration
 ## 1.4.7
