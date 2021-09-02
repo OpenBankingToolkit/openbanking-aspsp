@@ -73,7 +73,7 @@ public class DiscoveryApiController implements DiscoveryApi {
         };
         ResponseEntity<OIDCDiscoveryResponse> responseEntity = amGateway.toAM(request, additionalHttpHeaders, ptr);
         OIDCDiscoveryResponse discoveryResponse = Objects.requireNonNull(responseEntity.getBody());
-        log.debug("Discovery response received by AM: {}", discoveryResponse);
+        log.debug("Discovery response received from AM: {}", discoveryResponse);
 
         discoveryResponse.setVersion(readWriteApiVersion);
         discoveryResponse.setReadWriteApiVersion(readWriteApiVersion);

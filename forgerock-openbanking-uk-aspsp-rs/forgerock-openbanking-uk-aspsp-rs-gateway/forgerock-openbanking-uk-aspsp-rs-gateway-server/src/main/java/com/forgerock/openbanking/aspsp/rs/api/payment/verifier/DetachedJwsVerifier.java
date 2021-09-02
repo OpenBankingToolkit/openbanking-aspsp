@@ -26,6 +26,7 @@ import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
+import com.forgerock.openbanking.model.DirectorySoftwareStatement;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.nimbusds.jose.util.JSONObjectUtils;
@@ -85,10 +86,9 @@ public class DetachedJwsVerifier {
             }
             UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
             Tpp tpp = tppStoreService.findByClientId(currentUser.getUsername()).get();
-            String softwareStatement = tpp.getSsa();
-            Map<String, Object> softwareStatmentObjects = JSONObjectUtils.parse(softwareStatement);
-            String orgId = (String) softwareStatmentObjects.get("org_id");
-            String softwareId = (String) softwareStatmentObjects.get("software_id");
+            DirectorySoftwareStatement softwareStatement = tpp.getDirectorySoftwareStatement();
+            String orgId = softwareStatement.getOrg_id();
+            String softwareId = softwareStatement.getSoftware_id();
             String expectedIssuer = orgId + "/" + softwareId;
 
             if (tpp.getRegistrationResponse().getJwks() != null) {

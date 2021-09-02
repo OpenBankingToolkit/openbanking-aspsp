@@ -24,10 +24,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.oidc.services.UserInfoService;
 import com.nimbusds.jwt.SignedJWT;
 import kong.unirest.HttpResponse;
@@ -50,6 +52,7 @@ import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.account.Links;
 import uk.org.openbanking.datamodel.payment.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
@@ -87,6 +90,8 @@ public class DomesticPaymentConsentsApiControllerIT {
     private AMResourceServerService amResourceServerService;
     @MockBean
     private RsStoreGateway rsStoreGateway;
+    @MockBean
+    private TppStoreService tppStoreService;
     @Autowired
     private SpringSecForTest springSecForTest;
 
@@ -104,6 +109,9 @@ public class DomesticPaymentConsentsApiControllerIT {
         OBWriteDomesticConsent4 request = aValidOBWriteDomesticConsent4();
         OBWriteDomesticConsentResponse5 rsStoreResponse = aValidOBWriteDomesticConsentResponse5(request);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(rsStoreResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorisationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
 
         // When
         HttpResponse<OBWriteDomesticConsentResponse5> response = Unirest.post("https://rs-api:" + port + CONTEXT_PATH)

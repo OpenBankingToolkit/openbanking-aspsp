@@ -20,6 +20,13 @@
  */
 package com.forgerock.openbanking.aspsp.as.service;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.AMOIDCRegistrationService;
 import com.forgerock.openbanking.analytics.model.entries.TppEntry;
 import com.forgerock.openbanking.analytics.services.TppEntriesKPIService;
@@ -32,24 +39,19 @@ import com.forgerock.openbanking.common.error.exception.dynamicclientregistratio
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants.TokenEndpointAuthMethods;
-import com.forgerock.openbanking.constants.OpenBankingConstants.SSAClaims;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
+import com.forgerock.openbanking.model.DirectorySoftwareStatement;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
-import com.nimbusds.jwt.JWTClaimsSet;
-import lombok.extern.slf4j.Slf4j;
-import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import java.io.IOException;
-import java.text.ParseException;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 
 @Service
 @Slf4j
@@ -251,6 +253,20 @@ public class TppRegistrationService {
 
     public Tpp registerTpp(ApiClientIdentity clientIdentity, RegistrationRequest oidcRegistrationRequest)
             throws DynamicClientRegistrationException {
+        
+        Optional<DirectorySoftwareStatement> jti = tppStoreService.findByAuthorisationNumber(clientIdentity.getUsername())
+            .stream()
+            .map(Tpp::getDirectorySoftwareStatement)
+            .filter(ssa -> ssa.getJti().equals(oidcRegistrationRequest.getJti()))
+            .findAny();
+        
+        if (jti.isPresent()) {
+            log.info("registerTpp() this tpp has already registered with an identical SSA. " +
+              "You can only onboard with a single software statement if you generate a new SSA");
+            return null;
+        }
+            
+
         log.debug("registerTpp() Send the OAuth2 dynamic registration request to the AS");
         OIDCRegistrationResponse oidcRegistrationResponse = amoidcRegistrationService.register(oidcRegistrationRequest);
         log.debug("registerTpp() Response from the AS: {}", oidcRegistrationResponse);
@@ -265,8 +281,6 @@ public class TppRegistrationService {
         removeSecretIfNeeded(oidcRegistrationResponse);
 
         String officialName = getOrgSoftwareCombinedTppName(oidcRegistrationRequest, oidcRegistrationResponse);
-        String softwareStatementAsJsonString =
-                oidcRegistrationRequest.getSoftwareStatementClaimsAsJsonString();
 
         // ToDo: Is this just the same as the SoftwareStatement
 
@@ -278,7 +292,9 @@ public class TppRegistrationService {
                 .officialName(officialName)
                 .clientId(oidcRegistrationResponse.getClientId())
                 .types(oidcRegistrationRequest.getSoftwareStatementRoles())
-                .ssa(softwareStatementAsJsonString)
+                .softwareId(oidcRegistrationRequest.getDirectorySoftwareStatement().getSoftware_id())
+                .authorisationNumber(clientIdentity.getAuthorisationNumber().orElse(null))
+                .directorySoftwareStatement(oidcRegistrationRequest.getDirectorySoftwareStatement())
                 .tppRequest(oidcRegistrationRequest.toJson())
                 .registrationResponse(oidcRegistrationResponse)
                 .directoryId(directoryId)
@@ -305,7 +321,7 @@ public class TppRegistrationService {
         return directoryId;
     }
 
-    public Tpp updateTpp(Tpp tpp, String token, RegistrationRequest oidcRegistrationRequest)
+    public Tpp updateTpp(ApiClientIdentity clientIdentity, Tpp tpp, String token, RegistrationRequest oidcRegistrationRequest)
             throws DynamicClientRegistrationException {
         log.debug("updateTpp() Updating tpp '{}'", tpp.getClientId());
         log.debug("updateTpp() Sending the OAuth2 dynamic registration request to AM");
@@ -319,8 +335,6 @@ public class TppRegistrationService {
         removeSecretIfNeeded(oidcRegistrationResponse);
 
         String officialName = getOrgSoftwareCombinedTppName(oidcRegistrationRequest, oidcRegistrationResponse);
-        String softwareStatementAsJsonString =
-                oidcRegistrationRequest.getSoftwareStatementClaimsAsJsonString();
 
         Tpp updatedTpp = Tpp.builder()
                 .created(tpp.getCreated())
@@ -330,7 +344,9 @@ public class TppRegistrationService {
                 .officialName(officialName)
                 .clientId(oidcRegistrationResponse.getClientId())
                 .types(oidcRegistrationRequest.getSoftwareStatementRoles())
-                .ssa(softwareStatementAsJsonString)
+                .softwareId(oidcRegistrationRequest.getDirectorySoftwareStatement().getSoftware_id())
+                .authorisationNumber(clientIdentity.getAuthorisationNumber().orElse(null))
+                .directorySoftwareStatement(oidcRegistrationRequest.getDirectorySoftwareStatement())
                 .tppRequest(oidcRegistrationRequest.toJson())
                 .registrationResponse(oidcRegistrationResponse)
                 .directoryId(directoryId)
@@ -355,11 +371,11 @@ public class TppRegistrationService {
                 .types(tpp.getTypes());
 
         try {
-            JWTClaimsSet ssaClaim = tpp.getSsaClaim();
-            tppEntryBuilder.softwareId(ssaClaim.getStringClaim(SSAClaims.SOFTWARE_ID))
-                    .organisationId(ssaClaim.getStringClaim(SSAClaims.ORG_ID))
-                    .organisationName(ssaClaim.getStringClaim(SSAClaims.ORG_NAME));
-        } catch (ParseException e) {
+            DirectorySoftwareStatement ssaClaim = tpp.getDirectorySoftwareStatement();
+            tppEntryBuilder.softwareId(ssaClaim.getSoftware_id())
+                    .organisationId(ssaClaim.getOrg_id())
+                    .organisationName(ssaClaim.getOrg_name());
+        } catch (NullPointerException e) {
             log.warn("Couldn't read TPP SSA, skipping SSA claims population to TPP entry for this TPP {}", tpp, e);
         }
 

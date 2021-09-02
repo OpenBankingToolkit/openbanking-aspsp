@@ -24,10 +24,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.oidc.services.UserInfoService;
 import com.github.jsonzou.jmockdata.JMockData;
 import com.nimbusds.jwt.SignedJWT;
@@ -51,8 +53,8 @@ import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetup1;
 import uk.org.openbanking.datamodel.payment.paymentsetup.OBPaymentSetupResponse1;
 
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
@@ -84,6 +86,8 @@ public class PaymentsApiControllerIT {
     private AMResourceServerService amResourceServerService;
     @MockBean
     private RsStoreGateway rsStoreGateway;
+    @MockBean
+    private TppStoreService tppStoreService;
     @Autowired
     private SpringSecForTest springSecForTest;
 
@@ -101,6 +105,9 @@ public class PaymentsApiControllerIT {
         OBPaymentSetupResponse1 paymentSetupResponse = defaultPaymentResponse();
         OBPaymentSetup1 request = defaultPaymentSetupRequest(paymentSetupResponse);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(paymentSetupResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorisationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
 
         // When
         HttpResponse<OBPaymentSetupResponse1> response = Unirest.post("https://rs-api:" + port + "/open-banking/v2.0/payments")

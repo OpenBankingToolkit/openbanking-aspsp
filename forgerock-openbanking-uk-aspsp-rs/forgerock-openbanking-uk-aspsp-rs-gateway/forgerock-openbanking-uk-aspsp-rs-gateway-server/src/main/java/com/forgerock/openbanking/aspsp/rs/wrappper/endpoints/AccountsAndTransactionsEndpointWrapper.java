@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -38,8 +39,9 @@ public class AccountsAndTransactionsEndpointWrapper extends AccountsApiEndpointW
     private static final Logger LOGGER = LoggerFactory.getLogger(AccountsAndTransactionsEndpointWrapper.class);
 
 
-    public AccountsAndTransactionsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
-        super(RSEndpointWrapperService);
+    public AccountsAndTransactionsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
+                                                  TppStoreService tppStoreService) {
+        super(RSEndpointWrapperService, tppStoreService);
     }
 
     @Override

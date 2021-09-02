@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -41,8 +42,9 @@ import static com.forgerock.openbanking.model.error.OBRIErrorType.REQUEST_FIELD_
 public class FundsConfirmationApiEndpointWrapper extends RSEndpointWrapper<FundsConfirmationApiEndpointWrapper, FundsConfirmationApiEndpointWrapper.FundsConfirmationRestEndpointContent> {
     private FRFundsConfirmationConsent consent;
 
-    public FundsConfirmationApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
-        super(RSEndpointWrapperService);
+    public FundsConfirmationApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
+                                               TppStoreService tppStoreService) {
+        super(RSEndpointWrapperService, tppStoreService);
     }
 
     public FRFundsConfirmationConsent getConsent() {
@@ -71,7 +73,7 @@ public class FundsConfirmationApiEndpointWrapper extends RSEndpointWrapper<Funds
     @Override
     protected ResponseEntity run(FundsConfirmationApiEndpointWrapper.FundsConfirmationRestEndpointContent main) throws OBErrorException {
         try {
-            return main.run(tppId);
+            return main.run(oAuth2ClientId);
         } catch (HttpClientErrorException e) {
             if (HttpStatus.NOT_FOUND == e.getStatusCode()) {
                 // Change the 404 to 400 in line with V3 spec - implication is that client has submitted a non-existent id in URL therefore a bad request as opposed to resource not found

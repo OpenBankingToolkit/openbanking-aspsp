@@ -25,16 +25,17 @@ import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
 import com.forgerock.openbanking.common.services.openbanking.OBHeaderCheckerService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.error.ErrorCode;
+import com.forgerock.spring.security.multiauth.model.authentication.PasswordLessUserNameAuthentication;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
-import com.forgerock.spring.security.multiauth.model.authentication.PasswordLessUserNameAuthentication;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,9 +48,7 @@ import java.util.Collections;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -72,6 +71,9 @@ public class PaymentsRequestPaymentIdEndpointWrapperTest {
     @Mock(name = "obHeaderCheckerService")
     OBHeaderCheckerService obHeaderCheckerService;
 
+    @Mock(name = "tppStoreService")
+    TppStoreService tppStoreService;
+
     @Before
     public void setup() {
         // setting required objects to the perform test
@@ -82,7 +84,7 @@ public class PaymentsRequestPaymentIdEndpointWrapperTest {
                 null, false, null, rsConfiguration.financialId, amOpenBankingConfiguration, null,
                 null, null, amResourceServerService, null, null, null, null);
 
-        wrapper = new PaymentsRequestPaymentIdEndpointWrapper(rsEndpointWrapperService) {
+        wrapper = new PaymentsRequestPaymentIdEndpointWrapper(rsEndpointWrapperService, tppStoreService) {
             @Override
             protected ResponseEntity run(PaymentRestEndpointContent main) throws OBErrorException {
                 return super.run(main);

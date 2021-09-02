@@ -26,7 +26,7 @@ import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
 import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.dto.RegistrationError;
 import com.forgerock.openbanking.aspsp.as.configuration.ForgeRockDirectoryConfiguration;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatement;
+import com.forgerock.openbanking.model.DirectorySoftwareStatement;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.JWTClaimsOrigin;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestJWTClaims;

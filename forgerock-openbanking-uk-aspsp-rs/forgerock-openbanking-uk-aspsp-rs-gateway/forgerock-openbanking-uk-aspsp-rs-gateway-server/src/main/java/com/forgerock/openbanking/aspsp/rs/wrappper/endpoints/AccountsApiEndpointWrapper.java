@@ -25,6 +25,7 @@ import com.forgerock.openbanking.common.error.exception.PermissionDenyException;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import org.joda.time.DateTime;
@@ -50,8 +51,8 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
     protected DateTime fromBookingDateTime;
     protected DateTime toBookingDateTime;
 
-    public AccountsApiEndpointWrapper(RSEndpointWrapperService rsEndpointWrapperService) {
-        super(rsEndpointWrapperService);
+    public AccountsApiEndpointWrapper(RSEndpointWrapperService rsEndpointWrapperService, TppStoreService tppStoreService) {
+        super(rsEndpointWrapperService, tppStoreService);
     }
 
     public T minimumPermissions(FRExternalPermissionsCode... permissions) {

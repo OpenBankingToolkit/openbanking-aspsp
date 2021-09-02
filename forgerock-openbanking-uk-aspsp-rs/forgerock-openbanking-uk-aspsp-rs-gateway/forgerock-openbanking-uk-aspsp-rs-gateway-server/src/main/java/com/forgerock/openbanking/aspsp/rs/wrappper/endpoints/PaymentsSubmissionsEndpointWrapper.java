@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -40,8 +41,9 @@ public class PaymentsSubmissionsEndpointWrapper extends RSEndpointWrapper<Paymen
 
     private PaymentConsent payment;
 
-    public PaymentsSubmissionsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
-        super(RSEndpointWrapperService);
+    public PaymentsSubmissionsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
+                                              TppStoreService tppStoreService) {
+        super(RSEndpointWrapperService, tppStoreService);
     }
 
     public PaymentConsent getPayment() {
@@ -55,7 +57,7 @@ public class PaymentsSubmissionsEndpointWrapper extends RSEndpointWrapper<Paymen
 
     @Override
     protected ResponseEntity run(PaymentRestEndpointContent main) throws OBErrorException {
-        return main.run(tppId);
+        return main.run(oAuth2ClientId);
     }
 
     @Override

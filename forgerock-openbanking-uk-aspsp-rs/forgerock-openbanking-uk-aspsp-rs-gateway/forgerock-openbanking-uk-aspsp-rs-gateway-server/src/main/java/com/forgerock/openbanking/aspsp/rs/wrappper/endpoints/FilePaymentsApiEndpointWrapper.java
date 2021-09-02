@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FileConsent;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.utils.HashUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
@@ -39,8 +40,9 @@ import java.util.Collections;
 public class FilePaymentsApiEndpointWrapper extends RSEndpointWrapper<FilePaymentsApiEndpointWrapper, FilePaymentsApiEndpointWrapper.FilePaymentRestEndpointContent> {
     private FileConsent consent;
 
-    public FilePaymentsApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
-        super(RSEndpointWrapperService);
+    public FilePaymentsApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
+                                          TppStoreService tppStoreService) {
+        super(RSEndpointWrapperService, tppStoreService);
     }
 
     public FilePaymentsApiEndpointWrapper payment(FileConsent consent) {
@@ -50,7 +52,7 @@ public class FilePaymentsApiEndpointWrapper extends RSEndpointWrapper<FilePaymen
 
     @Override
     protected ResponseEntity run(FilePaymentRestEndpointContent main) throws OBErrorException {
-        return main.run(tppId);
+        return main.run(oAuth2ClientId);
     }
 
     @Override

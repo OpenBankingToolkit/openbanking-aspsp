@@ -14,12 +14,6 @@ Release/1.4.8 (#443)
 * Release candidate: prepare release 1.4.8
 
 * Release candidate: prepare for next development iteration
-### GitHub [#444](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/444) 789: Missing account consent field statusUpdateDateTime
-[6b6425fef5d164e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6b6425fef5d164e) Jorge Sanchez Perez *2021-08-26 08:25:48*
-789: Missing account consent field statusUpdateDateTime (#444)
-
-- Fix the missing field statusUpdateDateTime across all versions
-Issue: https://github.com/ForgeCloud/ob-deploy/issues/789
 [963f0b5c1e6cb4f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/963f0b5c1e6cb4f) JamieB *2021-08-05 14:04:30*
 Release candidate: prepare for next development iteration
 ## 1.4.7

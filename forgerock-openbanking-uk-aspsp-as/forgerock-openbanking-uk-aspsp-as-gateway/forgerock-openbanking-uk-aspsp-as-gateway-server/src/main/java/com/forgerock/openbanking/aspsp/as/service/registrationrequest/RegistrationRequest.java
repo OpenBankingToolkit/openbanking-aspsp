@@ -27,6 +27,7 @@ import com.forgerock.openbanking.common.error.exception.dynamicclientregistratio
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.model.SoftwareStatementRole;
+import com.forgerock.openbanking.model.DirectorySoftwareStatement;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jwt.JWTClaimsSet;
@@ -156,8 +157,21 @@ public class RegistrationRequest extends OIDCRegistrationRequest {
         return this.directorySoftwareStatement.getIss();
     }
 
+    /**
+    *  Represents the uniqe id of the JWT SSA
+    **/
+    @JsonIgnore
+    public String getJti() {
+        return this.directorySoftwareStatement.getJti();
+    }
+
     @JsonIgnore
     public void setDirectorySoftwareStatement(DirectorySoftwareStatement directorySoftwareStatement){
         this.directorySoftwareStatement = directorySoftwareStatement;
+    }
+
+    @JsonIgnore
+    public DirectorySoftwareStatement getDirectorySoftwareStatement(){
+        return this.directorySoftwareStatement;
     }
 }

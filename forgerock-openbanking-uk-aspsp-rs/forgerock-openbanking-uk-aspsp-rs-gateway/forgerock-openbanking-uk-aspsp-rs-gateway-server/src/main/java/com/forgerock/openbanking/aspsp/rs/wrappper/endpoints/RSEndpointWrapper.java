@@ -24,12 +24,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.IdempotencyService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.utils.ApiVersionUtils;
 import com.forgerock.openbanking.constants.OIDCConstants;
-import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
+import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.nimbusds.jwt.SignedJWT;
@@ -46,6 +47,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.text.ParseException;
 import java.util.List;
+import java.util.Optional;
 
 import static com.forgerock.openbanking.model.error.OBRIErrorType.SERVER_ERROR;
 
@@ -57,12 +59,14 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
     protected String xFapiFinancialId;
     protected Principal principal;
     protected SignedJWT accessToken;
-    protected String tppId;
+    protected String oAuth2ClientId;
     protected AdditionalFilter additionalFilter;
     protected OBVersion obVersion;
+    protected TppStoreService tppStoreService;
 
-    public RSEndpointWrapper(RSEndpointWrapperService rsEndpointWrapperService) {
+    public RSEndpointWrapper(RSEndpointWrapperService rsEndpointWrapperService, TppStoreService tppStoreService) {
         this.rsEndpointWrapperService = rsEndpointWrapperService;
+        this.tppStoreService = tppStoreService;
     }
 
     public T authorization(String authorization) {
@@ -223,20 +227,29 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
         log.debug("xIdempotency key '{}' is valid length", xIdempotencyKey);
     }
 
+    // This method ensures that the certificate used for MATLS to access the endpoint belongs to the same
+    // organisation that the access token provided in the request authorization header was issued to.
     public void verifyMatlsFromAccessToken() throws OBErrorException {
         try {
-            tppId = accessToken.getJWTClaimsSet().getAudience().get(0);
+            log.debug("verifyMatlsFromAccessToken() called");
+            String oauth2ClientId = accessToken.getJWTClaimsSet().getAudience().get(0);
             //MTLS check. We verify that the certificate is associated with the expected AISP ID
+            Optional<Tpp> tpp = this.tppStoreService.findByClientId(oauth2ClientId);
             UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-            if (!currentUser.getUsername().equals(tppId)) {
-                log.warn("TPP ID from account token {} is not the one associated with the certificate {}",
-                        tppId, currentUser.getUsername());
-                throw new OBErrorException(OBRIErrorType.MATLS_TPP_AUTHENTICATION_INVALID_FROM_ACCESS_TOKEN,
-                        currentUser.getUsername(),
-                        tppId
-                );
+            if(tpp.isPresent()){
+                String authorisationNumberFromTppRecord = tpp.get().getAuthorisationNumber();
+                if (!currentUser.getUsername().equals(authorisationNumberFromTppRecord)) {
+                    log.warn("TPP ID from account token {} is not the one associated with the certificate {}",
+                            oauth2ClientId, currentUser.getUsername());
+                    throw new OBErrorException(OBRIErrorType.MATLS_TPP_AUTHENTICATION_INVALID_FROM_ACCESS_TOKEN,
+                            currentUser.getUsername(),
+                            oauth2ClientId
+                    );
+                }
             }
-            log.info("AISP ID {} has been verified against X509 certificate (MTLS)", currentUser.getUsername());
+            this.oAuth2ClientId = oauth2ClientId;
+            log.info("TPP AuthorizationNumber {} has been verified against X509 certificate (MTLS)",
+                    currentUser.getUsername());
         } catch (ParseException e) {
             log.warn("Access token {} doesn't look to be a JWT. You need to enable stateless", authorization);
             throw new OBErrorException(OBRIErrorType.ACCESS_TOKEN_INVALID_FORMAT);
