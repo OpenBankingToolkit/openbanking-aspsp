@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -45,13 +46,14 @@ import static com.forgerock.openbanking.model.error.OBRIErrorType.SERVER_ERROR;
 @Slf4j
 public class AggregatedPollingApiEndpointWrapper extends RSEndpointWrapper<AggregatedPollingApiEndpointWrapper, AggregatedPollingApiEndpointWrapper.AggregatedPollingRestEndpointContent> {
 
-    public AggregatedPollingApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
-        super(RSEndpointWrapperService);
+    public AggregatedPollingApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
+                                               TppStoreService tppStoreService) {
+        super(RSEndpointWrapperService, tppStoreService);
     }
 
     @Override
     protected ResponseEntity run(AggregatedPollingRestEndpointContent main) throws OBErrorException {
-        return main.run(tppId);
+        return main.run(oAuth2ClientId);
     }
 
     @Override

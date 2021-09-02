@@ -22,13 +22,13 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.test.context.TestComponent;
 import org.springframework.http.ResponseEntity;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,6 +43,9 @@ public class RSEndpointWrapperTest {
 
     @Mock
     private RSEndpointWrapperService rsEndpointWrapperService;
+
+    @Mock
+    private TppStoreService tppStoreService;
 
     @InjectMocks
     private TestRSEndpointWrapper testRSEndpointWrapper;
@@ -108,8 +111,9 @@ public class RSEndpointWrapperTest {
     // Testing of run() method implementations can be done for concrete subclass tests
     private static class TestRSEndpointWrapper extends RSEndpointWrapper
     {
-        public TestRSEndpointWrapper(RSEndpointWrapperService rsEndpointWrapperService) {
-            super(rsEndpointWrapperService);
+        public TestRSEndpointWrapper(RSEndpointWrapperService rsEndpointWrapperService,
+                                     TppStoreService tppStoreService) {
+            super(rsEndpointWrapperService, tppStoreService);
         }
 
         @Override

@@ -26,6 +26,7 @@ import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.services.openbanking.OBHeaderCheckerService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -68,6 +69,9 @@ public class PaymentsApiEndpointWrapperTest {
 
     @Mock(name = "obHeaderCheckerService")
     OBHeaderCheckerService obHeaderCheckerService;
+
+    @Mock(name = "tppStoreService")
+    TppStoreService tppStoreService;
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
@@ -170,6 +174,7 @@ public class PaymentsApiEndpointWrapperTest {
 
         return new PaymentsApiEndpointWrapper(
                 rsEndpointWrapperService,
+                tppStoreService,
                 null,
                 null,
                 null,

@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.version.OBVersion;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -34,7 +34,6 @@ import uk.org.openbanking.OBConstants;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -46,13 +45,14 @@ import static com.forgerock.openbanking.model.error.OBRIErrorType.SERVER_ERROR;
 @Slf4j
 public class EventNotificationsApiEndpointWrapper extends RSEndpointWrapper<EventNotificationsApiEndpointWrapper, EventNotificationsApiEndpointWrapper.EventNotificationRestEndpointContent> {
 
-    public EventNotificationsApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService) {
-        super(RSEndpointWrapperService);
+    public EventNotificationsApiEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
+                                                TppStoreService tppStoreService) {
+        super(RSEndpointWrapperService, tppStoreService);
     }
 
     @Override
     protected ResponseEntity run(EventNotificationRestEndpointContent main) throws OBErrorException {
-        return main.run(tppId);
+        return main.run(oAuth2ClientId);
     }
 
     @Override
