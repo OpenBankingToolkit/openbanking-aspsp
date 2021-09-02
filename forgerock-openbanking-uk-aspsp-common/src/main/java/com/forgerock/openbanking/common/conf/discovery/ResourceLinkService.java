@@ -43,7 +43,10 @@ public class ResourceLinkService {
     }
 
     public Links toSelfLink(PaymentConsent consent, Function<DiscoveryConfigurationProperties.PaymentApis, String> getUrl) {
-        return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getPayments()), consent.getId());
+        DiscoveryConfigurationProperties.Apis apis = discoveryConfigurationProperties.getApis();
+        DiscoveryConfigurationProperties.PaymentApis payments = apis.getPayments();
+        String url = getUrl.apply(payments);
+        return resourceToLink(url, consent.getId());
     }
 
     public Links toSelfLink(PaymentSubmission payment, Function<DiscoveryConfigurationProperties.PaymentApis, String> getUrl) {

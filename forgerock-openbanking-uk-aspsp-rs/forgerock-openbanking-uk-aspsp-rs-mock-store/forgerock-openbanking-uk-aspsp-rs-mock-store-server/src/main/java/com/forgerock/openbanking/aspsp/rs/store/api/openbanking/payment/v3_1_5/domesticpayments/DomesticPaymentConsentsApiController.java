@@ -45,6 +45,7 @@ import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.account.Links;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksPayment4;
 import uk.org.openbanking.datamodel.payment.*;
@@ -189,6 +190,9 @@ public class DomesticPaymentConsentsApiController implements DomesticPaymentCons
     }
 
     private OBWriteDomesticConsentResponse5 responseEntity(FRDomesticConsent domesticConsent) {
+
+        Links links = resourceLinkService.toSelfLink(domesticConsent,
+                discovery -> getVersion(discovery).getGetDomesticPaymentConsent());
         return new OBWriteDomesticConsentResponse5()
                 .data(new OBWriteDomesticConsentResponse5Data()
                         .readRefundAccount(toOBReadRefundAccountEnum(domesticConsent.getDomesticConsent().getData().getReadRefundAccount()))

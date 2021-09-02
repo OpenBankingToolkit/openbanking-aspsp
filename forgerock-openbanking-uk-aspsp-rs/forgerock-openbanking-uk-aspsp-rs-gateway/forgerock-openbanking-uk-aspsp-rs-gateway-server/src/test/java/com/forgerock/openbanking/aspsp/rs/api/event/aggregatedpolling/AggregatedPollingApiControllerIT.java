@@ -23,14 +23,15 @@ package com.forgerock.openbanking.aspsp.rs.api.event.aggregatedpolling;
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
-import com.forgerock.openbanking.oidc.services.UserInfoService;
 import com.nimbusds.jwt.SignedJWT;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -52,6 +53,7 @@ import uk.org.openbanking.datamodel.event.OBEventPollingResponse1;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,6 +77,8 @@ public class AggregatedPollingApiControllerIT {
     private AMResourceServerService amResourceServerService;
     @MockBean
     private RsStoreGateway rsStoreGateway;
+    @MockBean(name = "tppStoreService")
+    private TppStoreService tppStoreService;
 
     @Before
     public void setUp() {
@@ -92,6 +96,9 @@ public class AggregatedPollingApiControllerIT {
                 .sets(Map.of("asdfasdfas","eyJhbG....asefasefa","asdfasdfas2","eyJhbG2....asefasefa"))
                 .moreAvailable(false);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.ok(obEventPollingResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorisationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
         OBEventPolling1 obEventPolling = new OBEventPolling1().returnImmediately(true);
 
         // When
@@ -144,6 +151,9 @@ public class AggregatedPollingApiControllerIT {
                 .sets(Map.of("asdfasdfas","eyJhbG....asefasefa","asdfasdfas2","eyJhbG2....asefasefa"))
                 .moreAvailable(false);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.ok(obEventPollingResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorisationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
         OBEventPolling1 obEventPolling = new OBEventPolling1().returnImmediately(true);
 
         // When
@@ -196,6 +206,9 @@ public class AggregatedPollingApiControllerIT {
                 .sets(Map.of("asdfasdfas","eyJhbG....asefasefa","asdfasdfas2","eyJhbG2....asefasefa"))
                 .moreAvailable(false);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.ok(obEventPollingResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorisationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
         OBEventPolling1 obEventPolling = new OBEventPolling1().returnImmediately(true);
 
         // When
