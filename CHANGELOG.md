@@ -29,6 +29,28 @@ Release/1.4.9 (#446)
 * Release candidate: prepare release 1.4.9
 
 * Release candidate: prepare for next development iteration
+### GitHub [#448](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/448) Release/1.5.0
+[9d669f224210d73](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/9d669f224210d73) Jorge Sanchez Perez *2021-09-02 16:42:26*
+Release/1.5.0 (#448)
+
+* Release 1.5.0
+- Bumped commons version 1.2.5
+- Bumped clients version 1.2.4
+- Bumped auth version 1.1.4
+- Bumped jwksm version 1.2.4
+- Update development version to 1.5.0-SNAPSHOT for the next release generation
+
+* Release candidate: prepare release 1.5.0
+
+* Release candidate: prepare for next development iteration
+
+* Release candidate: rollback the release of 1.5.0
+
+* Bumped latest versions of FR dependencies
+
+* Release candidate: prepare release 1.5.0
+
+* Release candidate: prepare for next development iteration
 [36f69a7520a2fc6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/36f69a7520a2fc6) JamieB *2021-09-02 11:03:09*
 775: Fix some IT tests
 

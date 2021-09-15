@@ -144,8 +144,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         log.info("{} called for ClientId '{}'", methodName, clientId);
         checkAuthArgsContainValidInformation(principal, authorization);
         
-        Tpp tpp = getTpp(principal);
-        ensureTppOwnsOidcRegistration(tpp, clientId);
+        Tpp tpp = getTpp(clientId);
+        ensureTppOwnsOidcRegistration(tpp, principal.getName());
 
         String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
 
@@ -201,8 +201,12 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         log.info("Received a request to get registration information for clientId {}, principal is {}", clientId,
                 principal);
         checkAuthArgsContainValidInformation(principal, authorization);
-        Tpp tpp = getTpp(principal);
-        ensureTppOwnsOidcRegistration(tpp, clientId);
+        if(clientId == null){
+            throw new OAuth2InvalidClientException("No client id provided. Request must be of the form " +
+                    "/register/{clientId) where client Id is taken from the client_id in the registration response");
+        }
+        Tpp tpp = getTpp(clientId);
+        ensureTppOwnsOidcRegistration(tpp, principal.getName());
         String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
         OIDCRegistrationResponse registrationResponse = tppRegistrationService.getOIDCClient(accessToken, tpp);
         log.info("Successfully returning registration information for clientId {}", registrationResponse.getClientId());
@@ -247,8 +251,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                     registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
 
 
-            Tpp tpp = getTpp(principal);
-            ensureTppOwnsOidcRegistration(tpp, clientId);
+            Tpp tpp = getTpp(clientId);
+            ensureTppOwnsOidcRegistration(tpp, principal.getName());
             String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
 
             //Override client ID
@@ -388,8 +392,8 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         // eIDAS certificates only identify the TPP, NOT the Software Statement. So if we have an eIDAS certificate we
         // won't find the softwareId anywhere in the certificate DN.
         if(!clientIdentity.isPSD2Certificate()) {
-            tppRegistrationService.verifySSASoftwareIDMatchesMatlsTransportCertSoftwareId(softwareId,
-                    clientIdentity.getTransportCertificateCn());
+            throw new OAuth2InvalidClientException("Onboarding must be done with a PSD2 eIDAS certificate. " +
+                    "OBTransport certificates have been depricated");
         }
 
         tppRegistrationService.verifyTPPRegistrationRequestAgainstSSA(registrationRequest);
@@ -398,38 +402,33 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
     }
 
     /**
-     * Tests to see if the tpp's clientId matches a specific client Id.
-     * The tpp is identified from the Principal of the request, which is derived from a certificate (MATLS). This
-     * method can test if the clientID for which the registration request is being made (taken from the request URL
-     * path for example) is the same clientId issued when the Tpp onboarded.
+     * Tests to see if the tpp's authorisationNumber matches a specific authorisationNumber.
+     *
      * @param tpp - The tpp that made the request as identified by MATLS, cookie etc.
-     * @param clientIdFromRequest the OIDC clientId specified in the request (e.g. as a URI path element)
+     * @param authorisationNumber the authorisationNumber to test
      * @throws OBErrorResponseException - if the oidcClientIDFromRequest does not match the client Id registered when
      * the TPP onboarded.
      */
-    private void ensureTppOwnsOidcRegistration(@NotNull Tpp tpp, String clientIdFromRequest)
+    private void ensureTppOwnsOidcRegistration(@NotNull Tpp tpp, String authorisationNumber)
             throws OAuth2InvalidClientException {
-        log.debug("ensureTppOwnsOidcRegistration() stored tpp clientId is '{}', clientIdFromRequest is '{}'",
-                tpp==null?"tpp is null!":tpp.getClientId(),clientIdFromRequest);
+        log.debug("ensureTppOwnsOidcRegistration() stored tpp clientId is '{}', authorisationNumber is '{}'",
+                tpp==null?"tpp is null!":tpp.getClientId(),authorisationNumber);
 
-        Optional<String> clientIdFromTpp = getTppClientId(tpp);
-        if (clientIdFromRequest != null && clientIdFromTpp.isPresent() && !clientIdFromTpp.get().equals(clientIdFromRequest)) {
-            String errorMessage = "ClientId specified in the request url was '" + clientIdFromRequest + "'. The " +
-                    "ClientId of the Tpp associated with your MATLS certificate used in this call was '" +
-                    tpp.getClientId() + "  Please use a certificate associated with the Tpp that performed the  " +
-                    "registration.";
-            log.info("{}; tpp; '{}', clientIdFromRequest; '{}'", errorMessage, tpp, clientIdFromRequest);
+        Optional<String> tppsAuthorisationNumber = getAuthorisationNumber(tpp);
+        if (authorisationNumber == null || tppsAuthorisationNumber.isEmpty() || !tppsAuthorisationNumber.get().equals(authorisationNumber)) {
+            String errorMessage =
+                    "The clientId specified in the request url belongs to a different Tpp from the one indicated by " +
+                            "the authorisationNumber in the transport certificate. authorisationNumber from cert was" +
+                            " '" + authorisationNumber + "'. Please use a certificate associated with the Tpp that " +
+                            "performed the registration.";
+            log.info("{}; tpp; '{}', authorisationNumber; '{}'", errorMessage, tpp, authorisationNumber);
             throw new OAuth2InvalidClientException(errorMessage);
         }
         log.debug("ensureTppOwnsOidcRegistration() - success - TPP owns the clientId specified in request URL");
     }
 
-    private Optional<String> getTppClientId(Tpp tpp){
-        if(tpp == null){
-            return Optional.empty();
-        } else {
-            return Optional.ofNullable(tpp.getClientId());
-        }
+    private Optional<String> getAuthorisationNumber(Tpp tpp){
+        return Optional.ofNullable(tpp.getAuthorisationNumber());
     }
 
     private void verifyAuthenticationMethodSupported(RegistrationRequest registrationRequest)
@@ -452,19 +451,18 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
 
     /**
      * getTpp returns the tpp associated with the principal. If not tpp can be found will throw.
-     * @param principal the principal as obtained from the client MATLS certificate used to make the request
+     * @param clientId the principal as obtained from the client MATLS certificate used to make the request
      * @return a Tpp object belonging to the principal. If no tpp can be found then will throw
      * OAuth2InvalidClientException
      * @throws OAuth2InvalidClientException
      */
-    private @NotNull Tpp getTpp( Principal principal) throws OAuth2InvalidClientException {
+    private @NotNull Tpp getTpp(String clientId) throws OAuth2InvalidClientException {
         //Todo: this next line looks odd. findByClientId but passing the principal.getName which I would think would
         // return the name pulled from the MATLS certificate?
-        Optional<Tpp> optionalTpp = tppStoreService.findByClientId(principal.getName());
+        Optional<Tpp> optionalTpp = tppStoreService.findByClientId(clientId);
         if (optionalTpp.isEmpty()) {
-            String errorMessage = "No tpp associated with the MATLS certificate used in the request." +
-                    " The certificate is associated with OrganisationId " + principal.getName() +". This Tpp is not " +
-                    "currently onboarded";
+            String errorMessage = "No registration exists for the clientId in the request path. clientId was '" +
+                    clientId + "'";
             log.info("getTpp() {}", errorMessage);
             throw new OAuth2InvalidClientException(errorMessage);
         }

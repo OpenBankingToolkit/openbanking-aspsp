@@ -27,6 +27,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.account.common.
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountRequest;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
+import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -51,7 +52,8 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
     protected DateTime fromBookingDateTime;
     protected DateTime toBookingDateTime;
 
-    public AccountsApiEndpointWrapper(RSEndpointWrapperService rsEndpointWrapperService, TppStoreService tppStoreService) {
+    public AccountsApiEndpointWrapper(RSEndpointWrapperService rsEndpointWrapperService,
+                                      TppStoreService tppStoreService) {
         super(rsEndpointWrapperService, tppStoreService);
     }
 
@@ -95,16 +97,37 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
 
     public void verifyMatlsFromAccountRequest() throws OBErrorException {
         //MTLS check. We verify that the certificate is associated with the expected AISP ID
+        LOGGER.debug("verifyMatlsFromAccountRequest() verifying account request token was issued to the Tpp indicated" +
+                " by the MATLS tranport certificate presented");
         UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-        if (!currentUser.getUsername().equals(getAccountRequest().getClientId())) {
-            LOGGER.warn("AISP ID from account request {} is not the one associated with the certificate {}",
-                    getAccountRequest().getClientId(), currentUser.getUsername());
+        AccountRequest accountRequest = getAccountRequest();
+        String oauth2ClientIdFromAccountRequest = accountRequest.getClientId();
+        LOGGER.debug("verifyMatlsFromAccountRequest() oauth2 clientId from account request is '{}'",
+                oauth2ClientIdFromAccountRequest);
+        Optional<Tpp> isTpp = this.tppStoreService.findByClientId(oauth2ClientIdFromAccountRequest);
+        if(isTpp.isEmpty()){
+            LOGGER.info("The OAuth2 client to which the accountAccessToken was issued no longer exists. ClientId is " +
+                    "'{}'", oauth2ClientIdFromAccountRequest);
             throw new OBErrorException(OBRIErrorType.MATLS_TPP_AUTHENTICATION_INVALID_FROM_ACCOUNT_REQUEST,
                     currentUser.getUsername(),
-                    getAccountRequest().getClientId()
-            );
+                    getAccountRequest().getClientId());
+
+        } else {
+
+            Tpp tpp = isTpp.get();
+            String tppAuthorisationNumber = tpp.getAuthorisationNumber();
+            if(!currentUser.getUsername().equals(tppAuthorisationNumber)){
+                LOGGER.warn("AISP ID from account request '{}' is not the one associated with the certificate '{}'",
+                        tppAuthorisationNumber, currentUser.getUsername());
+                throw new OBErrorException(OBRIErrorType.MATLS_TPP_AUTHENTICATION_INVALID_FROM_ACCOUNT_REQUEST,
+                        currentUser.getUsername(),
+                        getAccountRequest().getClientId()
+                );
+            }
         }
-        LOGGER.info("AISP ID {} has been verified against X509 certificate (MTLS)", currentUser.getUsername());
+        LOGGER.info("Account Request with clientId of {} has been verified as belonging to X509 certificate (MTLS) " +
+                        "principal '{}'",
+                oauth2ClientIdFromAccountRequest, currentUser.getUsername());
     }
 
     public void verifyAccountRequestStatus() throws OBErrorException {

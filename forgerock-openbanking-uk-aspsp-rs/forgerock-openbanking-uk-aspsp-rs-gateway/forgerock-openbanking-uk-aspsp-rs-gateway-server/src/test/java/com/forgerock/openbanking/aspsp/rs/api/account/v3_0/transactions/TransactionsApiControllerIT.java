@@ -30,6 +30,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.account.common.
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
@@ -78,6 +79,10 @@ public class TransactionsApiControllerIT {
 
     private static final DateTime CONSENT_FROM = DateTime.now().minusDays(3);
     private static final DateTime CONSENT_TO = DateTime.now().plusDays(3);
+    private static final String CLIENT_ID = "test-tpp";
+    private static final String AUTHORISATION_NUMBER = "PDSGB-OB-324354";
+
+    private Tpp tpp;
 
     @LocalServerPort
     private int port;
@@ -97,19 +102,25 @@ public class TransactionsApiControllerIT {
     private AMResourceServerService amResourceServerService;
     @MockBean
     private RsStoreGateway rsStoreGateway;
+    @MockBean
+    private TppStoreService tppStoreService;
     @Autowired
     private SpringSecForTest springSecForTest;
 
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper()).verifySsl(false);
+        tpp = new Tpp();
+        tpp.setClientId(CLIENT_ID);
+        tpp.setAuthorisationNumber(AUTHORISATION_NUMBER);
     }
 
     @Test
     public void getAccountTransactionShouldBeOk() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        this.mockAuthCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
@@ -132,7 +143,8 @@ public class TransactionsApiControllerIT {
     public void getAccountTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        this.mockAuthCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
@@ -162,7 +174,8 @@ public class TransactionsApiControllerIT {
     public void getAccountStatementTransactionShouldBeOk() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+                this.mockAuthCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READSTATEMENTSDETAIL,
@@ -186,7 +199,8 @@ public class TransactionsApiControllerIT {
     public void getAccountStatementTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+                this.mockAuthCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READSTATEMENTSDETAIL,
@@ -217,7 +231,8 @@ public class TransactionsApiControllerIT {
     public void getTransactionShouldBeOk() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+                this.mockAuthCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
@@ -240,7 +255,8 @@ public class TransactionsApiControllerIT {
     public void getTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+                this.mockAuthCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
@@ -266,6 +282,16 @@ public class TransactionsApiControllerIT {
         verify(rsStoreGateway).toRsStore(any(), any(), eq(params), any());
     }
 
+    private void mockAuthCollector(){
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        springSecForTest.mockAuthCollector.mockUser(AUTHORISATION_NUMBER, OBRIRole.ROLE_AISP);
+    }
+
+
+    private void mockTppStoreService(){
+        given(tppStoreService.findByClientId(CLIENT_ID)).willReturn(Optional.of(tpp));
+    }
+    
     private void mockAccessTokenVerification(String jws) throws ParseException, InvalidTokenException, IOException {
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
     }

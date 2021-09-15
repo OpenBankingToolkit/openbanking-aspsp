@@ -44,10 +44,10 @@
     <url>http://www.forgerock.org</url>
 
     <properties>
-        <ob-common.version>1.2.5</ob-common.version>
-        <ob-clients.version>1.2.4</ob-clients.version>
-        <ob-jwkms.version>1.2.4</ob-jwkms.version>
-        <ob-auth.version>1.1.4</ob-auth.version>
+        <ob-common.version>1.2.9</ob-common.version>
+        <ob-clients.version>1.2.0</ob-clients.version>
+        <ob-jwkms.version>1.2.8</ob-jwkms.version>
+        <ob-auth.version>1.1.8</ob-auth.version>
         <maven-release-plugin.version>3.0.0-M1</maven-release-plugin.version>
         <main.basedir.license>${project.basedir}</main.basedir.license>
     </properties>

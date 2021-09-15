@@ -23,7 +23,6 @@ package com.forgerock.openbanking.aspsp.as.service;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -32,7 +31,6 @@ import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -41,9 +39,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.text.ParseException;
 import java.util.Base64;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -63,9 +59,6 @@ public class MatlsRequestVerificationService {
             throws OBErrorResponseException {
         UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
 
-        //the X509 authentication already check that the TPP cert exist but not if tpp is registered
-        Tpp tpp = getTppRegistered(currentUser);
-
         PairClientIDAuthMethod pairClientIDAuthMethod;
 
         String clientAssertion = (String) paramMap.getFirst(OIDCConstants.OIDCClaim.CLIENT_ASSERTION);
@@ -78,36 +71,55 @@ public class MatlsRequestVerificationService {
         } else {
             pairClientIDAuthMethod = getPairClientIdAuthMethodDefault(paramMap);
         }
+
+        String authClientId = pairClientIDAuthMethod.clientId;
+        Tpp tpp = getTppRegistered(authClientId);
+
+        if(!matlsIdMatchesTppId(principal.getName(), tpp)){
+            log.info("The clientId found via the authentication method did not belong to the Tpp identified by the " +
+                    "MATLS certificate's principal (authorisationNumber). authorisationNumber '{}', clientId '{}'",
+                    principal.getName(), tpp.getAuthorisationNumber());
+            throw new OBErrorResponseException(
+                    OBRIErrorType.ACCESS_TOKEN_CREDENTIAL_NOT_MATCHING_CLIENT_CERTS.getHttpStatus(),
+                    OBRIErrorResponseCategory.ACCESS_TOKEN,
+                    OBRIErrorType.ACCESS_TOKEN_CREDENTIAL_NOT_MATCHING_CLIENT_CERTS.toOBError1(tpp.getClientId(), pairClientIDAuthMethod.clientId, pairClientIDAuthMethod.authMethod.type));
+        }
+
         // can throw UnsupportedOIDCAuthMethodsException
         OIDCRegistrationResponse registrationResponse = tpp.getRegistrationResponse();
         String tokenEndpointAuthMethod = registrationResponse.getTokenEndpointAuthMethod();
         OIDCConstants.TokenEndpointAuthMethods authMethodsFromTpp = OIDCConstants.TokenEndpointAuthMethods.fromType(tokenEndpointAuthMethod);
 
         if (!authMethodsFromTpp.equals(pairClientIDAuthMethod.authMethod)) {
+            log.info("The authorisation method specified in the token differend from that in the Tpp registration " +
+                    "response");
             throw new OBErrorResponseException(
                     OBRIErrorType.ACCESS_TOKEN_WRONG_AUTH_METHOD.getHttpStatus(),
                     OBRIErrorResponseCategory.ACCESS_TOKEN,
                     OBRIErrorType.ACCESS_TOKEN_WRONG_AUTH_METHOD.toOBError1(pairClientIDAuthMethod.authMethod.type, authMethodsFromTpp.type));
         }
 
-        if (!tpp.getClientId().equals(pairClientIDAuthMethod.clientId)) {
-            throw new OBErrorResponseException(
-                    OBRIErrorType.ACCESS_TOKEN_CREDENTIAL_NOT_MATCHING_CLIENT_CERTS.getHttpStatus(),
-                    OBRIErrorResponseCategory.ACCESS_TOKEN,
-                    OBRIErrorType.ACCESS_TOKEN_CREDENTIAL_NOT_MATCHING_CLIENT_CERTS.toOBError1(tpp.getClientId(), pairClientIDAuthMethod.clientId, pairClientIDAuthMethod.authMethod.type));
-        }
         return pairClientIDAuthMethod;
     }
 
-    private Tpp getTppRegistered(UserDetails currentUser) throws OBErrorResponseException {
+    private boolean matlsIdMatchesTppId(String principalName, Tpp tpp) {
+        boolean matches = true;
+        Optional<String> authorizationNumber = Optional.ofNullable(tpp.getAuthorisationNumber());
+        if(authorizationNumber.isEmpty() || !authorizationNumber.get().equals(principalName)){
+            matches = false;
+        }
+        log.debug("matlsIdMatchesTppId() returning '{}'", matches);
+        return matches;
+    }
+
+    private Tpp getTppRegistered(String clientId) throws OBErrorResponseException {
         // if the current user have unregistered tpp authority means that isn't registered yet.
-        List<String> authorities = currentUser.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
-        Optional<Tpp> optionalTpp = tppStoreService.findByClientId(currentUser.getUsername());
-        if (!optionalTpp.isPresent() || authorities.contains(OBRIRole.UNREGISTERED_TPP)) {
+        Optional<Tpp> optionalTpp = tppStoreService.findByClientId(clientId);
+        if (optionalTpp.isEmpty()) {
             throw new OBErrorResponseException(
                     OBRIErrorType.TPP_REGISTRATION_NOT_REGISTERED.getHttpStatus(),
                     OBRIErrorResponseCategory.ACCESS_TOKEN,
-                    OBRIErrorType.TPP_REGISTRATION_NOT_REGISTERED.toOBError1(currentUser.getUsername() + ", identified from certificate, "));
+                    OBRIErrorType.TPP_REGISTRATION_NOT_REGISTERED.toOBError1(clientId + ", identified from certificate, "));
         }
         return optionalTpp.get();
     }

@@ -29,22 +29,17 @@ import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.DirectorySoftwareStatement;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
-import com.nimbusds.jose.util.JSONObjectUtils;
 import com.nimbusds.jose.util.StandardCharset;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.security.Principal;
 import java.text.ParseException;
 import java.util.Base64;
-import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -65,7 +60,8 @@ public class DetachedJwsVerifier {
         this.cryptoApiClient = cryptoApiClient;
     }
 
-    public void verifyDetachedJws(String detachedJws, OBVersion obVersion, HttpServletRequest request, Principal principal) throws OBErrorException {
+    public void verifyDetachedJws(String detachedJws, OBVersion obVersion, HttpServletRequest request,
+                                  String oauth2ClientId) throws OBErrorException {
         if (StringUtils.isEmpty(detachedJws)) {
             log.warn("Detached signature not provided");
             throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, "Not provided");
@@ -84,8 +80,8 @@ public class DetachedJwsVerifier {
                 log.warn("Invalid detached signature {}", detachedJws, "b64 claim header must not be present in version: " + obVersion);
                 throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, "b64 claim header must not be present");
             }
-            UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-            Tpp tpp = tppStoreService.findByClientId(currentUser.getUsername()).get();
+
+            Tpp tpp = tppStoreService.findByClientId(oauth2ClientId).get();
             DirectorySoftwareStatement softwareStatement = tpp.getDirectorySoftwareStatement();
             String orgId = softwareStatement.getOrg_id();
             String softwareId = softwareStatement.getSoftware_id();

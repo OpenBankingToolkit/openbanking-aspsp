@@ -127,7 +127,7 @@ public class DirectorySoftwareStatementFactory {
                 .authority_id(JSONObjectUtils.getString(contactsJsonArray, SSAClaims.OCAC_AUTHORITY_ID))
                 .registration_id(JSONObjectUtils.getString(contactsJsonArray, SSAClaims.OCAC_REGISTRATION_ID))
                 .status(JSONObjectUtils.getString(contactsJsonArray, SSAClaims.OCAC_STATUS))
-                .authorizations(getAuthorizations(contactsJsonArray)).build();
+                .authorisations(getAuthorizations(contactsJsonArray)).build();
     }
 
     private List<AuthorisationClaim> getAuthorizations(JSONObject contactsJsonArray) throws ParseException {
