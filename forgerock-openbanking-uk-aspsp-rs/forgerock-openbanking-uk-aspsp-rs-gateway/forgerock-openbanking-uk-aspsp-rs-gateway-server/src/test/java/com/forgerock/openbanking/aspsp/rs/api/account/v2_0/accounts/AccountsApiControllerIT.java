@@ -30,6 +30,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.account.common.
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
@@ -70,6 +71,11 @@ import static org.mockito.BDDMockito.given;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AccountsApiControllerIT {
 
+    private static final String CLIENT_ID = "test-tpp";
+    private static final String AUTHORISATION_NUMBER = "PDSGB-OB-324354";
+
+    private Tpp tpp;
+
     @LocalServerPort
     private int port;
 
@@ -89,17 +95,23 @@ public class AccountsApiControllerIT {
     private RsStoreGateway rsStoreGateway;
     @Autowired
     private SpringSecForTest springSecForTest;
+    @MockBean
+    TppStoreService tppStoreService;
 
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper()).verifySsl(false);
+        tpp = new Tpp();
+        tpp.setClientId(CLIENT_ID);
+        tpp.setAuthorisationNumber(AUTHORISATION_NUMBER);
     }
 
     @Test
     public void getAccountShouldReturnAccountInfo() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        this.mockAuthCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Collections.singletonList(READACCOUNTSDETAIL));
         OBReadAccount2 obReadAccount2 = new OBReadAccount2();
@@ -134,7 +146,6 @@ public class AccountsApiControllerIT {
     public void getAccountShouldBeForbiddenWhenNoReadAccountDetailsPermission() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Collections.singletonList(READBALANCES));
 
@@ -148,6 +159,14 @@ public class AccountsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(403);
     }
 
+    private void mockAuthCollector(){
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        springSecForTest.mockAuthCollector.mockUser(AUTHORISATION_NUMBER, OBRIRole.ROLE_AISP);
+    }
+
+    private void mockTppStoreService(){
+        given(tppStoreService.findByClientId(CLIENT_ID)).willReturn(Optional.of(tpp));
+    }
 
     private void mockAccessTokenVerification(String jws) throws ParseException, InvalidTokenException, IOException {
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
@@ -155,8 +174,6 @@ public class AccountsApiControllerIT {
 
     private void mockAccountPermissions(List<FRExternalPermissionsCode> permissions) {
         FRAccountRequest value = new FRAccountRequest();
-        Tpp tpp = new Tpp();
-        tpp.setClientId("test-tpp");
         value.setAisp(tpp);
         value.setAccountIds(Collections.singletonList("100000123"));
         value.setAccountRequest(FRReadResponse.builder()

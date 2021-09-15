@@ -30,6 +30,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.account.common.
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountRequest;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
+import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
@@ -78,6 +79,10 @@ public class TransactionsApiControllerIT {
 
     private static final DateTime CONSENT_FROM = DateTime.now().minusDays(3);
     private static final DateTime CONSENT_TO = DateTime.now().plusDays(3);
+    private static final String CLIENT_ID = "test-tpp";
+    private static final String AUTHORISATION_NUMBER = "PDSGB-OB-324354";
+
+    private Tpp tpp;
 
     @LocalServerPort
     private int port;
@@ -98,17 +103,23 @@ public class TransactionsApiControllerIT {
     private RsStoreGateway rsStoreGateway;
     @Autowired
     private SpringSecForTest springSecForTest;
+    @MockBean
+    private TppStoreService tppStoreService;
 
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper()).verifySsl(false);
+        this.tpp = new Tpp();
+        tpp.setClientId(CLIENT_ID);
+        tpp.setAuthorisationNumber(AUTHORISATION_NUMBER);
     }
 
     @Test
     public void getAccountTransactionShouldBeOk() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        this.mockAuthenticationCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
@@ -116,6 +127,8 @@ public class TransactionsApiControllerIT {
                 FRExternalPermissionsCode.READTRANSACTIONSDEBITS));
         OBReadTransaction2 transaction = new OBReadTransaction2();
         given(rsStoreGateway.toRsStore(any(), any(), any(), any())).willReturn(ResponseEntity.ok(transaction));
+
+
 
         // When
         HttpResponse<OBReadTransaction2> response = Unirest.get("https://rs-api:" + port + "/open-banking/v2.0/accounts/100000123/transactions")
@@ -131,8 +144,9 @@ public class TransactionsApiControllerIT {
     public void getAccountTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
-        mockAccessTokenVerification(jws);
+        this.mockAuthenticationCollector();
+        this.mockTppStoreService();
+        this.mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
                 FRExternalPermissionsCode.READTRANSACTIONSCREDITS,
@@ -161,8 +175,10 @@ public class TransactionsApiControllerIT {
     public void getAccountStatementTransactionShouldBeOk() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        this.mockAuthenticationCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
+        mockAuthenticationCollector();
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READSTATEMENTSDETAIL,
                 FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
@@ -181,11 +197,14 @@ public class TransactionsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(200);
     }
 
+
+
     @Test
     public void getAccountStatementTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        this.mockAuthenticationCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READSTATEMENTSDETAIL,
@@ -216,7 +235,8 @@ public class TransactionsApiControllerIT {
     public void getTransactionShouldBeOk() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        this.mockAuthenticationCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
@@ -239,7 +259,8 @@ public class TransactionsApiControllerIT {
     public void getTransactionShouldNotGetMoreTransactionThatConsentAllows() throws Exception {
         // Given
         String jws = jws("accounts");
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        this.mockAuthenticationCollector();
+        this.mockTppStoreService();
         mockAccessTokenVerification(jws);
         mockAccountPermissions(Arrays.asList(
                 FRExternalPermissionsCode.READTRANSACTIONSDETAIL,
@@ -265,14 +286,21 @@ public class TransactionsApiControllerIT {
         verify(rsStoreGateway).toRsStore(any(), any(), eq(params), any());
     }
 
+    private void mockAuthenticationCollector() {
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        springSecForTest.mockAuthCollector.mockUser(AUTHORISATION_NUMBER, OBRIRole.ROLE_AISP);
+    }
+
+    private void mockTppStoreService(){
+        given(tppStoreService.findByClientId(CLIENT_ID)).willReturn(Optional.of(tpp));
+    }
+
     private void mockAccessTokenVerification(String jws) throws ParseException, InvalidTokenException, IOException {
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
     }
 
     private void mockAccountPermissions(List<FRExternalPermissionsCode> permissions) {
         FRAccountRequest value = new FRAccountRequest();
-        Tpp tpp = new Tpp();
-        tpp.setClientId("test-tpp");
         value.setAisp(tpp);
         value.setAccountIds(Collections.singletonList("100000123"));
         value.setAccountRequest(FRReadResponse.builder()

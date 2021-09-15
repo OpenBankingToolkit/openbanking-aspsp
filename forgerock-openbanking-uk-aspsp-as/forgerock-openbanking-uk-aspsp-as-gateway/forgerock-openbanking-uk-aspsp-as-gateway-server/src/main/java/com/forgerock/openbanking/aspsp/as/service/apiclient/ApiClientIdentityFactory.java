@@ -70,7 +70,9 @@ public class ApiClientIdentityFactory {
 
                 }
             } else {
-                apiClientIdentity = createOBTransportIdentity(authentication);
+                log.info("ApiClient presented a deprecated OBTransport certificate.");
+                throw new OAuth2InvalidClientException("Onboarding must be done with a PSD2 eIDAS certificate. " +
+                        "OBTransport certificates have been depricated");
             }
         } else if (principal instanceof X509Authentication){
             X509Authentication authentication = (X509Authentication) principal;

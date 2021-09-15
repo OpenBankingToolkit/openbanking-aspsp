@@ -195,7 +195,8 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
 
     public void verifyJwsDetachedSignature(String jwsDetachedSignature, HttpServletRequest request) throws OBErrorException {
         if (rsEndpointWrapperService.isDetachedSignatureEnable) {
-            rsEndpointWrapperService.detachedJwsVerifier.verifyDetachedJws(jwsDetachedSignature, obVersion, request, principal);
+            rsEndpointWrapperService.detachedJwsVerifier.verifyDetachedJws(jwsDetachedSignature, obVersion, request,
+                    this.oAuth2ClientId);
         }
     }
 

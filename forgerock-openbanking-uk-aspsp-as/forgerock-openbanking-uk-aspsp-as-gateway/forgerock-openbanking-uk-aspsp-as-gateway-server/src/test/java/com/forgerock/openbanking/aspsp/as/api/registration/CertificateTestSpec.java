@@ -48,9 +48,9 @@ public class CertificateTestSpec {
     public X509Authentication getPrincipal(Collection<? extends GrantedAuthority> authorities)
             throws InvalidPsd2EidasCertificate {
         if(isEidas){
-            return new PSD2Authentication("testname", authorities, certsChain, new Psd2CertInfo(certsChain));
+            return new PSD2Authentication("tppName", authorities, certsChain, new Psd2CertInfo(certsChain));
         } else {
-            return new X509Authentication("testname", authorities, certsChain);
+            return new X509Authentication("tppName", authorities, certsChain);
         }
     }
 }
