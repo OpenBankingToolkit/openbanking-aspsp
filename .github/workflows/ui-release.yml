@@ -110,10 +110,11 @@ jobs:
           git add releases-published.json
           git commit --allow-empty -m "Bumping Bank & Register UI version ${{ steps.version.outputs.BUILD_VERSION }}"
       - name: Temporarily disable "include administrators" protection
-        uses: benjefferies/branch-protection-bot@master
+        id: disable_include_admins
+        uses: benjefferies/branch-protection-bot@1.0.7
         if: always()
         with:
-          access-token: ${{ secrets.FORGECLOUD_ACCESS_TOKEN }}
+          access_token: ${{ secrets.FORGECLOUD_ACCESS_TOKEN }}
           enforce_admins: false
           owner: forgeCloud
           repo: ob-deploy
@@ -125,10 +126,10 @@ jobs:
           repository: "forgeCloud/ob-deploy"
           branch: master
       - name: Enable "include administrators" branch protection
-        uses: benjefferies/branch-protection-bot@master
+        uses: benjefferies/branch-protection-bot@1.0.7
         if: always()
         with:
-          access-token: ${{ secrets.FORGECLOUD_ACCESS_TOKEN }}
-          enforce_admins: true
+          access_token: ${{ secrets.FORGECLOUD_ACCESS_TOKEN }}
+          enforce_admins: ${{ steps.disable_include_admins.outputs.initial_status }}
           owner: forgeCloud
           repo: ob-deploy
