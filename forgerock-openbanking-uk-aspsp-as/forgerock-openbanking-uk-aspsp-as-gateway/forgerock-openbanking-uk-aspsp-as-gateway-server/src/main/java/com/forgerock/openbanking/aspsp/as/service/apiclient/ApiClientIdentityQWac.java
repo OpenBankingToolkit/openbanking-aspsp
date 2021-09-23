@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.apiclient;
 
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authentication;
 
@@ -32,5 +33,10 @@ public class ApiClientIdentityQWac extends ApiClientIdentityPsd2{
     @Override
     public String getTransportCertificateCn() {
         return null;
+    }
+
+    @Override
+    public boolean wasIssuedWith(RegistrationRequest registrationRequest) {
+        return (this.getTppIdentifier().equals(registrationRequest.getAuthorisationNumber()));
     }
 }

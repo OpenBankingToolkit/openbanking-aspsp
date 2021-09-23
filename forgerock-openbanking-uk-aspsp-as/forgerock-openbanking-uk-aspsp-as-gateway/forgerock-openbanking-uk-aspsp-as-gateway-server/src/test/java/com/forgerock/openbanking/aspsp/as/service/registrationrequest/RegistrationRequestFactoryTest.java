@@ -65,7 +65,7 @@ public class RegistrationRequestFactoryTest {
     @Test
     public void getRegistrationRequestFromJwt() throws DynamicClientRegistrationException {
         // Given
-        String registrationRequestJWT = TestHelperFunctions.getValidRegistrationRequestJWTSerialised();
+        String registrationRequestJWT = TestHelperFunctions.getValidForgeRockSsaRegistrationRequestJWTSerialised();
 
 
         // When
@@ -82,7 +82,7 @@ public class RegistrationRequestFactoryTest {
             throws DynamicClientRegistrationException {
 
         // Given
-        String registrationRequestJwtSerialised = TestHelperFunctions.getValidRegistrationRequestJWTSerialised();
+        String registrationRequestJwtSerialised = TestHelperFunctions.getValidForgeRockSsaRegistrationRequestJWTSerialised();
 
 
         // When
@@ -96,7 +96,7 @@ public class RegistrationRequestFactoryTest {
     @Test
     public void failIfDynamicRegistrationJWTIsInvalid_getRegRequestFromManualRegistrationJson() throws DynamicClientRegistrationException {
         // Given
-        String registrationRequestJwtSerialised = TestHelperFunctions.getValidRegistrationRequestJWTSerialised();
+        String registrationRequestJwtSerialised = TestHelperFunctions.getValidForgeRockSsaRegistrationRequestJWTSerialised();
         String registrationRequestJWKUri = "https://service.directory.dev-ob.forgerock" +
                 ".financial:8074/api/software-statement/60c75ba3c450450011efa679/application/jwk_uri";
         Mockito.doThrow(new DynamicClientRegistrationException("blah",

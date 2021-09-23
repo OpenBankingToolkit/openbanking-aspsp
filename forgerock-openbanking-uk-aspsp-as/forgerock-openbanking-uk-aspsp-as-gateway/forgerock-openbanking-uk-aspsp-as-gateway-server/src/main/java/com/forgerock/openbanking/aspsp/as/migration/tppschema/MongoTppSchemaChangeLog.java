@@ -20,34 +20,66 @@
  */
 package com.forgerock.openbanking.aspsp.as.migration.tppschema;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementFactory;
+import com.forgerock.openbanking.model.DirectorySoftwareStatement;
 import com.forgerock.openbanking.model.Tpp;
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.util.StopWatch;
 
+import java.io.IOException;
 import java.util.List;
 
 @ChangeLog
 @Slf4j
 public class MongoTppSchemaChangeLog {
 
-    @ChangeSet(order = "001", id = "tpp-to-multi-software-statement-tpp", author = "Jamie Bowen", runAlways = true)
-    public void migrateTpps(MongoTemplate mongoTemplate){
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    public MongoTppSchemaChangeLog(){
+        this.objectMapper = new ObjectMapper();
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+    }
+
+
+
+    @ChangeSet(order = "001", id = "tpp-to-multi-software-statement-tpp", author = "Jamie Bowen")
+    public void migrateTpps(MongoTemplate mongoTemplate) throws IOException {
         StopWatch elapsedTime = new StopWatch();
         elapsedTime.start();
         long docsUpdated = 0;
         log.info("-----------------------------------------------------------------------");
         log.info("Migrating Tpp data to have full softwareStatement info");
 
-        Criteria queryCriteria = new Criteria("directoryId").is("ForgeRock");
-        Query query = new Query().addCriteria(queryCriteria);
+        OpenBankingDirectoryConfiguration openBankingDirectoryConfiguration =
+                new OpenBankingDirectoryConfiguration();
+        openBankingDirectoryConfiguration.issuerId = "OpenBanking Ltd";
+        DirectorySoftwareStatementFactory directorySoftwareStatementFactory =
+                new DirectorySoftwareStatementFactory(openBankingDirectoryConfiguration);
+
+        Query query = new Query();
         List<Tpp> tpps = mongoTemplate.find(query, Tpp.class);
+        log.info("Found {} tpps", tpps.size());
         for(Tpp tpp: tpps){
-            //ApiClientOrganisation =
+            String ssa = tpp.getSsa();
+            DirectorySoftwareStatement directorySoftwareStatement =
+                    directorySoftwareStatementFactory.getSoftwareStatementFromJsonString(ssa, objectMapper);
+            if(directorySoftwareStatement.getIss().equals("OpenBanking Ltd")){
+                tpp.setAuthorisationNumber("PSDGB-OB-" + directorySoftwareStatement.getOrg_id());
+            } else {
+                tpp.setAuthorisationNumber("PSDGB-FFA-" + directorySoftwareStatement.getOrg_id());
+            }
+            tpp.setSoftwareId(directorySoftwareStatement.getSoftware_client_id());
+            tpp.setDirectorySoftwareStatement(directorySoftwareStatement);
+            mongoTemplate.save(tpp);
         }
 
         elapsedTime.stop();
@@ -56,7 +88,4 @@ public class MongoTppSchemaChangeLog {
         log.info("-----------------------------------------------------------------------");
         log.info("Finished updating Tpps to have full software statement information");
     }
-
-
-
 }

@@ -246,10 +246,15 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         try {
             log.info("{} called for ClientId '{}'. Princpal is {}", methodName, clientId, principal);
             ApiClientIdentity apiClientIdentity = this.apiClientIdentityFactory.getApiClientIdentity(principal);
-            apiClientIdentity.throwIfTppNotOnboarded();
             RegistrationRequest registrationRequest =
                     registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
 
+            if(!apiClientIdentity.wasIssuedWith(registrationRequest)){
+                String errorString = "The MATLS transport certificate and the SSA were not issued to the same " +
+                        "organisation";
+                log.info("updateRegistration() {}", errorString);
+                throw new OAuth2InvalidClientException(errorString);
+            }
 
             Tpp tpp = getTpp(clientId);
             ensureTppOwnsOidcRegistration(tpp, principal.getName());
@@ -285,12 +290,18 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
 
         try {
             ApiClientIdentity apiClientIdentity = this.apiClientIdentityFactory.getApiClientIdentity(principal);
-            String tppIdentifier = apiClientIdentity.getTransportCertificateCn();
+            String tppIdentifier = apiClientIdentity.getTppIdentifier();
 
             RegistrationRequest registrationRequest =
                 registrationRequestFactory.getRegistrationRequestFromJwt(registrationRequestJwtSerialised);
             //delete client ID
             registrationRequest.setClientId(null);
+            if(!apiClientIdentity.wasIssuedWith(registrationRequest)){
+                String errorString = "The MATLS transport certificate and the SSA were not issued to the same " +
+                        "organisation";
+                log.info("register() {}", errorString);
+                throw new OAuth2InvalidClientException(errorString);
+            }
             verifyRegistrationRequest(apiClientIdentity, registrationRequest);
             registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
 

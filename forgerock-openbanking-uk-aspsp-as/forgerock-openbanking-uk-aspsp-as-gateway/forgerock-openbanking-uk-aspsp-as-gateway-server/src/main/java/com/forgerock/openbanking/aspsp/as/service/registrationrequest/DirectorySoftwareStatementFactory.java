@@ -20,15 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
-import com.forgerock.openbanking.model.DirectorySoftwareStatementOpenBanking.DirectorySoftwareStatementOpenBankingBuilder;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.constants.OpenBankingConstants.SSAClaims;
-import com.forgerock.openbanking.model.DirectorySoftwareStatement;
-import com.forgerock.openbanking.model.DirectorySoftwareStatementOpenBanking;
-import com.forgerock.openbanking.model.OrganisationAuthorityClaims;
-import com.forgerock.openbanking.model.OrganisationContact;
-import com.forgerock.openbanking.model.AuthorisationClaim;
+import com.forgerock.openbanking.model.*;
+import com.forgerock.openbanking.model.DirectorySoftwareStatementOpenBanking.DirectorySoftwareStatementOpenBankingBuilder;
 import com.nimbusds.jose.shaded.json.JSONArray;
 import com.nimbusds.jose.shaded.json.JSONObject;
 import com.nimbusds.jose.util.JSONObjectUtils;
@@ -36,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,7 +60,7 @@ public class DirectorySoftwareStatementFactory {
         return fieldValue;
     }
 
-    DirectorySoftwareStatement getSoftwareStatement(RegistrationRequestJWTClaims softwareStatementClaims)
+    public DirectorySoftwareStatement getSoftwareStatement(RegistrationRequestJWTClaims softwareStatementClaims)
             throws DynamicClientRegistrationException, ParseException {
 
         DirectorySoftwareStatement softwareStatement = null;
@@ -162,5 +160,11 @@ public class DirectorySoftwareStatementFactory {
             log.info("getOrgContacts() {}", errorString);
         }
         return contacts;
+    }
+
+    public DirectorySoftwareStatement getSoftwareStatementFromJsonString(String ssaAsJson,
+                                                                         ObjectMapper objectMapper) throws IOException {
+        DirectorySoftwareStatement softwareStatement = objectMapper.readValue(ssaAsJson, DirectorySoftwareStatement.class);
+        return softwareStatement;
     }
 }

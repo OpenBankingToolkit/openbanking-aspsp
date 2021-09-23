@@ -22,20 +22,14 @@ package com.forgerock.openbanking.aspsp.as.service.registrationrequest;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
-import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
-import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
-import com.forgerock.openbanking.model.SoftwareStatementRole;
 import com.forgerock.openbanking.model.DirectorySoftwareStatement;
+import com.forgerock.openbanking.model.SoftwareStatementRole;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationRequest;
-import com.nimbusds.jose.shaded.json.JSONObject;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -62,20 +56,6 @@ public class RegistrationRequest extends OIDCRegistrationRequest {
         return this.registrationRequestJson;
     }
 
-
-
-    @JsonIgnore
-    public String getSoftwareStatementClaimsAsJsonString() throws DynamicClientRegistrationException {
-        try {
-            SignedJWT ssaJws = SignedJWT.parse(getSoftwareStatement());
-            JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
-            JSONObject ssaJwsJson = new JSONObject(ssaClaims.toJSONObject());
-            return ssaJwsJson.toJSONString();
-        } catch (ParseException pe){
-            throw new DynamicClientRegistrationException("Invalid SSA. Could not parse software statement JWK. Error:" +
-                    " " + pe.getMessage(),DynamicClientRegistrationErrorType.INVALID_SOFTWARE_STATEMENT);
-        }
-    }
 
     /**
      * Section 3.1.1 of <a href=https://datatracker.ietf.org/doc/html/rfc7591#section-3.1.1>OAuth 2.0 Dynamic Client
@@ -157,14 +137,6 @@ public class RegistrationRequest extends OIDCRegistrationRequest {
         return this.directorySoftwareStatement.getIss();
     }
 
-    /**
-    *  Represents the uniqe id of the JWT SSA
-    **/
-    @JsonIgnore
-    public String getJti() {
-        return this.directorySoftwareStatement.getJti();
-    }
-
     @JsonIgnore
     public void setDirectorySoftwareStatement(DirectorySoftwareStatement directorySoftwareStatement){
         this.directorySoftwareStatement = directorySoftwareStatement;
@@ -173,5 +145,9 @@ public class RegistrationRequest extends OIDCRegistrationRequest {
     @JsonIgnore
     public DirectorySoftwareStatement getDirectorySoftwareStatement(){
         return this.directorySoftwareStatement;
+    }
+
+    public String getAuthorisationNumber() {
+        return this.directorySoftwareStatement.getAuthorisationNumber();
     }
 }
