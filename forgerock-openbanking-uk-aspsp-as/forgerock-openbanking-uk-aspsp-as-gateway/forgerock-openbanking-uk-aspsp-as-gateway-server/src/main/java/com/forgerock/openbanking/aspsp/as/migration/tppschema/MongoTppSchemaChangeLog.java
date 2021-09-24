@@ -77,6 +77,8 @@ public class MongoTppSchemaChangeLog {
             if(authorisationNumber == null || authorisationNumber.isBlank()){
                 log.error("Failed to set authorisation number of document id '{}'", tpp.getId());
                 docsWithNoAuthorisationNumber++;
+            } else {
+                tpp.setAuthorisationNumber(authorisationNumber);
             }
             tpp.setSoftwareId(directorySoftwareStatement.getSoftware_client_id());
             tpp.setDirectorySoftwareStatement(directorySoftwareStatement);

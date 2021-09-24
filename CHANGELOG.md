@@ -7,6 +7,30 @@ Changelog of Git Changelog Maven plugin.
 
 - Upgrade github workflows with bot version 1.0.7
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/39
+[1e84b529cf5238a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1e84b529cf5238a) JamieB *2021-09-24 09:38:42*
+775: Perform database upgrade to fix TPP records
+
+The database upgrade is controlled by a spring config setting that is
+placed in the application.yaml;
+
+```
+as:
+  mongo-migration:
+    tpp-migration:
+      enabled: true
+```
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/775
+[55c823e355ce230](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/55c823e355ce230) JamieB *2021-09-23 14:41:39*
+775: Start of database migration
+[191f3d1ecafc790](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/191f3d1ecafc790) JamieB *2021-09-23 14:41:39*
+775: Allow TPPs to register multiple software statements
+
+This contains fixes for;
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/796
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/795
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/775
 [a8abfff98e9ad8c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a8abfff98e9ad8c) JamieB *2021-09-15 15:07:31*
 Release candidate: prepare for next development iteration
 ## 1.5.1
