@@ -56,6 +56,7 @@ public class MongoTppSchemaChangeLog {
         StopWatch elapsedTime = new StopWatch();
         elapsedTime.start();
         long docsUpdated = 0;
+        long docsWithNoAuthorisationNumber = 0;
         log.info("-----------------------------------------------------------------------");
         log.info("Migrating Tpp data to have full softwareStatement info");
 
@@ -72,19 +73,21 @@ public class MongoTppSchemaChangeLog {
             String ssa = tpp.getSsa();
             DirectorySoftwareStatement directorySoftwareStatement =
                     directorySoftwareStatementFactory.getSoftwareStatementFromJsonString(ssa, objectMapper);
-            if(directorySoftwareStatement.getIss().equals("OpenBanking Ltd")){
-                tpp.setAuthorisationNumber("PSDGB-OB-" + directorySoftwareStatement.getOrg_id());
-            } else {
-                tpp.setAuthorisationNumber("PSDGB-FFA-" + directorySoftwareStatement.getOrg_id());
+            String authorisationNumber = directorySoftwareStatement.getAuthorisationNumber();
+            if(authorisationNumber == null || authorisationNumber.isBlank()){
+                log.error("Failed to set authorisation number of document id '{}'", tpp.getId());
+                docsWithNoAuthorisationNumber++;
             }
             tpp.setSoftwareId(directorySoftwareStatement.getSoftware_client_id());
             tpp.setDirectorySoftwareStatement(directorySoftwareStatement);
             mongoTemplate.save(tpp);
+            docsUpdated++;
         }
 
         elapsedTime.stop();
 
         log.info("Upgraded {} documents in {} seconds.", docsUpdated, elapsedTime.getTotalTimeSeconds());
+        log.info("Failed to create authorisationNumbers for {} documents", docsWithNoAuthorisationNumber);
         log.info("-----------------------------------------------------------------------");
         log.info("Finished updating Tpps to have full software statement information");
     }
