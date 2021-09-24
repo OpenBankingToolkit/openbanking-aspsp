@@ -20,12 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.apiclient;
 
-import java.util.Optional;
-
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
-
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.Optional;
 
 @Slf4j
 public class ApiClientIdentityOBTransport extends ApiClientIdentity {
@@ -43,6 +43,16 @@ public class ApiClientIdentityOBTransport extends ApiClientIdentity {
     @Override
     public Optional<String> getAuthorisationNumber() {
         log.info("OBTransport certificates do not have the AuthorisationNumber field in the subject: 2.5.4.97");
-        return null;
+        return Optional.empty();
+    }
+
+    @Override
+    public String getTppIdentifier() {
+        return this.getTransportCertificateCn();
+    }
+
+    @Override
+    public boolean wasIssuedWith(RegistrationRequest registrationRequest) {
+        return getTppIdentifier().equals(registrationRequest.getSoftwareId());
     }
 }

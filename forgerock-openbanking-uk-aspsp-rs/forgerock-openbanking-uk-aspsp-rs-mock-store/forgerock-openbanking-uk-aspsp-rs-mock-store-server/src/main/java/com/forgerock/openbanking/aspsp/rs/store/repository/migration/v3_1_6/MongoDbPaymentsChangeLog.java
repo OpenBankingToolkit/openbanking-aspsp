@@ -62,7 +62,8 @@ public class MongoDbPaymentsChangeLog {
         log.info("-----------------------------------------------------------------------");
         log.info("Migrating Payments API data from v3.1.6 to v3.1.6 patch...");
 
-        int docsUpdated = getObjectsToUpdate().stream().mapToInt(objectToUpdate -> upgrade(mongoTemplate, objectToUpdate.legacyClass, objectToUpdate.writeRiskParentField)).sum();
+        int docsUpdated = getObjectsToUpdate().stream().mapToInt(
+                objectToUpdate -> upgrade(mongoTemplate, objectToUpdate.legacyClass, objectToUpdate.writeRiskParentField)).sum();
 
         elapsedTime.stop();
 

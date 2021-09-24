@@ -37,12 +37,17 @@ public class CertificateTestSpec {
     X509Certificate[] certsChain;
     String certType;
     boolean isEidas;
+    private String registrationRequest;
+    private String registrationRequestIssuedToDifferentTpp;
 
-    public CertificateTestSpec(String certType, String filePath, boolean isEidas) throws CertificateException,
+    public CertificateTestSpec(String certType, String filePath, String registrationRequest,
+                               String regRequestIssuedToDifferentTpp, boolean isEidas) throws CertificateException,
             IOException {
         this.certsChain = TestHelperFunctions.getCertChainFromFile(filePath);
         this.certType = certType;
         this.isEidas = isEidas;
+        this.registrationRequest = registrationRequest;
+        this.registrationRequestIssuedToDifferentTpp = regRequestIssuedToDifferentTpp;
     }
 
     public X509Authentication getPrincipal(Collection<? extends GrantedAuthority> authorities)
@@ -52,5 +57,13 @@ public class CertificateTestSpec {
         } else {
             return new X509Authentication("tppName", authorities, certsChain);
         }
+    }
+
+    public String getRegistrationRequest(){
+        return this.registrationRequest;
+    }
+
+    public String getRegRequestIssuedToDifferentTpp() {
+        return this.registrationRequestIssuedToDifferentTpp;
     }
 }

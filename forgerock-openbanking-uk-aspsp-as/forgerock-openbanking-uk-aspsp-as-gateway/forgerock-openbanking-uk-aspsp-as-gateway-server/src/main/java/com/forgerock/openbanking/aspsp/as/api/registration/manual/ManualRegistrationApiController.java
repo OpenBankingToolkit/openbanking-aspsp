@@ -112,8 +112,7 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
                 manualRegistrationRequest);
 
         ApiClientIdentity apiClientIdentity = identityFactory.getApiClientIdentity(principal);
-        log.debug("User detail: username {} and authorities {}", apiClientIdentity.getUsername(),
-                apiClientIdentity.getAuthorities());
+        log.debug("ApiClientIdentity is '{}'", apiClientIdentity);
 
         //Prepare the request
         String registrationRequestDefaultJsonClaims = getRegistrationRequestDefaultJsonClaims();

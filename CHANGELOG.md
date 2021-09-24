@@ -1,6 +1,15 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#451](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/451) 39: Branch protection bot upgrade
+[f1ba82a48442111](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f1ba82a48442111) Jorge Sanchez Perez *2021-09-23 14:35:42*
+39: Branch protection bot upgrade (#451)
+
+- Upgrade github workflows with bot version 1.0.7
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/39
+[a8abfff98e9ad8c](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a8abfff98e9ad8c) JamieB *2021-09-15 15:07:31*
+Release candidate: prepare for next development iteration
+## 1.5.1
 ### GitHub [#443](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/443) Release/1.4.8
 [058348cdaf09714](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/058348cdaf09714) Jorge Sanchez Perez *2021-08-13 09:53:24*
 Release/1.4.8 (#443)
@@ -51,6 +60,16 @@ Release/1.5.0 (#448)
 * Release candidate: prepare release 1.5.0
 
 * Release candidate: prepare for next development iteration
+[da696c4b31e1edb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/da696c4b31e1edb) JamieB *2021-09-15 15:07:27*
+Release candidate: prepare release 1.5.1
+[6098c549aa5e0ae](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6098c549aa5e0ae) JamieB *2021-09-15 14:53:10*
+755: Allows TPP to Register multiple software statements
+
+All DCR endpoints now work, have fixed functional tests and done an
+account access hybrid flow via postman.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/775
+PR: https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/449
 [36f69a7520a2fc6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/36f69a7520a2fc6) JamieB *2021-09-02 11:03:09*
 775: Fix some IT tests
 

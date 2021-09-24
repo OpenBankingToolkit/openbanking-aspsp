@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.as.service.apiclient;
 
+import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
@@ -29,12 +30,10 @@ import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
-import org.springframework.security.core.GrantedAuthority;
 
 import javax.security.auth.x500.X500Principal;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-import java.util.Collection;
 import java.util.Optional;
 
 @Slf4j
@@ -55,6 +54,7 @@ public abstract class ApiClientIdentity {
 
     public abstract Optional<String> getAuthorisationNumber();
 
+    public abstract String getTppIdentifier();
 
     /**
      * Return the unique TppIdentifier. This can be overridden for different ApiClientIdentity types. For example,
@@ -97,29 +97,17 @@ public abstract class ApiClientIdentity {
     }
 
 
-    public boolean isUnregistered(){
-        return authentication.getAuthorities().contains(OBRIRole.UNREGISTERED_TPP);
-    }
-
-
     public String getUsername() {
         return authentication.getName();
     }
 
-    /**
-     * Return the authorities identified by the spring-security-multi-auth.
-     * @return
-     */
-    public Collection<GrantedAuthority> getAuthorities() {
-        return authentication.getAuthorities();
-    }
 
     /**
      * Check the transport certificate is issued by a recognised authority. Will throw with errors that can be
      * directly returned from Client Registration Endpoints.
      */
     public void throwIfNotValidCertAuthority() throws OAuth2InvalidClientException {
-        if (this.getAuthorities().contains(OBRIRole.UNKNOWN_CERTIFICATE)) {
+        if (this.authentication.getAuthorities().contains(OBRIRole.UNKNOWN_CERTIFICATE)) {
             String helpString = "The transport certificate is not signed by a recognised " +
                     "authority";
             X509Certificate certificate = this.getTransportCertificate();
@@ -134,14 +122,9 @@ public abstract class ApiClientIdentity {
         }
     }
 
-    public void throwIfTppNotOnboarded() throws OAuth2InvalidClientException {
-        log.debug("throwIfTppNotOnboarded() user detail: username '{}', and authorities: '{}'", this.getUsername(),
-                this.getAuthorities());
-        Collection<? extends GrantedAuthority> authorities = this.getAuthorities();
-        if(authorities.contains(OBRIRole.UNREGISTERED_TPP)){
-            String errorString = "Tpp is not onboarded.";
-            log.info("throwIfTppNotOnboarded() {}, X509Authentication; {}", errorString, this.authentication);
-            throw new OAuth2InvalidClientException(errorString);
-        }
-    }
+    /**
+     * Check to see if the registration request was issued to the API client.
+     * @param registrationRequest the registration request to check
+     */
+    public abstract boolean wasIssuedWith(RegistrationRequest registrationRequest);
 }

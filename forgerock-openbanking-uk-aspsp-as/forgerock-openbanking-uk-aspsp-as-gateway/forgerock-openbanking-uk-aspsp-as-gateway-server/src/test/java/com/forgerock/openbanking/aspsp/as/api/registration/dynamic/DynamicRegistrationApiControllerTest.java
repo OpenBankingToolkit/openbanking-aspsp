@@ -28,7 +28,6 @@ import com.forgerock.cert.psd2.RoleOfPsp;
 import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
 import com.forgerock.openbanking.aspsp.as.api.registration.CertificateTestSpec;
 import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
-import com.forgerock.openbanking.aspsp.as.service.OIDCException;
 import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
 import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
@@ -81,10 +80,15 @@ public class DynamicRegistrationApiControllerTest {
     public static Collection<Object[]> data() throws CertificateException, IOException {
         List<Object[]> testCerts = new ArrayList<Object[]>();
         testCerts.add(new Object[]{new CertificateTestSpec("FrTransport",
-                "src/test/resources/certificates/fr-transport.pem", true)});
-        testCerts.add(new Object[]{new CertificateTestSpec("OBWac", "src/test/resources/certificates/OBWac.pem",
+                "src/test/resources/certificates/fr-transport.pem",
+                TestHelperFunctions.getValidForgeRockSsaRegistrationRequestJWTSerialised(),
+                TestHelperFunctions.getValidOpenBankingSsaRegistrationRequestJWTSerialised(),
                 true)});
-        testCerts.add(new Object[]{new CertificateTestSpec("QWAC", "src/test/resources/certificates/QWac.pem", true)});
+        testCerts.add(new Object[]{new CertificateTestSpec("OBWac",
+                "src/test/resources/certificates/OBWac.pem",
+                TestHelperFunctions.getValidOpenBankingSsaRegistrationRequestJWTSerialised(),
+                TestHelperFunctions.getValidForgeRockSsaRegistrationRequestJWTSerialised(),
+                true)});
         return testCerts;
     }
 
@@ -109,7 +113,7 @@ public class DynamicRegistrationApiControllerTest {
 
     private RegistrationRequestFactory registrationRequestFactory;
 
-    List<String> supportedAuthMethod = Arrays.asList("private_key_jwt");
+    List<String> supportedAuthMethod = Arrays.asList("private_key_jwt", "client_secret_basic");
 
     private DynamicRegistrationApiController dynamicRegistrationApiController;
     private final String clientId = "clientId";
@@ -126,14 +130,16 @@ public class DynamicRegistrationApiControllerTest {
     public void setUp(){
         this.closeMocks = openMocks(this);
         OpenBankingDirectoryConfiguration obDirectoryConfig = new OpenBankingDirectoryConfiguration();
-        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         obDirectoryConfig.issuerId = "OpenBanking Ltd";
+
+        this.objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         this.softwareStatementFactory = new DirectorySoftwareStatementFactory(obDirectoryConfig);
-        registrationRequestFactory = new RegistrationRequestFactory(tppRegistrationService,
-                 softwareStatementFactory, objectMapper);
-        dynamicRegistrationApiController = new DynamicRegistrationApiController(tppStoreService, objectMapper,
-                tokenExtractor, tppRegistrationService, supportedAuthMethod, this.identityFactory, registrationRequestFactory);
-        this.registrationRequestJwtSerialised = TestHelperFunctions.getValidRegistrationRequestJWTSerialised();
+        this.registrationRequestFactory = new RegistrationRequestFactory(this.tppRegistrationService,
+                 this.softwareStatementFactory, this.objectMapper);
+        this.dynamicRegistrationApiController = new DynamicRegistrationApiController(this.tppStoreService,
+                this.objectMapper, this.tokenExtractor, this.tppRegistrationService, this.supportedAuthMethod,
+                this.identityFactory, this.registrationRequestFactory);
+        this.registrationRequestJwtSerialised = testSpec.getRegistrationRequest();
     }
 
     @After
@@ -256,11 +262,6 @@ public class DynamicRegistrationApiControllerTest {
         assertThat(exception.getErrorCode()).isEqualTo(OAuth2BearerTokenUsageException.ErrorEnum.INVALID_TOKEN);
     }
 
-    /**
-     * This tests the scenario when the tpp, as identified by MATLS, is requesting that a client id different from
-     * the one associated with the TPP associated with the client_id they are requesting to delete. i.e. when a tpp
-     * is requesting the deletion of a client registration they didn't make.
-     */
     @Test
     public void successful_unregister() throws OAuth2BearerTokenUsageMissingAuthInfoException,
             OAuth2BearerTokenUsageInvalidTokenException, OAuth2InvalidClientException {
@@ -290,14 +291,14 @@ public class DynamicRegistrationApiControllerTest {
     }
 
     @Test
-    public void updateClient() throws InvalidPsd2EidasCertificate, OAuth2InvalidClientException, DynamicClientRegistrationException, OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2BearerTokenUsageInvalidTokenException {
+    public void successful_updateClient() throws InvalidPsd2EidasCertificate, OAuth2InvalidClientException,
+            DynamicClientRegistrationException, OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2BearerTokenUsageInvalidTokenException {
         // Given
         String clientId = "3105f70b-b417-427e-922d-7ba04d16278a";
         String authToken = "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiRm9sN0lwZEtlTFptekt0Q0VnaTFMRGhTSXpNPSIsImFsZyI6IkVTMjU2In0.eyJzdWIiOiIzMTA1ZjcwYi1iNDE3LTQyN2UtOTIyZC03YmEwNGQxNjI3OGEiLCJjdHMiOiJPQVVUSDJfU1RBVEVMRVNTX0dSQU5UIiwiYXVkaXRUcmFja2luZ0lkIjoiZTY2MDZiOGYtNDA2Ni00Y2U2LWIxZDAtYTQ1MzM0MDEzYjA5LTIwNTkiLCJpc3MiOiJodHRwczovL2FzLmFzcHNwLmRldi1vYi5mb3JnZXJvY2suZmluYW5jaWFsOjgwNzQvb2F1dGgyIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoiMW9zekR5NTJxNlByUU51anpGVDhOT1U4U1VZIiwiYXVkIjoiMzEwNWY3MGItYjQxNy00MjdlLTkyMmQtN2JhMDRkMTYyNzhhIiwibmJmIjoxNjI2MzUxNzMxLCJzY29wZSI6W10sImF1dGhfdGltZSI6MTYyNjM1MTczMSwicmVhbG0iOiIvb3BlbmJhbmtpbmciLCJleHAiOjE2MjY0MzgxMzEsImlhdCI6MTYyNjM1MTczMSwiZXhwaXJlc19pbiI6ODY0MDAsImp0aSI6IldmYm13OGtkUFk1bEhZSldMa3lDS3RmekZ1NCJ9.vhH9AGDKbxK1R_tnq8_nOkIpPH7se68MxOC8y-Wq4SW4_ffMBj1ChkckU-q2wJ_4hh_l1sgdlCdkom_VQFvN9Q";
         String authTokenHeaderValue = "Bearer " +
                 "eyJ0eXAiOiJKV1QiLCJ6aXAiOiJOT05FIiwia2lkIjoiRm9sN0lwZEtlTFptekt0Q0VnaTFMRGhTSXpNPSIsImFsZyI6IkVTMjU2In0.eyJzdWIiOiIzMTA1ZjcwYi1iNDE3LTQyN2UtOTIyZC03YmEwNGQxNjI3OGEiLCJjdHMiOiJPQVVUSDJfU1RBVEVMRVNTX0dSQU5UIiwiYXVkaXRUcmFja2luZ0lkIjoiZTY2MDZiOGYtNDA2Ni00Y2U2LWIxZDAtYTQ1MzM0MDEzYjA5LTIwNTkiLCJpc3MiOiJodHRwczovL2FzLmFzcHNwLmRldi1vYi5mb3JnZXJvY2suZmluYW5jaWFsOjgwNzQvb2F1dGgyIiwidG9rZW5OYW1lIjoiYWNjZXNzX3Rva2VuIiwidG9rZW5fdHlwZSI6IkJlYXJlciIsImF1dGhHcmFudElkIjoiMW9zekR5NTJxNlByUU51anpGVDhOT1U4U1VZIiwiYXVkIjoiMzEwNWY3MGItYjQxNy00MjdlLTkyMmQtN2JhMDRkMTYyNzhhIiwibmJmIjoxNjI2MzUxNzMxLCJzY29wZSI6W10sImF1dGhfdGltZSI6MTYyNjM1MTczMSwicmVhbG0iOiIvb3BlbmJhbmtpbmciLCJleHAiOjE2MjY0MzgxMzEsImlhdCI6MTYyNjM1MTczMSwiZXhwaXJlc19pbiI6ODY0MDAsImp0aSI6IldmYm13OGtkUFk1bEhZSldMa3lDS3RmekZ1NCJ9.vhH9AGDKbxK1R_tnq8_nOkIpPH7se68MxOC8y-Wq4SW4_ffMBj1ChkckU-q2wJ_4hh_l1sgdlCdkom_VQFvN9Q";
-        // ROLE_PISP, PSD2GrantType(roleOfPsp=RoleOfPsp{role=PSP_AI}), PSD2GrantType(roleOfPsp=RoleOfPsp{role=PSP_PI})
-        // , ROLE_TPP, ROLE_FORGEROCK_EXTERNAL_APP
+
         Collection<? extends GrantedAuthority> authorities = new ArrayList<>(List.of(OBRIRole.ROLE_DATA,
                 OBRIRole.ROLE_AISP, OBRIRole.ROLE_CBPII,
                 OBRIRole.ROLE_EIDAS, new PSD2GrantType(new RoleOfPsp(Psd2Role.PSP_IC))));
@@ -328,13 +329,9 @@ public class DynamicRegistrationApiControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
-    @Test
-    public void testUpdateClient() {
-    }
 
     @Test
-    public void failWithInvalidClientIfCertificateIsNotFromATrustedParty_register() throws OIDCException,
-            OBErrorResponseException, OAuth2InvalidClientException, InvalidPsd2EidasCertificate {
+    public void failWithInvalidClientIfCertificateIsNotFromATrustedParty_register() throws InvalidPsd2EidasCertificate {
         // given
         
         Collection<OBRIRole> authorities = new ArrayList<>(List.of(OBRIRole.UNKNOWN_CERTIFICATE));
@@ -349,9 +346,28 @@ public class DynamicRegistrationApiControllerTest {
         assertThat(exception.getRfc6750ErrorCode()).isEqualTo(OAuth2Exception.INVALID_CLIENT);
     }
 
+    @Test
+    public void failWithInvalidClientIfSoftwareStatementDoesNotBelongToApiClient_register() throws InvalidPsd2EidasCertificate{
+        // Given
+        Collection<? extends GrantedAuthority> authorities = new ArrayList<>(List.of(OBRIRole.ROLE_DATA,
+                OBRIRole.ROLE_AISP, OBRIRole.ROLE_CBPII,
+                OBRIRole.ROLE_EIDAS, new PSD2GrantType(new RoleOfPsp(Psd2Role.PSP_IC))));
+        X509Authentication principal = testSpec.getPrincipal(authorities);
+
+        String registrationRequestJwtSerial = testSpec.getRegRequestIssuedToDifferentTpp();
+
+        // When
+        OAuth2InvalidClientException exception = catchThrowableOfType( () ->
+                dynamicRegistrationApiController.register(registrationRequestJwtSerial,
+                        principal), OAuth2InvalidClientException.class);
+
+        assertThat(exception.getRfc6750ErrorCode()).isEqualTo(OAuth2Exception.INVALID_CLIENT);
+    }
+
 
     @Test
-    public void willRegisterIfCertHasBeenUsedToPreviouslyRegister_register() throws InvalidPsd2EidasCertificate, OAuth2InvalidClientException, DynamicClientRegistrationException {
+    public void willRegisterIfCertHasBeenUsedToPreviouslyRegister_register() throws InvalidPsd2EidasCertificate,
+            OAuth2InvalidClientException, DynamicClientRegistrationException {
         // given
         
         Collection<OBRIRole> authorities = new ArrayList<>(List.of(OBRIRole.ROLE_AISP, OBRIRole.ROLE_AISP));
@@ -384,7 +400,7 @@ public class DynamicRegistrationApiControllerTest {
         Collection<OBRIRole> authorities = new ArrayList<>(List.of(OBRIRole.ROLE_ANONYMOUS,
                 OBRIRole.UNREGISTERED_TPP,OBRIRole.ROLE_EIDAS));
         X509Authentication principal = testSpec.getPrincipal(authorities);
-        given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(anyString(), eq("ForgeRock")))
+        given(this.tppRegistrationService.validateSsaAgainstIssuingDirectoryJwksUri(anyString(), anyString()))
                 .willThrow(new DynamicClientRegistrationException("Test throw", UNAPPROVED_SOFTWARE_STATEMENT));
 
         // when
