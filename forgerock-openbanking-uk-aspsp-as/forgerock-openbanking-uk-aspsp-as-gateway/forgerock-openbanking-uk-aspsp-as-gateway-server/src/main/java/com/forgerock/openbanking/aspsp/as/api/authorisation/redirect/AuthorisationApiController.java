@@ -378,10 +378,18 @@ public class AuthorisationApiController implements AuthorisationApi {
         }
     }
 
-    private void verifyRequestparameterClaims(SignedJWT requestParameters) throws OBErrorException, ParseException {
+    private void verifyRequestparameterClaims(SignedJWT requestParameters) throws OBErrorException {
 
-        JWTClaimsSet claimSet = requestParameters.getJWTClaimsSet();
-        JSONObject claims = new JSONObject(claimSet.getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS));
+        JSONObject claims = null;
+        try {
+            JWTClaimsSet claimSet = requestParameters.getJWTClaimsSet();
+            claims = new JSONObject(claimSet.getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS));
+        } catch (ParseException pe){
+            log.info("verifyRequestparameterClaims() Could not obtain the {} claim from the request parameter.",
+                    OIDCConstants.OIDCClaim.CLAIMS);
+            throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID,  "No claims obtainable from the " +
+                    "jwt");
+        }
 
         if (!claims.containsKey(OpenBankingConstants.RequestParameterClaim.ID_TOKEN)) {
             throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID, "No id token claims");

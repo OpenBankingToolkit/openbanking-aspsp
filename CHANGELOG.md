@@ -1,12 +1,26 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[104306b2f933965](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/104306b2f933965) JamieB *2021-09-24 12:45:20*
+Release candidate: prepare for next development iteration
+## 1.5.3
+[e26a2637e56ef2f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e26a2637e56ef2f) JamieB *2021-09-24 12:45:16*
+Release candidate: prepare release 1.5.3
+[48452a76eba81a7](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/48452a76eba81a7) JamieB *2021-09-24 11:33:37*
+797: Database upgrade does not save authorisationNumber
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/797
+[3075d775b0f69a2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3075d775b0f69a2) JamieB *2021-09-24 10:12:47*
+Release candidate: prepare for next development iteration
+## 1.5.2
 ### GitHub [#451](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/451) 39: Branch protection bot upgrade
 [f1ba82a48442111](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f1ba82a48442111) Jorge Sanchez Perez *2021-09-23 14:35:42*
 39: Branch protection bot upgrade (#451)
 
 - Upgrade github workflows with bot version 1.0.7
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/39
+[6a72b528f152965](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6a72b528f152965) JamieB *2021-09-24 10:12:44*
+Release candidate: prepare release 1.5.2
 [1e84b529cf5238a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1e84b529cf5238a) JamieB *2021-09-24 09:38:42*
 775: Perform database upgrade to fix TPP records
 
