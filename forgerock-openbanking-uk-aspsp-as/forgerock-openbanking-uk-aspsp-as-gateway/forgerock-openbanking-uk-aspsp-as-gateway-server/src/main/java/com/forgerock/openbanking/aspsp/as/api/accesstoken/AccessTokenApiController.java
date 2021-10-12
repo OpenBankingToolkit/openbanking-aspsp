@@ -42,6 +42,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
 
@@ -75,6 +76,7 @@ public class AccessTokenApiController implements AccessTokenApi {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ROLE_PISP', 'ROLE_AISP', 'ROLE_CBPII')")
     public ResponseEntity getAccessToken(MultiValueMap<String, String> paramMap, String authorization,
                                          Principal principal,
                                          HttpServletRequest request) throws OBErrorResponseException, OBErrorException {

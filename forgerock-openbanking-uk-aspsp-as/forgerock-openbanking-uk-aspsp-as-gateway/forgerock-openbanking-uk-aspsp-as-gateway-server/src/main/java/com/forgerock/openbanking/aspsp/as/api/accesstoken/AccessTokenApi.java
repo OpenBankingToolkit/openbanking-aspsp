@@ -50,6 +50,7 @@ public interface AccessTokenApi {
             value = "/access_token",
             method = RequestMethod.POST
     )
+
     @PreAuthorize("hasAnyAuthority('ROLE_PISP', 'ROLE_AISP', 'ROLE_CBPII')")
     ResponseEntity getAccessToken(
             @RequestBody MultiValueMap<String, String> paramMap,
