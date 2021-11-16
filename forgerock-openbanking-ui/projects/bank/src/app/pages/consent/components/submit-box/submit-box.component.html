@@ -12,7 +12,7 @@
         color="accent"
         type="submit"
         [disabled]="form.invalid || form.disabled"
-        (click)="accept.emit()"
+        (click)="submit($event)"
       >
         <mat-spinner diameter="20" *ngIf="loading"></mat-spinner>
         {{ proceedLabel | translate }}

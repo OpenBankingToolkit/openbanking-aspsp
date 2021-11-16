@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output
 import { FormControl, FormGroup } from '@angular/forms';
 import { ApiResponses } from 'bank/src/app/types/api';
 import { Item, ItemType, IConsentEventEmitter } from 'bank/src/app/types/consentItem';
+import {ConsentDecision} from "bank/src/app/types/ConsentDecision";
 
 function validateCheckboxRequired(c: FormControl) {
   return Object.values(c.value).filter(v => v === true).length
@@ -82,7 +83,7 @@ export class AccountComponent implements OnInit {
 
   submit(allowing = false) {
     this.formSubmit.emit({
-      decision: allowing ? 'allow' : 'deny',
+      decision: allowing ? ConsentDecision.ALLOW : ConsentDecision.DENY,
       sharedAccounts: Object.keys(this.form.value).filter(k => this.form.value[k])
     });
   }

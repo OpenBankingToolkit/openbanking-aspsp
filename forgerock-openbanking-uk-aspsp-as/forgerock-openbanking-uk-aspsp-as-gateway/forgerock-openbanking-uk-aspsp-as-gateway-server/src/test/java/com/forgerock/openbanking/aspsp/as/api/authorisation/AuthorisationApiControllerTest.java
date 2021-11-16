@@ -26,6 +26,7 @@ import com.forgerock.openbanking.analytics.services.TokenUsageService;
 import com.forgerock.openbanking.aspsp.as.api.authorisation.redirect.AuthorisationApiController;
 import com.forgerock.openbanking.aspsp.as.api.oauth2.discovery.DiscoveryConfig;
 import com.forgerock.openbanking.aspsp.as.service.headless.authorisation.HeadLessAuthorisationService;
+import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
 import com.forgerock.openbanking.common.services.JwtOverridingService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -55,6 +56,7 @@ import java.util.Optional;
 import static com.forgerock.openbanking.aspsp.as.api.authorisation.JwtTestHelper.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowableOfType;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -166,7 +168,7 @@ public class AuthorisationApiControllerTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenJwtScopesDoNotMatchQueryParamScope()
+    public void shouldReturnRedirectActionWhenJwtScopesDoNotMatchQueryParamScope()
             throws OBErrorException, OBErrorResponseException {
         // Given
         List<String> responseTypes = List.of("code id_token");
@@ -180,14 +182,35 @@ public class AuthorisationApiControllerTest {
 
 
         // When
-        OBErrorException exception =
-                catchThrowableOfType(() ->authorisationApiController.getAuthorisation(responseTypes.get(0),
-                        "98e119f6-196f-4296-98d4-f1a2f445bca2", null, null, "openid accounts", null, jwt, true, null,
-                        null, null, null, null), OBErrorException.class);
+        ResponseEntity responseEntity = authorisationApiController.getAuthorisation(responseTypes.get(0),
+                "98e119f6-196f-4296-98d4-f1a2f445bca2", "98e119f6-xxxx-yyyy-zzzz-f1a2f445bca2", null, "openid accounts", "https://www.google.com", jwt, true, null,
+                null, null, null, null);
+        // Then
+        assertThat(responseEntity).isNotNull();
+        assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
+        assertTrue(responseEntity.getHeaders().getLocation().toString().contains("error"));
+    }
 
-        // Then exception
-        assertThat(exception).isNotNull();
-        assertThat(exception.getObriErrorType()).isEqualTo(OBRIErrorType.REQUEST_PARAMETER_QUERY_PARAM_DIFF_CLAIM);
+    @Test
+    public void shouldReturnRedirectActionWhenResponseTypeNotMatch()
+            throws OBErrorException, OBErrorResponseException {
+        // Given
+        List<String> responseTypes = List.of("code id_token");
+        given(discoveryConfig.getSupportedResponseTypes()).willReturn(responseTypes);
+        String jwt = toEncodedSignedTestJwt("jwt/authorisation.jwt");
+        OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
+        registrationResponse.setJwks_uri("url");
+        Tpp tpp = new Tpp();
+        tpp.setRegistrationResponse(registrationResponse);
+
+        // When
+        ResponseEntity<RedirectionAction> responseEntity = authorisationApiController.getAuthorisation("responseTypes.get(0)",
+                "98e119f6-196f-4296-98d4-f1a2f445bca2", "98e119f6-xxxx-yyyy-zzzz-f1a2f445bca2", null, "openid accounts", "https://www.google.com", jwt, true, null,
+                null, null, null, null);
+        // Then
+        assertThat(responseEntity).isNotNull();
+        assertThat(responseEntity.getHeaders().getLocation()).isNotNull();
+        assertTrue(responseEntity.getHeaders().getLocation().toString().contains("error"));
     }
 
     @Test
@@ -212,29 +235,6 @@ public class AuthorisationApiControllerTest {
                 "openid accounts payments", null, jwt, true, null, null, null, null, null);
 
         // Then no exception
-    }
-
-    @Test
-    public void shouldBeBadRequestWhen_responseTypesNotMatch() {
-        // Given
-        List<String> responseTypes = List.of("code id_token");
-        given(discoveryConfig.getSupportedResponseTypes()).willReturn(responseTypes);
-        String jwt = toEncodedSignedTestJwt("jwt/authorisation.jwt");
-        Tpp tpp = new Tpp();
-        OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
-        registrationResponse.setJwks_uri("url");
-        tpp.setRegistrationResponse(registrationResponse);
-        String responseType = "device_code";
-
-        // When
-        OBErrorResponseException e = catchThrowableOfType(() ->
-                authorisationApiController.getAuthorisation(responseType, null, null, null, "openid accounts payments",
-                        null, jwt, true, null, null, null, null, null), OBErrorResponseException.class);
-
-        // Then
-        assertThat(e.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
-        assertThat(e.getErrors().get(0).getMessage()).isEqualTo("The response type '" + responseType + "' is not " +
-                "supported. Supported response types are '"+discoveryConfig.getSupportedResponseTypes()+"'");
     }
 
     @Test

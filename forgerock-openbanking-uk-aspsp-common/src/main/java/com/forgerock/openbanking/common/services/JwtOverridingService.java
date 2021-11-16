@@ -50,7 +50,10 @@ import java.util.regex.Pattern;
 @Slf4j
 public class JwtOverridingService {
 
-    private static final Pattern ID_TOKEN_PATTERN = Pattern.compile("id_token=?([^&]+)?");
+    private static final String ID_TOKEN_PARAM = "id_token";
+    private static final String ERROR_PARAM = "error";
+    private static final String EQUALS_CHAR = "=";
+    private static final Pattern ID_TOKEN_PATTERN = Pattern.compile(ID_TOKEN_PARAM + EQUALS_CHAR + "?([^&]+)?");
 
     private final CryptoApiClient cryptoApiClient;
     private final AMOpenBankingConfiguration amOpenBankingConfiguration;
@@ -174,21 +177,25 @@ public class JwtOverridingService {
         ResponseEntity rewrittenResponseEntity = null;
         try {
             String locationString = responseEntity.getHeaders().getLocation().toString();
-            Matcher matcher = ID_TOKEN_PATTERN.matcher(locationString);
-            while (matcher.find()) {
-                String oldIdToken = matcher.group(1);
-                String newIdToken = rewriteJWS(oldIdToken);
-                String newLocationHeaderValue = locationString.replaceAll(oldIdToken, newIdToken);
-                if (!newLocationHeaderValue.isEmpty() && !newLocationHeaderValue.isBlank()) {
-                    HttpHeaders writableHttpHeaders = HttpHeaders.writableHttpHeaders(responseEntity.getHeaders());
-                    writableHttpHeaders.set(HttpHeaders.LOCATION, newLocationHeaderValue);
-                    rewrittenResponseEntity = new ResponseEntity(responseEntity.getBody(), writableHttpHeaders,
-                            HttpStatus.FOUND);
-                } else {
-                    log.debug("rewriteIdTokenFragmentInLocationHeader() No new location header value.");
-                    throw new AccessTokenReWriteException("Failed to rewrite id_token: new Location header value is " +
-                            "null or empty");
+            if (locationString.contains(ID_TOKEN_PARAM + EQUALS_CHAR)) {
+                Matcher matcher = ID_TOKEN_PATTERN.matcher(locationString);
+                while (matcher.find()) {
+                    String oldIdToken = matcher.group(1);
+                    String newIdToken = rewriteJWS(oldIdToken);
+                    String newLocationHeaderValue = locationString.replaceAll(oldIdToken, newIdToken);
+                    if (!newLocationHeaderValue.isEmpty() && !newLocationHeaderValue.isBlank()) {
+                        HttpHeaders writableHttpHeaders = HttpHeaders.writableHttpHeaders(responseEntity.getHeaders());
+                        writableHttpHeaders.set(HttpHeaders.LOCATION, newLocationHeaderValue);
+                        rewrittenResponseEntity = new ResponseEntity(responseEntity.getBody(), writableHttpHeaders,
+                                HttpStatus.FOUND);
+                    } else {
+                        log.debug("rewriteIdTokenFragmentInLocationHeader() No new location header value.");
+                        throw new AccessTokenReWriteException("Failed to rewrite id_token: new Location header value is " +
+                                "null or empty");
+                    }
                 }
+            } else if (locationString.contains(ERROR_PARAM + EQUALS_CHAR)) { // reject by user
+                throw new AccessTokenReWriteException("Rejected by user");
             }
         } catch (ParseException e) {
             log.error("rewriteIdTokenFragmentInLocationHeader() Could not parse the JWT", e);

@@ -4,6 +4,7 @@ import _get from 'lodash-es/get';
 
 import { ApiResponses } from 'bank/src/app/types/api';
 import { Item, ItemType, IConsentEventEmitter } from 'bank/src/app/types/consentItem';
+import {ConsentDecision} from "bank/src/app/types/ConsentDecision";
 
 @Component({
   selector: 'app-consent-international-payment',
@@ -136,7 +137,7 @@ export class InternationalPaymentComponent implements OnInit {
 
   submit(allowing = false) {
     this.formSubmit.emit({
-      decision: allowing ? 'allow' : 'deny',
+      decision: allowing ? ConsentDecision.ALLOW : ConsentDecision.DENY,
       accountId: this.form.value.selectedAccount
     });
   }

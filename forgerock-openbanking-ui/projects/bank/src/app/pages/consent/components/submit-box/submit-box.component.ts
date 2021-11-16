@@ -39,4 +39,19 @@ export class SubmitBoxComponent implements OnInit {
       }
     });
   }
+
+  submit(e: Event) {
+    console.log("submit");
+    e.stopPropagation();
+    const dialogRef = this.dialog.open(ForgerockConfirmDialogComponent, {
+      data: {
+        text: this.translate.instant('COMPONENT.ACCEPT.CONFIRM')
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.accept.emit();
+      }
+    });
+  }
 }

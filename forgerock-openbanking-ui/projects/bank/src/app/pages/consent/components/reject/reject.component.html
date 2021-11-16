@@ -1,0 +1,6 @@
+<div>
+  <form ngNoForm #rejectFormPost name="rejectFormPost" action="{{response.decisionResponse?.redirectUri}}"
+        method="POST">
+    <input name="consent_response" type="hidden" value="{{response.decisionResponse?.consentJwt}}"/>
+  </form>
+</div>

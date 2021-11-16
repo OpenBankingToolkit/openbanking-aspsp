@@ -1,4 +1,18 @@
-## Running docker image
+## Run the app
+- bank (default angular app)
+- manual-onboarding
+### Run local app
+- `npm run build.{app/project}.themes`
+- `npm run serve.{app/project}`
+```shell
+# bank app
+npm run build.bank.themes
+npm run serve.bank
+# manual-onboading app
+npm run build.manual-onboarding.themes
+npm run serve.manual-onboarding
+```
+### Running docker image
 
 <https://hub.docker.com/repository/docker/openbankingtoolkit/openbanking-bank-ui> & <https://hub.docker.com/repository/docker/openbankingtoolkit/openbanking-register-ui> is a built version of the Analytics app with only the Forgerock template.
 
@@ -13,13 +27,14 @@ docker run -it -p <PORT>:80 -e TEMPLATE=<TEMPLATE_NAME> -e DOMAIN=<DOMAIN> openb
 docker run -it -p <PORT>:80 -e TEMPLATE=<TEMPLATE_NAME> -e DOMAIN=<DOMAIN> openbankingtoolkit/openbanking-register-ui
 ```
 
-## Building the app with your theme
+## Build
+### Building the app with your theme
 
 Create a new theme: <https://github.com/OpenBankingToolkit/openbanking-toolkit/wiki/Create-a-new-Theme>
 
 Then build the docker image
 
-## Building your own docker image
+### Building your own docker image
 
 ```bash
 # Build Analytics

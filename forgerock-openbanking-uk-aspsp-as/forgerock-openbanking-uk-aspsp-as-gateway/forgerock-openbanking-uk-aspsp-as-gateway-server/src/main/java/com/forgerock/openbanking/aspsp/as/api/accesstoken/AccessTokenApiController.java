@@ -155,12 +155,16 @@ public class AccessTokenApiController implements AccessTokenApi {
                 log.debug("getAccessToken() response from AM; {}", responseFromAM);
                 HttpStatus statusCode = responseFromAM.getStatusCode();
                 if (!statusCode.is2xxSuccessful() && !statusCode.is3xxRedirection()) {
+                    String responseAMBody = responseFromAM.getBody().toString();
+                    if(responseFromAM.getBody() instanceof byte[]) {
+                        responseAMBody = new String((byte[]) responseFromAM.getBody());
+                    }
                     log.warn("getAccessToken() Un-successful call to AM to get access token. Status code: {}, body " +
-                            "{}", responseFromAM.getStatusCode(), responseFromAM.getBody());
+                            "{}", responseFromAM.getStatusCode(), responseAMBody);
                     throw new OBErrorResponseException(
                             OBRIErrorType.ACCESS_TOKEN_INVALID.getHttpStatus(),
                             OBRIErrorResponseCategory.ACCESS_TOKEN,
-                            OBRIErrorType.ACCESS_TOKEN_INVALID.toOBError1(responseFromAM.getBody()));
+                            OBRIErrorType.ACCESS_TOKEN_INVALID.toOBError1(responseAMBody));
                 }
                 AccessTokenResponse accessTokenResponse = (AccessTokenResponse) responseFromAM.getBody();
                 log.debug("getAccessToken() accessTokenResponse from AM is {}", accessTokenResponse);

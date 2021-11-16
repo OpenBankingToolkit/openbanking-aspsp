@@ -31,6 +31,7 @@ import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -38,6 +39,7 @@ import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import uk.org.openbanking.OBConstants;
 
+import java.net.URI;
 import java.net.URLDecoder;
 import java.text.ParseException;
 import java.util.Map;
@@ -90,19 +92,37 @@ public class RCSErrorService {
             }
             UriComponents uriComponents = UriComponentsBuilder
                     .fromHttpUrl(redirectURL)
-                    .fragment("error=invalid_request_object&state=" + state + "&error_description=" + String.format(obError.getObriErrorType().getMessage(), obError.getArgs()))
+                    .fragment("error=invalid_request_object&state=" + state + "&error_description=" +
+                            String.format(obError.getObriErrorType().getMessage(), obError.getArgs()))
                     .encode()
                     .build();
 
             return ResponseEntity
-                    .status(obError.getObriErrorType().getHttpStatus())
+                    .status(HttpStatus.OK)
                     .body(RedirectionAction.builder()
                             .redirectUri(uriComponents.toUriString())
                             .requestMethod(HttpMethod.GET)
                             .build());
         } catch (Exception e) {
-            log.warn("Failed to turn error into a redirect back to TPP with and Exception. Falling back to just throwing error back to UI", e);
+            log.warn("Failed to turn error into a redirect back to TPP with and Exception. " +
+                    "Falling back to just throwing error back to UI", e);
             throw obError;
+        }
+    }
+
+    public ResponseEntity<RedirectionAction> invalidConsentError(URI redirectURL) throws OBErrorException {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(RedirectionAction.builder()
+                            .redirectUri(redirectURL.toString())
+                            .requestMethod(HttpMethod.GET)
+                            .build());
+        } catch (Exception e) {
+            log.warn("invalidConsentError(String redirectURL): " +
+                    "Failed to turn error into a redirect back to TPP with and Exception. " +
+                    "Falling back to just throwing error back to UI", e);
+            throw new OBErrorException(OBRIErrorType.SERVER_ERROR);
         }
     }
 
