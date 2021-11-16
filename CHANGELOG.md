@@ -1,6 +1,19 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[eef7145f5305af3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eef7145f5305af3) JamieB *2021-10-12 06:53:39*
+Release candidate: prepare for next development iteration
+## 1.5.4
+[ac7a863a04bc5e0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ac7a863a04bc5e0) JamieB *2021-10-11 15:57:23*
+802: Use latest commons and parent
+
+Allow creation of OBRIRoles from PSD2Role
+Also;
+Pulls in 1.0.3 of spring-security-mult-auth that has improved logging
+
+Issue: ForgeCloud/ob-deploy#802
+[870b8d2c984ebb2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/870b8d2c984ebb2) JamieB *2021-10-12 06:53:35*
+Release candidate: prepare release 1.5.4
 [104306b2f933965](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/104306b2f933965) JamieB *2021-09-24 12:45:20*
 Release candidate: prepare for next development iteration
 ## 1.5.3

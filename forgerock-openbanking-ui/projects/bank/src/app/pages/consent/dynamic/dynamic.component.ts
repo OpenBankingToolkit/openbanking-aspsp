@@ -28,6 +28,7 @@ import {InternationalStandingOrderComponent} from 'bank/src/app/pages/consent/in
 import {FundsConfirmationComponent} from 'bank/src/app/pages/consent/funds-confirmation/funds-confirmation.component';
 import {FilePaymentComponent} from 'bank/src/app/pages/consent/file-payment/file-payment.component';
 import {CancelComponent} from "bank/src/app/pages/consent/components/cancel/cancel.component";
+import {RejectComponent} from "bank/src/app/pages/consent/components/reject/reject.component";
 
 const log = debug('consent:DynamicComponent');
 
@@ -39,21 +40,25 @@ const log = debug('consent:DynamicComponent');
   encapsulation: ViewEncapsulation.None
 })
 export class DynamicComponent implements OnInit, OnChanges {
-  constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) {
+  }
 
   @Input() response: ApiResponses.ConsentDetailsResponse;
   @Input() loading: boolean;
   @Output() formSubmit: EventEmitter<any> = new EventEmitter<any>();
-  @ViewChild('dynamicTarget', { read: ViewContainerRef, static: true })
+  @ViewChild('dynamicTarget', {read: ViewContainerRef, static: true})
   dynamicTarget: ViewContainerRef;
   componentRef: ComponentRef<any>;
 
-  ngOnInit() {}
+  ngOnInit() {
+  }
 
   ngOnChanges(changes: any) {
     console.log("Dynamic component")
-    if(this.response.canceledByUser){
+    if (this.response.canceledByUser) {
       this.createComponent(CancelComponent);
+    } else if (this.response.userActions?.rejectedByUser) {
+      this.createComponent(RejectComponent);
     }
     if (changes.loading && !changes.loading.firstChange) {
       this.componentRef.instance.loading = changes.loading.currentValue;

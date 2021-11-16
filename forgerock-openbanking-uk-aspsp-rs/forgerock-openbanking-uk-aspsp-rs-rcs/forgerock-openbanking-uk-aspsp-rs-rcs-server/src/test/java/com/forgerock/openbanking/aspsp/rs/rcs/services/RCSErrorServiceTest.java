@@ -27,6 +27,7 @@ import com.forgerock.openbanking.integration.test.support.Tracer;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -60,7 +61,8 @@ public class RCSErrorServiceTest {
                 .encode()
                 .build();
 
-        assertThat(response.getStatusCode()).isEqualTo(obErrorException.getObriErrorType().getHttpStatus());
+        // we expect httpStatus.OK to redirect from UI
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         RedirectionAction body = Objects.requireNonNull(response.getBody());
         assertThat(body.getRedirectUri()).isEqualTo(uriComponents.toUriString());
     }

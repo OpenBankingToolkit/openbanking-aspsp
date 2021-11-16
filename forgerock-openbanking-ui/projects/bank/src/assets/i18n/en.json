@@ -9,7 +9,7 @@
   "COMPONENT": {
     "CANCEL": {
       "APPLICATION": "Application requesting access",
-      "CONFIRM": "Are you sure you want to cancel?",
+      "CONFIRM": "Are you sure you want to cancel and reject the consent?",
       "CANCEL_CONFIRMATION": "Canceled by user: {{username}}",
       "CONSENTS": {
         "ACCOUNT_ACCESS_CONSENT": "Account sharing",
@@ -23,6 +23,9 @@
         "PAYMENT_FILE_CONSENT": "File payment",
         "FUNDS_CONFIRMATION_CONSENT": "Funds confirmation"
       }
+    },
+    "ACCEPT": {
+      "CONFIRM": "Are you sure you want to accept the consent?"
     }
   },
   "GDPR": {

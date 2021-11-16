@@ -116,10 +116,6 @@ public class RCSConsentDecisionApiControllerTest {
         Map<String, String> profile = new HashMap<String, String>();
         profile.put(amOpenBankingConfiguration.userProfileId, "username");
         given(this.userProfileService.getProfile(anyString(), anyString(), anyString())).willReturn(profile);
-
-        ResponseEntity responseEntity = mock(ResponseEntity.class);
-        given(this.rcsService.sendRCSResponseToAM(anyString(), any(RedirectionAction.class))).willReturn(responseEntity);
-        given(responseEntity.getStatusCode()).willReturn(HttpStatus.FOUND);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "https://www.google.com#code=oq62Wr-V0E7cnuIl5rDSwscCyVo&id_token" +
                 "=eyJ0eXAiOiJKV1QiLCJraWQiOiJzUUhYOHlnT3JGcHBsZ09ZZkxpQUNTNzJOMG89IiwiYWxnIjoiUFMyNTYifQ.eyJzdWIiOiJ" +
@@ -135,6 +131,10 @@ public class RCSConsentDecisionApiControllerTest {
                 "W5qe5K-WUFTWMtfX2ncIwf-RJzxazzfxkpIrKfVhi6R96qpi7RYSZ3GWUfxBm2za24ZvyUNVR5c9ptlyke5h4Wq1QZkaiHv02VT" +
                 "EO2GbumtWIWYfpl84FepZvDm6E6O7K0KCTs8G--jrCnZljwL-qSgWEUkIDja4eaz4KYdZ7-U-CUVzdoMaxhZY5CbM09PRRPsiuy" +
                 "vsZ6FVGx6YGHUN-BDIFssy6hpD53Dp2HGbCxZ0unBU50Q9N3w&state=10d260bf-a7d9-444a-92d9-7b7a5f088208");
+
+        ResponseEntity responseEntity = new ResponseEntity(null, headers, HttpStatus.FOUND);
+        given(this.rcsService.sendRCSResponseToAM(anyString(), any(RedirectionAction.class))).willReturn(responseEntity);
+
         URI rewrittenUri = new URI("https://www.google.com#code=oq62Wr-V0E7cnuIl5rDSwscCyVo&id_token" +
                 "=re-writtenIdToken");
         HttpHeaders rewrittenHeaders = new HttpHeaders();
@@ -171,4 +171,5 @@ public class RCSConsentDecisionApiControllerTest {
         assertThat(redirectAction).isNotNull();
         assertThat(redirectAction.getRedirectUri()).contains("re-writtenIdToken");
     }
+
 }

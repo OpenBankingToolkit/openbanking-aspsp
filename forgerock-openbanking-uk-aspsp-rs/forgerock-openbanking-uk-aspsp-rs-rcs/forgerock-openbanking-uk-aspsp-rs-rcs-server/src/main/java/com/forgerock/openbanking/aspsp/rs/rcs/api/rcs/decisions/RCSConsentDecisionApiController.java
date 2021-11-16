@@ -45,6 +45,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -54,6 +55,7 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
+import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +111,7 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
         log.debug("decisionAccountSharing() consentDecisionSerialised is {}", consentDecisionSerialised);
 
         //Send a Consent response JWT to the initial request, which is define in the code
-        if ( consentDecisionSerialised == null || consentDecisionSerialised.isEmpty()) {
+        if (consentDecisionSerialised == null || consentDecisionSerialised.isEmpty()) {
             log.debug("Consent decision is empty");
             return rcsErrorService.error(OBRIErrorType.RCS_CONSENT_DECISION_EMPTY);
         }
@@ -123,9 +125,9 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
         }
 
         String consentRequestJwt = consentDecision.getConsentJwt();
-        if(consentRequestJwt == null || consentRequestJwt.isEmpty() || consentRequestJwt.isBlank()){
+        if (consentRequestJwt == null || consentRequestJwt.isEmpty() || consentRequestJwt.isBlank()) {
             log.error("Remote consent decisions invalid - consentRequestJwt is null ");
-            throw new OBErrorException(OBRIErrorType.RCS_CONSENT_DECISIONS_FORMAT,  "consentRequestJwt was null or " +
+            throw new OBErrorException(OBRIErrorType.RCS_CONSENT_DECISIONS_FORMAT, "consentRequestJwt was null or " +
                     "empty");
         }
 
@@ -153,7 +155,7 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
 
 
                 ConsentDecisionDelegate consentDecisionDelegate = intentTypeService.getConsentDecision(intentId);
-                if(consentDecisionDelegate == null){
+                if (consentDecisionDelegate == null) {
                     log.error("No Consent Decision Delegate available from the intent type Service.");
                     throw new OBErrorException(OBRIErrorType.RCS_CONSENT_REQUEST_INVALID,
                             "Invalid intent ID? '" + intentId + "'");
@@ -198,23 +200,27 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
 
                 ResponseEntity responseEntity = rcsService.sendRCSResponseToAM(ssoToken,
                         RedirectionAction.builder()
-                        .redirectUri(redirectUri)
-                        .consentJwt(consentJwt)
-                        .requestMethod(HttpMethod.POST)
-                        .build());
+                                .redirectUri(redirectUri)
+                                .consentJwt(consentJwt)
+                                .requestMethod(HttpMethod.POST)
+                                .build());
                 log.debug("Response received from AM: {}", responseEntity);
 
                 if (responseEntity.getStatusCode() != HttpStatus.FOUND) {
                     log.error("When sending the consent response {} to AM, it failed to returned a 302. response '{}' ",
                             consentJwt, responseEntity);
                     throw new OBErrorException(OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE);
+                } else if (locationContainsError(responseEntity.getHeaders().getLocation())) {
+                    log.error("When sending the consent response {} to AM, it failed. response '{}' ",
+                            consentJwt, responseEntity);
+                    return rcsErrorService.invalidConsentError(responseEntity.getHeaders().getLocation());
                 }
 
                 ResponseEntity rewrittenResponseEntity = null;
                 try {
                     rewrittenResponseEntity =
                             jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(responseEntity);
-                } catch (AccessTokenReWriteException e){
+                } catch (AccessTokenReWriteException e) {
                     log.info("decisionAccountSharing() Failed to re-write id_token", e);
                     throw new OBErrorException(OBRIErrorType.RCS_CONSENT_RESPONSE_FAILURE);
                 }
@@ -241,5 +247,21 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
         } catch (OBErrorException e) {
             return rcsErrorService.invalidConsentError(consentRequestJwt, e);
         }
+    }
+
+    private boolean locationContainsError(URI location) {
+        if (location != null) {
+            if (location.getQuery() != null) {
+                return location.getQuery().contains("error");
+            } else if (location.getFragment() != null) {
+                return location.getFragment().contains("error");
+            }
+        }
+        return false;
+    }
+
+    @AfterReturning
+    public void test(){
+        this.rcsService.toString();
     }
 }

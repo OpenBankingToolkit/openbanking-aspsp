@@ -54,6 +54,22 @@ export module ApiResponses {
     requestedExecutionDateTime?: string;
     currencyOfTransfer?: string;
     expirationDateTime?: string;
+    // special ui treatment
+    userActions?:UserActions;
+    decisionResponse?: ConsentDecisionResponse;
+  }
+
+  export interface ConsentDecisionResponse {
+    consentJwt: string;
+    requestMethod: string;
+    redirectUri: string
+  }
+
+  export interface UserActions {
+    acceptedByUser?: boolean;
+    rejectedByUser?: boolean;
+    canceledByUser?: boolean;
+    cancelRedirectUri?: string;
   }
 }
 

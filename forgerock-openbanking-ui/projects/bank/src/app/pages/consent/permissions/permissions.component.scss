@@ -7,19 +7,19 @@
     mat-expansion-panel {
       box-shadow: none;
       margin: 0;
-      /deep/ mat-expansion-panel-header {
+      :host ::ng-deep mat-expansion-panel-header {
         padding: 0 5px;
         .mat-expansion-indicator {
           margin-right: 10px;
         }
       }
-      /deep/ .mat-expansion-panel-content {
+      :host ::ng-deep .mat-expansion-panel-content {
         background-color: mat-color($background, background);
         border-left-width: 3px;
         border-left-style: solid;
         border-left-color: mat-color($accent);
       }
-      /deep/ .mat-expansion-panel-body {
+      :host ::ng-deep .mat-expansion-panel-body {
         padding: 13px;
       }
     }

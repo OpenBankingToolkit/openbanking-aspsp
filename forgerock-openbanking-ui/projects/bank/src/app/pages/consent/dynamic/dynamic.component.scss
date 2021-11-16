@@ -31,7 +31,7 @@
         margin: 0 0.9em 0 0;
       }
     }
-    /deep/ .secondary-text {
+    :host ::ng-deep .secondary-text {
       color: mat-color($foreground, secondary-text);
     }
 
@@ -125,13 +125,13 @@
         height: 40px;
       }
     }
-    /deep/ .mat-radio-label {
+    :host ::ng-deep .mat-radio-label {
       width: 100%;
     }
-    /deep/ .mat-radio-label-content {
+    :host ::ng-deep .mat-radio-label-content {
       flex: 1;
     }
-    /deep/ .button-cancel {
+    :host ::ng-deep .button-cancel {
       min-height: 65px;
       white-space: normal;
     }

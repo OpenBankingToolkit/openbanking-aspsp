@@ -27,6 +27,7 @@ import com.forgerock.openbanking.analytics.services.TokenUsageService;
 import com.forgerock.openbanking.aspsp.as.api.oauth2.discovery.DiscoveryConfig;
 import com.forgerock.openbanking.aspsp.as.service.headless.authorisation.HeadLessAuthorisationService;
 import com.forgerock.openbanking.common.error.exception.AccessTokenReWriteException;
+import com.forgerock.openbanking.common.model.rcs.RedirectionAction;
 import com.forgerock.openbanking.common.services.JwtOverridingService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
@@ -53,10 +54,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -162,70 +165,85 @@ public class AuthorisationApiController implements AuthorisationApi {
             String requestParametersSerialised, boolean isHeadlessEnabled, String username, String password,
             String ssoToken, MultiValueMap body, HttpServletRequest request
     ) throws OBErrorResponseException, OBErrorException {
-        // FAPI compliant ('code id_token'): https://github.com/ForgeCloud/ob-deploy/issues/674
-        if (!discoveryConfig.getSupportedResponseTypes().contains(responseType)) {
-            log.error("The response types requested '" + responseType + "' don't match with the response types " +
-                    "supported '" + discoveryConfig.getSupportedResponseTypes() + "' by as-api");
-            throw new OBErrorResponseException(
-                    OBRIErrorType.REQUEST_RESPONSE_TYPE_MISMATCH.getHttpStatus(),
-                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.REQUEST_RESPONSE_TYPE_MISMATCH.toOBError1(responseType,
-                            discoveryConfig.getSupportedResponseTypes().toString()));
-        }
-        SignedJWT requestParameterJwt = validateRequestParameter(responseType, clientId, state, nonce, scopes,
-                redirectUri, requestParametersSerialised);
-
-        requestParametersSerialised = requestParameterJwt.serialize();
+        // Initialisation the response entity, it will be overwritten with am response.
+        ResponseEntity responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         try {
-            state = getState(state, requestParameterJwt);
-        } catch (ParseException e) {
-            throw new OBErrorResponseException(
-                    OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID.getHttpStatus(),
-                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID.toOBError1(e.getMessage()));
-        }
-
-        AMGateway amGateway = amGatewayService.getAmGateway(requestParametersSerialised);
-
-        ResponseEntity responseEntity;
-        if (isHeadlessAlwaysEnabled || isHeadlessEnabled) {
-            log.debug("getAuthorisation() performing headless authorisation");
-            responseEntity = headLessAuthorisationService.getAuthorisation(amGateway, responseType, clientId, state,
-                    nonce, scopes, redirectUri, requestParametersSerialised, username, password);
-        } else {
-            log.debug("getAuthorisation() delegating authorisation to AM");
-            HashMap<String, String> queryParameters = new HashMap<>();
-            queryParameters.put("request", requestParametersSerialised);
-            HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.add("Cookie", cookieName + "=" + ssoToken);
-            responseEntity = amGateway.toAM(request, httpHeaders, queryParameters,
-                    new ParameterizedTypeReference<String>() {
-                    }, body);
-        }
-        log.debug("getAuthorisation() responseEntity {}", responseEntity);
-
-        // The id_token should be in the URL fragment, not as a query parameter. If it appears as a query parameter
-        // re-write it to appear as a fragment
-        if (hasQueryParamIdToken(responseEntity)) {
-            responseEntity = convertQueryToFragment(responseEntity.getHeaders().getLocation(),
-                    responseEntity.getHeaders(), state);
-        }
-
-        //Rewriting the response as we need to re-sign the id token. We can assume the id_token will exist as a fragment
-        if (hasFragmentIdToken(responseEntity)) {
-            try {
-                responseEntity = this.jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(responseEntity);
-                tokenUsageService.incrementTokenUsage(TokenUsage.ID_TOKEN);
-            } catch (AccessTokenReWriteException e) {
-                String supportUID = UUID.randomUUID().toString();
-                log.info("getAuthorisation() Failed to re-write the id_token", e);
+            // FAPI compliant ('code id_token'): https://github.com/ForgeCloud/ob-deploy/issues/674
+            if (!discoveryConfig.getSupportedResponseTypes().contains(responseType)) {
+                log.error("The response types requested '" + responseType + "' don't match with the response types " +
+                        "supported '" + discoveryConfig.getSupportedResponseTypes() + "' by as-api");
                 throw new OBErrorResponseException(
-                        OBRIErrorType.AUTHORIZE_INVALID_ID_TOKEN.getHttpStatus(),
-                        OBRIErrorResponseCategory.ACCESS_TOKEN,
-                        OBRIErrorType.AUTHORIZE_INVALID_ID_TOKEN.toOBError1(supportUID));
+                        OBRIErrorType.REQUEST_RESPONSE_TYPE_MISMATCH.getHttpStatus(),
+                        OBRIErrorResponseCategory.REQUEST_INVALID,
+                        OBRIErrorType.REQUEST_RESPONSE_TYPE_MISMATCH.toOBError1(responseType,
+                                discoveryConfig.getSupportedResponseTypes().toString()));
             }
-        } else {
-            log.debug("responseEntity {} is null or is not a redirection", responseEntity);
+
+
+            SignedJWT requestParameterJwt = validateRequestParameter(responseType, clientId, state, nonce, scopes,
+                    redirectUri, requestParametersSerialised);
+            requestParametersSerialised = requestParameterJwt.serialize();
+            try {
+                state = getState(state, requestParameterJwt);
+            } catch (ParseException e) {
+                throw new OBErrorResponseException(
+                        OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID.getHttpStatus(),
+                        OBRIErrorResponseCategory.REQUEST_INVALID,
+                        OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID.toOBError1(e.getMessage()));
+            }
+
+
+            AMGateway amGateway = amGatewayService.getAmGateway(requestParametersSerialised);
+
+
+            if (isHeadlessAlwaysEnabled || isHeadlessEnabled) {
+                log.debug("getAuthorisation() performing headless authorisation");
+                responseEntity = headLessAuthorisationService.getAuthorisation(amGateway, responseType, clientId, state,
+                        nonce, scopes, redirectUri, requestParametersSerialised, username, password);
+            } else {
+                log.debug("getAuthorisation() delegating authorisation to AM");
+                HashMap<String, String> queryParameters = new HashMap<>();
+                queryParameters.put("request", requestParametersSerialised);
+                HttpHeaders httpHeaders = new HttpHeaders();
+                httpHeaders.add("Cookie", cookieName + "=" + ssoToken);
+                responseEntity = amGateway.toAM(request, httpHeaders, queryParameters,
+                        new ParameterizedTypeReference<String>() {
+                        }, body);
+            }
+            log.debug("getAuthorisation() responseEntity {}", responseEntity);
+
+            // The id_token should be in the URL fragment, not as a query parameter. If it appears as a query parameter
+            // re-write it to appear as a fragment
+            if (hasQueryParamIdToken(responseEntity)) {
+                responseEntity = convertQueryToFragment(responseEntity.getHeaders().getLocation(),
+                        responseEntity.getHeaders(), state);
+                return responseEntity;
+            }
+
+            //Rewriting the response as we need to re-sign the id token. We can assume the id_token will exist as a fragment
+            if (hasFragmentIdToken(responseEntity)) {
+                try {
+                    responseEntity = this.jwtOverridingService.rewriteIdTokenFragmentInLocationHeader(responseEntity);
+                    tokenUsageService.incrementTokenUsage(TokenUsage.ID_TOKEN);
+                } catch (AccessTokenReWriteException e) {
+                    String supportUID = UUID.randomUUID().toString();
+                    log.info("getAuthorisation() Failed to re-write the id_token", e);
+                    throw new OBErrorResponseException(
+                            OBRIErrorType.AUTHORIZE_INVALID_ID_TOKEN.getHttpStatus(),
+                            OBRIErrorResponseCategory.ACCESS_TOKEN,
+                            OBRIErrorType.AUTHORIZE_INVALID_ID_TOKEN.toOBError1(supportUID));
+                }
+            } else {
+                log.debug("responseEntity {} is null or is not a redirection", responseEntity);
+            }
+        } catch (OBErrorResponseException | OBErrorException obException) {
+            log.error("Authorisation error '{}', building the redirect action",obException.getMessage());
+            if (redirectUri != null && state != null) {
+                RedirectionAction redirectionAction = buildRedirectionAction(obException, redirectUri, state);
+                return ResponseEntity
+                        .status(HttpStatus.FOUND)
+                        .header("Location", redirectionAction.getRedirectUri()).build();
+            }
         }
         return responseEntity;
     }
@@ -342,6 +360,7 @@ public class AuthorisationApiController implements AuthorisationApi {
 
             verifyRequestparameterClaims(requestParameters);
         } catch (ParseException | IOException e) {
+            log.error("Invalid Request parameter {}. Reason: {}", requestParametersSerialised, e.getMessage(), e);
             throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_FORMAT_INVALID, e.getMessage());
         } catch (InvalidTokenException e) {
             log.error("Invalid Request parameter {}. Reason: {}", requestParametersSerialised, e.getMessage(), e);
@@ -384,10 +403,10 @@ public class AuthorisationApiController implements AuthorisationApi {
         try {
             JWTClaimsSet claimSet = requestParameters.getJWTClaimsSet();
             claims = new JSONObject(claimSet.getJSONObjectClaim(OIDCConstants.OIDCClaim.CLAIMS));
-        } catch (ParseException pe){
+        } catch (ParseException pe) {
             log.info("verifyRequestparameterClaims() Could not obtain the {} claim from the request parameter.",
                     OIDCConstants.OIDCClaim.CLAIMS);
-            throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID,  "No claims obtainable from the " +
+            throw new OBErrorException(OBRIErrorType.REQUEST_PARAMETER_JWT_INVALID, "No claims obtainable from the " +
                     "jwt");
         }
 
@@ -437,5 +456,53 @@ public class AuthorisationApiController implements AuthorisationApi {
                     "'" + OpenBankingConstants.IdTokenClaim.ACR + "' should be essential");
         }
         return idTokenClaims;
+    }
+
+    private RedirectionAction buildRedirectionAction(Exception obException, String redirectUri, String state) {
+        UriComponents uriComponents = UriComponentsBuilder.newInstance().build();
+        if (obException instanceof OBErrorException) {
+            OBErrorException obErrorException = (OBErrorException) obException;
+            uriComponents = UriComponentsBuilder
+                    .fromHttpUrl(redirectUri)
+                    .fragment("error=invalid_request_object&state=" + state + "&error_description=" +
+                            String.format(obErrorException.getObriErrorType().getMessage(), obErrorException.getArgs()))
+                    .encode()
+                    .build();
+        } else if (obException instanceof OBErrorResponseException) {
+            OBErrorResponseException obErrorResponseException = (OBErrorResponseException) obException;
+            uriComponents = UriComponentsBuilder
+                    .fromHttpUrl(redirectUri)
+                    .fragment("error=invalid_request_object&state=" + state + "&error_description=" +
+                            obErrorResponseException.getErrors().get(0).getMessage())
+                    .encode()
+                    .build();
+        }
+        return RedirectionAction.builder().redirectUri(uriComponents.toUriString()).requestMethod(HttpMethod.GET).build();
+    }
+
+    private RedirectionAction buildRedirectionAction(OBErrorException obErrorException, String redirectUri, String state) {
+        UriComponents uriComponents = UriComponentsBuilder
+                .fromHttpUrl(redirectUri)
+                .fragment("error=invalid_request_object&state=" + state + "&error_description=" +
+                        String.format(obErrorException.getObriErrorType().getMessage(), obErrorException.getArgs()))
+                .encode()
+                .build();
+        return RedirectionAction.builder()
+                .redirectUri(uriComponents.toUriString())
+                .requestMethod(HttpMethod.GET)
+                .build();
+    }
+
+    private RedirectionAction buildRedirectionAction(OBErrorResponseException obErrorResponseException, String redirectUri, String state) {
+        UriComponents uriComponents = UriComponentsBuilder
+                .fromHttpUrl(redirectUri)
+                .fragment("error=invalid_request_object&state=" + state + "&error_description=" +
+                        obErrorResponseException.getErrors().get(0).getMessage())
+                .encode()
+                .build();
+        return RedirectionAction.builder()
+                .redirectUri(uriComponents.toUriString())
+                .requestMethod(HttpMethod.GET)
+                .build();
     }
 }
