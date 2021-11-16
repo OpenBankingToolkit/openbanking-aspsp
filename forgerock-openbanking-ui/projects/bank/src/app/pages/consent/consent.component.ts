@@ -22,7 +22,6 @@ export class ConsentComponent implements OnInit {
   loading: boolean;
   error: Error;
   response: ApiResponses.ConsentDetailsResponse;
-  private redirect_uri: string;
 
   constructor(
     private route: ActivatedRoute,
