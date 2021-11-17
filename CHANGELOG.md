@@ -1,6 +1,14 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#456](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/456) 794: UI redirection customer experience
+[eb58e6dccb7cb99](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eb58e6dccb7cb99) Jorge Sanchez Perez *2021-11-16 16:04:23*
+794: UI redirection customer experience (#456)
+
+* 794: UI redirection customer experience
+- Issue: https://github.com/ForgeCloud/ob-deploy/issues/794
+
+* Fix ng lint
 [eef7145f5305af3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eef7145f5305af3) JamieB *2021-10-12 06:53:39*
 Release candidate: prepare for next development iteration
 ## 1.5.4
