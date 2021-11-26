@@ -9,6 +9,15 @@ Changelog of Git Changelog Maven plugin.
 - Issue: https://github.com/ForgeCloud/ob-deploy/issues/794
 
 * Fix ng lint
+### GitHub [#457](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/457) Release/1.5.5
+[18b50ef6ffaf807](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/18b50ef6ffaf807) Jorge Sanchez Perez *2021-11-17 08:34:07*
+Release/1.5.5 (#457)
+
+* Changelog updated
+
+* Release candidate: prepare release 1.5.5
+
+* Release candidate: prepare for next development iteration
 [eef7145f5305af3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eef7145f5305af3) JamieB *2021-10-12 06:53:39*
 Release candidate: prepare for next development iteration
 ## 1.5.4

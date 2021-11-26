@@ -131,10 +131,11 @@ public class FRAmountConverter {
         return FRModelMapper.map(amount, FRAmount.class);
     }
 
-    public static FRAmount toFRAmount(OBFundsConfirmation1DataInstructedAmount amount){
+    public static FRAmount toFRAmount(OBFundsConfirmation1DataInstructedAmount amount) {
         return FRModelMapper.map(amount, FRAmount.class);
     }
-                                      // FR to OB
+
+    // FR to OB
     public static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(FRAmount amount) {
         return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount.class);
     }

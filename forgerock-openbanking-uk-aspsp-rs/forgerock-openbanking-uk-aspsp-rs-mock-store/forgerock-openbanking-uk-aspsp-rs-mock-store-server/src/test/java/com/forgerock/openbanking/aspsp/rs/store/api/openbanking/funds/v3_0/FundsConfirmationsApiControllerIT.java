@@ -51,12 +51,12 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationData1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1Data;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1DataInstructedAmount;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
-import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBFundsConfirmation1DataInstructedAmount;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -152,9 +152,9 @@ public class FundsConfirmationsApiControllerIT {
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         FRFundsConfirmationConsent consent = saveConsent();
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
-                .data(new OBFundsConfirmationData1()
+                .data(new OBFundsConfirmation1Data()
                         .consentId(consent.getId())
-                        .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("100.00").currency("GBP"))
+                        .instructedAmount(new OBFundsConfirmation1DataInstructedAmount().amount("100.00").currency("GBP"))
                         .reference("test1")
                 );
         given(fundsAvailabilityService.isFundsAvailable(any(), any())).willReturn(true);
@@ -174,7 +174,7 @@ public class FundsConfirmationsApiControllerIT {
         OBFundsConfirmationResponse1 responseBody = response.getBody();
         FRFundsConfirmation submission = fundsConfirmationRepository.findById(response.getBody().getData().getFundsConfirmationId()).get();
         assertThat(submission.getId()).isEqualTo(responseBody.getData().getFundsConfirmationId());
-        assertThat(toOBActiveOrHistoricCurrencyAndAmount(submission.getFundsConfirmation().getInstructedAmount())).isEqualTo(request.getData().getInstructedAmount());
+        assertThat(toOBFundsConfirmation1DataInstructedAmount(submission.getFundsConfirmation().getInstructedAmount())).isEqualTo(request.getData().getInstructedAmount());
         assertThat(submission.getFundsConfirmation().getReference()).isEqualTo(request.getData().getReference());
         assertThat(submission.isFundsAvailable()).isEqualTo(true);
     }
@@ -187,9 +187,9 @@ public class FundsConfirmationsApiControllerIT {
         FRFundsConfirmation frFundsConfirmation = saveFundsConfirmation(consent);
 
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
-                .data(new OBFundsConfirmationData1()
+                .data(new OBFundsConfirmation1Data()
                         .consentId(consent.getId())
-                        .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("100000.0").currency("GBP"))
+                        .instructedAmount(new OBFundsConfirmation1DataInstructedAmount().amount("100000.0").currency("GBP"))
                         .reference("test1")
                 );
         given(fundsAvailabilityService.isFundsAvailable(any(), any())).willReturn(false);
@@ -212,9 +212,9 @@ public class FundsConfirmationsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         OBFundsConfirmation1 request = new OBFundsConfirmation1()
-                .data(new OBFundsConfirmationData1()
+                .data(new OBFundsConfirmation1Data()
                         .consentId(IntentType.FUNDS_CONFIRMATION_CONSENT.generateIntentId())
-                        .instructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("100.00").currency("GBP"))
+                        .instructedAmount(new OBFundsConfirmation1DataInstructedAmount().amount("100.00").currency("GBP"))
                         .reference("test1")
                 );
 
