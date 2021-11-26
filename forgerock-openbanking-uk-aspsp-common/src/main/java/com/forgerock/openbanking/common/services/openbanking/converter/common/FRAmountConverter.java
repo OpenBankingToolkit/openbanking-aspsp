@@ -23,6 +23,7 @@ package com.forgerock.openbanking.common.services.openbanking.converter.common;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.services.openbanking.converter.FRModelMapper;
 import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1DataInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.payment.*;
 
@@ -122,6 +123,10 @@ public class FRAmountConverter {
     }
 
     public static FRAmount toFRAmount(uk.org.openbanking.datamodel.account.OBTransactionCashBalanceAmount amount) {
+        return FRModelMapper.map(amount, FRAmount.class);
+    }
+
+    public static FRAmount toFRAmount(OBFundsConfirmation1DataInstructedAmount amount) {
         return FRModelMapper.map(amount, FRAmount.class);
     }
 
@@ -237,4 +242,10 @@ public class FRAmountConverter {
     public static OBReadBalance1DataAmount1 toOBReadBalance1DataAmount1(FRAmount amount) {
         return FRModelMapper.map(amount, OBReadBalance1DataAmount1.class);
     }
+
+    public static OBFundsConfirmation1DataInstructedAmount toOBFundsConfirmation1DataInstructedAmount(FRAmount amount){
+        return FRModelMapper.map(amount, OBFundsConfirmation1DataInstructedAmount.class);
+    }
+
+
 }

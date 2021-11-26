@@ -20,8 +20,10 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.fund;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.domain.funds.FRFundsConfirmationConsentData;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toFRAccountIdentifier;
 
@@ -33,4 +35,6 @@ public class FRFundsConfirmationConsentConverter {
                 .debtorAccount(toFRAccountIdentifier(obFundsConfirmationConsent.getData().getDebtorAccount()))
                 .build();
     }
+
+
 }
