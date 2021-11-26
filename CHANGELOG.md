@@ -2,6 +2,7 @@
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
 <<<<<<< HEAD
+<<<<<<< HEAD
 [4833a4411f2b7f9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4833a4411f2b7f9) JamieB *2021-11-26 09:45:58*
 Release candidate: prepare for next development iteration
 ## 1.5.6
@@ -20,6 +21,11 @@ currently in openbanking-reference-implementation, but master has
 
 Issue: https://github.com/ForgeCloud/ob-deploy/issues/749
 >>>>>>> cc8df318 (36: Initial controllers and their interfaces for VRPs)
+=======
+[4833a4411f2b7f9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4833a4411f2b7f9) JamieB *2021-11-26 09:45:58*
+Release candidate: prepare for next development iteration
+## 1.5.6
+>>>>>>> 45ea6103 (Move Matts controllers to the payments/v3_1_8/vrp package)
 ### GitHub [#456](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/456) 794: UI redirection customer experience
 [eb58e6dccb7cb99](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eb58e6dccb7cb99) Jorge Sanchez Perez *2021-11-16 16:04:23*
 794: UI redirection customer experience (#456)

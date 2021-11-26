@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_8.vrp;
 
+<<<<<<< HEAD
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.DomesticVRPConsentRepository;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
@@ -28,12 +29,16 @@ import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.repositories.TppRepository;
 import lombok.extern.slf4j.Slf4j;
+=======
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+>>>>>>> 45ea6103 (Move Matts controllers to the payments/v3_1_8/vrp package)
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
+<<<<<<< HEAD
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
 
 import javax.servlet.http.HttpServletRequest;
@@ -102,4 +107,36 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
         return new ResponseEntity<OBVRPFundsConfirmationResponse>(HttpStatus.NOT_IMPLEMENTED);
     }
 
+=======
+
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-05-27T13:44:23.551801+01:00[Europe/London]")
+
+@Controller("DomesticVrpConsentsApiControllerV3.1.8")
+public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi {
+
+    @Override
+    public ResponseEntity<OBDomesticVRPConsentResponse> createDomesticVrpConsent(
+            OBDomesticVRPConsentRequest domesticVRPConsentRequest
+    ) throws OBErrorResponseException {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public ResponseEntity<OBDomesticVRPConsentResponse> getDomesticVrpConsent() {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteDomesticVrpConsent() {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+
+    @Override
+    public ResponseEntity<Object> createDomesticVrpConsentsConsentFundsConfirmation(
+            OBVRPFundsConfirmationRequest vrpFundsConfirmationRequest
+    ) throws OBErrorResponseException {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    }
+>>>>>>> 45ea6103 (Move Matts controllers to the payments/v3_1_8/vrp package)
 }
