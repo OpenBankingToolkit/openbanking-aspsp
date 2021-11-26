@@ -1,7 +1,6 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
-  "defaultProject": "bank",
   "newProjectRoot": "projects",
   "projects": {
     "bank": {
@@ -9,7 +8,11 @@
       "sourceRoot": "projects/bank/src",
       "projectType": "application",
       "prefix": "app",
-      "schematics": { "@schematics/angular:component": { "styleext": "scss" } },
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
       "architect": {
         "build": {
           "builder": "ngx-build-plus:browser",
@@ -20,10 +23,23 @@
             "main": "projects/bank/src/main.ts",
             "polyfills": "projects/bank/src/polyfills.ts",
             "tsConfig": "projects/bank/tsconfig.app.json",
-            "assets": ["projects/bank/src/favicon.ico", "projects/bank/src/assets"],
-            "styles": ["node_modules/cookieconsent/build/cookieconsent.min.css", "projects/bank/src/styles.scss"],
-            "scripts": ["node_modules/cookieconsent/build/cookieconsent.min.js"],
-            "stylePreprocessorOptions": { "includePaths": ["utils/scss", "projects/bank/src/scss"] },
+            "assets": [
+              "projects/bank/src/favicon.ico",
+              "projects/bank/src/assets"
+            ],
+            "styles": [
+              "node_modules/cookieconsent/build/cookieconsent.min.css",
+              "projects/bank/src/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/cookieconsent/build/cookieconsent.min.js"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "utils/scss",
+                "projects/bank/src/scss"
+              ]
+            },
             "es5BrowserSupport": true
           },
           "configurations": {
@@ -46,8 +62,18 @@
               "statsJson": true,
               "es5BrowserSupport": true
             },
+            "wiremock": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/bank/src/environments/environment.ts",
+                  "with": "projects/bank/src/environments/environment.wiremock.ts"
+                }
+              ]
+            },
             "ui-integ-native": {
-              "options": { "main": "projects/bank/src/main-native.ts" },
+              "options": {
+                "main": "projects/bank/src/main-native.ts"
+              },
               "fileReplacements": [
                 {
                   "replace": "projects/bank/src/environments/environment.ts",
@@ -75,18 +101,43 @@
             "sslCert": "ssl/all.dev-ob.forgerock.financial.crt",
             "sslKey": "ssl/k-all.dev-ob.forgerock.financial.key"
           },
-          "configurations": { "production": { "browserTarget": "bank:build:production" } }
+          "configurations": {
+            "production": {
+              "browserTarget": "bank:build:production"
+            },
+            "wiremock": {
+              "browserTarget": "bank:build:wiremock"
+            }
+          }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": { "browserTarget": "bank:build" }
+          "options": {
+            "browserTarget": "bank:build"
+          }
         },
-        "test": { "builder": "@angular-builders/jest:run", "options": { "no-cache": true, "reporters": ["default"] } },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "no-cache": true,
+            "reporters": [
+              "default"
+            ]
+          }
+        },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
-            "tsConfig": ["projects/bank/tsconfig.app.json", "projects/bank/tsconfig.spec.json"],
-            "exclude": ["**/node_modules/**", "projects/@fuse/**", "**/*.spec.ts", "**/*.storybook.ts"]
+            "tsConfig": [
+              "projects/bank/tsconfig.app.json",
+              "projects/bank/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "projects/@fuse/**",
+              "**/*.spec.ts",
+              "**/*.storybook.ts"
+            ]
           }
         }
       }
@@ -96,7 +147,11 @@
       "sourceRoot": "projects/manual-onboarding/src",
       "projectType": "application",
       "prefix": "app",
-      "schematics": { "@schematics/angular:component": { "styleext": "scss" } },
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
       "architect": {
         "build": {
           "builder": "ngx-build-plus:browser",
@@ -107,13 +162,23 @@
             "main": "projects/manual-onboarding/src/main.ts",
             "polyfills": "projects/manual-onboarding/src/polyfills.ts",
             "tsConfig": "projects/manual-onboarding/tsconfig.app.json",
-            "assets": ["projects/manual-onboarding/src/favicon.ico", "projects/manual-onboarding/src/assets"],
+            "assets": [
+              "projects/manual-onboarding/src/favicon.ico",
+              "projects/manual-onboarding/src/assets"
+            ],
             "styles": [
               "node_modules/cookieconsent/build/cookieconsent.min.css",
               "projects/manual-onboarding/src/styles.scss"
             ],
-            "scripts": ["node_modules/cookieconsent/build/cookieconsent.min.js"],
-            "stylePreprocessorOptions": { "includePaths": ["utils/scss", "projects/manual-onboarding/src/scss"] },
+            "scripts": [
+              "node_modules/cookieconsent/build/cookieconsent.min.js"
+            ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "utils/scss",
+                "projects/manual-onboarding/src/scss"
+              ]
+            },
             "es5BrowserSupport": true
           },
           "configurations": {
@@ -156,13 +221,27 @@
             "sslCert": "ssl/all.dev-ob.forgerock.financial.crt",
             "sslKey": "ssl/k-all.dev-ob.forgerock.financial.key"
           },
-          "configurations": { "production": { "browserTarget": "manual-onboarding:build:production" } }
+          "configurations": {
+            "production": {
+              "browserTarget": "manual-onboarding:build:production"
+            }
+          }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": { "browserTarget": "manual-onboarding:build" }
+          "options": {
+            "browserTarget": "manual-onboarding:build"
+          }
         },
-        "test": { "builder": "@angular-builders/jest:run", "options": { "no-cache": true, "reporters": ["default"] } },
+        "test": {
+          "builder": "@angular-builders/jest:run",
+          "options": {
+            "no-cache": true,
+            "reporters": [
+              "default"
+            ]
+          }
+        },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
@@ -170,7 +249,12 @@
               "projects/manual-onboarding/tsconfig.app.json",
               "projects/manual-onboarding/tsconfig.spec.json"
             ],
-            "exclude": ["**/node_modules/**", "projects/@fuse/**", "**/*.spec.ts", "**/*.storybook.ts"]
+            "exclude": [
+              "**/node_modules/**",
+              "projects/@fuse/**",
+              "**/*.spec.ts",
+              "**/*.storybook.ts"
+            ]
           }
         }
       }

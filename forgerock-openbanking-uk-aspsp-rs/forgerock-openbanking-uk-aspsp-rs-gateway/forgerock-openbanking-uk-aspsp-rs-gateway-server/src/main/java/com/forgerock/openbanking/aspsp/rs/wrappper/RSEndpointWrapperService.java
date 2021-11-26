@@ -129,6 +129,10 @@ public class RSEndpointWrapperService {
                 paymPaymentValidator, riskValidator);
     }
 
+    public DomesticVrpPaymentsEndpointWrapper vrpPaymentEndpoint(){
+        return new DomesticVrpPaymentsEndpointWrapper(this, tppStoreService);
+    }
+
     public FilePaymentsApiEndpointWrapper filePaymentEndpoint() {
         return new FilePaymentsApiEndpointWrapper(this, tppStoreService);
     }

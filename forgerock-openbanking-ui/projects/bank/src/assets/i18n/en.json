@@ -21,7 +21,8 @@
         "PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT": "International scheduled payment",
         "PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT": "International standing orders",
         "PAYMENT_FILE_CONSENT": "File payment",
-        "FUNDS_CONFIRMATION_CONSENT": "Funds confirmation"
+        "FUNDS_CONFIRMATION_CONSENT": "Funds confirmation",
+        "DOMESTIC_VRP_PAYMENTS": "Domestic VRP Payment"
       }
     },
     "ACCEPT": {
@@ -54,6 +55,21 @@
     "PASSWORD_UPDATE_ERROR": "Could not update password"
   },
   "CONSENT": {
+    "VRP-PAYMENT": {
+      "TITLE": "{{merchantName}} needs your permission to make VRP payment(s) from your account within the payment limits below.",
+      "PAYER_DETAILS": "Payer Details",
+      "PAYEE_DETAILS": "Payee Details",
+      "ACCOUNT_SORT_CODE": "Sort Code",
+      "ACCOUNT_NUMBER": "Account Number",
+      "ASPSP_NAME": "ASPSP Name",
+      "PAYEE_NAME": "Payee NAme",
+      "REFERENCE": "Consent Reference",
+      "DEBTOR_REF": "Debtor Reference",
+      "MAX_AMOUNT_PERIOD_TYPE": "Max amount per {{periodType}}",
+      "MAX_AMOUNT_PER_PAYMENT": "Max amount per payment",
+      "EXPIRE": "Expiry Date",
+      "PROCEED_PAYMENT": "Press Proceed to setup VRP"
+    },
     "PAYMENT": {
       "CHECK_DETAILS": "Please check the details below are correct.",
       "PAYEE_NAME": "Payee name",

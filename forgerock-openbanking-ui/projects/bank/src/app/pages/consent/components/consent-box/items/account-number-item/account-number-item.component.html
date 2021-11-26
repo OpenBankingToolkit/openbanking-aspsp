@@ -1,6 +1,6 @@
 <app-key-value-item
   *ngIf="payload.account"
   [key]="payload.label | translate"
-  [value]="payload.account | AccountNumberFormat"
+  [value]="payload.account | AccountFormat"
   [cssClass]="payload.cssClass"
 ></app-key-value-item>

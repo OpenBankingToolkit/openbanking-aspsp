@@ -10,7 +10,7 @@
               <div>
                 <div>{{ account.account?.Nickname }}</div>
                 <div class="secondary-text account-number" *ngIf="account.account?.Account">
-                  {{ (account.account?.Account)[0] | AccountNumberFormat }}
+                  {{ (account.account?.Account)[0] | AccountFormat }}
                 </div>
               </div>
 

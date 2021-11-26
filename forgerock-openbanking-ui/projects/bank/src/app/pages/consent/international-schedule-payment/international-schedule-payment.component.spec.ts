@@ -15,6 +15,7 @@ import { AccountCheckboxModule } from '../components/account-checkbox/account-ch
 import { AccountSelectionComponentModule } from '../components/account-selection/account-selection.module';
 
 import { InternationalSchedulePaymentComponent } from './international-schedule-payment.component';
+import {ConsentDecision} from "bank/src/app/types/ConsentDecision";
 
 describe('app:bank InternationalSchedulePaymentComponent', () => {
   let component: InternationalSchedulePaymentComponent;
@@ -56,7 +57,7 @@ describe('app:bank InternationalSchedulePaymentComponent', () => {
     fixture.detectChanges();
 
     expect(component.formSubmit.emit).toHaveBeenCalledWith({
-      decision: 'deny',
+      decision: ConsentDecision.DENY,
       accountId: ''
     });
   });
@@ -70,7 +71,7 @@ describe('app:bank InternationalSchedulePaymentComponent', () => {
     fixture.detectChanges();
 
     expect(component.formSubmit.emit).toHaveBeenCalledWith({
-      decision: 'deny',
+      decision: ConsentDecision.DENY,
       accountId: testValue
     });
   });
@@ -84,7 +85,7 @@ describe('app:bank InternationalSchedulePaymentComponent', () => {
     fixture.detectChanges();
 
     expect(component.formSubmit.emit).toHaveBeenCalledWith({
-      decision: 'allow',
+      decision: ConsentDecision.ALLOW,
       accountId: testValue
     });
   });

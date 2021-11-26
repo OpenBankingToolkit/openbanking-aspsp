@@ -23,6 +23,7 @@ package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import uk.org.openbanking.datamodel.payment.OBRemittanceInformation1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiationRemittanceInformation;
 
 public class FRRemittanceInformationConverter {
 
@@ -34,6 +35,14 @@ public class FRRemittanceInformationConverter {
     }
 
     public static FRRemittanceInformation toFRRemittanceInformation(OBWriteDomestic2DataInitiationRemittanceInformation remittanceInformation) {
+        return remittanceInformation == null ? null : FRRemittanceInformation.builder()
+                .unstructured(remittanceInformation.getUnstructured())
+                .reference(remittanceInformation.getReference())
+                .build();
+    }
+
+
+    public static FRRemittanceInformation toFRRemittanceInformation(OBDomesticVRPInitiationRemittanceInformation remittanceInformation) {
         return remittanceInformation == null ? null : FRRemittanceInformation.builder()
                 .unstructured(remittanceInformation.getUnstructured())
                 .reference(remittanceInformation.getReference())

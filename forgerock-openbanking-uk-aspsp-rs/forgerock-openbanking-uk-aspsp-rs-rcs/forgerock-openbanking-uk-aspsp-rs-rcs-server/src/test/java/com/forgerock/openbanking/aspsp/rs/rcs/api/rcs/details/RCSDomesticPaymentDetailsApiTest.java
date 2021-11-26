@@ -20,6 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.forgerock.openbanking.aspsp.rs.rcs.services.AccountService;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
@@ -31,6 +37,8 @@ import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.Tpp;
 import com.github.jsonzou.jmockdata.JMockData;
 import com.github.jsonzou.jmockdata.TypeReference;
+import com.google.gson.GsonBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -43,12 +51,14 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
+@Slf4j
 public class RCSDomesticPaymentDetailsApiTest {
     private static final String CLIENT_ID = "client123";
 
@@ -80,7 +90,7 @@ public class RCSDomesticPaymentDetailsApiTest {
     }
 
     @Test
-    public void shouldReturnRequestedAccountWhenDebtor() throws OBErrorException {
+    public void shouldReturnRequestedAccountWhenDebtor() throws OBErrorException, JsonProcessingException {
         // Given
         List<AccountWithBalance> accounts = JMockData.mock(new TypeReference<>() {});
         FRDomesticConsent consent = JMockData.mock(FRDomesticConsent.class);
@@ -94,6 +104,15 @@ public class RCSDomesticPaymentDetailsApiTest {
 
         // Then
         DomesticPaymentConsentDetails body = (DomesticPaymentConsentDetails) Objects.requireNonNull(responseEntity.getBody());
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.registerModule(new JodaModule());
+        mapper.setTimeZone(TimeZone.getDefault());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        String json = mapper.writeValueAsString(body);
+        log.info("Json Serialize as String \n{}", json);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(body.getAccounts().size()).isEqualTo(1);
         assertThat(body.getAccounts()).containsExactly(accounts.get(0));

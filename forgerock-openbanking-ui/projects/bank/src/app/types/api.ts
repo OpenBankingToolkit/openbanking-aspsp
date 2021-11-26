@@ -22,15 +22,24 @@ export module ApiResponses {
     clientName: string;
     merchantName: string;
     aispName: string;
+    aspspName?: string;
     // optional
-    canceledByUser?: boolean;
     permissions?: OBAccountPermissions[];
     expiredDate?: string;
     fromTransaction?: string;
     toTransaction?: string;
     instructedAmount?: OBActiveOrHistoricCurrencyAndAmount;
-    account: OBAccount2;
-
+    account?: OBAccount2;
+    debtorAccount?: {
+      account: OBAccount2;
+    }; // vrp payment
+    CreditorAccount?: {
+      account: OBAccount2;
+    }; // vrp payment
+    RemittanceInformation?: { // vrp payment
+      Reference: string;
+    };
+    ControlParameters?:ControlParameters;
     standingOrder?: {
       Frequency: string;
       Reference: string;
@@ -78,4 +87,20 @@ export class Rate {
   UnitCurrency: string;
   ExchangeRate: number;
   ContractIdentification: string;
+}
+
+export class ControlParameters {
+  ValidFromDateTime?: string;
+  ValidToDateTime?: string;
+  MaximumIndividualAmount?:OBActiveOrHistoricCurrencyAndAmount;
+  PeriodicLimits?: PeriodicLimits;
+  VRPType: string;
+  PSUAuthenticationMethods: string[]
+}
+
+export class PeriodicLimits {
+  PeriodType?: string;
+  PeriodAlignment?: string;
+  Amount?: number;
+  Currency?: string;
 }

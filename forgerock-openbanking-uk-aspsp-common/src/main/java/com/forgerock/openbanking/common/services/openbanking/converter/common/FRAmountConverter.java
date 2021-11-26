@@ -23,8 +23,10 @@ package com.forgerock.openbanking.common.services.openbanking.converter.common;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.services.openbanking.converter.FRModelMapper;
 import uk.org.openbanking.datamodel.account.*;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1DataInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersMaximumIndividualAmount;
 
 public class FRAmountConverter {
 
@@ -125,7 +127,14 @@ public class FRAmountConverter {
         return FRModelMapper.map(amount, FRAmount.class);
     }
 
-    // FR to OB
+    public static FRAmount toFRAmount(OBDomesticVRPControlParametersMaximumIndividualAmount amount){
+        return FRModelMapper.map(amount, FRAmount.class);
+    }
+
+    public static FRAmount toFRAmount(OBFundsConfirmation1DataInstructedAmount amount){
+        return FRModelMapper.map(amount, FRAmount.class);
+    }
+                                      // FR to OB
     public static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(FRAmount amount) {
         return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount.class);
     }
@@ -236,5 +245,9 @@ public class FRAmountConverter {
 
     public static OBReadBalance1DataAmount1 toOBReadBalance1DataAmount1(FRAmount amount) {
         return FRModelMapper.map(amount, OBReadBalance1DataAmount1.class);
+    }
+
+    public static OBFundsConfirmation1DataInstructedAmount toOBFundsConfirmation1DataInstructedAmount(FRAmount amount){
+        return FRModelMapper.map(amount, OBFundsConfirmation1DataInstructedAmount.class);
     }
 }
