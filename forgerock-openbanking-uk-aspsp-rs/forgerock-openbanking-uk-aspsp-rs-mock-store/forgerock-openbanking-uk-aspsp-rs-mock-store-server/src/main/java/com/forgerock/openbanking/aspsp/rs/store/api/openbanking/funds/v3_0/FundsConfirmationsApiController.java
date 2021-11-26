@@ -23,37 +23,29 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.funds.v3_0;
 import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.funds.FundsConfirmationRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
-import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
 import com.forgerock.openbanking.common.model.openbanking.domain.funds.FRFundsConfirmationData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
-import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.datamodel.account.Meta;
-import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksFundsConfirmation3;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1;
-import uk.org.openbanking.datamodel.fund.OBFundsConfirmationDataResponse1;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1;
+import uk.org.openbanking.datamodel.fund.OBFundsConfirmationResponse1Data;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.Optional;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBActiveOrHistoricCurrencyAndAmount;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toOBFundsConfirmation1DataInstructedAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.fund.FRFundsConfirmationConverter.toFRFundsConfirmationData;
-import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
+
 
 @Controller("FundsConfirmationsApiV3.0")
 @Slf4j
@@ -141,8 +133,8 @@ public class FundsConfirmationsApiController implements FundsConfirmationsApi {
     private OBFundsConfirmationResponse1 packageResponse(FRFundsConfirmation fundsConfirmation, FRFundsConfirmationConsent consent, HttpServletRequest request) {
         final FRFundsConfirmationData obFundsConfirmationData = fundsConfirmation.getFundsConfirmation();
         return new OBFundsConfirmationResponse1()
-                .data(new OBFundsConfirmationDataResponse1()
-                        .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(obFundsConfirmationData.getInstructedAmount()))
+                .data(new OBFundsConfirmationResponse1Data()
+                        .instructedAmount(toOBFundsConfirmation1DataInstructedAmount(obFundsConfirmationData.getInstructedAmount()))
                         .creationDateTime(fundsConfirmation.getCreated())
                         .fundsConfirmationId(fundsConfirmation.getId())
                         .fundsAvailable(fundsConfirmation.isFundsAvailable())
