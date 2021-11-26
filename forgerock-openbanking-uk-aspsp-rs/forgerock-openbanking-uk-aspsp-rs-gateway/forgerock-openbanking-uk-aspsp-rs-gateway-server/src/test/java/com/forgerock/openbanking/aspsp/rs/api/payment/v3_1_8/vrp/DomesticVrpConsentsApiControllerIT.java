@@ -18,8 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package com.forgerock.openbanking.aspsp.rs.api.vrp.v3_1_8;
+package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_8.vrp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.AMResourceServerService;

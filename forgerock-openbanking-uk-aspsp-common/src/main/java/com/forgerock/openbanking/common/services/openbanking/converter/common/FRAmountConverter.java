@@ -136,10 +136,6 @@ public class FRAmountConverter {
     }
 
     // FR to OB
-    public static FRAmount toFRAmount(OBDomesticVRPControlParametersMaximumIndividualAmount amount){
-        return FRModelMapper.map(amount, FRAmount.class);
-    }
-
     public static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(FRAmount amount) {
         return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount.class);
     }

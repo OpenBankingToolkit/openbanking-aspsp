@@ -42,7 +42,7 @@ import java.security.Principal;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toFRDomesticVRPConsentDetails;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
-@Controller
+@Controller("DomesticVrpConsentsApiControllerV3.1.8")
 @Slf4j
 public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi {
 

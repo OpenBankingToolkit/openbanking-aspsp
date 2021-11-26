@@ -31,7 +31,6 @@ import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
@@ -44,7 +43,7 @@ import javax.validation.Valid;
 import java.security.Principal;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
-@Validated
+
 @Api(value = "domestic-vrp-consents", description = "the domestic-vrp-consents API")
 @OpenBankingAPI(
         obVersion = "3.1.8",
@@ -95,6 +94,9 @@ public interface DomesticVrpConsentsApi {
             value = "/domestic-vrp-consents/{ConsentId}",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
     )
+//    @RequestMapping(value = "/domestic-vrp-consents/{ConsentId}",
+//            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+//            method = RequestMethod.DELETE)
     ResponseEntity<Void> domesticVrpConsentsDelete(
             @ApiParam(value = "ConsentId", required = true)
             @PathVariable("ConsentId") String consentId,
@@ -164,6 +166,10 @@ public interface DomesticVrpConsentsApi {
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
             consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
     )
+//    @RequestMapping(value = "/domestic-vrp-consents/{ConsentId}/funds-confirmation",
+//            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+//            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+//            method = RequestMethod.POST)
     ResponseEntity<OBVRPFundsConfirmationResponse> domesticVrpConsentsFundsConfirmation(
             @ApiParam(value = "ConsentId", required = true)
             @PathVariable("ConsentId") String consentId,
@@ -236,6 +242,9 @@ public interface DomesticVrpConsentsApi {
             value = "/domestic-vrp-consents/{ConsentId}",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
     )
+//    @RequestMapping(value = "/domestic-vrp-consents/{ConsentId}",
+//            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+//            method = RequestMethod.GET)
     ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsGet(
             @ApiParam(value = "ConsentId", required = true)
             @PathVariable("ConsentId") String consentId,
@@ -299,11 +308,15 @@ public interface DomesticVrpConsentsApi {
     @OpenBankingAPI(
             obReference = OBReference.CREATE_DOMESTIC_VRP_PAYMENT_CONSENT
     )
-    @PostMapping(
-            value = "/domestic-vrp-consents",
+//    @PostMapping(
+//            value = "/domestic-vrp-consents",
+//            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+//            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
+//    )
+    @RequestMapping(value = "/domestic-vrp-consents",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
-    )
+            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.POST)
     ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsPost(
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
