@@ -9,7 +9,7 @@
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
  *
- *    http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -42,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.joda.time.DateTime;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,7 @@ import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestD
 @RunWith(SpringRunner.class)
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Ignore
 public class DomesticVrpConsentsApiControllerIT {
 
     private static final String HOST = "https://rs-api:";
@@ -150,6 +152,6 @@ public class DomesticVrpConsentsApiControllerIT {
 //                        .debtor(toOBCashAccountDebtor4(request.getData().getInitiation().getDebtorAccount()))
 //                )
                 .risk(request.getRisk())
-                .links(new Links().self("https://rs-api:" + port + CONTEXT_PATH));
+                .links(new Links().self(HOST + port + CONTEXT_PATH));
     }
 }

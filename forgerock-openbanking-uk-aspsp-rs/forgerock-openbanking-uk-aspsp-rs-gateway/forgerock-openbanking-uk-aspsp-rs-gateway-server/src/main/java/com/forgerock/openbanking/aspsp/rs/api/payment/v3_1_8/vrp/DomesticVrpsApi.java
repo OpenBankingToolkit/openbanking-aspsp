@@ -79,9 +79,10 @@ public interface DomesticVrpsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-    @GetMapping(
+    @RequestMapping(
             value = "/domestic-vrps/{DomesticVRPId}",
-            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
+            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.GET
     )
     ResponseEntity<OBDomesticVRPResponse> domesticVrpGet(
             @ApiParam(value = "DomesticVRPId", required = true)
@@ -142,9 +143,10 @@ public interface DomesticVrpsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-    @GetMapping(
+    @RequestMapping(
             value = "/domestic-vrps/{DomesticVRPId}/payment-details",
-            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
+            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.GET
     )
     ResponseEntity<OBDomesticVRPDetails> domesticVrpPaymentDetailsGet(
             @ApiParam(value = "DomesticVRPId", required = true)
@@ -206,10 +208,11 @@ public interface DomesticVrpsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-    @PostMapping(
+    @RequestMapping(
             value = "/domestic-vrps",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
+            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.POST
     )
     ResponseEntity<OBDomesticVRPResponse> domesticVrpPost(
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)

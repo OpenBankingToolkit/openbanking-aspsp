@@ -29,6 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
@@ -40,7 +41,7 @@ import java.security.Principal;
 import java.util.Collections;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
-@Controller("domesticVrpConsentsApiV3.1.8")
+@Controller("DomesticVrpConsentsApiV3.1.8")
 @Slf4j
 public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi {
 

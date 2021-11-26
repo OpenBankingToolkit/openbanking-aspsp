@@ -81,9 +81,10 @@ public interface DomesticVrpConsentsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-    @DeleteMapping(
+    @RequestMapping(
             value = "/domestic-vrp-consents/{ConsentId}",
-            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
+            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.DELETE
     )
     ResponseEntity<Void> domesticVrpConsentsDelete(
             @ApiParam(value = "ConsentId", required = true)
@@ -146,10 +147,11 @@ public interface DomesticVrpConsentsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-    @PostMapping(
+    @RequestMapping(
             value = "/domestic-vrp-consents/{ConsentId}/funds-confirmation",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
+            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.POST
     )
     ResponseEntity<OBVRPFundsConfirmationResponse> domesticVrpConsentsFundsConfirmation(
             @ApiParam(value = "ConsentId", required = true)
@@ -216,9 +218,10 @@ public interface DomesticVrpConsentsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-    @GetMapping(
+    @RequestMapping(
             value = "/domestic-vrp-consents/{ConsentId}",
-            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
+            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.GET
     )
     ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsGet(
             @ApiParam(value = "ConsentId", required = true)
@@ -280,10 +283,11 @@ public interface DomesticVrpConsentsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
-    @PostMapping(
+    @RequestMapping(
             value = "/domestic-vrp-consents",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
+            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.POST
     )
     ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsPost(
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)

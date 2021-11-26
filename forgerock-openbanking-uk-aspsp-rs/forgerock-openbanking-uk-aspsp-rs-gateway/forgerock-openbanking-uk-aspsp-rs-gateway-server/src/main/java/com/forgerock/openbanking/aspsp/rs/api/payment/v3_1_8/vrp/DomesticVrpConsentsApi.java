@@ -90,13 +90,9 @@ public interface DomesticVrpConsentsApi {
     @OpenBankingAPI(
             obReference = OBReference.DELETE_DOMESTIC_VRP_PAYMENT_CONSENT
     )
-    @DeleteMapping(
-            value = "/domestic-vrp-consents/{ConsentId}",
-            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
-    )
-//    @RequestMapping(value = "/domestic-vrp-consents/{ConsentId}",
-//            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
-//            method = RequestMethod.DELETE)
+    @RequestMapping(value = "/domestic-vrp-consents/{ConsentId}",
+            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.DELETE)
     ResponseEntity<Void> domesticVrpConsentsDelete(
             @ApiParam(value = "ConsentId", required = true)
             @PathVariable("ConsentId") String consentId,
@@ -161,15 +157,10 @@ public interface DomesticVrpConsentsApi {
     @OpenBankingAPI(
             obReference = OBReference.GET_DOMESTIC_VRP_PAYMENT_FUNDS_CONFIRMATION
     )
-    @PostMapping(
-            value = "/domestic-vrp-consents/{ConsentId}/funds-confirmation",
+    @RequestMapping(value = "/domestic-vrp-consents/{ConsentId}/funds-confirmation",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
-            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
-    )
-//    @RequestMapping(value = "/domestic-vrp-consents/{ConsentId}/funds-confirmation",
-//            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
-//            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
-//            method = RequestMethod.POST)
+            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.POST)
     ResponseEntity<OBVRPFundsConfirmationResponse> domesticVrpConsentsFundsConfirmation(
             @ApiParam(value = "ConsentId", required = true)
             @PathVariable("ConsentId") String consentId,
@@ -238,13 +229,9 @@ public interface DomesticVrpConsentsApi {
     @OpenBankingAPI(
             obReference = OBReference.GET_DOMESTIC_VRP_PAYMENT_CONSENT
     )
-    @GetMapping(
-            value = "/domestic-vrp-consents/{ConsentId}",
-            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
-    )
-//    @RequestMapping(value = "/domestic-vrp-consents/{ConsentId}",
-//            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
-//            method = RequestMethod.GET)
+    @RequestMapping(value = "/domestic-vrp-consents/{ConsentId}",
+            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
+            method = RequestMethod.GET)
     ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsGet(
             @ApiParam(value = "ConsentId", required = true)
             @PathVariable("ConsentId") String consentId,
@@ -308,11 +295,6 @@ public interface DomesticVrpConsentsApi {
     @OpenBankingAPI(
             obReference = OBReference.CREATE_DOMESTIC_VRP_PAYMENT_CONSENT
     )
-//    @PostMapping(
-//            value = "/domestic-vrp-consents",
-//            produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
-//            consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"}
-//    )
     @RequestMapping(value = "/domestic-vrp-consents",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
             consumes = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
