@@ -26,7 +26,6 @@ import uk.org.openbanking.datamodel.account.*;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmation1DataInstructedAmount;
 import uk.org.openbanking.datamodel.payment.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.payment.*;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersMaximumIndividualAmount;
 
 public class FRAmountConverter {
 
@@ -127,11 +126,11 @@ public class FRAmountConverter {
         return FRModelMapper.map(amount, FRAmount.class);
     }
 
-    public static FRAmount toFRAmount(OBDomesticVRPControlParametersMaximumIndividualAmount amount){
+    public static FRAmount toFRAmount(OBFundsConfirmation1DataInstructedAmount amount) {
         return FRModelMapper.map(amount, FRAmount.class);
     }
 
-    public static FRAmount toFRAmount(OBFundsConfirmation1DataInstructedAmount amount) {
+    public static FRAmount toFRAmount(uk.org.openbanking.datamodel.vrp.OBActiveOrHistoricCurrencyAndAmount amount){
         return FRModelMapper.map(amount, FRAmount.class);
     }
 

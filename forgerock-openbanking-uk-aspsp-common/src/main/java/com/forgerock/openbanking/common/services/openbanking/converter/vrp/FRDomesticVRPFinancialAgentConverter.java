@@ -21,8 +21,9 @@
 package com.forgerock.openbanking.common.services.openbanking.converter.vrp;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAgent;
-import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentPostalAddressConverter;
-import uk.org.openbanking.datamodel.payment.OBBranchAndFinancialInstitutionIdentification6;
+import uk.org.openbanking.datamodel.vrp.OBBranchAndFinancialInstitutionIdentification6;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConverters.toFRPostalAddress;
 
 public class FRDomesticVRPFinancialAgentConverter {
 
@@ -31,7 +32,7 @@ public class FRDomesticVRPFinancialAgentConverter {
                 .identification(agent.getIdentification())
                 .name(agent.getName())
                 .schemeName(agent.getSchemeName())
-                .postalAddress(FRPaymentPostalAddressConverter.toFRPostalAddress(agent.getPostalAddress()))
+                .postalAddress(toFRPostalAddress(agent.getPostalAddress()))
                 .build();
     }
 }

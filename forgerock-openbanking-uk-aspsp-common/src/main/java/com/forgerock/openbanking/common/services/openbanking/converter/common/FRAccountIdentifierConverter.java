@@ -78,6 +78,10 @@ public class FRAccountIdentifierConverter {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
+    public static FRAccountIdentifier toFRAccountIdentifier(uk.org.openbanking.datamodel.vrp.OBCashAccountCreditor3 account) {
+        return FRModelMapper.map(account, FRAccountIdentifier.class);
+    }
+
     public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccountDebtor1 account) {
         return account == null ? null : FRAccountIdentifier.builder()
                 .schemeName(account.getSchemeName() == null ? null : account.getSchemeName().getReference())

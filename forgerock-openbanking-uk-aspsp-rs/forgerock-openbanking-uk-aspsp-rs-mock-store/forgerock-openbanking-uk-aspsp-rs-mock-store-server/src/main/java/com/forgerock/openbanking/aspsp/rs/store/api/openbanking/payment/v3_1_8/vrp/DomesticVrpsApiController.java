@@ -18,27 +18,28 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_8.vrp;
+package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_8.vrp;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPRequest;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.payment.VrpConsentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.model.Tpp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetails;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
-import java.util.Collections;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConverters.toFRDomesticVRPRequest;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
 @Controller("DomesticVrpsApiV3.1.8")
@@ -46,17 +47,9 @@ import java.util.Collections;
 public class DomesticVrpsApiController implements DomesticVrpsApi {
 
 
-    private final VrpConsentService consentService;
-    private final RSEndpointWrapperService rsEndpointWrapperService;
+    private final DomesticVRPRepository;
     private final RsStoreGateway rsStoreGateway;
 
-    @Autowired
-    public DomesticVrpsApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway
-            , VrpConsentService consentService) {
-        this.rsEndpointWrapperService = rsEndpointWrapperService;
-        this.rsStoreGateway = rsStoreGateway;
-        this.consentService = consentService;
-    }
 
 
     @Override
@@ -104,34 +97,14 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        log.debug("domesticVrpPost() Recieved OBDomesticVrpRequest {}", obDomesticVRPRequest);
-
 
         String consentId = obDomesticVRPRequest.getData().getConsentId();
         // Need a payment service that gets 'payments' from the rs-store. Payments are actually consents poorly named
         // :-( -> technical debt
         // TODO Change payments services to consent services?
-        FRDomesticVRPConsent payment = consentService.getPayment(consentId);
+        FRDomesticVRPRequest frDomesticVRPRequest = toFRDomesticVRPRequest(obDomesticVRPRequest);
 
-        return rsEndpointWrapperService.paymentEndpoint()
-                .authorization(authorization)
-                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
-                .principal(principal)
-                .filters(f -> {
-                    f.verifyJwsDetachedSignature(xJwsSignature, request);
-                    f.validateRisk(obDomesticVRPRequest.getRisk());
-                })
-                .execute(
-                        (String tppId) -> {
-                            HttpHeaders additionalHeaders = new HttpHeaders();
-                            additionalHeaders.add("x-ob-client-id", tppId);
-                            return rsStoreGateway.toRsStore(
-                                    request, additionalHeaders, Collections.emptyMap(),
-                                    OBDomesticVRPConsentResponse.class, obDomesticVRPRequest
-                            );
-                        }
+        return new ResponseEntity<OBDomesticVRPResponse>(HttpStatus.NOT_IMPLEMENTED);
 
-                );
     }
-
 }
