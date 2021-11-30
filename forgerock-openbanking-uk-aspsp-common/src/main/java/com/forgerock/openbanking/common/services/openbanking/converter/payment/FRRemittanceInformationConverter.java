@@ -24,6 +24,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.
 import uk.org.openbanking.datamodel.payment.OBRemittanceInformation1;
 import uk.org.openbanking.datamodel.payment.OBWriteDomestic2DataInitiationRemittanceInformation;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiationRemittanceInformation;
+import uk.org.openbanking.datamodel.vrp.OBVRPRemittanceInformation;
 
 public class FRRemittanceInformationConverter {
 
@@ -41,8 +42,14 @@ public class FRRemittanceInformationConverter {
                 .build();
     }
 
-
     public static FRRemittanceInformation toFRRemittanceInformation(OBDomesticVRPInitiationRemittanceInformation remittanceInformation) {
+        return remittanceInformation == null ? null : FRRemittanceInformation.builder()
+                .unstructured(remittanceInformation.getUnstructured())
+                .reference(remittanceInformation.getReference())
+                .build();
+    }
+
+    public static FRRemittanceInformation toFRRemittanceInformation(OBVRPRemittanceInformation remittanceInformation) {
         return remittanceInformation == null ? null : FRRemittanceInformation.builder()
                 .unstructured(remittanceInformation.getUnstructured())
                 .reference(remittanceInformation.getReference())

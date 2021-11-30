@@ -126,6 +126,13 @@
             <groupId>com.forgerock.openbanking.uk</groupId>
             <artifactId>openbanking-uk-datamodel</artifactId>
         </dependency>
+        <!-- uk-datamodel test support jar -->
+        <dependency>
+            <groupId>com.forgerock.openbanking.uk</groupId>
+            <artifactId>openbanking-uk-datamodel</artifactId>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
