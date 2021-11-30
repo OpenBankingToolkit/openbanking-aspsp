@@ -21,24 +21,31 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import uk.org.openbanking.datamodel.payment.OBRisk1;
 
 import java.util.Arrays;
 import java.util.Collections;
 
+@Slf4j
 public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<DomesticVrpPaymentsEndpointWrapper, DomesticVrpPaymentsEndpointWrapper.DomesticVrpPaymentRestEndpointContent> {
 
     private FRDomesticVRPConsent consent;
+    private final OBRisk1Validator riskValidator;
 
     public DomesticVrpPaymentsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
-                                              TppStoreService tppStoreService) {
+                                              TppStoreService tppStoreService,
+                                              OBRisk1Validator riskValidator) {
         super(RSEndpointWrapperService, tppStoreService);
+        this.riskValidator = riskValidator;
     }
 
     public DomesticVrpPaymentsEndpointWrapper payment(FRDomesticVRPConsent consent) {
@@ -63,6 +70,16 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         );
 
         verifyMatlsFromAccessToken();
+    }
+
+    public void validateRisk(OBRisk1 risk) throws OBErrorException{
+        if(riskValidator != null) {
+            riskValidator.validate(risk);
+        }else{
+            String errorString = "validatePaymentCodeContext called but no validator present";
+            log.error(errorString);
+            throw new NullPointerException(errorString);
+        }
     }
 
     public interface DomesticVrpPaymentRestEndpointContent {
