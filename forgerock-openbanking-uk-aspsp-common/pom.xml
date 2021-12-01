@@ -125,7 +125,6 @@
         <dependency>
             <groupId>com.forgerock.openbanking.uk</groupId>
             <artifactId>openbanking-uk-datamodel</artifactId>
-            <version>3.1.8.3-SNAPSHOT</version>
         </dependency>
         <!-- uk-datamodel test support jar -->
         <dependency>
