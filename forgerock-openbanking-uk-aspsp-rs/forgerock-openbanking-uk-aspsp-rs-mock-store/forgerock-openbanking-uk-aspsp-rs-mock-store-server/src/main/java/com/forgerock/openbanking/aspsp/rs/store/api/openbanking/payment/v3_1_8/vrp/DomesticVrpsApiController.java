@@ -20,15 +20,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_8.vrp;
 
-import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
-import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPRequest;
-import com.forgerock.openbanking.common.services.store.RsStoreGateway;
-import com.forgerock.openbanking.common.services.store.payment.VrpConsentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
-import com.forgerock.openbanking.model.Tpp;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -46,10 +40,12 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.vr
 @Slf4j
 public class DomesticVrpsApiController implements DomesticVrpsApi {
 
-
-    private final DomesticVRPRepository;
-    private final RsStoreGateway rsStoreGateway;
-
+// TODO: pending to create repository
+//    private final DomesticVRPRepository domesticVRPRepository;
+//
+//    public DomesticVrpsApiController(DomesticVRPRepository domesticVRPRepository) {
+//        this.domesticVRPRepository = domesticVRPRepository;
+//    }
 
 
     @Override

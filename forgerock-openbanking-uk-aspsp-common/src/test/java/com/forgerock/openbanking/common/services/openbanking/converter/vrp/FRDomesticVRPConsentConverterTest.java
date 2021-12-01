@@ -20,13 +20,17 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.vrp;
 
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsentDetails;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsentDetailsData;
 import com.github.jsonzou.jmockdata.JMockData;
 import org.junit.Test;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequestData;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toFRDomesticVRPConsentDetails;
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBDomesticVRPConsentRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -38,7 +42,7 @@ public class FRDomesticVRPConsentConverterTest {
     public void convertOBDomesticVRPConsentRequestToFR() {
         // given
         OBDomesticVRPConsentRequest vrpConsentRequest = getOBDomesticVRPConsentRequest();
-        FRDomesticVRPConsentDetails frDomesticVRPConsentDetails = FRDomesticVRPConsentConverter.toFRDomesticVRPConsentDetails(vrpConsentRequest);
+        FRDomesticVRPConsentDetails frDomesticVRPConsentDetails = toFRDomesticVRPConsentDetails(vrpConsentRequest);
         OBDomesticVRPConsentRequestData obData = vrpConsentRequest.getData();
 
         // when
@@ -57,7 +61,34 @@ public class FRDomesticVRPConsentConverterTest {
                 .isEqualTo(obData.getControlParameters().getPeriodicLimits().get(0).getPeriodAlignment().getValue());
     }
 
+    @Test
+    public void convertFRDomesticVRPConsentDetailsToOB() {
+        // given
+        FRDomesticVRPConsent frDomesticVRPConsent = getFRDomesticVRPConsent();
+        OBDomesticVRPConsentRequest obDomesticVRPConsentRequest = toOBDomesticVRPConsentRequest(frDomesticVRPConsent.getVrpDetails());
+
+        // when
+        OBDomesticVRPConsentRequestData obData = obDomesticVRPConsentRequest.getData();
+        FRDomesticVRPConsentDetailsData frData = frDomesticVRPConsent.getVrpDetails().getData();
+
+        // then (check few fields)
+        assertThat(frData.getReadRefundAccount().getValue()).isEqualTo(obData.getReadRefundAccount().getValue());
+        assertThat(frData.getInitiation().getCreditorAccount().getIdentification())
+                .isEqualTo(obData.getInitiation().getCreditorAccount().getIdentification());
+        assertThat(frData.getInitiation().getDebtorAccount().getIdentification())
+                .isEqualTo(obData.getInitiation().getDebtorAccount().getIdentification());
+        assertThat(frData.getControlParameters().getVrpType().size()).isEqualTo(obData.getControlParameters().getVrPType().size());
+        assertThat(frData.getControlParameters().getPeriodicLimits().get(0).getPeriodType().getValue())
+                .isEqualTo(obData.getControlParameters().getPeriodicLimits().get(0).getPeriodType().getValue());
+        assertThat(frData.getControlParameters().getPeriodicLimits().get(0).getPeriodAlignment().getValue())
+                .isEqualTo(obData.getControlParameters().getPeriodicLimits().get(0).getPeriodAlignment().getValue());
+    }
+
     private OBDomesticVRPConsentRequest getOBDomesticVRPConsentRequest() {
         return JMockData.mock(OBDomesticVRPConsentRequest.class);
+    }
+
+    private FRDomesticVRPConsent getFRDomesticVRPConsent() {
+        return JMockData.mock(FRDomesticVRPConsent.class);
     }
 }

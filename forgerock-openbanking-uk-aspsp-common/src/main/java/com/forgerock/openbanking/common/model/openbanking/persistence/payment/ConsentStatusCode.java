@@ -46,6 +46,10 @@ public enum ConsentStatusCode {
         this.value = value;
     }
 
+    public String getValue(){
+        return this.value;
+    }
+
     public static ConsentStatusCode fromValue(String value) {
         for (ConsentStatusCode consentStatusCode : ConsentStatusCode.values()) {
             if (consentStatusCode.value.equals(value)) {

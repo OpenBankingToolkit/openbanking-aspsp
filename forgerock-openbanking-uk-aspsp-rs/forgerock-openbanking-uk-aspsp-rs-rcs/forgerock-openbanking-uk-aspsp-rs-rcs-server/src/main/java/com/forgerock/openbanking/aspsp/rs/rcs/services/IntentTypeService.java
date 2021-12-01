@@ -37,7 +37,6 @@ import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -130,7 +129,7 @@ public class IntentTypeService {
             case FUNDS_CONFIRMATION_CONSENT:
                 log.debug("It's an funds confirmation consent decision request");
                 return fundsConfirmationConsentDecisionFactory.create(intentId);
-            case VRP_PAYMENT_CONSENT:
+            case DOMESTIC_VRP_PAYMENT_CONSENT:
                 log.debug("It's a VRP payment consent decision request");
                 return domesticVRPConsentDecisionFactory.create(intentId);
             default:
@@ -178,7 +177,7 @@ public class IntentTypeService {
             case FUNDS_CONFIRMATION_CONSENT:
                 log.debug("It's a funds confirmation consent details request");
                 return rcsFundsConfirmationDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
-            case VRP_PAYMENT_CONSENT:
+            case DOMESTIC_VRP_PAYMENT_CONSENT:
                 log.debug("It's a VRP payment consent details request");
                 return rcsVrpPaymentDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             default:

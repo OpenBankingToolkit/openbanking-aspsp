@@ -46,10 +46,10 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.vr
 @Slf4j
 public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi {
 
-    private DomesticVRPConsentRepository domesticVRPConsentRepository;
-    private TppRepository tppRepository;
-    private ResourceLinkService resourceLinkService;
-    private ConsentMetricService consentMetricService;
+    private final DomesticVRPConsentRepository domesticVRPConsentRepository;
+    private final TppRepository tppRepository;
+    private final ResourceLinkService resourceLinkService;
+    private final ConsentMetricService consentMetricService;
 
     public DomesticVrpConsentsApiController(
             DomesticVRPConsentRepository domesticVRPConsentRepository, TppRepository tppRepository,

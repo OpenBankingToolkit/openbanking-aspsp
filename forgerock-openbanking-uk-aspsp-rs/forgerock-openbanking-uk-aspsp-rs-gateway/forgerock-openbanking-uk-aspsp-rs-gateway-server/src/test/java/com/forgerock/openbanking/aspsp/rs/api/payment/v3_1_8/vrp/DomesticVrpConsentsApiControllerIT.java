@@ -22,18 +22,15 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_8.vrp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.AMResourceServerService;
-import com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_8.vrp.DomesticVrpConsentsApiController;
-import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.AccountAccessConsentPermittedPermissionsFilter;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
-import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
-import com.github.jsonzou.jmockdata.JMockData;
 import com.nimbusds.jwt.SignedJWT;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -42,7 +39,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.joda.time.DateTime;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,15 +49,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.account.Links;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsent4;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse5Data;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
+import uk.org.openbanking.datamodel.vrp.*;
 
-import java.io.IOException;
-import java.text.ParseException;
+import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -69,7 +59,7 @@ import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4;
+import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest;
 
 /**
  * Integration test for {@link DomesticVrpConsentsApiController}
@@ -77,7 +67,6 @@ import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestD
 @RunWith(SpringRunner.class)
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Ignore
 public class DomesticVrpConsentsApiControllerIT {
 
     private static final String HOST = "https://rs-api:";
@@ -112,7 +101,8 @@ public class DomesticVrpConsentsApiControllerIT {
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
-        OBDomesticVRPConsentRequest request = new OBDomesticVRPConsentRequest(); //aValidOBWriteDomesticConsent4();
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().setReadRefundAccount(OBDomesticVRPConsentRequestData.ReadRefundAccountEnum.NO);
         OBDomesticVRPConsentResponse rsStoreResponse = aValidOBDomesticVRPConsentResponse(request);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(rsStoreResponse));
         Tpp tpp = new Tpp();
@@ -121,7 +111,7 @@ public class DomesticVrpConsentsApiControllerIT {
 
         // When
         HttpResponse<OBDomesticVRPConsentResponse> response = Unirest.post(HOST + port + CONTEXT_PATH)
-                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                .header(OBHeaders.X_FAPI_INTERACTION_ID, rsConfiguration.financialId)
                 .header(OBHeaders.X_IDEMPOTENCY_KEY, IDEMPOTENCY_KEY)
                 .header(OBHeaders.X_JWS_SIGNATURE, jws)
                 .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
@@ -130,28 +120,32 @@ public class DomesticVrpConsentsApiControllerIT {
                 .asObject(OBDomesticVRPConsentResponse.class);
 
         // Then
-        assertThat(response.getStatus()).isEqualTo(201);
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getBody()).isEqualTo(rsStoreResponse);
     }
 
     private OBDomesticVRPConsentResponse aValidOBDomesticVRPConsentResponse(OBDomesticVRPConsentRequest request) {
         DateTime now = DateTime.now();
         return new OBDomesticVRPConsentResponse()
-//                .data(new OBWriteDomesticConsentResponse5Data()
-//                        .consentId(UUID.randomUUID().toString())
-//                        .creationDateTime(now)
-//                        .status(OBWriteDomesticConsentResponse5Data.StatusEnum.AWAITINGAUTHORISATION)
-//                        .statusUpdateDateTime(now)
-//                        .readRefundAccount(request.getData().getReadRefundAccount())
-//                        .cutOffDateTime(now.plusDays(1))
-//                        .expectedExecutionDateTime(now)
-//                        .expectedSettlementDateTime(now.plusDays(1))
-//                        .initiation(request.getData().getInitiation())
-//                        .authorisation(request.getData().getAuthorisation())
-//                        .scASupportData(request.getData().getScASupportData())
-//                        .debtor(toOBCashAccountDebtor4(request.getData().getInitiation().getDebtorAccount()))
-//                )
+                .data(new OBDomesticVRPConsentResponseData()
+                        .consentId(UUID.randomUUID().toString())
+                        .creationDateTime(now)
+                        .readRefundAccount(
+                                OBDomesticVRPConsentResponseData.ReadRefundAccountEnum.fromValue(
+                                        request.getData().getReadRefundAccount().getValue()
+                                )
+                        )
+                        .status(
+                                OBDomesticVRPConsentResponseData.StatusEnum.fromValue(
+                                        ConsentStatusCode.AWAITINGAUTHORISATION.getValue()
+                                )
+                        )
+                        .statusUpdateDateTime(now)
+                        .controlParameters(request.getData().getControlParameters())
+                        .debtorAccount(request.getData().getInitiation().getDebtorAccount())
+                        .initiation(request.getData().getInitiation())
+                )
                 .risk(request.getRisk())
-                .links(new Links().self(HOST + port + CONTEXT_PATH));
+                .links(new Links().self(URI.create(HOST + port + CONTEXT_PATH)));
     }
 }
