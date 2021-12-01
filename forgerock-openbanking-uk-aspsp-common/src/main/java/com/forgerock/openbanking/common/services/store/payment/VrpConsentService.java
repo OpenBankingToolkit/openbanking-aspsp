@@ -22,17 +22,22 @@ package com.forgerock.openbanking.common.services.store.payment;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+@Service
 @Slf4j
 public class VrpConsentService implements PaymentService<FRDomesticVRPConsent> {
-    // ToDo Find correct base path for this - I guess this is in the internal apis of the rs-store
+
     private static final String BASE_RESOURCE_PATH = "/api/vrps/";
 
-    private final String rsStoreRoot;
+    @Value("${rs-store.base-url}")
+    private String rsStoreRoot;
+
     private final RestTemplate restTemplate;
 
-    public VrpConsentService(String rsStoreRoot, RestTemplate restTemplate) {
-        this.rsStoreRoot = rsStoreRoot;
+    public VrpConsentService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 

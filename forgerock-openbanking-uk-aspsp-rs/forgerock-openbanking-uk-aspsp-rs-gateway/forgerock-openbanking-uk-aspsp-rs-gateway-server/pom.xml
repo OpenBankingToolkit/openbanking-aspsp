@@ -52,6 +52,10 @@
             <artifactId>forgerock-openbanking-model</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.forgerock.openbanking.uk</groupId>
+            <artifactId>openbanking-uk-datamodel</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.forgerock.openbanking</groupId>
             <artifactId>forgerock-openbanking-am</artifactId>
         </dependency>

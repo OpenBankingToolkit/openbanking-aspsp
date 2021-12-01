@@ -20,13 +20,22 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.vrp;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAgent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPostalAddress;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
-import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsentDetails;
-import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsentDetailsData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequestData;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.*;
+import uk.org.openbanking.datamodel.payment.OBRisk1;
+import uk.org.openbanking.datamodel.vrp.*;
 
-import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.*;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toOBSupplementaryData1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPControlParametersConverter.toFRDomesticVRPControlParameters;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRWriteDomesticVRPDataInitiationConverter.toFRWriteDomesticVRPDataInitiation;
 
@@ -52,5 +61,117 @@ public class FRDomesticVRPConsentConverter {
                 .build();
     }
 
+    // FR to OB
+    public static OBDomesticVRPConsentRequest toOBDomesticVRPConsentRequest(FRDomesticVRPConsentDetails frDomesticVRPConsentDetails) {
+        return frDomesticVRPConsentDetails == null ? null : new OBDomesticVRPConsentRequest()
+                .data(toOBDomesticVRPConsentRequestData(frDomesticVRPConsentDetails.getData()))
+                .risk(toOBRisk1(frDomesticVRPConsentDetails.getRisk()));
+    }
 
+    public static OBDomesticVRPConsentRequestData toOBDomesticVRPConsentRequestData(FRDomesticVRPConsentDetailsData data) {
+        return data == null ? null : new OBDomesticVRPConsentRequestData()
+                .readRefundAccount(OBDomesticVRPConsentRequestData.ReadRefundAccountEnum.fromValue(data.getReadRefundAccount().getValue()))
+                .controlParameters(toOBDomesticVRPControlParameters(data.getControlParameters()))
+                .initiation(toOBDomesticVRPInitiation(data.getInitiation()));
+    }
+
+    public static OBDomesticVRPInitiation toOBDomesticVRPInitiation(FRWriteDomesticVRPDataInitiation initiation) {
+        return initiation == null ? null : new OBDomesticVRPInitiation()
+                .creditorAccount(toOBCashAccountCreditor3(initiation.getCreditorAccount()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(initiation.getCreditorAgent()))
+                .debtorAccount(toOBCashAccountDebtorWithName(initiation.getDebtorAccount()))
+                .remittanceInformation(toOBDomesticVRPInitiationRemittanceInformation(initiation.getRemittanceInformation()));
+    }
+
+    public static OBDomesticVRPInitiationRemittanceInformation toOBDomesticVRPInitiationRemittanceInformation(
+            FRRemittanceInformation remittanceInformation
+    ) {
+        return remittanceInformation == null ? null : new OBDomesticVRPInitiationRemittanceInformation()
+                .reference(remittanceInformation.getReference())
+                .unstructured(remittanceInformation.getUnstructured());
+    }
+
+    public static OBCashAccountDebtorWithName toOBCashAccountDebtorWithName(FRAccountIdentifier accountIdentifier) {
+        return accountIdentifier == null ? null : new OBCashAccountDebtorWithName()
+                .identification(accountIdentifier.getIdentification())
+                .name(accountIdentifier.getName())
+                .schemeName(accountIdentifier.getSchemeName())
+                .secondaryIdentification(accountIdentifier.getSecondaryIdentification());
+    }
+
+    public static OBCashAccountCreditor3 toOBCashAccountCreditor3(FRAccountIdentifier accountIdentifier) {
+        return accountIdentifier == null ? null : new OBCashAccountCreditor3()
+                .identification(accountIdentifier.getIdentification())
+                .name(accountIdentifier.getName())
+                .schemeName(accountIdentifier.getSchemeName())
+                .secondaryIdentification(accountIdentifier.getSecondaryIdentification());
+    }
+
+    public static OBBranchAndFinancialInstitutionIdentification6 toOBBranchAndFinancialInstitutionIdentification6(
+            FRFinancialAgent agent) {
+        return agent == null ? null : new OBBranchAndFinancialInstitutionIdentification6()
+                .identification(agent.getIdentification())
+                .name(agent.getName())
+                .schemeName(agent.getSchemeName())
+                .postalAddress(toOBPostalAddress6(agent.getPostalAddress()));
+    }
+
+    public static OBPostalAddress6 toOBPostalAddress6(FRPostalAddress address) {
+        return address == null ? null : new OBPostalAddress6()
+                .addressLine(address.getAddressLine())
+                .addressType(OBAddressTypeCode.fromValue(address.getAddressType().getValue()))
+                .buildingNumber(address.getBuildingNumber())
+                .country(address.getCountry())
+                .countrySubDivision(address.getCountrySubDivision())
+                .department(address.getDepartment())
+                .postCode(address.getPostCode())
+                .streetName(address.getStreetName())
+                .subDepartment(address.getSubDepartment())
+                .townName(address.getTownName());
+    }
+
+    public static OBDomesticVRPControlParameters toOBDomesticVRPControlParameters(FRDomesticVRPControlParameters controlParameters) {
+        return controlParameters == null ? null : new OBDomesticVRPControlParameters()
+                .psUAuthenticationMethods(controlParameters.getPsuAuthenticationMethods())
+                .vrPType(controlParameters.getVrpType())
+                .validFromDateTime(controlParameters.getValidFromDateTime())
+                .validToDateTime(controlParameters.getValidToDateTime())
+                .maximumIndividualAmount(toOBActiveOrHistoricCurrencyAndAmount(controlParameters.getMaximumIndividualAmount()))
+                .periodicLimits(toListOBDomesticVRPControlParametersPeriodicLimits(controlParameters.getPeriodicLimits()))
+                .supplementaryData(toOBSupplementaryData1(controlParameters.getSupplementaryData()));
+    }
+
+    public static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(FRAmount amount) {
+        return amount == null ? null : new OBActiveOrHistoricCurrencyAndAmount()
+                .amount(amount.getAmount())
+                .currency(amount.getCurrency());
+    }
+
+    public static List<OBDomesticVRPControlParametersPeriodicLimits> toListOBDomesticVRPControlParametersPeriodicLimits(
+            List<FRPeriodicLimits> periodicLimits
+    ) {
+        return periodicLimits == null ? null : periodicLimits.stream().map(
+                item -> (new OBDomesticVRPControlParametersPeriodicLimits())
+                        .amount(item.getAmount())
+                        .currency(item.getCurrency())
+                        .periodAlignment(
+                                OBDomesticVRPControlParametersPeriodicLimits.PeriodAlignmentEnum.fromValue(
+                                        item.getPeriodAlignment().getValue()
+                                )
+                        )
+                        .periodType(
+                                OBDomesticVRPControlParametersPeriodicLimits.PeriodTypeEnum.fromValue(
+                                        item.getPeriodType().getValue()
+                                )
+                        )
+        ).collect(Collectors.toList());
+    }
+
+    public static OBRisk1 toOBRisk1(FRPaymentRisk frPaymentRisk) {
+        return frPaymentRisk == null ? null : new OBRisk1()
+                .deliveryAddress(toOBRisk1DeliveryAddress(frPaymentRisk.getDeliveryAddress()))
+                .merchantCategoryCode(frPaymentRisk.getMerchantCategoryCode())
+                .merchantCustomerIdentification(frPaymentRisk.getMerchantCustomerIdentification())
+                .paymentContextCode(toOBExternalPaymentContext1Code(frPaymentRisk.getPaymentContextCode()));
+    }
 }
