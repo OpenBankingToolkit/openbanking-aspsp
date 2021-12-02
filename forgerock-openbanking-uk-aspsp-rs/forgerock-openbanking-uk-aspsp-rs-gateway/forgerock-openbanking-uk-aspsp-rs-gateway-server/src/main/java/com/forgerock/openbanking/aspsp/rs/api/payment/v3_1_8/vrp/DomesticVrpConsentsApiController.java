@@ -31,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse2;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
@@ -56,6 +57,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             OBDomesticVRPConsentRequest obDomesticVRPConsentRequest, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
+        log.debug("Request to create a VRP consent received, interactionId '{}'", xFapiInteractionId);
         return rsEndpointWrapperService.vrpPaymentEndpoint()
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiInteractionId)
@@ -81,7 +83,20 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        return new ResponseEntity<OBDomesticVRPConsentResponse>(HttpStatus.NOT_IMPLEMENTED);
+        log.debug("Request to get a VRP consent received, consentId '{}'", consentId);
+        return rsEndpointWrapperService.vrpPaymentEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(xFapiInteractionId)
+                .principal(principal)
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            additionalHttpHeaders.add("x-ob-client-id", tppId);
+
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBDomesticVRPConsentResponse.class);
+                        }
+                );
+//        return new ResponseEntity<OBDomesticVRPConsentResponse>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @Override

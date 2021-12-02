@@ -23,6 +23,7 @@ package com.forgerock.openbanking.common.model.openbanking.persistence.vrp;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.VrpPaymentConsent;
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.model.Tpp;
 import lombok.AllArgsConstructor;
@@ -44,7 +45,7 @@ import java.util.Date;
 @AllArgsConstructor
 @Builder
 @Document
-public class FRDomesticVRPConsent  implements PaymentConsent, Persistable<String> {
+public class FRDomesticVRPConsent  implements VrpPaymentConsent, Persistable<String> {
     @Id
     @Indexed
     public String id;

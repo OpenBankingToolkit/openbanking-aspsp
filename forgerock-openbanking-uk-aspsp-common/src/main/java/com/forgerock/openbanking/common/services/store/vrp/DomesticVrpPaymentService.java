@@ -21,9 +21,7 @@
 package com.forgerock.openbanking.common.services.store.vrp;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRDomesticConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
-import com.forgerock.openbanking.common.services.store.payment.PaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +38,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class DomesticVrpPaymentService implements PaymentService<FRDomesticVRPConsent> {
+public class DomesticVrpPaymentService implements VrpPaymentService<FRDomesticVRPConsent> {
     private static final String BASE_RESOURCE_PATH = "/api/domestic-vrp-payments/";
     private String rsStoreRoot;
     private RestTemplate restTemplate;
@@ -54,16 +52,18 @@ public class DomesticVrpPaymentService implements PaymentService<FRDomesticVRPCo
         this.restTemplate = restTemplate;
     }
 
-    public FRDomesticVRPConsent getPayment(String consentId) {
+    @Override
+    public FRDomesticVRPConsent getVrpPayment(String consentId) {
         log.debug("Getting VRP consent for {}", consentId);
         return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId,
                 FRDomesticVRPConsent.class);
     }
 
-    public Collection<FRDomesticVRPConsent> getAllVrpPaymentsInProcess(){
+    public Collection<FRDomesticVRPConsent> getAllVrpPaymentsInProcess() {
         log.debug("Read all VRP payments");
         ParameterizedTypeReference<List<FRDomesticVRPConsent>> ptr =
-                new ParameterizedTypeReference<List<FRDomesticVRPConsent>>() {};
+                new ParameterizedTypeReference<List<FRDomesticVRPConsent>>() {
+                };
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(
                 rsStoreRoot + BASE_RESOURCE_PATH + "search/findByStatus"
         );
@@ -75,7 +75,7 @@ public class DomesticVrpPaymentService implements PaymentService<FRDomesticVRPCo
     }
 
     @Override
-    public void updatePayment(FRDomesticVRPConsent payment) {
+    public void updateVrpPayment(FRDomesticVRPConsent payment) {
 
     }
 }
