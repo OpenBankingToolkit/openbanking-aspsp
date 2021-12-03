@@ -28,6 +28,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.*;
+import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.vrp.*;
 
@@ -61,7 +62,7 @@ public class FRDomesticVRPConsentConverter {
                 .build();
     }
 
-    // FR to OB
+    // FR to OB request
     public static OBDomesticVRPConsentRequest toOBDomesticVRPConsentRequest(FRDomesticVRPConsentDetails frDomesticVRPConsentDetails) {
         return frDomesticVRPConsentDetails == null ? null : new OBDomesticVRPConsentRequest()
                 .data(toOBDomesticVRPConsentRequestData(frDomesticVRPConsentDetails.getData()))
@@ -70,7 +71,12 @@ public class FRDomesticVRPConsentConverter {
 
     public static OBDomesticVRPConsentRequestData toOBDomesticVRPConsentRequestData(FRDomesticVRPConsentDetailsData data) {
         return data == null ? null : new OBDomesticVRPConsentRequestData()
-                .readRefundAccount(OBDomesticVRPConsentRequestData.ReadRefundAccountEnum.fromValue(data.getReadRefundAccount().getValue()))
+                .readRefundAccount(
+                        OBDomesticVRPConsentRequestData.ReadRefundAccountEnum.fromValue
+                                (
+                                        data.getReadRefundAccount().getValue()
+                                )
+                )
                 .controlParameters(toOBDomesticVRPControlParameters(data.getControlParameters()))
                 .initiation(toOBDomesticVRPInitiation(data.getInitiation()));
     }
@@ -155,14 +161,16 @@ public class FRDomesticVRPConsentConverter {
                         .amount(item.getAmount())
                         .currency(item.getCurrency())
                         .periodAlignment(
-                                OBDomesticVRPControlParametersPeriodicLimits.PeriodAlignmentEnum.fromValue(
-                                        item.getPeriodAlignment().getValue()
-                                )
+                                OBDomesticVRPControlParametersPeriodicLimits.PeriodAlignmentEnum.fromValue
+                                        (
+                                                item.getPeriodAlignment().getValue()
+                                        )
                         )
                         .periodType(
-                                OBDomesticVRPControlParametersPeriodicLimits.PeriodTypeEnum.fromValue(
-                                        item.getPeriodType().getValue()
-                                )
+                                OBDomesticVRPControlParametersPeriodicLimits.PeriodTypeEnum.fromValue
+                                        (
+                                                item.getPeriodType().getValue()
+                                        )
                         )
         ).collect(Collectors.toList());
     }
@@ -173,5 +181,39 @@ public class FRDomesticVRPConsentConverter {
                 .merchantCategoryCode(frPaymentRisk.getMerchantCategoryCode())
                 .merchantCustomerIdentification(frPaymentRisk.getMerchantCustomerIdentification())
                 .paymentContextCode(toOBExternalPaymentContext1Code(frPaymentRisk.getPaymentContextCode()));
+    }
+
+    // FR to OB response
+    public static OBDomesticVRPConsentResponse toOBDomesticVRPConsentResponse(FRDomesticVRPConsent consent) {
+        return consent == null ? null : new OBDomesticVRPConsentResponse()
+                .data(toOBDomesticVRPConsentResponseData(consent))
+                .meta(new Meta())
+                .risk(toOBRisk1(consent.getRisk()));
+
+    }
+
+    public static OBDomesticVRPConsentResponseData toOBDomesticVRPConsentResponseData(FRDomesticVRPConsent consent) {
+        FRDomesticVRPConsentDetails details = consent == null ? null : consent.getVrpDetails();
+        FRDomesticVRPConsentDetailsData data = details == null ? null : details.getData();
+        return data == null ? null : new OBDomesticVRPConsentResponseData()
+                .consentId(consent.getId())
+                .creationDateTime(consent.getCreated())
+                .readRefundAccount(
+                        OBDomesticVRPConsentResponseData.ReadRefundAccountEnum.fromValue
+                                (
+                                        data.getReadRefundAccount().getValue()
+                                )
+                )
+                .status(
+                        OBDomesticVRPConsentResponseData.StatusEnum.fromValue
+                                (
+                                        consent.getStatus().getValue()
+                                )
+                )
+                .statusUpdateDateTime(consent.getStatusUpdate())
+                .controlParameters(toOBDomesticVRPControlParameters(data.getControlParameters()))
+                .debtorAccount(toOBCashAccountDebtorWithName(data.getInitiation().getDebtorAccount()))
+                .initiation(toOBDomesticVRPInitiation(data.getInitiation()));
+
     }
 }

@@ -23,7 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_8.vrp;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
-import com.forgerock.openbanking.common.services.store.payment.VrpConsentService;
+import com.forgerock.openbanking.common.services.store.vrp.DomesticVrpPaymentConsentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,16 +46,16 @@ import java.util.Collections;
 public class DomesticVrpsApiController implements DomesticVrpsApi {
 
 
-    private final VrpConsentService consentService;
+    private final DomesticVrpPaymentConsentService vrpPaymentConsentService;
     private final RSEndpointWrapperService rsEndpointWrapperService;
     private final RsStoreGateway rsStoreGateway;
 
     @Autowired
     public DomesticVrpsApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway
-            , VrpConsentService consentService) {
+            , DomesticVrpPaymentConsentService vrpPaymentConsentService) {
         this.rsEndpointWrapperService = rsEndpointWrapperService;
         this.rsStoreGateway = rsStoreGateway;
-        this.consentService = consentService;
+        this.vrpPaymentConsentService = vrpPaymentConsentService;
     }
 
 
@@ -111,7 +111,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         // Need a payment service that gets 'payments' from the rs-store. Payments are actually consents poorly named
         // :-( -> technical debt
         // TODO Change payments services to consent services?
-        FRDomesticVRPConsent payment = consentService.getPayment(consentId);
+        FRDomesticVRPConsent payment = vrpPaymentConsentService.getVrpPayment(consentId);
 
         return rsEndpointWrapperService.paymentEndpoint()
                 .authorization(authorization)
