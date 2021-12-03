@@ -92,11 +92,9 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
                             additionalHttpHeaders.add("x-ob-client-id", tppId);
-
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBDomesticVRPConsentResponse.class);
                         }
                 );
-//        return new ResponseEntity<OBDomesticVRPConsentResponse>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @Override
@@ -104,7 +102,17 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        return new ResponseEntity<Void>(HttpStatus.NOT_IMPLEMENTED);
+        return rsEndpointWrapperService.vrpPaymentEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(xFapiInteractionId)
+                .principal(principal)
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            additionalHttpHeaders.add("x-ob-client-id", tppId);
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Void.class);
+                        }
+                );
     }
 
     @Override

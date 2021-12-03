@@ -20,16 +20,21 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_8.vrp;
 
+import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.DomesticVRPConsentRepository;
+import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsentDetails;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.repositories.TppRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -43,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toFRDomesticVRPConsentDetails;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBDomesticVRPConsentResponse;
 
@@ -73,12 +79,45 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             String clientId, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received VRP consent: '{}'", obDomesticVRPConsentRequest);
+        log.debug("Received Domestic VRP consent: '{}'", obDomesticVRPConsentRequest);
+
         FRDomesticVRPConsentDetails frDomesticVRPDetails = toFRDomesticVRPConsentDetails(obDomesticVRPConsentRequest);
-        log.trace("Converted OB VRP consent to: '{}'", frDomesticVRPDetails);
+        log.trace("Converted OB Domestic VRP consent to: '{}'", frDomesticVRPDetails);
+
         final Tpp tpp = tppRepository.findByClientId(clientId);
         log.debug("Got TPP '{}' for client Id '{}'", tpp, clientId);
-        return new ResponseEntity<OBDomesticVRPConsentResponse>(HttpStatus.NOT_IMPLEMENTED);
+
+        Optional<FRDomesticVRPConsent> vrpConsentByIdempotencyKey = domesticVRPConsentRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+
+        if (vrpConsentByIdempotencyKey.isPresent()) {
+            validateIdempotencyRequest(xIdempotencyKey, frDomesticVRPDetails, vrpConsentByIdempotencyKey.get(), () -> vrpConsentByIdempotencyKey.get().getVrpDetails());
+            log.info("Idempotent request for VRP payment consent is valid. Returning [201 CREATED] but take no further action.");
+            return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(vrpConsentByIdempotencyKey.get()));
+        }
+
+        log.debug("No Domestic VRP payment consent with matching idempotency key has been found. Creating new consent.");
+        FRDomesticVRPConsent domesticVrpConsent = FRDomesticVRPConsent.builder()
+                .id(IntentType.DOMESTIC_VRP_PAYMENT_CONSENT.generateIntentId())
+                .status(ConsentStatusCode.AWAITINGAUTHORISATION)
+                .vrpDetails(frDomesticVRPDetails)
+                .pispId(tpp.getId())
+                .pispName(tpp.getOfficialName())
+                .statusUpdate(DateTime.now())
+                .idempotencyKey(xIdempotencyKey)
+                .obVersion(VersionPathExtractor.getVersionFromPath(request))
+                .build();
+
+        log.debug("Saving Domestic VRP payment consent: '{}'", domesticVrpConsent);
+        consentMetricService.sendConsentActivity(
+                new ConsentStatusEntry(
+                        domesticVrpConsent.getId(),
+                        domesticVrpConsent.getStatus().name()
+                )
+        );
+        domesticVRPConsentRepository.save(domesticVrpConsent);
+        log.info("Created domestic VRP payment consent id: '{}'", domesticVrpConsent.getId());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(packageResponse(domesticVrpConsent));
     }
 
     @Override
@@ -91,13 +130,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment consent '" + consentId + "' " +
                     "can't be found");
         }
-        FRDomesticVRPConsent domesticVRPConsent = optional.get();
-
-        OBDomesticVRPConsentResponse obDomesticVRPConsentResponse = toOBDomesticVRPConsentResponse(domesticVRPConsent);
-        obDomesticVRPConsentResponse.setLinks(
-                resourceLinkService.toSelfLink(domesticVRPConsent, discovery -> getVersion(discovery).getCreateDomesticVrpPaymentConsent())
-        );
-        return ResponseEntity.ok(obDomesticVRPConsentResponse);
+        return ResponseEntity.ok(packageResponse(optional.get()));
     }
 
     @Override
@@ -122,6 +155,16 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
         return new ResponseEntity<OBVRPFundsConfirmationResponse>(HttpStatus.NOT_IMPLEMENTED);
+    }
+
+    private OBDomesticVRPConsentResponse packageResponse(FRDomesticVRPConsent frDomesticVRPConsent) {
+        return toOBDomesticVRPConsentResponse(frDomesticVRPConsent)
+                .links(
+                        resourceLinkService.toSelfLink(
+                                frDomesticVRPConsent,
+                                discovery -> getVersion(discovery).getCreateDomesticVrpPaymentConsent()
+                        )
+                );
     }
 
     protected OBDiscoveryAPILinksVrpPayment getVersion(DiscoveryConfigurationProperties.VrpPaymentApis discovery) {

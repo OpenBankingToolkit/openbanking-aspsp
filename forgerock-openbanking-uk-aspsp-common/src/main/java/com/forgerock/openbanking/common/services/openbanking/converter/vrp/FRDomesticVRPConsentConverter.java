@@ -56,7 +56,11 @@ public class FRDomesticVRPConsentConverter {
             OBDomesticVRPConsentRequestData data
     ) {
         return data == null ? null : FRDomesticVRPConsentDetailsData.builder()
-                .readRefundAccount(FRReadRefundAccount.fromValue(data.getReadRefundAccount().getValue()))
+                .readRefundAccount(
+                        FRReadRefundAccount.fromValue(
+                                data.getReadRefundAccount()==null ? null : data.getReadRefundAccount().getValue()
+                        )
+                )
                 .initiation(toFRWriteDomesticVRPDataInitiation(data.getInitiation()))
                 .controlParameters(toFRDomesticVRPControlParameters(data.getControlParameters()))
                 .build();

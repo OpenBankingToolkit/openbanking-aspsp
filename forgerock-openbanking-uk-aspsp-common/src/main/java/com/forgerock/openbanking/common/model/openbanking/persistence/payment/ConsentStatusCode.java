@@ -38,7 +38,8 @@ public enum ConsentStatusCode {
     ACCEPTEDTECHNICALVALIDATION("AcceptedTechnicalValidation"),
     PENDING("Pending"),
     REVOKED("Revoked"),
-    AWAITINGUPLOAD("AwaitingUpload");
+    AWAITINGUPLOAD("AwaitingUpload"),
+    EXPIRED("Expired");
 
     private final String value;
 
