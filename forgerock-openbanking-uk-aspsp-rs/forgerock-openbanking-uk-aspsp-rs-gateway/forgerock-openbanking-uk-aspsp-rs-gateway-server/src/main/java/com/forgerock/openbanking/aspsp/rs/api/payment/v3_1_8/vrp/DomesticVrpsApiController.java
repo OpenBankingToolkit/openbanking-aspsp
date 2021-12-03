@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_8.vrp;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.DomesticVrpPaymentsEndpointWrapper;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.vrp.DomesticVrpPaymentConsentService;
@@ -43,7 +44,7 @@ import java.util.Collections;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
 @Controller("DomesticVrpsApiV3.1.8")
 @Slf4j
-public class DomesticVrpsApiController implements DomesticVrpsApi {
+public class DomesticVrpsApiController implements DomesticVrpsApi{
 
 
     private final DomesticVrpPaymentConsentService vrpPaymentConsentService;
@@ -106,32 +107,30 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     ) throws OBErrorResponseException {
         log.debug("domesticVrpPost() Recieved OBDomesticVrpRequest {}", obDomesticVRPRequest);
 
-
         String consentId = obDomesticVRPRequest.getData().getConsentId();
+        log.debug("domesticVrpPost() consentId is {}", consentId);
         // Need a payment service that gets 'payments' from the rs-store. Payments are actually consents poorly named
         // :-( -> technical debt
         // TODO Change payments services to consent services?
         FRDomesticVRPConsent payment = vrpPaymentConsentService.getVrpPayment(consentId);
 
-        return rsEndpointWrapperService.paymentEndpoint()
-                .authorization(authorization)
-                .xFapiFinancialId(rsEndpointWrapperService.rsConfiguration.financialId)
-                .principal(principal)
-                .filters(f -> {
-                    f.verifyJwsDetachedSignature(xJwsSignature, request);
-                    f.validateRisk(obDomesticVRPRequest.getRisk());
-                })
-                .execute(
-                        (String tppId) -> {
-                            HttpHeaders additionalHeaders = new HttpHeaders();
-                            additionalHeaders.add("x-ob-client-id", tppId);
-                            return rsStoreGateway.toRsStore(
-                                    request, additionalHeaders, Collections.emptyMap(),
-                                    OBDomesticVRPConsentResponse.class, obDomesticVRPRequest
-                            );
-                        }
+        DomesticVrpPaymentsEndpointWrapper vrpPaymentsEndpointWrapper = rsEndpointWrapperService.vrpPaymentEndpoint();
+        vrpPaymentsEndpointWrapper.authorization(authorization);
+        vrpPaymentsEndpointWrapper.xFapiFinancialId(rsEndpointWrapperService.getRsConfiguration().financialId);
+        vrpPaymentsEndpointWrapper.principal(principal);
+        vrpPaymentsEndpointWrapper.filters(f -> {
+            f.verifyJwsDetachedSignature(xJwsSignature, request);
+            f.validateRisk(obDomesticVRPRequest.getRisk());
+        });
+        ResponseEntity responseEntity =  vrpPaymentsEndpointWrapper.execute((String tppId) -> {
+            HttpHeaders additionalHeaders = new HttpHeaders();
+            additionalHeaders.add("x-ob-client-id", tppId);
+            return rsStoreGateway.toRsStore(
+                    request, additionalHeaders, Collections.emptyMap(),
+                    OBDomesticVRPConsentResponse.class, obDomesticVRPRequest
+            );
+        });
 
-                );
+        return responseEntity;
     }
-
 }

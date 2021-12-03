@@ -40,12 +40,7 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.vr
 @Slf4j
 public class DomesticVrpsApiController implements DomesticVrpsApi {
 
-// TODO: pending to create repository
-//    private final DomesticVRPRepository domesticVRPRepository;
-//
-//    public DomesticVrpsApiController(DomesticVRPRepository domesticVRPRepository) {
-//        this.domesticVRPRepository = domesticVRPRepository;
-//    }
+
 
 
     @Override

@@ -65,10 +65,11 @@ public interface DomesticVrpsApi {
      *         or Too Many Requests (status code 429)
      *         or Internal Server Error (status code 500)
      */
-    @ApiOperation(value = "Retrieve a domestic VRP", nickname = "domesticVrpGet", notes = "Retrieve a domestic VRP", response = OBDomesticVRPResponse.class, authorizations = {
+    @ApiOperation(value = "Retrieve a domestic VRP", nickname = "domesticVrpGet", notes = "Retrieve a domestic VRP",
+            response = OBDomesticVRPResponse.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")})
-    }, tags = {"Domestic VRPs",})
+            }, tags = {"Domestic VRPs",})
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Default response", response = OBDomesticVRPResponse.class),
             @ApiResponse(code = 400, message = "Bad request", response = OBErrorResponse1.class),
@@ -180,7 +181,8 @@ public interface DomesticVrpsApi {
      * @param authorization An Authorisation Token as per https://tools.ietf.org/html/rfc6750 (required)
      * @param xJwsSignature A detached JWS signature of the body of the payload. (required)
      * @param obDomesticVRPRequest Default (required)
-     * @param xFapiAuthDate The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC (optional)
+     * @param xFapiAuthDate The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are
+     *                      represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC (optional)
      * @param xFapiCustomerIpAddress The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
      * @param xFapiInteractionId An RFC4122 UID used as a correlation id. (optional)
      * @param xCustomerUserAgent Indicates the user-agent that the PSU is using. (optional)
@@ -194,7 +196,8 @@ public interface DomesticVrpsApi {
      *         or Too Many Requests (status code 429)
      *         or Internal Server Error (status code 500)
      */
-    @ApiOperation(value = "Create a domestic VRP", nickname = "domesticVrpPost", notes = "Create a domestic VRP", response = OBDomesticVRPResponse.class, authorizations = {
+    @ApiOperation(value = "Create a domestic VRP", nickname = "domesticVrpPost", notes = "Create a domestic VRP",
+            response = OBDomesticVRPResponse.class, authorizations = {
             @Authorization(value = "TPPOAuth2Security", scopes = {
                     @AuthorizationScope(scope = "payments", description = "Generic payment scope")})
     }, tags = {"Domestic VRPs",})
@@ -225,7 +228,8 @@ public interface DomesticVrpsApi {
             @Valid
             @RequestBody OBDomesticVRPRequest obDomesticVRPRequest,
 
-            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
+            @ApiParam(value = "The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are" +
+                    " represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC")
             @RequestHeader(value = "x-fapi-auth-date", required = false) String xFapiAuthDate,
 
             @ApiParam(value = "The PSU's IP address if the PSU is currently logged in with the TPP.")
