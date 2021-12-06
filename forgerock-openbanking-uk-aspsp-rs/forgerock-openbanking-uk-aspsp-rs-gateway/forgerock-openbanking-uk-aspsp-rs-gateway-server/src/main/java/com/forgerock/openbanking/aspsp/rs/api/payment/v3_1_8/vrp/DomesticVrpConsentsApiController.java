@@ -29,9 +29,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import uk.org.openbanking.datamodel.payment.OBWriteDomesticConsentResponse2;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
@@ -52,7 +49,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
     private RsStoreGateway rsStoreGateway;
 
     @Override
-    public ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsPost(
+    public ResponseEntity domesticVrpConsentsPost(
             String authorization, String xIdempotencyKey, String xJwsSignature,
             OBDomesticVRPConsentRequest obDomesticVRPConsentRequest, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
@@ -79,7 +76,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
     }
 
     @Override
-    public ResponseEntity<OBDomesticVRPConsentResponse> domesticVrpConsentsGet(
+    public ResponseEntity domesticVrpConsentsGet(
             String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
@@ -91,14 +88,13 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.add("x-ob-client-id", tppId);
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBDomesticVRPConsentResponse.class);
                         }
                 );
     }
 
     @Override
-    public ResponseEntity<Void> domesticVrpConsentsDelete(
+    public ResponseEntity domesticVrpConsentsDelete(
             String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
@@ -109,19 +105,40 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
-                            additionalHttpHeaders.add("x-ob-client-id", tppId);
                             return rsStoreGateway.toRsStore(request, additionalHttpHeaders, Void.class);
                         }
                 );
     }
 
     @Override
-    public ResponseEntity<OBVRPFundsConfirmationResponse> domesticVrpConsentsFundsConfirmation(
+    public ResponseEntity domesticVrpConsentsFundsConfirmation(
             String consentId, String authorization, String xJwsSignature,
             OBVRPFundsConfirmationRequest obVRPFundsConfirmationRequest, String xFapiAuthDate,
             String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        return new ResponseEntity<OBVRPFundsConfirmationResponse>(HttpStatus.NOT_IMPLEMENTED);
+        log.debug("Request to get a VRP funds confirmation, consentId '{}'", consentId);
+        if (!consentId.equals(obVRPFundsConfirmationRequest.getData().getConsentId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The consent ID '" + consentId +
+                    "' path parameter does not match with the consent ID '" +
+                    obVRPFundsConfirmationRequest.getData().getConsentId() + "' requested to confirm the funds.");
+        }
+        return rsEndpointWrapperService.vrpPaymentEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(xFapiInteractionId)
+                .principal(principal)
+                .isFundsConfirmationRequest(true)
+                .filters(f -> {
+                    f.verifyJwsDetachedSignature(xJwsSignature, request);
+                })
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHeaders = new HttpHeaders();
+                            return rsStoreGateway.toRsStore(
+                                    request, additionalHeaders, Collections.emptyMap(),
+                                    OBVRPFundsConfirmationResponse.class, obVRPFundsConfirmationRequest
+                            );
+                        }
+                );
     }
 }

@@ -60,6 +60,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest;
+import static uk.org.openbanking.testsupport.vrp.OBVRPFundsConfirmationRequestTestDataFactory.aValidOBVRPFundsConfirmationRequest;
 
 /**
  * Integration test for {@link DomesticVrpConsentsApiController}
@@ -70,7 +71,7 @@ import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentRequestTest
 public class DomesticVrpConsentsApiControllerIT {
 
     private static final String HOST = "https://rs-api:";
-    private static final String CONTEXT_PATH = "/open-banking/v3.1.8/pisp/domestic-vrp-consents";
+    private static final String CONTEXT_PATH = "/open-banking/v3.1.8/pisp/domestic-vrp-consents/";
     private static final String IDEMPOTENCY_KEY = UUID.randomUUID().toString();
 
     @LocalServerPort
@@ -124,6 +125,155 @@ public class DomesticVrpConsentsApiControllerIT {
         assertThat(response.getBody()).isEqualTo(rsStoreResponse);
     }
 
+    @Test
+    public void createVrpPaymentConsentWrongGrantType() throws Exception {
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().setReadRefundAccount(OBDomesticVRPConsentRequestData.ReadRefundAccountEnum.NO);
+
+        // When
+        HttpResponse<ResponseEntity> response = Unirest.post(HOST + port + CONTEXT_PATH)
+                .header(OBHeaders.X_FAPI_INTERACTION_ID, rsConfiguration.financialId)
+                .header(OBHeaders.X_IDEMPOTENCY_KEY, IDEMPOTENCY_KEY)
+                .header(OBHeaders.X_JWS_SIGNATURE, jws)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .body(request)
+                .asObject(ResponseEntity.class);
+        // Then
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getParsingError().get().getOriginalBody()).contains("{\"ErrorCode\":\"OBRI.AccessToken.Invalid\"");
+    }
+
+    @Test
+    public void getVrpFundsConfirmation() throws Exception {
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        OBVRPFundsConfirmationRequest request = aValidOBVRPFundsConfirmationRequest();
+        OBVRPFundsConfirmationResponse rsStoreResponse = aValidOBVRPFundsConfirmationResponse(request);
+        given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.OK).body(rsStoreResponse));
+
+        // When
+        HttpResponse<OBVRPFundsConfirmationResponse> response = Unirest.post(
+                        HOST + port + CONTEXT_PATH + request.getData().getConsentId() + "/funds-confirmation"
+                )
+                .header(OBHeaders.X_FAPI_INTERACTION_ID, rsConfiguration.financialId)
+                .header(OBHeaders.X_JWS_SIGNATURE, jws)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .body(request)
+                .asObject(OBVRPFundsConfirmationResponse.class);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getBody()).isEqualTo(rsStoreResponse);
+    }
+
+    @Test
+    public void getVrpFundsConfirmationConsentIdDontMatch() throws Exception {
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        OBVRPFundsConfirmationRequest request = aValidOBVRPFundsConfirmationRequest();
+        OBVRPFundsConfirmationResponse rsStoreResponse = aValidOBVRPFundsConfirmationResponse(request);
+        given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.OK).body(rsStoreResponse));
+
+        // When
+        HttpResponse<ResponseEntity>  response = Unirest.post(
+                        HOST + port + CONTEXT_PATH + "DVRP_" + UUID.randomUUID() + "/funds-confirmation"
+                )
+                .header(OBHeaders.X_FAPI_INTERACTION_ID, rsConfiguration.financialId)
+                .header(OBHeaders.X_JWS_SIGNATURE, jws)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .body(request)
+                .asObject(ResponseEntity.class);
+    /*
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The consent ID '" + consentId +
+                    "' path parameter does not match with the consent ID '" +
+                    obVRPFundsConfirmationRequest.getData().getConsentId() + "' requested to confirm the funds.");
+     */
+        // Then
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.getParsingError().get().getOriginalBody()).contains("path parameter does not match with the consent ID");
+    }
+
+    @Test
+    public void getVrpFundsConfirmationWrongGrantType() throws Exception {
+        String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        OBVRPFundsConfirmationRequest request = aValidOBVRPFundsConfirmationRequest();
+
+        // When
+        HttpResponse<ResponseEntity> response = Unirest.post(
+                        HOST + port + CONTEXT_PATH + request.getData().getConsentId() + "/funds-confirmation"
+                )
+                .header(OBHeaders.X_FAPI_INTERACTION_ID, rsConfiguration.financialId)
+                .header(OBHeaders.X_JWS_SIGNATURE, jws)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .body(request)
+                .asObject(ResponseEntity.class);
+
+        // Then
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.FORBIDDEN.value());
+        assertThat(response.getParsingError().get().getOriginalBody()).contains("{\"ErrorCode\":\"OBRI.AccessToken.Invalid\"");
+    }
+
+    @Test
+    public void getVrpPaymentConsent() throws Exception {
+        String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().setReadRefundAccount(OBDomesticVRPConsentRequestData.ReadRefundAccountEnum.NO);
+        OBDomesticVRPConsentResponse rsStoreResponse = aValidOBDomesticVRPConsentResponse(request);
+        given(rsStoreGateway.toRsStore(any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.OK).body(rsStoreResponse));
+//        Tpp tpp = new Tpp();
+//        tpp.setAuthorisationNumber("test-tpp");
+//        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
+
+        // When
+        HttpResponse<OBDomesticVRPConsentResponse> response = Unirest.get(HOST + port + CONTEXT_PATH + rsStoreResponse.getData().getConsentId())
+                .header(OBHeaders.X_FAPI_INTERACTION_ID, rsConfiguration.financialId)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .asObject(OBDomesticVRPConsentResponse.class);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.getBody()).isEqualTo(rsStoreResponse);
+    }
+
+    @Test
+    public void deleteVrpPaymentConsent() throws Exception {
+        String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().setReadRefundAccount(OBDomesticVRPConsentRequestData.ReadRefundAccountEnum.NO);
+        OBDomesticVRPConsentResponse rsStoreResponse = aValidOBDomesticVRPConsentResponse(request);
+        given(rsStoreGateway.toRsStore(any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.NO_CONTENT).build());
+//        Tpp tpp = new Tpp();
+//        tpp.setAuthorisationNumber("test-tpp");
+//        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
+
+        // When
+        HttpResponse response = Unirest.delete(HOST + port + CONTEXT_PATH + rsStoreResponse.getData().getConsentId())
+                .header(OBHeaders.X_FAPI_INTERACTION_ID, rsConfiguration.financialId)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .asEmpty();
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
     private OBDomesticVRPConsentResponse aValidOBDomesticVRPConsentResponse(OBDomesticVRPConsentRequest request) {
         DateTime now = DateTime.now();
         return new OBDomesticVRPConsentResponse()
@@ -147,5 +297,23 @@ public class DomesticVrpConsentsApiControllerIT {
                 )
                 .risk(request.getRisk())
                 .links(new Links().self(URI.create(HOST + port + CONTEXT_PATH)));
+    }
+
+    private OBVRPFundsConfirmationResponse aValidOBVRPFundsConfirmationResponse(OBVRPFundsConfirmationRequest request) {
+        return new OBVRPFundsConfirmationResponse()
+                .data(
+                        new OBVRPFundsConfirmationResponseData()
+                                .consentId(request.getData().getConsentId())
+                                .creationDateTime(DateTime.now())
+                                .fundsConfirmationId(UUID.randomUUID().toString())
+                                .reference(request.getData().getReference())
+                                .fundsAvailableResult(
+                                        new OBPAFundsAvailableResult1()
+                                                .fundsAvailable(OBPAFundsAvailableResult1.FundsAvailableEnum.AVAILABLE)
+                                                .fundsAvailableDateTime(DateTime.now()
+                                                )
+                                )
+                                .instructedAmount(request.getData().getInstructedAmount())
+                );
     }
 }

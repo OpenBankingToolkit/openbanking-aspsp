@@ -30,8 +30,11 @@ import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsentDetails;
+import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
+import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
+import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.repositories.TppRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -39,14 +42,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksVrpPayment;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
+import uk.org.openbanking.datamodel.vrp.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.openbanking.common.services.openbanking.IdempotencyService.validateIdempotencyRequest;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toFRDomesticVRPConsentDetails;
@@ -60,15 +61,18 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
     private final DomesticVRPConsentRepository domesticVRPConsentRepository;
     private final TppRepository tppRepository;
     private final ResourceLinkService resourceLinkService;
+    private final FundsAvailabilityService fundsAvailabilityService;
     private final ConsentMetricService consentMetricService;
 
     public DomesticVrpConsentsApiController(
             DomesticVRPConsentRepository domesticVRPConsentRepository, TppRepository tppRepository,
-            ResourceLinkService resourceLinkService, ConsentMetricService consentMetricService
+            ResourceLinkService resourceLinkService, FundsAvailabilityService fundsAvailabilityService,
+            ConsentMetricService consentMetricService
     ) {
         this.domesticVRPConsentRepository = domesticVRPConsentRepository;
         this.tppRepository = tppRepository;
         this.resourceLinkService = resourceLinkService;
+        this.fundsAvailabilityService = fundsAvailabilityService;
         this.consentMetricService = consentMetricService;
     }
 
@@ -79,8 +83,8 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             String clientId, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        log.debug("Received Domestic VRP consent: '{}'", obDomesticVRPConsentRequest);
-
+        log.debug("(store) Received Domestic VRP consent: '{}'", obDomesticVRPConsentRequest);
+        log.debug("(store) Request to create a VRP consent received, interactionId '{}'", xFapiInteractionId);
         FRDomesticVRPConsentDetails frDomesticVRPDetails = toFRDomesticVRPConsentDetails(obDomesticVRPConsentRequest);
         log.trace("Converted OB Domestic VRP consent to: '{}'", frDomesticVRPDetails);
 
@@ -125,6 +129,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
+        log.debug("(store) Request to get a VRP consent with consentId '{}'", consentId);
         Optional<FRDomesticVRPConsent> optional = domesticVRPConsentRepository.findById(consentId);
         if (!optional.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment consent '" + consentId + "' " +
@@ -138,6 +143,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             String consentId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
+        log.debug("(store) Request to delete a VRP consent received, consentId '{}'", consentId);
         Optional<FRDomesticVRPConsent> optional = domesticVRPConsentRepository.findById(consentId);
         if (!optional.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment consent '" + consentId + "' " +
@@ -148,13 +154,50 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
     }
 
     @Override
-    public ResponseEntity<OBVRPFundsConfirmationResponse> domesticVrpConsentsFundsConfirmation(
+    public ResponseEntity domesticVrpConsentsFundsConfirmation(
             String consentId, String authorization, String xJwsSignature,
             OBVRPFundsConfirmationRequest obVRPFundsConfirmationRequest, String xFapiAuthDate,
             String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        return new ResponseEntity<OBVRPFundsConfirmationResponse>(HttpStatus.NOT_IMPLEMENTED);
+        log.debug("(store) Request to get a VRP funds confirmation, consentId '{}'", consentId);
+        Optional<FRDomesticVRPConsent> optional = domesticVRPConsentRepository.findById(consentId);
+        if (!optional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment consent '" + consentId + "' " +
+                    "to confirm funds can't be found");
+        }
+        FRDomesticVRPConsent domesticVrpConsent = optional.get();
+        if (!domesticVrpConsent.getStatus().equals(ConsentStatusCode.AUTHORISED)) {
+            throw new OBErrorResponseException(
+                    HttpStatus.BAD_REQUEST,
+                    OBRIErrorResponseCategory.REQUEST_INVALID,
+                    OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consentId)
+            );
+        }
+
+        // Check if funds are available on the account selected in consent
+        boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(
+                domesticVrpConsent.getAccountId(),
+                obVRPFundsConfirmationRequest.getData().getInstructedAmount().getAmount());
+        OBVRPFundsConfirmationRequestData data = obVRPFundsConfirmationRequest.getData();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new OBVRPFundsConfirmationResponse()
+                        .data(new OBVRPFundsConfirmationResponseData()
+                                .fundsConfirmationId(UUID.randomUUID().toString())
+                                .consentId(consentId)
+                                .creationDateTime(DateTime.now())
+                                .reference(data.getReference())
+                                .fundsAvailableResult(new OBPAFundsAvailableResult1()
+                                        .fundsAvailable(
+                                                areFundsAvailable
+                                                        ? OBPAFundsAvailableResult1.FundsAvailableEnum.AVAILABLE
+                                                        : OBPAFundsAvailableResult1.FundsAvailableEnum.NOTAVAILABLE
+                                        )
+                                        .fundsAvailableDateTime(DateTime.now())
+                                )
+                                .instructedAmount(data.getInstructedAmount()))
+                );
     }
 
     private OBDomesticVRPConsentResponse packageResponse(FRDomesticVRPConsent frDomesticVRPConsent) {

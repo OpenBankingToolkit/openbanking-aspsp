@@ -34,12 +34,14 @@ import uk.org.openbanking.datamodel.payment.OBRisk1;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Slf4j
 public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<DomesticVrpPaymentsEndpointWrapper, DomesticVrpPaymentsEndpointWrapper.DomesticVrpPaymentRestEndpointContent> {
 
     private FRDomesticVRPConsent consent;
     private final OBRisk1Validator riskValidator;
+    private boolean isFundsConfirmationRequest;
 
     public DomesticVrpPaymentsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
                                               TppStoreService tppStoreService,
@@ -53,6 +55,12 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         return this;
     }
 
+    public DomesticVrpPaymentsEndpointWrapper isFundsConfirmationRequest(boolean isFundsConfirmationRequest) {
+        this.isFundsConfirmationRequest = isFundsConfirmationRequest;
+        return this;
+    }
+
+
     @Override
     protected ResponseEntity run(DomesticVrpPaymentRestEndpointContent main) throws OBErrorException, JsonProcessingException {
         return main.run(oAuth2ClientId);
@@ -61,21 +69,21 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
     @Override
     protected void applyFilters() throws OBErrorException {
         super.applyFilters();
-
-        verifyAccessToken(Collections.singletonList(OpenBankingConstants.Scope.PAYMENTS),
-                Arrays.asList(
-                        OIDCConstants.GrantType.CLIENT_CREDENTIAL,
-                        OIDCConstants.GrantType.AUTHORIZATION_CODE // for funds confirmation
-                )
-        );
-
+        List grantTypes = Arrays.asList(OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        // the grant type for funds confirmation endpoint is different than the others payment endpoints
+        if (isFundsConfirmationRequest) {
+            grantTypes = Arrays.asList(
+                    OIDCConstants.GrantType.AUTHORIZATION_CODE
+            );
+        }
+        verifyAccessToken(Arrays.asList(OpenBankingConstants.Scope.PAYMENTS), grantTypes);
         verifyMatlsFromAccessToken();
     }
 
-    public void validateRisk(OBRisk1 risk) throws OBErrorException{
-        if(riskValidator != null) {
+    public void validateRisk(OBRisk1 risk) throws OBErrorException {
+        if (riskValidator != null) {
             riskValidator.validate(risk);
-        }else{
+        } else {
             String errorString = "validatePaymentCodeContext called but no validator present";
             log.error(errorString);
             throw new NullPointerException(errorString);

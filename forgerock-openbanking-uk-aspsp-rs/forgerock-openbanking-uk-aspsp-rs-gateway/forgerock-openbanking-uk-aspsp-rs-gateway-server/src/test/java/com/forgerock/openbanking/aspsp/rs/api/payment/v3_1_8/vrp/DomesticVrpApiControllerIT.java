@@ -131,7 +131,7 @@ public class DomesticVrpApiControllerIT {
         assertThat(response.getBody()).isEqualTo(rsStoreResponse);
     }
 
-    private FRDomesticVRPConsent aValidFRDomesticVRPConsent(){
+    private FRDomesticVRPConsent aValidFRDomesticVRPConsent() {
         return JMockData.mock(FRDomesticVRPConsent.class);
     }
 
