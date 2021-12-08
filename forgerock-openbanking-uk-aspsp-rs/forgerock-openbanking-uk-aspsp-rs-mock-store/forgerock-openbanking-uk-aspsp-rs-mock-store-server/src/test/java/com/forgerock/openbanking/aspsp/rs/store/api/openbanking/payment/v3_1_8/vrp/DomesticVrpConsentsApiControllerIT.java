@@ -22,10 +22,14 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_8.vrp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.DomesticVRPConsentRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsentDetails;
@@ -53,9 +57,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.vrp.*;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.*;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toFRDomesticVRPConsentDetails;
@@ -93,6 +99,8 @@ public class DomesticVrpConsentsApiControllerIT {
 
     @MockBean
     private FundsAvailabilityService fundsAvailabilityService;
+    @MockBean
+    private FRAccountRepository accountRepository;
 
     @MockBean
     private TppRepository tppRepository;
@@ -228,7 +236,14 @@ public class DomesticVrpConsentsApiControllerIT {
                 FRReadRefundAccount.NO, ConsentStatusCode.AUTHORISED
         );
         given(fundsAvailabilityService.isFundsAvailable(any(), any())).willReturn(true);
-
+        FRAccountIdentifier accountIdentifier = consent.getVrpDetails().getData().getInitiation().getDebtorAccount();
+        given(accountRepository.findByUserID(any())).willReturn(Collections.singletonList(
+                FRAccount.builder()
+                        .account(FRFinancialAccount.builder()
+                                .accounts(Collections.singletonList(accountIdentifier))
+                                .build())
+                        .id("111").build()
+        ));
         // When
         HttpResponse<OBVRPFundsConfirmationResponse> response = Unirest.post(
                         RS_STORE_URL + port + CONTEXT_PATH + consent.getId() + "/funds-confirmation"
@@ -268,7 +283,15 @@ public class DomesticVrpConsentsApiControllerIT {
                 request.getData().getConsentId(),
                 FRReadRefundAccount.NO, ConsentStatusCode.AUTHORISED
         );
-
+        given(fundsAvailabilityService.isFundsAvailable(any(), any())).willReturn(false);
+        FRAccountIdentifier accountIdentifier = consent.getVrpDetails().getData().getInitiation().getDebtorAccount();
+        given(accountRepository.findByUserID(any())).willReturn(Collections.singletonList(
+                FRAccount.builder()
+                        .account(FRFinancialAccount.builder()
+                                .accounts(Collections.singletonList(accountIdentifier))
+                                .build())
+                        .id("111").build()
+        ));
         // When
         HttpResponse<OBVRPFundsConfirmationResponse> response = Unirest.post(
                         RS_STORE_URL + port + CONTEXT_PATH + consent.getId() + "/funds-confirmation"
@@ -375,6 +398,7 @@ public class DomesticVrpConsentsApiControllerIT {
         FRDomesticVRPConsent consent = JMockData.mock(FRDomesticVRPConsent.class);
         consent.setVrpDetails(details);
         consent.getVrpDetails().getData().setReadRefundAccount(frReadRefundAccount);
+        consent.getVrpDetails().getData().getInitiation().setDebtorAccount(aValidFRAccountIdentifier());
         consent.setId(consentId);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
         consent.setStatus(consentStatusCode);
