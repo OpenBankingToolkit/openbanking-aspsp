@@ -33,7 +33,6 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.payment.Co
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsentDetails;
 import com.forgerock.openbanking.common.services.openbanking.FundsAvailabilityService;
-import com.forgerock.openbanking.common.services.store.account.AccountStoreServiceImpl;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
@@ -73,8 +72,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
     public DomesticVrpConsentsApiController(
             DomesticVRPConsentRepository domesticVRPConsentRepository, TppRepository tppRepository,
             ResourceLinkService resourceLinkService, FundsAvailabilityService fundsAvailabilityService,
-            ConsentMetricService consentMetricService,
-            FRAccountRepository accountsRepository, FRAccountRepository accountRepository) {
+            ConsentMetricService consentMetricService, FRAccountRepository accountRepository) {
         this.domesticVRPConsentRepository = domesticVRPConsentRepository;
         this.tppRepository = tppRepository;
         this.resourceLinkService = resourceLinkService;
@@ -177,7 +175,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
         FRDomesticVRPConsent domesticVrpConsent = optional.get();
         if (!domesticVrpConsent.getStatus().equals(ConsentStatusCode.AUTHORISED)) {
             log.error("(store) Funds confirmation for VRP payment consent Id '{}, with status '{}' can't be requested" +
-                    " because the consent status hasn't '{}'", consentId, domesticVrpConsent.getStatus().getValue(),
+                            " because the consent status hasn't '{}'", consentId, domesticVrpConsent.getStatus().getValue(),
                     ConsentStatusCode.AUTHORISED.getValue());
             throw new OBErrorResponseException(
                     HttpStatus.BAD_REQUEST,
@@ -194,9 +192,9 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                         a -> a.getIdentification().equals(accountIdentification)
                 ).findFirst().isPresent()
         ).findFirst();
-        if(!accountOptional.isPresent()){
+        if (!accountOptional.isPresent()) {
             log.warn("(store) VRP consent '{}', debtor account with identitication '{}' can't be found", consentId, accountIdentification);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("VRP consent '"+ consentId +"', debtor account with identitication '" + accountIdentification +
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("VRP consent '" + consentId + "', debtor account with identitication '" + accountIdentification +
                     "' to confirm funds can't be found");
         }
         boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(
