@@ -43,15 +43,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class FRPeriodicLimits {
-    @JsonProperty("Amount") // JSON format required for RCS UI (see AccountWithBalance within ConsentDetails objects)
     private String amount;
-    @JsonProperty("Currency")
     private String currency;
-    @JsonProperty("PeriodType")
     private FRPeriodicLimits.PeriodTypeEnum periodType;
-    @JsonProperty("PeriodAlignment")
     private FRPeriodicLimits.PeriodAlignmentEnum periodAlignment;
-    @JsonProperty("SupplementaryData")
     private FRSupplementaryData supplementaryData;
     /**
      * ^ Period type for this period limit

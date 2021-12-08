@@ -96,7 +96,7 @@ public class RCSAccountDetailsApi implements RCSDetailsApi {
                 .username(username)
                 .logo(tpp.getLogo())
                 .clientId(clientId)
-                .aispName(accountRequest.getAispName())
+                .pispName(accountRequest.getAispName())
                 .expiredDate(accountRequest.getExpirationDateTime())
                 .build());
     }

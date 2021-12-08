@@ -21,15 +21,12 @@
 package com.forgerock.openbanking.common.model.rcs.consentdetails;
 
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
+import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPControlParameters;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
-import uk.org.openbanking.datamodel.account.OBExternalPermissions1Code;
-
-import java.util.List;
 
 /**
  * Models the consent data that is used for
@@ -38,25 +35,22 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AccountsConsentDetails extends ConsentDetails {
-
-    private List<OBExternalPermissions1Code> permissions;
-    private DateTime fromTransaction;
-    private DateTime toTransaction;
-
+public class DomesticVrpPaymentConsentDetails extends ConsentDetails {
     protected String decisionApiUri;
-
-    protected List<AccountWithBalance> accounts;
     protected String username;
     protected String logo;
     protected String clientId;
+    protected String merchantName;
     protected String pispName;
-    protected DateTime expiredDate;
+    protected String aspspName;
+    protected FRAccountIdentifier debtorAccount;
+    protected FRAccountIdentifier creditorAccount;
+    protected String paymentReference;
+    protected String debtorReference;
+    protected FRDomesticVRPControlParameters controlParameters;
 
     @Override
     public IntentType getIntentType() {
-        return IntentType.ACCOUNT_ACCESS_CONSENT;
+        return IntentType.DOMESTIC_VRP_PAYMENT_CONSENT;
     }
-
-
 }

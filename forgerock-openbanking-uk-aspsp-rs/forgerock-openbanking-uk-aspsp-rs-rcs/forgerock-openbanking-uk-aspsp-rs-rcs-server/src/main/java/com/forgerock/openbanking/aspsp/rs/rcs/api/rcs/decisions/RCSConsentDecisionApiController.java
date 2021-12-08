@@ -105,7 +105,7 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
      * @throws OBErrorException
      */
     @Override
-    public ResponseEntity decisionAccountSharing(
+    public ResponseEntity decision(
             @RequestBody String consentDecisionSerialised,
             @CookieValue(value = "${am.cookie.name}") String ssoToken) throws OBErrorException {
         log.debug("decisionAccountSharing() consentDecisionSerialised is {}", consentDecisionSerialised);
@@ -237,10 +237,7 @@ public class RCSConsentDecisionApiController implements RCSConsentDecisionApi {
             } catch (ParseException e) {
                 log.error("Could not parse the JWT", e);
                 throw new OBErrorException(OBRIErrorType.RCS_CONSENT_REQUEST_FORMAT);
-            } /* catch (InvalidTokenException e) {
-            log.error("Remote consent request invalid", e);
-            throw new OBErrorException(OBRIErrorType.RCS_CONSENT_REQUEST_INVALID, e.getMessage());
-            } */ catch (IOException e) {
+            } catch (IOException e) {
                 log.error("Remote consent decisions invalid", e);
                 throw new OBErrorException(OBRIErrorType.RCS_CONSENT_DECISIONS_FORMAT, e.getMessage());
             }

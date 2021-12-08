@@ -119,6 +119,10 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
     ) throws OBErrorResponseException {
         log.debug("Request to get a VRP funds confirmation, consentId '{}'", consentId);
         if (!consentId.equals(obVRPFundsConfirmationRequest.getData().getConsentId())) {
+            log.error(
+                    "The consent ID '{}' path parameter does not match with the consent ID '{}' requested to confirm the funds.",
+                    consentId, obVRPFundsConfirmationRequest.getData().getConsentId()
+            );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("The consent ID '" + consentId +
                     "' path parameter does not match with the consent ID '" +
                     obVRPFundsConfirmationRequest.getData().getConsentId() + "' requested to confirm the funds.");

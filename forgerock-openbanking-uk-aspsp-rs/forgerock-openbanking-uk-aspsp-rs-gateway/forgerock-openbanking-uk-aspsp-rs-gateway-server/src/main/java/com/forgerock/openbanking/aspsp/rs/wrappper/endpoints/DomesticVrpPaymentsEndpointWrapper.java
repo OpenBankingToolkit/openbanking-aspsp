@@ -68,7 +68,6 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
 
     @Override
     protected void applyFilters() throws OBErrorException {
-        super.applyFilters();
         List grantTypes = Arrays.asList(OIDCConstants.GrantType.CLIENT_CREDENTIAL);
         // the grant type for funds confirmation endpoint is different than the others payment endpoints
         if (isFundsConfirmationRequest) {

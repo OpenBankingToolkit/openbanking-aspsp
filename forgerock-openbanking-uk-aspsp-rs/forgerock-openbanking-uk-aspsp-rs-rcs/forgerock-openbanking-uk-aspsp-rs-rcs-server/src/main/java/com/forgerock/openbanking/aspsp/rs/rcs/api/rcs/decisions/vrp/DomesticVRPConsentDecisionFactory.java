@@ -20,15 +20,29 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.vrp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
+import com.forgerock.openbanking.common.services.store.vrp.DomesticVrpPaymentConsentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
 public class DomesticVRPConsentDecisionFactory {
+    private DomesticVrpPaymentConsentService consentService;
+    private ObjectMapper objectMapper;
+
+    public DomesticVRPConsentDecisionFactory(
+            DomesticVrpPaymentConsentService consentService,
+            ObjectMapper objectMapper
+    ) {
+        this.consentService = consentService;
+        this.objectMapper = objectMapper;
+    }
 
     public ConsentDecisionDelegate create(final String intentId) {
-        return new DomesticVRPConsentDecisionDelegate();
+        FRDomesticVRPConsent consent = consentService.getVrpPayment(intentId);
+        return new DomesticVRPConsentDecisionDelegate(consent, consentService, objectMapper);
     }
 }

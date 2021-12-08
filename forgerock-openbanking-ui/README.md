@@ -1,7 +1,13 @@
 ## Run the app
 - bank (default angular app)
 - manual-onboarding
-### Run local app
+### Run local bank app
+```shell
+# bank app
+npm run build.bank.themes
+npm run serve.bank.local
+```
+### Run other scripts (@see package.json)
 - `npm run build.{app/project}.themes`
 - `npm run serve.{app/project}`
 ```shell

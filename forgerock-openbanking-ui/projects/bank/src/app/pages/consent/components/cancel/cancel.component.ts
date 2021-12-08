@@ -29,7 +29,7 @@ export class CancelComponent implements OnInit {
         type: ItemType.STRING,
         payload: {
           label: 'COMPONENT.CANCEL.APPLICATION',
-          value: this.response.aispName,
+          value: this.response.pispName,
           cssClass: 'cof-merchantName'
         }
       }

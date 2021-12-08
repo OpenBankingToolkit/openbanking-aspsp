@@ -18,9 +18,7 @@ export class VrpPaymentComponent implements OnInit {
   constructor(private translate: TranslateService) {
   }
 
-  form: FormGroup = new FormGroup({
-    selectedAccount: new FormControl('', Validators.required)
-  });
+  form: FormGroup = new FormGroup({});
 
   @Input() response: ApiResponses.ConsentDetailsResponse;
   _loading = false;
@@ -40,90 +38,108 @@ export class VrpPaymentComponent implements OnInit {
       return;
     }
     // PAYER ITEMS
-    this.payerItems.push({
-      type: ItemType.VRP_ACCOUNT_NUMBER,
-      payload: {
-        sortCodeLabel: 'CONSENT.VRP-PAYMENT.ACCOUNT_SORT_CODE',
-        accountNumberLabel: 'CONSENT.VRP-PAYMENT.ACCOUNT_NUMBER',
-        account: this.response.debtorAccount.account.Account[0],
-        cssClass: 'vrp-payment-payer-account'
+    if (_get(this.response, 'debtorAccount')) {
+      if (_get(this.response, 'debtorAccount.Name')) {
+        this.payerItems.push({
+          type: ItemType.STRING,
+          payload: {
+            label: 'CONSENT.VRP-PAYMENT.NAME',
+            value: this.response.debtorAccount.Name,
+            cssClass: 'vrp-payment-debtorAccount-Name'
+          }
+        });
       }
-    });
+      this.payerItems.push({
+        type: ItemType.VRP_ACCOUNT_NUMBER,
+        payload: {
+          sortCodeLabel: 'CONSENT.VRP-PAYMENT.ACCOUNT_SORT_CODE',
+          accountNumberLabel: 'CONSENT.VRP-PAYMENT.ACCOUNT_NUMBER',
+          account: this.response.debtorAccount,
+          cssClass: 'vrp-payment-payer-account'
+        }
+      });
+    }
     // PAYEE ITEMS
-    this.payeeItems.push({
-      type: ItemType.STRING,
-      payload: {
-        label: 'CONSENT.VRP-PAYMENT.ASPSP_NAME',
-        value: this.response.aspspName,
-        cssClass: 'vrp-payment-aspspName'
-      }
-    });
+    if (_get(this.response, 'aspspName')) {
+      this.payeeItems.push({
+        type: ItemType.STRING,
+        payload: {
+          label: 'CONSENT.VRP-PAYMENT.ASPSP_NAME',
+          value: this.response.aspspName,
+          cssClass: 'vrp-payment-aspspName'
+        }
+      });
+    }
     this.payeeItems.push({
       type: ItemType.STRING,
       payload: {
         label: 'CONSENT.VRP-PAYMENT.PAYEE_NAME',
-        value: this.response.aispName,
-        cssClass: 'vrp-payment-asipName'
+        value: this.response.pispName,
+        cssClass: 'vrp-payment-psipName'
       }
     });
-    this.payeeItems.push({
-      type: ItemType.VRP_ACCOUNT_NUMBER,
-      payload: {
-        sortCodeLabel: 'CONSENT.VRP-PAYMENT.ACCOUNT_SORT_CODE',
-        accountNumberLabel: 'CONSENT.VRP-PAYMENT.ACCOUNT_NUMBER',
-        account: this.response.CreditorAccount.account.Account[0],
-        cssClass: 'vrp-payment-payee-account'
-      }
-    });
+    if (_get(this.response, 'creditorAccount')) {
+      this.payeeItems.push({
+        type: ItemType.VRP_ACCOUNT_NUMBER,
+        payload: {
+          sortCodeLabel: 'CONSENT.VRP-PAYMENT.ACCOUNT_SORT_CODE',
+          accountNumberLabel: 'CONSENT.VRP-PAYMENT.ACCOUNT_NUMBER',
+          account: this.response.creditorAccount,
+          cssClass: 'vrp-payment-payee-account'
+        }
+      });
+    }
     // Control parameter items
-    this.controlItems.push({
-      type: ItemType.STRING,
-      payload: {
-        label: 'CONSENT.VRP-PAYMENT.REFERENCE',
-        value: this.response.RemittanceInformation.Reference,
-        cssClass: 'vrp-payment-payee-identification'
-      }
-    });
-    this.controlItems.push({
-      type: ItemType.STRING,
-      payload: {
-        label: 'CONSENT.VRP-PAYMENT.DEBTOR_REF',
-        value: this.response.RemittanceInformation.Reference,
-        cssClass: 'vrp-payment-payee-identification'
-      }
-    });
-    if (_get(this.response, 'ControlParameters.PeriodicLimits[0]')) {
+    if (_get(this.response, 'paymentReference')) {
+      this.controlItems.push({
+        type: ItemType.STRING,
+        payload: {
+          label: 'CONSENT.VRP-PAYMENT.REFERENCE',
+          value: this.response.paymentReference,
+          cssClass: 'vrp-payment-payee-identification'
+        }
+      });
+      this.controlItems.push({
+        type: ItemType.STRING,
+        payload: {
+          label: 'CONSENT.VRP-PAYMENT.DEBTOR_REF',
+          value: this.response.debtorReference,
+          cssClass: 'vrp-payment-payee-identification'
+        }
+      });
+    }
+    if (_get(this.response, 'controlParameters.periodicLimits[0]')) {
       let periodicLimitsInstructedAmount = {
-        Amount: this.response.ControlParameters.PeriodicLimits[0].Amount,
-        Currency: this.response.ControlParameters.PeriodicLimits[0].Currency
+        Amount: this.response.controlParameters.periodicLimits[0].amount,
+        Currency: this.response.controlParameters.periodicLimits[0].currency
       }
       this.controlItems.push({
         type: ItemType.INSTRUCTED_AMOUNT,
         payload: {
           label: this.translate.instant('CONSENT.VRP-PAYMENT.MAX_AMOUNT_PERIOD_TYPE', {
-            periodType: this.response.ControlParameters.PeriodicLimits[0].PeriodType
+            periodType: this.response.controlParameters.periodicLimits[0].periodType
           }),
           amount: periodicLimitsInstructedAmount,
           cssClass: 'vrp-payment-maxAmountPeriod'
         }
       });
     }
-    if (_get(this.response, 'ControlParameters.MaximumIndividualAmount')) {
+    if (_get(this.response, 'controlParameters.maximumIndividualAmount')) {
       this.controlItems.push({
         type: ItemType.INSTRUCTED_AMOUNT,
         payload: {
           label: 'CONSENT.VRP-PAYMENT.MAX_AMOUNT_PER_PAYMENT',
-          amount: this.response.ControlParameters.MaximumIndividualAmount,
+          amount: this.response.controlParameters.maximumIndividualAmount,
           cssClass: 'vrp-payment-maxAmountPerPayment'
         }
       });
     }
-    if (_get(this.response, 'ControlParameters.ValidToDateTime')) {
+    if (_get(this.response, 'controlParameters.validToDateTime')) {
       this.controlItems.push({
         type: ItemType.DATE,
         payload: {
           label: 'CONSENT.VRP-PAYMENT.EXPIRE',
-          date: this.response.ControlParameters.ValidToDateTime,
+          date: this.response.controlParameters.validToDateTime,
           cssClass: 'vrp-payment-validToDateTime'
         }
       });
@@ -132,9 +148,7 @@ export class VrpPaymentComponent implements OnInit {
 
   submit(allowing = false) {
     this.formSubmit.emit({
-      decision: allowing ? ConsentDecision.ALLOW : ConsentDecision.DENY,
-      accountId: this.form.value.selectedAccount
+      decision: allowing ? ConsentDecision.ALLOW : ConsentDecision.DENY
     });
   }
-
 }

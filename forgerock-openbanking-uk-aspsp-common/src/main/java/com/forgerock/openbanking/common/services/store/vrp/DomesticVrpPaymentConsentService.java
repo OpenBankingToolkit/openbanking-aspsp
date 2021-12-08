@@ -31,7 +31,7 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class DomesticVrpPaymentConsentService implements VrpPaymentService<FRDomesticVRPConsent> {
 
-    private static final String BASE_RESOURCE_PATH = "/api/vrps/";
+    private static final String BASE_RESOURCE_PATH = "/api/domestic-vrp-payments/";
 
     @Value("${rs-store.base-url}")
     private String rsStoreRoot;

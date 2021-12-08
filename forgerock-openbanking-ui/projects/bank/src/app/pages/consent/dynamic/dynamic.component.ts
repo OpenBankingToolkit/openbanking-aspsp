@@ -106,7 +106,7 @@ export class DynamicComponent implements OnInit, OnChanges {
       case IntentType.FUNDS_CONFIRMATION_CONSENT:
         componentInstance = FundsConfirmationComponent;
         break;
-      case IntentType.VRP_PAYMENT_CONSENT:
+      case IntentType.DOMESTIC_VRP_PAYMENT_CONSENT:
         componentInstance = VrpPaymentComponent;
         break;
       default:

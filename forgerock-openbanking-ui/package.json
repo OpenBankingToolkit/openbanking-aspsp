@@ -17,6 +17,7 @@
     "build.bank.forgerock": "ng build --project=bank --prod --configuration=forgerock --output-path dist/forgerock --statsJson --extra-webpack-config webpack.extra.js",
     "build.bank.themes": "openbanking-ui-cli buildThemes --project bank",
     "build.bank.wiremock": "ng serve bank -c wiremock",
+    "build.bank.local": "ng serve bank -c local",
     "=================REGISTER APP=================": "",
     "bundleSize.manual-onboarding": "openbanking-ui-cli appSize --theme forgerock --project manual-onboarding",
     "serve.manual-onboarding": "ng serve manual-onboarding",

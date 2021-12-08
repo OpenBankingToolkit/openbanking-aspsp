@@ -1,4 +1,4 @@
-import { OBAccount2, OBActiveOrHistoricCurrencyAndAmount, OBCashBalance1 } from './ob';
+import {OBAccount2, OBActiveOrHistoricCurrencyAndAmount, OBCashAccount3, OBCashBalance1} from './ob';
 import { IntentType } from 'bank/src/app/types/IntentType';
 import { OBAccountPermissions } from 'bank/src/app/types/OBAccountPermissions';
 
@@ -21,7 +21,7 @@ export module ApiResponses {
     clientId: string;
     clientName: string;
     merchantName: string;
-    aispName: string;
+    pispName: string;
     aspspName?: string;
     // optional
     permissions?: OBAccountPermissions[];
@@ -30,16 +30,10 @@ export module ApiResponses {
     toTransaction?: string;
     instructedAmount?: OBActiveOrHistoricCurrencyAndAmount;
     account?: OBAccount2;
-    debtorAccount?: {
-      account: OBAccount2;
-    }; // vrp payment
-    CreditorAccount?: {
-      account: OBAccount2;
-    }; // vrp payment
-    RemittanceInformation?: { // vrp payment
-      Reference: string;
-    };
-    ControlParameters?:ControlParameters;
+    debtorAccount?: OBCashAccount3; // vrp payment
+    creditorAccount?: OBCashAccount3; // vrp payment
+    controlParameters?: ControlParameters; // vrp payment
+    debtorReference?: string; // vrp payment
     standingOrder?: {
       Frequency: string;
       Reference: string;
@@ -90,17 +84,17 @@ export class Rate {
 }
 
 export class ControlParameters {
-  ValidFromDateTime?: string;
-  ValidToDateTime?: string;
-  MaximumIndividualAmount?:OBActiveOrHistoricCurrencyAndAmount;
-  PeriodicLimits?: PeriodicLimits;
-  VRPType: string;
-  PSUAuthenticationMethods: string[]
+  validFromDateTime?: string;
+  validToDateTime?: string;
+  maximumIndividualAmount?:OBActiveOrHistoricCurrencyAndAmount;
+  periodicLimits?: PeriodicLimits;
+  vrpType: string;
+  psuAuthenticationMethods: string[]
 }
 
 export class PeriodicLimits {
-  PeriodType?: string;
-  PeriodAlignment?: string;
-  Amount?: number;
-  Currency?: string;
+  periodType?: string;
+  periodAlignment?: string;
+  amount?: number;
+  currency?: string;
 }

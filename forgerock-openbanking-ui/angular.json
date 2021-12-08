@@ -62,6 +62,14 @@
               "statsJson": true,
               "es5BrowserSupport": true
             },
+            "local": {
+              "fileReplacements": [
+                {
+                  "replace": "projects/bank/src/environments/environment.ts",
+                  "with": "projects/bank/src/environments/environment.local.ts"
+                }
+              ]
+            },
             "wiremock": {
               "fileReplacements": [
                 {
@@ -104,6 +112,9 @@
           "configurations": {
             "production": {
               "browserTarget": "bank:build:production"
+            },
+            "local": {
+              "browserTarget": "bank:build:local"
             },
             "wiremock": {
               "browserTarget": "bank:build:wiremock"

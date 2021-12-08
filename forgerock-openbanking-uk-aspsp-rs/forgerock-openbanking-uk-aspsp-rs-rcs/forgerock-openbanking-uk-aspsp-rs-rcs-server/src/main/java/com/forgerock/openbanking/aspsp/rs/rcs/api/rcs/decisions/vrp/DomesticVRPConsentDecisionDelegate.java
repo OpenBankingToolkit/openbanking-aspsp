@@ -20,8 +20,12 @@
  */
 package com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.vrp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
+import com.forgerock.openbanking.common.services.store.vrp.DomesticVrpPaymentConsentService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,23 +34,46 @@ import java.util.List;
 
 @Slf4j
 public class DomesticVRPConsentDecisionDelegate implements ConsentDecisionDelegate {
+    private DomesticVrpPaymentConsentService consentService;
+    private ObjectMapper objectMapper;
+    private FRDomesticVRPConsent consent;
+
+    public DomesticVRPConsentDecisionDelegate(
+            FRDomesticVRPConsent consent,
+            DomesticVrpPaymentConsentService consentService,
+            ObjectMapper objectMapper
+    ) {
+        this.consentService = consentService;
+        this.objectMapper = objectMapper;
+        this.consent = consent;
+    }
+
     @Override
     public String getTppIdBehindConsent() {
-        return null;
+        return consent.getPispId();
     }
 
     @Override
     public String getUserIDBehindConsent() {
-        return null;
+        return consent.getUserId();
     }
 
     @Override
     public void consentDecision(String consentDecisionSerialised, boolean decision) throws IOException, OBErrorException {
-
+        if (decision) {
+            log.debug("The current VRP payment consent: '{}' has been accepted by the PSU: {}", consent.getId(), consent.getUserId());
+            consent.setStatus(ConsentStatusCode.AUTHORISED);
+        } else {
+            log.debug("The current VRP payment consent: '{}' has been rejected by the PSU: {}", consent.getId(), consent.getUserId());
+            consent.setStatus(ConsentStatusCode.REJECTED);
+        }
+        consentService.updateVrpPayment(consent);
     }
 
     @Override
     public void autoaccept(List<FRAccount> accounts, String username) throws OBErrorException {
-
+        log.debug("The current VRP payment consent: '{}' has been accepted automatically for the user: {}", consent.getId(), consent.getUserId());
+        consent.setStatus(ConsentStatusCode.AUTHORISED);
+        consentService.updateVrpPayment(consent);
     }
 }
