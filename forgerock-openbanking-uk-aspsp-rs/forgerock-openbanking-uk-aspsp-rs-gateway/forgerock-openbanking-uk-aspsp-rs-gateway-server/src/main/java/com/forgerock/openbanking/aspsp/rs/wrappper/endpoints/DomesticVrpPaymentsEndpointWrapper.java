@@ -32,6 +32,8 @@ import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
@@ -110,6 +112,15 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         OBRisk1 consentRisk = toOBRisk1(frConsent.getRisk());
         if(!requestRisk.equals(consentRisk)){
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_RISK_DOESNT_MATCH_CONSENT);
+        }
+    }
+
+    public void checkCreditorAccountIsInInstructionIfNotInConsent(OBDomesticVRPRequest vrpRequest,
+                                                                  FRDomesticVRPConsent frConsent) throws OBErrorException {
+        if(frConsent.getVrpDetails().getData().getInitiation().getCreditorAccount() == null){
+            if(vrpRequest.getData().getInitiation().getCreditorAccount() == null){
+                throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
+            }
         }
     }
 
