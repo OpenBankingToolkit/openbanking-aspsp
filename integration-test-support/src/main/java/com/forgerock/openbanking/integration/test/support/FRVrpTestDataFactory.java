@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.persistence.vrp.testdata;
+package com.forgerock.openbanking.integration.test.support;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.github.jsonzou.jmockdata.JMockData;

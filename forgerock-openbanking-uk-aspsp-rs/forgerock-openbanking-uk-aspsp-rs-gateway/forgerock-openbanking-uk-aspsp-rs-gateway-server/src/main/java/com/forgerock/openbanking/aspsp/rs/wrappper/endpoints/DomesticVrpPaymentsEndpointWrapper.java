@@ -24,17 +24,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRWriteDomesticVRPDataInitiation;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
+import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
+
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBDomesticVRPInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBRisk1;
 
 @Slf4j
 public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<DomesticVrpPaymentsEndpointWrapper, DomesticVrpPaymentsEndpointWrapper.DomesticVrpPaymentRestEndpointContent> {
@@ -86,6 +92,24 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
             String errorString = "validatePaymentCodeContext called but no validator present";
             log.error(errorString);
             throw new NullPointerException(errorString);
+        }
+    }
+
+    public void checkRequestAndConsentInitiationMatch(OBDomesticVRPInitiation requestInitiation, FRDomesticVRPConsent consent)
+            throws OBErrorException {
+        FRWriteDomesticVRPDataInitiation consentFRInitiation = consent.getInitiation();
+        OBDomesticVRPInitiation consentOBInitiation = toOBDomesticVRPInitiation(consentFRInitiation);
+        if(!consentOBInitiation.equals(requestInitiation)){
+            throw new OBErrorException(OBRIErrorType.REQUEST_VRP_INITIATION_DOESNT_MATCH_CONSENT);
+        }
+    }
+
+    public void checkRequestAndConsentRiskMatch(OBDomesticVRPRequest request, FRDomesticVRPConsent frConsent)
+            throws OBErrorException {
+        OBRisk1 requestRisk = request.getRisk();
+        OBRisk1 consentRisk = toOBRisk1(frConsent.getRisk());
+        if(!requestRisk.equals(consentRisk)){
+            throw new OBErrorException(OBRIErrorType.REQUEST_VRP_RISK_DOESNT_MATCH_CONSENT);
         }
     }
 
