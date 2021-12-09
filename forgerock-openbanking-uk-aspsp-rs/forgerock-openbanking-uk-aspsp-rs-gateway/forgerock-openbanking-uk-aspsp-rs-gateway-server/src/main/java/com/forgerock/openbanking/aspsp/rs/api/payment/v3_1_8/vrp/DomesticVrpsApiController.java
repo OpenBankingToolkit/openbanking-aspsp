@@ -32,12 +32,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetails;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponse;
+import uk.org.openbanking.datamodel.vrp.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.Collections;
 
@@ -106,21 +105,24 @@ public class DomesticVrpsApiController implements DomesticVrpsApi{
             HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
         log.debug("domesticVrpPost() Recieved OBDomesticVrpRequest {}", obDomesticVRPRequest);
-
+        @NotNull @Valid OBDomesticVRPInitiation initiation = obDomesticVRPRequest.getData().getInitiation();
         String consentId = obDomesticVRPRequest.getData().getConsentId();
         log.debug("domesticVrpPost() consentId is {}", consentId);
-        // Need a payment service that gets 'payments' from the rs-store. Payments are actually consents poorly named
+        // Need a consent service that gets 'payments' from the rs-store. Payments are actually consents poorly named
         // :-( -> technical debt
         // TODO Change payments services to consent services?
-        FRDomesticVRPConsent payment = vrpPaymentConsentService.getVrpPayment(consentId);
+        FRDomesticVRPConsent consent = vrpPaymentConsentService.getVrpPayment(consentId);
 
         DomesticVrpPaymentsEndpointWrapper vrpPaymentsEndpointWrapper = rsEndpointWrapperService.vrpPaymentEndpoint();
         vrpPaymentsEndpointWrapper.authorization(authorization);
         vrpPaymentsEndpointWrapper.xFapiFinancialId(rsEndpointWrapperService.getRsConfiguration().financialId);
         vrpPaymentsEndpointWrapper.principal(principal);
+        vrpPaymentsEndpointWrapper.payment(consent);
         vrpPaymentsEndpointWrapper.filters(f -> {
             f.verifyJwsDetachedSignature(xJwsSignature, request);
             f.validateRisk(obDomesticVRPRequest.getRisk());
+            f.checkRequestAndConsentInitiationMatch(initiation, consent);
+            f.checkRequestAndConsentRiskMatch(obDomesticVRPRequest, consent);
         });
         ResponseEntity responseEntity =  vrpPaymentsEndpointWrapper.execute((String tppId) -> {
             HttpHeaders additionalHeaders = new HttpHeaders();

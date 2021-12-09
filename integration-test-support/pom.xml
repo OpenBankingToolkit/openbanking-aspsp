@@ -120,6 +120,10 @@
             <groupId>com.forgerock.spring.security</groupId>
             <artifactId>spring-security-multi-auth-starter</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.jsonzou</groupId>
+            <artifactId>jmockdata</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
