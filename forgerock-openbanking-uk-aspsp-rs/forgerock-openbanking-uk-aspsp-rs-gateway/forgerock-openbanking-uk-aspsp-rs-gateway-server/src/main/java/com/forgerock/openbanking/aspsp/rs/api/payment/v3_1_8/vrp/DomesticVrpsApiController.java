@@ -123,6 +123,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi{
             f.validateRisk(obDomesticVRPRequest.getRisk());
             f.checkRequestAndConsentInitiationMatch(initiation, consent);
             f.checkRequestAndConsentRiskMatch(obDomesticVRPRequest, consent);
+            f.checkCreditorAccountIsInInstructionIfNotInConsent(new OBDomesticVRPRequest(), consent);
         });
         ResponseEntity responseEntity =  vrpPaymentsEndpointWrapper.execute((String tppId) -> {
             HttpHeaders additionalHeaders = new HttpHeaders();

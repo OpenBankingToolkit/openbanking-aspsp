@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVRPCommonTestDataFactory;
@@ -130,5 +131,63 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
 
         // Then
         assertThat(exception.getObriErrorType()).isEqualTo(OBRIErrorType.REQUEST_VRP_INITIATION_DOESNT_MATCH_CONSENT);
+        assertThat(exception.getOBError().getErrorCode()).isEqualTo(OBStandardErrorCodes1.UK_OBIE_RESOURCE_CONSENT_MISMATCH.toString());
     }
+
+    /**
+     * If the CreditorAccount was not specified in the consent, the CreditorAccount must be specified in the
+     * instruction.
+     */
+    @Test
+    public void success_checkCreditorAccountIsInInstructionIfNotInConsent() throws OBErrorException {
+        // Given
+        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper =
+                new DomesticVrpPaymentsEndpointWrapper(endpointWrapperService, tppStoreService,
+                        riskValidator);
+            // Create the request data
+        OBDomesticVRPRequest vrpRequest = OBDomesticVRPRequestTestDataFactory.aValidOBDomesticVRPRequest();
+
+            // Create an FR Consent with slightly differing initiation data
+        FRDomesticVRPConsent frConsent = FRVrpTestDataFactory.aValidFRDomesticVRPConsent();
+        frConsent.getVrpDetails().getData().getInitiation().setCreditorAccount(null);
+
+
+        // When
+        domesticVrpPaymentsEndpointWrapper.checkCreditorAccountIsInInstructionIfNotInConsent(vrpRequest, frConsent);
+
+        // Then
+
+    }
+
+    /**
+     * If the CreditorAccount was not specified in the consent, the CreditorAccount must be specified in the
+     * instruction.
+     */
+    @Test
+    public void fail_checkCreditorAccountIsInInstructionIfNotInConsent() throws OBErrorException {
+        // Given
+        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper =
+                new DomesticVrpPaymentsEndpointWrapper(endpointWrapperService, tppStoreService,
+                        riskValidator);
+        // Create the request data
+        OBDomesticVRPRequest vrpRequest = OBDomesticVRPRequestTestDataFactory.aValidOBDomesticVRPRequest();
+        vrpRequest.getData().getInitiation().setCreditorAccount(null);
+
+        // Create an FR Consent with slightly differing initiation data
+        FRDomesticVRPConsent frConsent = FRVrpTestDataFactory.aValidFRDomesticVRPConsent();
+        frConsent.getVrpDetails().getData().getInitiation().setCreditorAccount(null);
+
+
+        // When
+        OBErrorException exception =
+                catchThrowableOfType(() ->
+                        domesticVrpPaymentsEndpointWrapper.checkCreditorAccountIsInInstructionIfNotInConsent(vrpRequest, frConsent),
+                        OBErrorException.class);
+
+        // Then
+        assertThat(exception.getObriErrorType()).isEqualTo(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
+        assertThat(exception.getOBError().getErrorCode()).isEqualTo(OBStandardErrorCodes1.UK_OBIE_RESOURCE_CONSENT_MISMATCH.toString());
+
+    }
+
 }
