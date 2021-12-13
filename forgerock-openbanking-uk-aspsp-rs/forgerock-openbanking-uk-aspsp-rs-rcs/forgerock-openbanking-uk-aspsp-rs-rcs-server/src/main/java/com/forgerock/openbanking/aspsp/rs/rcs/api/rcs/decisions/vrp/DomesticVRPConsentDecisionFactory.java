@@ -42,7 +42,7 @@ public class DomesticVRPConsentDecisionFactory {
     }
 
     public ConsentDecisionDelegate create(final String intentId) {
-        FRDomesticVRPConsent consent = consentService.getVrpPayment(intentId);
+        FRDomesticVRPConsent consent = consentService.getVrpPaymentConsent(intentId);
         return new DomesticVRPConsentDecisionDelegate(consent, consentService, objectMapper);
     }
 }

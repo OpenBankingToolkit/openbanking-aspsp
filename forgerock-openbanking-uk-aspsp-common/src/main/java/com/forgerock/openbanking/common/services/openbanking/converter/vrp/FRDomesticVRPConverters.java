@@ -30,6 +30,7 @@ import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInstruction;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequestData;
+import uk.org.openbanking.datamodel.vrp.namespace.OBVRPAuthenticationMethods;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toFRAccountIdentifier;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
@@ -77,8 +78,8 @@ public class FRDomesticVRPConverters {
 
 
 
-    public static FRDomesticVRPDataInitiation toFRDomesticVRPInitiation(OBDomesticVRPInitiation initiation) {
-        FRDomesticVRPDataInitiation frInitiation = FRWriteDomesticVRPDataInitiation.builder()
+    public static FRWriteDomesticVRPDataInitiation toFRDomesticVRPInitiation(OBDomesticVRPInitiation initiation) {
+        FRWriteDomesticVRPDataInitiation frInitiation = FRWriteDomesticVRPDataInitiation.builder()
                 .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
                 .creditorAgent(toFRFinancialAgent(initiation.getCreditorAgent()))

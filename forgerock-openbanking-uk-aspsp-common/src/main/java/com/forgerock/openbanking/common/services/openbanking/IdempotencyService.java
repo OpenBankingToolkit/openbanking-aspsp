@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.common.services.openbanking;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.*;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.VrpPaymentConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;

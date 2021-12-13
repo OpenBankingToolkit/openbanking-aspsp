@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RequestMapping(value = "/api/domestic-vrp-payments")
-public interface DomesticVrpPaymentApi {
+public interface DomesticVrpPaymentConsentApi {
 
     @RequestMapping(value = "/{consentId}",
             produces = { "application/json; charset=utf-8" },

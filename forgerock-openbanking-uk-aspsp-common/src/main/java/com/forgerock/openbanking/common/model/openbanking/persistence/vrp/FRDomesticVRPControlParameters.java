@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.vrp;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import lombok.AllArgsConstructor;
@@ -29,7 +28,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.DateTime;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 

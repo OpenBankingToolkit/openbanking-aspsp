@@ -21,7 +21,6 @@
 package com.forgerock.openbanking.common.services.store.vrp;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
-import com.forgerock.openbanking.common.services.store.vrp.VrpPaymentService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
-public class DomesticVrpPaymentConsentService implements VrpPaymentService<FRDomesticVRPConsent> {
+public class DomesticVrpPaymentConsentService implements VrpPaymentServiceConsent<FRDomesticVRPConsent> {
 
     private static final String BASE_RESOURCE_PATH = "/api/domestic-vrp-payments/";
 
@@ -43,15 +42,15 @@ public class DomesticVrpPaymentConsentService implements VrpPaymentService<FRDom
     }
 
     @Override
-    public FRDomesticVRPConsent getVrpPayment(String consentId) {
-        log.debug("Getting consent for {}", consentId);
+    public FRDomesticVRPConsent getVrpPaymentConsent(String consentId) {
+        log.debug("Getting VRP consent for {}", consentId);
         return restTemplate.getForObject(rsStoreRoot + BASE_RESOURCE_PATH + consentId,
                 FRDomesticVRPConsent.class);
     }
 
     @Override
-    public void updateVrpPayment(FRDomesticVRPConsent consent) {
-        log.debug("Update the consent in the store. {}", consent);
+    public void updateVrpPaymentConsent(FRDomesticVRPConsent consent) {
+        log.debug("Update the VRP consent in the store. {}", consent);
         restTemplate.put(rsStoreRoot + BASE_RESOURCE_PATH, consent);
     }
 }

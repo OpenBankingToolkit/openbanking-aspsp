@@ -18,21 +18,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.persistence.vrp;
+package com.forgerock.openbanking.common.services.store.vrp;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.vrp.namespace.OBVRPAuthenticationMethods;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.VrpPaymentConsent;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class FRDomesticVRPRequestData {
-    public String consentId;
-    public String psuAuthenticationMethod;
-    public FRWriteDomesticVRPDataInitiation initiation;
-    public FRDomesticVRPInstruction instruction;
+public interface VrpPaymentServiceConsent<T extends VrpPaymentConsent> {
+    /**
+     * Get payment consent by id
+     * @param paymentId Payment id
+     * @return Payment consent
+     */
+    T getVrpPaymentConsent(String paymentId);
+
+    /**
+     * Update payment consent
+     * @param payment Payment consent
+     */
+    void updateVrpPaymentConsent(T payment);
 }

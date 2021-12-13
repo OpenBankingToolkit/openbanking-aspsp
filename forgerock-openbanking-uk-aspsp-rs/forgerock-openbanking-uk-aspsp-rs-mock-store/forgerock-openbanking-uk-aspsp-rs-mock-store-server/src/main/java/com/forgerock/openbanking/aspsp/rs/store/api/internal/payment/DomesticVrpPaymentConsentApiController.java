@@ -36,13 +36,13 @@ import java.util.Optional;
 
 @Controller
 @Slf4j
-public class DomesticVrpPaymentApiController implements DomesticVrpPaymentApi {
+public class DomesticVrpPaymentConsentApiController implements DomesticVrpPaymentConsentApi {
 
     private final DomesticVRPConsentRepository consentRepository;
     private ConsentMetricService consentMetricService;
 
     @Autowired
-    public DomesticVrpPaymentApiController(
+    public DomesticVrpPaymentConsentApiController(
             DomesticVRPConsentRepository consentRepository, ConsentMetricService consentMetricService
     ) {
         this.consentRepository = consentRepository;
@@ -51,18 +51,18 @@ public class DomesticVrpPaymentApiController implements DomesticVrpPaymentApi {
 
     @Override
     public ResponseEntity get(String consentId) {
-        log.debug("Find VRP payment by id {}", consentId);
-        Optional<FRDomesticVRPConsent> byPaymentId = consentRepository.findById(consentId);
-        return byPaymentId.
+        log.debug("Find VRP consent by id {}", consentId);
+        Optional<FRDomesticVRPConsent> byConsentId = consentRepository.findById(consentId);
+        return byConsentId.
                 <ResponseEntity>map(ResponseEntity::ok)
                 .orElseGet(() ->
-                        ResponseEntity.status(HttpStatus.NOT_FOUND).body("Payment id '" + consentId + "' not found")
+                        ResponseEntity.status(HttpStatus.NOT_FOUND).body("Consent id '" + consentId + "' not found")
                 );
     }
 
     @Override
     public ResponseEntity<Collection<FRDomesticVRPConsent>> findByStatus(ConsentStatusCode status) {
-        log.debug("Find VRP payment by status {}", status);
+        log.debug("Find VRP consent by status {}", status);
         return new ResponseEntity<>(
                 consentRepository.findByStatus(status.toOBTransactionIndividualStatus1Code()), HttpStatus.OK
         );
@@ -70,7 +70,7 @@ public class DomesticVrpPaymentApiController implements DomesticVrpPaymentApi {
 
     @Override
     public ResponseEntity<FRDomesticVRPConsent> update(FRDomesticVRPConsent vrpConsent) {
-        log.debug("Update VRP payment {}", vrpConsent);
+        log.debug("Update VRP consent {}", vrpConsent);
         consentMetricService.sendConsentActivity(
                 new ConsentStatusEntry(vrpConsent.getId(), vrpConsent.getStatus().name())
         );

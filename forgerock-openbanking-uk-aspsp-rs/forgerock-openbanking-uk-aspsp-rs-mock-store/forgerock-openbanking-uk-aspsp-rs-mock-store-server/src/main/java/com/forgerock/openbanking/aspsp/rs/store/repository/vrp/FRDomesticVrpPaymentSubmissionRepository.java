@@ -18,42 +18,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.openbanking.persistence.payment;
+package com.forgerock.openbanking.aspsp.rs.store.repository.vrp;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
-import com.forgerock.openbanking.model.Tpp;
-import org.joda.time.DateTime;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVrpPaymentSubmission;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface VrpPaymentConsent {
-    void setPisp(Tpp tpp);
-
-    String getPispName();
-
-    String getId();
-
-    ConsentStatusCode getStatus();
-
-    void setStatus(ConsentStatusCode status);
-
-    Object getInitiation();
-
-    FRPaymentRisk getRisk();
-
-    String getAccountId();
-
-    void setAccountId(String accountId);
-
-    String getUserId();
-
-    void setUserId(String userId);
-
-    String getPispId();
-
-    DateTime getCreated();
-
-    DateTime getStatusUpdate();
-
-    default boolean isNew() {
-        return getCreated() == null;
-    }
+public interface FRDomesticVrpPaymentSubmissionRepository extends MongoRepository<FRDomesticVrpPaymentSubmission, String> {
 }

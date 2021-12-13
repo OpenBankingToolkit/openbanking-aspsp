@@ -20,27 +20,34 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.vrp;
 
-import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
 import com.forgerock.openbanking.common.model.version.OBVersion;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.domain.Persistable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class FRDomesticVRPRequest {
-    public FRDomesticVRPRequestData data;
-    public FRPaymentRisk risk;
+@Data
+@Document
+public class FRDomesticVrpPaymentSubmission implements PaymentSubmission {
+    @Id
+    @Indexed
+    public String id;
+
+    public FRDomesticVRPRequest domesticVrpPayment;
+
+    @CreatedDate
+    public Date created;
+    @LastModifiedDate
+    public Date updated;
+
+    public String idempotencyKey;
+
+    public OBVersion obVersion;
 }

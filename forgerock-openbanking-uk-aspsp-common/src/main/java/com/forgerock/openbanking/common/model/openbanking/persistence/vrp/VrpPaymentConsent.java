@@ -21,26 +21,40 @@
 package com.forgerock.openbanking.common.model.openbanking.persistence.vrp;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
-import com.forgerock.openbanking.common.model.version.OBVersion;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
+import com.forgerock.openbanking.model.Tpp;
 import org.joda.time.DateTime;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.domain.Persistable;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+public interface VrpPaymentConsent {
+    void setPisp(Tpp tpp);
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class FRDomesticVRPRequest {
-    public FRDomesticVRPRequestData data;
-    public FRPaymentRisk risk;
+    String getPispName();
+
+    String getId();
+
+    ConsentStatusCode getStatus();
+
+    void setStatus(ConsentStatusCode status);
+
+    Object getInitiation();
+
+    FRPaymentRisk getRisk();
+
+    String getAccountId();
+
+    void setAccountId(String accountId);
+
+    String getUserId();
+
+    void setUserId(String userId);
+
+    String getPispId();
+
+    DateTime getCreated();
+
+    DateTime getStatusUpdate();
+
+    default boolean isNew() {
+        return getCreated() == null;
+    }
 }

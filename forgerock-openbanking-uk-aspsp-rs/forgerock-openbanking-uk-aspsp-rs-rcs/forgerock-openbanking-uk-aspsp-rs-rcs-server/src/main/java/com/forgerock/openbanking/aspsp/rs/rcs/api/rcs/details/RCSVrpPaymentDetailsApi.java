@@ -61,7 +61,7 @@ public class RCSVrpPaymentDetailsApi implements RCSDetailsApi {
         log.debug("=> The VRP payment consent id '{}'", consentId);
 
         log.debug("Populate the model with the VRP payment and consent data");
-        FRDomesticVRPConsent vrpConsent = consentService.getVrpPayment(consentId);
+        FRDomesticVRPConsent vrpConsent = consentService.getVrpPaymentConsent(consentId);
         if (vrpConsent == null) {
             log.error("VRP Consent ID '{}' not found", consentId);
             return rcsErrorService.invalidConsentError(
@@ -80,7 +80,7 @@ public class RCSVrpPaymentDetailsApi implements RCSDetailsApi {
         verifyTppCreatedPayment(clientId, tpp.getClientId(), consentId);
         //Associate the vrp payment to this user
         vrpConsent.setUserId(username);
-        consentService.updateVrpPayment(vrpConsent);
+        consentService.updateVrpPaymentConsent(vrpConsent);
         FRDomesticVRPConsentDetailsData data = vrpConsent.getVrpDetails().getData();
         return ResponseEntity.ok(
                 DomesticVrpPaymentConsentDetails.builder()

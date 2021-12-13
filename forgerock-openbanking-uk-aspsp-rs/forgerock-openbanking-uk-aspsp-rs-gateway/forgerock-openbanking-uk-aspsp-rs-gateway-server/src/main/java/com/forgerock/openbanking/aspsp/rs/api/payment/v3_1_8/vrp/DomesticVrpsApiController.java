@@ -43,7 +43,7 @@ import java.util.Collections;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
 @Controller("DomesticVrpsApiV3.1.8")
 @Slf4j
-public class DomesticVrpsApiController implements DomesticVrpsApi{
+public class DomesticVrpsApiController implements DomesticVrpsApi {
 
 
     private final DomesticVrpPaymentConsentService vrpPaymentConsentService;
@@ -111,8 +111,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi{
         // Need a consent service that gets 'payments' from the rs-store. Payments are actually consents poorly named
         // :-( -> technical debt
         // TODO Change payments services to consent services?
-        FRDomesticVRPConsent consent = vrpPaymentConsentService.getVrpPayment(consentId);
-
+        FRDomesticVRPConsent consent = vrpPaymentConsentService.getVrpPaymentConsent(consentId);
         DomesticVrpPaymentsEndpointWrapper vrpPaymentsEndpointWrapper = rsEndpointWrapperService.vrpPaymentEndpoint();
         vrpPaymentsEndpointWrapper.authorization(authorization);
         vrpPaymentsEndpointWrapper.xFapiFinancialId(rsEndpointWrapperService.getRsConfiguration().financialId);
@@ -123,9 +122,10 @@ public class DomesticVrpsApiController implements DomesticVrpsApi{
             f.validateRisk(obDomesticVRPRequest.getRisk());
             f.checkRequestAndConsentInitiationMatch(initiation, consent);
             f.checkRequestAndConsentRiskMatch(obDomesticVRPRequest, consent);
-            f.checkCreditorAccountIsInInstructionIfNotInConsent(new OBDomesticVRPRequest(), consent);
+            f.checkControlParameters(obDomesticVRPRequest, consent);
+            f.checkCreditorAccountIsInInstructionIfNotInConsent(obDomesticVRPRequest, consent);
         });
-        ResponseEntity responseEntity =  vrpPaymentsEndpointWrapper.execute((String tppId) -> {
+        ResponseEntity responseEntity = vrpPaymentsEndpointWrapper.execute((String tppId) -> {
             HttpHeaders additionalHeaders = new HttpHeaders();
             additionalHeaders.add("x-ob-client-id", tppId);
             return rsStoreGateway.toRsStore(

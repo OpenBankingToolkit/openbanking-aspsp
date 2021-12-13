@@ -18,22 +18,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.services.store.vrp;
+package com.forgerock.openbanking.common.model.openbanking.persistence.vrp;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.VrpPaymentConsent;
+import java.util.Date;
 
-public interface VrpPaymentService<T extends VrpPaymentConsent>{
-    /**
-     * Get payment consent by id
-     * @param paymentId Payment id
-     * @return Payment consent
-     */
-    T getVrpPayment(String paymentId);
-
-    /**
-     * Update payment consent
-     * @param payment Payment consent
-     */
-    void updateVrpPayment(T payment);
+public interface VrpPayment {
+    String getId();
+    Date getCreated();
+    default String getIdempotencyKey() {
+        return null; // Not used on V1.1, V2.0
+    }
 }

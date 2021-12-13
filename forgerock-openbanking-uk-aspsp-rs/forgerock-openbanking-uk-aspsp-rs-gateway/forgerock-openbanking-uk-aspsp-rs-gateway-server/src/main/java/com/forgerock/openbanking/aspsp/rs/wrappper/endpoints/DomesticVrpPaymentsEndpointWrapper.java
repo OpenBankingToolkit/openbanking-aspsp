@@ -24,16 +24,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPControlParameters;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRWriteDomesticVRPDataInitiation;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
+import com.forgerock.openbanking.model.error.VRPErrorControlParametersFields;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import uk.org.openbanking.datamodel.error.OBError1;
-import uk.org.openbanking.datamodel.error.OBStandardErrorCodes1;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
@@ -97,34 +97,62 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         }
     }
 
+    // The Initiation section must matches the values specified in the consent.
     public void checkRequestAndConsentInitiationMatch(OBDomesticVRPInitiation requestInitiation, FRDomesticVRPConsent consent)
             throws OBErrorException {
         FRWriteDomesticVRPDataInitiation consentFRInitiation = consent.getInitiation();
         OBDomesticVRPInitiation consentOBInitiation = toOBDomesticVRPInitiation(consentFRInitiation);
-        if(!consentOBInitiation.equals(requestInitiation)){
+        if (!consentOBInitiation.equals(requestInitiation)) {
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_INITIATION_DOESNT_MATCH_CONSENT);
         }
     }
 
+    // The Risk section must matches the values specified in the consent.
     public void checkRequestAndConsentRiskMatch(OBDomesticVRPRequest request, FRDomesticVRPConsent frConsent)
             throws OBErrorException {
         OBRisk1 requestRisk = request.getRisk();
         OBRisk1 consentRisk = toOBRisk1(frConsent.getRisk());
-        if(!requestRisk.equals(consentRisk)){
+        if (!requestRisk.equals(consentRisk)) {
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_RISK_DOESNT_MATCH_CONSENT);
         }
     }
 
+    // If the CreditorAccount was not specified in the consent, the CreditorAccount must be specified in the instruction
     public void checkCreditorAccountIsInInstructionIfNotInConsent(OBDomesticVRPRequest vrpRequest,
                                                                   FRDomesticVRPConsent frConsent) throws OBErrorException {
-        if(frConsent.getVrpDetails().getData().getInitiation().getCreditorAccount() == null){
-            if(vrpRequest.getData().getInitiation().getCreditorAccount() == null){
+        if (frConsent.getVrpDetails().getData().getInitiation().getCreditorAccount() == null) {
+            if (vrpRequest.getData().getInitiation().getCreditorAccount() == null) {
                 throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
             }
+        }
+    }
+
+    // When a payment would breach a limitation set by one or more ControlParameters,
+    // the ASPSP must return an error with code UK.OBIE.Rules.FailsControlParameters
+    // and pass in the control parameter field that caused the error
+    public void checkControlParameters(
+            OBDomesticVRPRequest vrpRequest, FRDomesticVRPConsent frConsent
+    ) throws OBErrorException {
+        // TODO Shall we validate the instructed amount against the control parameter periodic limits?
+        validateMaximumIndividualAmount(vrpRequest, frConsent);
+    }
+
+    private void validateMaximumIndividualAmount(
+            OBDomesticVRPRequest vrpRequest, FRDomesticVRPConsent frConsent
+    ) throws OBErrorException {
+        FRDomesticVRPControlParameters controlParameters = frConsent.getVrpDetails().getData().getControlParameters();
+        Double consentAmount = Double.valueOf(controlParameters.getMaximumIndividualAmount().getAmount());
+        Double requestAmount = Double.valueOf(vrpRequest.getData().getInstruction().getInstructedAmount().getAmount());
+        if(requestAmount.compareTo(consentAmount) > 0){
+            throw new OBErrorException(
+                    OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES,
+                    VRPErrorControlParametersFields.RequestControlFields.MAX_INDIVIDUAL_AMOUNT,
+                    VRPErrorControlParametersFields.ConsentControlFields.MAX_INDIVIDUAL_AMOUNT);
         }
     }
 
     public interface DomesticVrpPaymentRestEndpointContent {
         ResponseEntity run(String tppId) throws OBErrorException;
     }
+
 }

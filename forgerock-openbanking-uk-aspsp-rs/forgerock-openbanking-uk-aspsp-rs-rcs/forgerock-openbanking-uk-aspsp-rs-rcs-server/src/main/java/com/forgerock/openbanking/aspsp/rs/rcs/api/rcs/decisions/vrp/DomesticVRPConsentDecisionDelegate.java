@@ -67,13 +67,13 @@ public class DomesticVRPConsentDecisionDelegate implements ConsentDecisionDelega
             log.debug("The current VRP payment consent: '{}' has been rejected by the PSU: {}", consent.getId(), consent.getUserId());
             consent.setStatus(ConsentStatusCode.REJECTED);
         }
-        consentService.updateVrpPayment(consent);
+        consentService.updateVrpPaymentConsent(consent);
     }
 
     @Override
     public void autoaccept(List<FRAccount> accounts, String username) throws OBErrorException {
         log.debug("The current VRP payment consent: '{}' has been accepted automatically for the user: {}", consent.getId(), consent.getUserId());
         consent.setStatus(ConsentStatusCode.AUTHORISED);
-        consentService.updateVrpPayment(consent);
+        consentService.updateVrpPaymentConsent(consent);
     }
 }

@@ -27,7 +27,7 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCa
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.VrpPaymentConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.VrpPaymentConsent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.Links;

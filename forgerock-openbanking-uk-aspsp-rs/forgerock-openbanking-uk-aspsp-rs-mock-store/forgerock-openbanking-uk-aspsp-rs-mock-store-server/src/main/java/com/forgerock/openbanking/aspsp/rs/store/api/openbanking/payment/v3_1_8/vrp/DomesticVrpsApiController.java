@@ -20,19 +20,27 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_8.vrp;
 
+import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.FRDomesticVrpPaymentSubmissionRepository;
+import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPRequest;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVrpPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksVrpPayment;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetails;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponse;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
+import java.util.Optional;
 
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBDomesticVRPConsentResponse;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConverters.toFRDomesticVRPRequest;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
@@ -40,15 +48,23 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.vr
 @Slf4j
 public class DomesticVrpsApiController implements DomesticVrpsApi {
 
+    private final FRDomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
 
-
+    public DomesticVrpsApiController(FRDomesticVrpPaymentSubmissionRepository paymentSubmissionRepository) {
+        this.paymentSubmissionRepository = paymentSubmissionRepository;
+    }
 
     @Override
-    public ResponseEntity<OBDomesticVRPResponse> domesticVrpGet(
+    public ResponseEntity domesticVrpGet(
             String domesticVRPId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        return new ResponseEntity<OBDomesticVRPResponse>(HttpStatus.NOT_IMPLEMENTED);
+        Optional<FRDomesticVrpPaymentSubmission> optionalVrpPayment = paymentSubmissionRepository.findById(domesticVRPId);
+        if(!optionalVrpPayment.isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment '" + domesticVRPId + "' " +
+                    "can't be found");
+        }
+        return ResponseEntity.ok(packageResponse(optionalVrpPayment.get()));
     }
 
     @Override
@@ -97,5 +113,20 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
         return new ResponseEntity<OBDomesticVRPResponse>(HttpStatus.NOT_IMPLEMENTED);
 
+    }
+
+    private OBDomesticVRPResponse packageResponse(FRDomesticVrpPaymentSubmission paymentSubmission) {
+        return new OBDomesticVRPResponse();
+//        return toOBDomesticVRPConsentResponse(paymentSubmission)
+//                .links(
+//                        resourceLinkService.toSelfLink(
+//                                frDomesticVRPConsent,
+//                                discovery -> getVersion(discovery).getCreateDomesticVrpPaymentConsent()
+//                        )
+//                );
+    }
+
+    protected OBDiscoveryAPILinksVrpPayment getVersion(DiscoveryConfigurationProperties.VrpPaymentApis discovery) {
+        return discovery.getV_3_1_8();
     }
 }
