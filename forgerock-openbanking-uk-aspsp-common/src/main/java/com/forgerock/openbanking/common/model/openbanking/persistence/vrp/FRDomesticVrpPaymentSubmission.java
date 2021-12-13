@@ -29,6 +29,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequestData;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseData;
 
 import java.util.Date;
 
@@ -42,12 +44,19 @@ public class FRDomesticVrpPaymentSubmission implements PaymentSubmission {
 
     public FRDomesticVRPRequest domesticVrpPayment;
 
+    public OBDomesticVRPResponseData.StatusEnum status;
+
     @CreatedDate
     public Date created;
     @LastModifiedDate
     public Date updated;
 
-    public String idempotencyKey;
-
     public OBVersion obVersion;
+
+    /**
+     * Status of an individual entry in a file payment
+     */
+    public enum PaymentStatus {
+        PENDING, COMPLETED, REJECTED;
+    }
 }

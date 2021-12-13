@@ -106,7 +106,7 @@ public class FRDomesticVRPConvertersTest {
 
         // When
         FRDomesticVRPInstruction frInstruction =
-                FRDomesticVRPConverters.toOBDomesticVRPRequestDataInstruction(obInstruction);
+                FRDomesticVRPConverters.toFRDomesticVRPInstruction(obInstruction);
 
         // Then
         assertThat(frInstruction).isNotNull();
@@ -127,7 +127,7 @@ public class FRDomesticVRPConvertersTest {
         OBDomesticVRPInstruction obInstruction = getOBDomesticVRPInstruction();
 
         // When
-        FRDomesticVRPInstruction frInstruction = FRDomesticVRPConverters.toOBDomesticVRPRequestDataInstruction(obInstruction);
+        FRDomesticVRPInstruction frInstruction = FRDomesticVRPConverters.toFRDomesticVRPInstruction(obInstruction);
 
         // Then
         assertThat(frInstruction).isNotNull();

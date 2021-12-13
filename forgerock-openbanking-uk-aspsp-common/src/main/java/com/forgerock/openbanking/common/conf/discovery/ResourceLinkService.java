@@ -62,6 +62,10 @@ public class ResourceLinkService {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getPayments()), payment.getId());
     }
 
+    public Links toVrpSelfLink(PaymentSubmission payment, Function<DiscoveryConfigurationProperties.VrpPaymentApis, String> getUrl) {
+        return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getVrpPayments()), payment.getId());
+    }
+
     public Links toSelfLink(FRFundsConfirmationConsent fundsConfirmation, Function<DiscoveryConfigurationProperties.FundsConfirmationApis, String> getUrl) {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getFundsConfirmations()), fundsConfirmation.getId());
     }

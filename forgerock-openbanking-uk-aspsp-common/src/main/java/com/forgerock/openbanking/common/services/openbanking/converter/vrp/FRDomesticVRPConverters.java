@@ -21,20 +21,20 @@
 package com.forgerock.openbanking.common.services.openbanking.converter.vrp;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPostalAddress;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.*;
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter;
 import lombok.extern.slf4j.Slf4j;
-import uk.org.openbanking.datamodel.vrp.OBAddressTypeCode;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInstruction;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequestData;
+import uk.org.openbanking.datamodel.vrp.*;
 import uk.org.openbanking.datamodel.vrp.namespace.OBVRPAuthenticationMethods;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toFRAccountIdentifier;
+import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toOBSupplementaryData1;
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPFinancialAgentConverter.toFRFinancialAgent;
 
 @Slf4j
@@ -58,11 +58,11 @@ public class FRDomesticVRPConverters {
                 .consentId(obDomesticVRPRequestData.getConsentId())
                 .initiation(toFRDomesticVRPInitiation(obDomesticVRPRequestData.getInitiation()))
                 .psuAuthenticationMethod(obDomesticVRPRequestData.getPsUAuthenticationMethod())
-                .instruction(toOBDomesticVRPRequestDataInstruction(obDomesticVRPRequestData.getInstruction()))
+                .instruction(toFRDomesticVRPInstruction(obDomesticVRPRequestData.getInstruction()))
                 .build();
     }
 
-    public static FRDomesticVRPInstruction toOBDomesticVRPRequestDataInstruction(OBDomesticVRPInstruction instruction) {
+    public static FRDomesticVRPInstruction toFRDomesticVRPInstruction(OBDomesticVRPInstruction instruction) {
         FRDomesticVRPInstruction frInstruction = FRDomesticVRPInstruction.builder()
                 .creditorAccount(toFRAccountIdentifier(instruction.getCreditorAccount()))
                 .instructionIdentification(instruction.getInstructionIdentification())
@@ -105,5 +105,46 @@ public class FRDomesticVRPConverters {
 
     public static FRPostalAddress.AddressTypeCode toFRAddressTypeCode(OBAddressTypeCode obAddressTypeCode) {
         return obAddressTypeCode == null ? null : FRPostalAddress.AddressTypeCode.valueOf(obAddressTypeCode.name());
+    }
+
+    public static OBDomesticVRPRequest toOBDomesticVRPRequest(FRDomesticVRPRequest frDomesticVRPRequest){
+        return frDomesticVRPRequest == null ? null : new OBDomesticVRPRequest()
+                .data(toOBDomesticVRPRequestData(frDomesticVRPRequest.getData()))
+                .risk(toOBRisk1(frDomesticVRPRequest.getRisk()));
+    }
+
+    public static OBDomesticVRPRequestData toOBDomesticVRPRequestData(FRDomesticVRPRequestData data){
+        return data == null ? null : new OBDomesticVRPRequestData()
+                .consentId(data.getConsentId())
+                .initiation(toOBDomesticVRPInitiation(data.getInitiation()))
+                .instruction(toOBDomesticVRPInstruction(data.getInstruction()));
+    }
+
+    public static OBDomesticVRPInitiation toOBDomesticVRPInitiation(FRWriteDomesticVRPDataInitiation initiation){
+        return initiation == null ? null : new OBDomesticVRPInitiation()
+                .creditorAccount(toOBCashAccountCreditor3(initiation.getCreditorAccount()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(initiation.getCreditorAgent()))
+                .debtorAccount(toOBCashAccountDebtorWithName(initiation.getDebtorAccount()))
+                .remittanceInformation(
+                        toOBDomesticVRPInitiationRemittanceInformation(initiation.getRemittanceInformation())
+                );
+    }
+
+    public static OBDomesticVRPInstruction toOBDomesticVRPInstruction(FRDomesticVRPInstruction instruction){
+        return instruction == null ? null : new OBDomesticVRPInstruction()
+                .endToEndIdentification(instruction.getEndToEndIdentification())
+                .instructionIdentification(instruction.getInstructionIdentification())
+                .localInstrument(instruction.getLocalInstrument())
+                .creditorAccount(toOBCashAccountCreditor3(instruction.getCreditorAccount()))
+                .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(instruction.getCreditorAgent()))
+                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(instruction.getInstructedAmount()))
+                .remittanceInformation(toOBVRPRemittanceInformation(instruction.getRemittanceInformation()))
+                .supplementaryData(toOBSupplementaryData1(instruction.getSupplementaryData()));
+    }
+
+    public static OBVRPRemittanceInformation toOBVRPRemittanceInformation(FRRemittanceInformation remittanceInformation){
+        return remittanceInformation == null ? null : new OBVRPRemittanceInformation()
+                .reference(remittanceInformation.getReference())
+                .unstructured(remittanceInformation.getUnstructured());
     }
 }
