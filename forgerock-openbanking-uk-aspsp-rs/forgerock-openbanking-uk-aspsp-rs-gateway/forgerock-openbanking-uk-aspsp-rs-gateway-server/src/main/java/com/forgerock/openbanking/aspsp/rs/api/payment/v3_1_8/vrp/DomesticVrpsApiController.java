@@ -32,6 +32,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import uk.org.openbanking.datamodel.payment.OBWriteDomesticResponse2;
 import uk.org.openbanking.datamodel.vrp.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,7 +65,16 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String domesticVRPId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        return new ResponseEntity<OBDomesticVRPResponse>(HttpStatus.NOT_IMPLEMENTED);
+        return rsEndpointWrapperService.vrpPaymentEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(rsEndpointWrapperService.getRsConfiguration().financialId)
+                .principal(principal)
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBDomesticVRPResponse.class);
+                        }
+                );
     }
 
     @Override
@@ -72,7 +82,16 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             String domesticVRPId, String authorization, String xFapiAuthDate, String xFapiCustomerIpAddress,
             String xFapiInteractionId, String xCustomerUserAgent, HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        return new ResponseEntity<OBDomesticVRPDetails>(HttpStatus.NOT_IMPLEMENTED);
+        return rsEndpointWrapperService.vrpPaymentEndpoint()
+                .authorization(authorization)
+                .xFapiFinancialId(rsEndpointWrapperService.getRsConfiguration().financialId)
+                .principal(principal)
+                .execute(
+                        (String tppId) -> {
+                            HttpHeaders additionalHttpHeaders = new HttpHeaders();
+                            return rsStoreGateway.toRsStore(request, additionalHttpHeaders, OBDomesticVRPDetails.class);
+                        }
+                );
     }
 
     @Override
@@ -108,9 +127,6 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         @NotNull @Valid OBDomesticVRPInitiation initiation = obDomesticVRPRequest.getData().getInitiation();
         String consentId = obDomesticVRPRequest.getData().getConsentId();
         log.debug("domesticVrpPost() consentId is {}", consentId);
-        // Need a consent service that gets 'payments' from the rs-store. Payments are actually consents poorly named
-        // :-( -> technical debt
-        // TODO Change payments services to consent services?
         FRDomesticVRPConsent consent = vrpPaymentConsentService.getVrpPaymentConsent(consentId);
         DomesticVrpPaymentsEndpointWrapper vrpPaymentsEndpointWrapper = rsEndpointWrapperService.vrpPaymentEndpoint();
         vrpPaymentsEndpointWrapper.authorization(authorization);
@@ -130,7 +146,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             additionalHeaders.add("x-ob-client-id", tppId);
             return rsStoreGateway.toRsStore(
                     request, additionalHeaders, Collections.emptyMap(),
-                    OBDomesticVRPConsentResponse.class, obDomesticVRPRequest
+                    OBDomesticVRPResponse.class, obDomesticVRPRequest
             );
         });
 
