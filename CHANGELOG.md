@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[4833a4411f2b7f9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4833a4411f2b7f9) JamieB *2021-11-26 09:45:58*
+Release candidate: prepare for next development iteration
+## 1.5.6
 ### GitHub [#456](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/456) 794: UI redirection customer experience
 [eb58e6dccb7cb99](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eb58e6dccb7cb99) Jorge Sanchez Perez *2021-11-16 16:04:23*
 794: UI redirection customer experience (#456)
@@ -18,7 +21,21 @@ Release/1.5.5 (#457)
 * Release candidate: prepare release 1.5.5
 
 * Release candidate: prepare for next development iteration
+
+[60ade108053dc75](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/60ade108053dc75) JamieB *2021-11-26 09:45:54*
+Release candidate: prepare release 1.5.6
+[cfe1045b2b47703](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/cfe1045b2b47703) JamieB *2021-11-26 09:08:26*
+45: Use latest uk-datamodel with 3.1.8r5 swagger models
+
+Some changes to VRP and Funds Conformation
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
 [eef7145f5305af3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eef7145f5305af3) JamieB *2021-10-12 06:53:39*
+Release candidate: prepare for next development iteration
+[104306b2f933965](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/104306b2f933965) JamieB *2021-09-24 12:45:20*
+Release candidate: prepare for next development iteration
+[3075d775b0f69a2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3075d775b0f69a2) JamieB *2021-09-24 10:12:47*
 Release candidate: prepare for next development iteration
 ## 1.5.4
 [ac7a863a04bc5e0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ac7a863a04bc5e0) JamieB *2021-10-11 15:57:23*
@@ -31,8 +48,6 @@ Pulls in 1.0.3 of spring-security-mult-auth that has improved logging
 Issue: ForgeCloud/ob-deploy#802
 [870b8d2c984ebb2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/870b8d2c984ebb2) JamieB *2021-10-12 06:53:35*
 Release candidate: prepare release 1.5.4
-[104306b2f933965](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/104306b2f933965) JamieB *2021-09-24 12:45:20*
-Release candidate: prepare for next development iteration
 ## 1.5.3
 [e26a2637e56ef2f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/e26a2637e56ef2f) JamieB *2021-09-24 12:45:16*
 Release candidate: prepare release 1.5.3
@@ -40,8 +55,6 @@ Release candidate: prepare release 1.5.3
 797: Database upgrade does not save authorisationNumber
 
 Issue: https://github.com/ForgeCloud/ob-deploy/issues/797
-[3075d775b0f69a2](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3075d775b0f69a2) JamieB *2021-09-24 10:12:47*
-Release candidate: prepare for next development iteration
 ## 1.5.2
 ### GitHub [#451](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/451) 39: Branch protection bot upgrade
 [f1ba82a48442111](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/f1ba82a48442111) Jorge Sanchez Perez *2021-09-23 14:35:42*

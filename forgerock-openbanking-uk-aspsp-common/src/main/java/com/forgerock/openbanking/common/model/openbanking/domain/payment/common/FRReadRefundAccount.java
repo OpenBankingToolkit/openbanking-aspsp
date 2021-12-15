@@ -45,6 +45,6 @@ public enum FRReadRefundAccount {
         return Stream.of(values())
                 .filter(v -> v.getValue().equals(value))
                 .findFirst()
-                .orElse(null);
+                .orElse(NO);
     }
 }

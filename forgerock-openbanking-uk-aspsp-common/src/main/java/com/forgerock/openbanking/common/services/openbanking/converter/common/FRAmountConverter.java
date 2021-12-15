@@ -130,6 +130,10 @@ public class FRAmountConverter {
         return FRModelMapper.map(amount, FRAmount.class);
     }
 
+    public static FRAmount toFRAmount(uk.org.openbanking.datamodel.vrp.OBActiveOrHistoricCurrencyAndAmount amount){
+        return FRModelMapper.map(amount, FRAmount.class);
+    }
+
     // FR to OB
     public static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(FRAmount amount) {
         return FRModelMapper.map(amount, OBActiveOrHistoricCurrencyAndAmount.class);
@@ -246,6 +250,4 @@ public class FRAmountConverter {
     public static OBFundsConfirmation1DataInstructedAmount toOBFundsConfirmation1DataInstructedAmount(FRAmount amount){
         return FRModelMapper.map(amount, OBFundsConfirmation1DataInstructedAmount.class);
     }
-
-
 }

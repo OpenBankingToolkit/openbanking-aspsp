@@ -14,6 +14,7 @@ import { SubmitBoxComponentModule } from '../components/submit-box/submit-box.mo
 import { AccountCheckboxModule } from '../components/account-checkbox/account-checkbox.module';
 
 import { FundsConfirmationComponent } from './funds-confirmation.component';
+import {ConsentDecision} from "bank/src/app/types/ConsentDecision";
 
 describe('app:bank FundsConfirmationComponent', () => {
   let component: FundsConfirmationComponent;
@@ -54,7 +55,7 @@ describe('app:bank FundsConfirmationComponent', () => {
     fixture.detectChanges();
 
     expect(component.formSubmit.emit).toHaveBeenCalledWith({
-      decision: 'deny',
+      decision: ConsentDecision.DENY,
       accountId: ''
     });
   });
@@ -70,7 +71,7 @@ describe('app:bank FundsConfirmationComponent', () => {
     fixture.detectChanges();
 
     expect(component.formSubmit.emit).toHaveBeenCalledWith({
-      decision: 'deny',
+      decision: ConsentDecision.DENY,
       accountId: testValue
     });
   });
@@ -86,7 +87,7 @@ describe('app:bank FundsConfirmationComponent', () => {
     fixture.detectChanges();
 
     expect(component.formSubmit.emit).toHaveBeenCalledWith({
-      decision: 'allow',
+      decision: ConsentDecision.ALLOW,
       accountId: testValue
     });
   });

@@ -60,7 +60,8 @@ public class AccountAccessConsentBasicAndDetailPermissionsFilterTest {
                 OBExternalPermissions1Code.READSTATEMENTSDETAIL,
                 OBExternalPermissions1Code.READTRANSACTIONSCREDITS,
                 OBExternalPermissions1Code.READTRANSACTIONSDEBITS,
-                OBExternalPermissions1Code.READTRANSACTIONSDETAIL
+                OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
+                OBExternalPermissions1Code.READCUSTOMERINFOCONSENT
         );
     }
 
@@ -90,7 +91,8 @@ public class AccountAccessConsentBasicAndDetailPermissionsFilterTest {
                 OBExternalPermissions1Code.READSTATEMENTSDETAIL,
                 OBExternalPermissions1Code.READTRANSACTIONSCREDITS,
                 OBExternalPermissions1Code.READTRANSACTIONSDEBITS,
-                OBExternalPermissions1Code.READTRANSACTIONSDETAIL
+                OBExternalPermissions1Code.READTRANSACTIONSDETAIL,
+                OBExternalPermissions1Code.READCUSTOMERINFOCONSENT
         );
     }
 

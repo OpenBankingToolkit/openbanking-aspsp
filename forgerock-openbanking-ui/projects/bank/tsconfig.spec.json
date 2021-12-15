@@ -6,6 +6,10 @@
     "types": ["jest"],
     "allowJs": true
   },
-  "files": ["src/test.ts", "src/polyfills.ts"],
+  "files": [
+    "src/test.ts",
+    "src/polyfills.ts",
+    "../../node_modules/@types/jasmine/index.d.ts"
+  ],
   "include": ["**/*.spec.ts", "**/*.d.ts"]
 }

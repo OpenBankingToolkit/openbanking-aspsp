@@ -37,6 +37,7 @@ import com.forgerock.openbanking.common.services.store.accountrequest.AccountReq
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.services.token.AccessTokenService;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -47,6 +48,7 @@ import org.springframework.stereotype.Service;
  * would need to do, leaving you the "main" function to implement. You will be able to implement in the main and
  * concentrate on what your specific endpoint needs to provide.
  */
+@Data
 public class RSEndpointWrapperService {
 
     public OBHeaderCheckerService obHeaderCheckerService;
@@ -127,6 +129,10 @@ public class RSEndpointWrapperService {
         return new PaymentsApiEndpointWrapper(this, tppStoreService, balanceTransferPaymentValidator,
                 moneyTransferPaymentValidator,
                 paymPaymentValidator, riskValidator);
+    }
+
+    public DomesticVrpPaymentsEndpointWrapper vrpPaymentEndpoint(){
+        return new DomesticVrpPaymentsEndpointWrapper(this, tppStoreService, riskValidator);
     }
 
     public FilePaymentsApiEndpointWrapper filePaymentEndpoint() {

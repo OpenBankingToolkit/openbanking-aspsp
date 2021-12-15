@@ -43,7 +43,7 @@ export class AccountComponent implements OnInit {
       type: ItemType.STRING,
       payload: {
         label: 'CONSENT.ACCOUNT.APPLICATION',
-        value: this.response.aispName,
+        value: this.response.pispName,
         cssClass: 'account-merchantName'
       }
     });

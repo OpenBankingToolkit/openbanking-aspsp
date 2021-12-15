@@ -1,0 +1,99 @@
+{
+  "_id": "DVRP_6e7ac7ab-be30-48a5-9bc6-00eb24af4b3",
+  "status": "AWAITINGAUTHORISATION",
+  "vrpDetails": {
+    "data": {
+      "readRefundAccount": "NO",
+      "initiation": {
+        "debtorAccount": {
+          "schemeName": "UK.OBIE.SortCodeAccountNumber",
+          "identification": "08080021325698",
+          "name": "Mr Tim Burgess",
+          "secondaryIdentification": "11"
+        },
+        "creditorAccount": {
+          "schemeName": "UK.OBIE.SortCodeAccountNumber",
+          "identification": "08080021325698",
+          "name": "Mr Tim Burgess",
+          "secondaryIdentification": "11"
+        },
+        "remittanceInformation": {
+          "unstructured": "Internal ops code 5120103",
+          "reference": "FRESCO-037"
+        },
+        "creditorAgent": {
+          "schemeName": "UK.OBIE.SortCodeAccountNumber",
+          "identification": "08080021325698",
+          "name": "Mr Tim Burgess",
+          "postalAddress": {
+            "addressType": "RESIDENTIAL",
+            "streetName": "The Mall",
+            "buildingNumber": "1",
+            "postCode": "WC1 1AB",
+            "townName": "London",
+            "country": "UK"
+          }
+        }
+      },
+      "controlParameters": {
+        "vrpType": [
+          "UK.OBIE.VRPType.Sweeping"
+        ],
+        "psuAuthenticationMethods": [
+          "UK.OBIE.SCA"
+        ],
+        "validFromDateTime": {
+          "$date": "2021-12-03T15:18:48.429Z"
+        },
+        "validToDateTime": {
+          "$date": "2021-12-13T15:18:48.429Z"
+        },
+        "maximumIndividualAmount": {
+          "amount": "10.01",
+          "currency": "GBP"
+        },
+        "periodicLimits": [
+          {
+            "amount": "10.01",
+            "currency": "GBP",
+            "periodType": "MONTH",
+            "periodAlignment": "CALENDAR"
+          }
+        ],
+        "supplementaryData": {
+          "data": "{}"
+        }
+      }
+    },
+    "risk": {
+      "paymentContextCode": "OTHER",
+      "merchantCategoryCode": "mct1",
+      "merchantCustomerIdentification": "merchantId123",
+      "deliveryAddress": {
+        "addressLine": [
+          "60 Queens Sq"
+        ],
+        "streetName": "Queen Square",
+        "buildingNumber": "60",
+        "postCode": "BS1 1AA",
+        "townName": "Bristol",
+        "countrySubDivision": "en",
+        "country": "GB"
+      }
+    }
+  },
+  "pispId": "55555",
+  "pispName": "testPisp",
+  "idempotencyKey": "40c5d0dc-67f8-4b95-92cc-9ea0de43c16f",
+  "created": {
+    "$date": "2021-12-03T15:18:50.253Z"
+  },
+  "statusUpdate": {
+    "$date": "2021-12-03T15:18:50.197Z"
+  },
+  "updated": {
+    "$date": "2021-12-03T15:18:50.253Z"
+  },
+  "obVersion": "v3_1_8",
+  "_class": "com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent"
+}

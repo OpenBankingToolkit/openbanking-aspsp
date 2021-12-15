@@ -27,10 +27,12 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.event.FRCa
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmation;
 import com.forgerock.openbanking.common.model.openbanking.persistence.funds.FRFundsConfirmationConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.VrpPaymentConsent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.org.openbanking.datamodel.account.Links;
 
+import java.net.URI;
 import java.util.function.Function;
 
 @Service
@@ -42,6 +44,13 @@ public class ResourceLinkService {
         this.discoveryConfigurationProperties = discoveryConfigurationProperties;
     }
 
+    public uk.org.openbanking.datamodel.vrp.Links toSelfLink(VrpPaymentConsent consent, Function<DiscoveryConfigurationProperties.VrpPaymentApis, String> getUrl) {
+        DiscoveryConfigurationProperties.Apis apis = discoveryConfigurationProperties.getApis();
+        DiscoveryConfigurationProperties.VrpPaymentApis vrpPayments = apis.getVrpPayments();
+        String url = getUrl.apply(vrpPayments);
+        return vrpResourceToLink(url, consent.getId());
+    }
+
     public Links toSelfLink(PaymentConsent consent, Function<DiscoveryConfigurationProperties.PaymentApis, String> getUrl) {
         DiscoveryConfigurationProperties.Apis apis = discoveryConfigurationProperties.getApis();
         DiscoveryConfigurationProperties.PaymentApis payments = apis.getPayments();
@@ -51,6 +60,10 @@ public class ResourceLinkService {
 
     public Links toSelfLink(PaymentSubmission payment, Function<DiscoveryConfigurationProperties.PaymentApis, String> getUrl) {
         return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getPayments()), payment.getId());
+    }
+
+    public Links toVrpSelfLink(PaymentSubmission payment, Function<DiscoveryConfigurationProperties.VrpPaymentApis, String> getUrl) {
+        return resourceToLink(getUrl.apply(discoveryConfigurationProperties.getApis().getVrpPayments()), payment.getId());
     }
 
     public Links toSelfLink(FRFundsConfirmationConsent fundsConfirmation, Function<DiscoveryConfigurationProperties.FundsConfirmationApis, String> getUrl) {
@@ -76,6 +89,11 @@ public class ResourceLinkService {
     private static Links resourceToLink(String url, String id) {
         if (url==null) return null;
         return new Links().self(url.replaceAll("\\{.*}", id));
+    }
+
+    private static uk.org.openbanking.datamodel.vrp.Links vrpResourceToLink(String url, String id) {
+        if (url==null) return null;
+        return new uk.org.openbanking.datamodel.vrp.Links().self(URI.create(url.replaceAll("\\{.*}", id)));
     }
 
     private static Links resourceToLink(String url) {

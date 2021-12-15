@@ -1,0 +1,28 @@
+<mat-card *ngIf="response">
+  <forgerock-customer-logo></forgerock-customer-logo>
+  <form [formGroup]="form">
+    <p [translate]="'CONSENT.VRP-PAYMENT.TITLE'" [translateParams]="{ merchantName: response.merchantName }"></p>
+    <div *ngIf="response.logo" class="merchant-logo">
+      <img src="{{ response.logo }}" onerror="this.style.display='none'" />
+    </div>
+    <div class="divider"></div>
+
+    <span [translate]="'CONSENT.VRP-PAYMENT.PAYER_DETAILS'"></span>
+    <app-consent-box [items]="payerItems"></app-consent-box>
+    <span [translate]="'CONSENT.VRP-PAYMENT.PAYEE_DETAILS'"></span>
+    <app-consent-box [items]="payeeItems"></app-consent-box>
+    <div class="divider"></div>
+    <app-consent-box [items]="controlItems"></app-consent-box>
+
+    <app-submit-box
+      [loading]="_loading"
+      [form]="form"
+      [label]="'CONSENT.VRP-PAYMENT.PROCEED_PAYMENT'"
+      [proceedLabel]="'CONSENT.ACCOUNT.PROCEED'"
+      [cancelLabel]="'CONSENT.ACCOUNT.CANCEL'"
+      (accept)="submit(true)"
+      (deny)="submit(false)"
+    ></app-submit-box>
+  </form>
+</mat-card>
+

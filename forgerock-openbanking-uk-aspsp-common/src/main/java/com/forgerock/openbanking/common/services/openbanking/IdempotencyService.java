@@ -20,10 +20,8 @@
  */
 package com.forgerock.openbanking.common.services.openbanking;
 
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentConsent;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.PaymentSubmission;
-import com.forgerock.openbanking.common.model.openbanking.persistence.payment.FRFileConsent;
+import com.forgerock.openbanking.common.model.openbanking.persistence.payment.*;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.VrpPaymentConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -49,6 +47,17 @@ public class IdempotencyService {
     public static boolean isIdempotencyKeyHeaderValid(String xIdempotencyKey) {
         return !StringUtils.isEmpty(xIdempotencyKey)
                 && xIdempotencyKey.length() <= X_IDEMPOTENCY_MAX_KEY_LENGTH;
+    }
+
+    /**
+     * For VRP payment consents.
+     *
+     * Consent body must be the same on new and existing requests. Idempotency key must be less than expiry time. (X_IDEMPOTENCY_KEY_EXPIRY_HOURS)
+     */
+    public static <T> void validateIdempotencyRequest(String xIdempotencyKey, T submittedRequestBody, VrpPaymentConsent existingConsent, Supplier<T> existingConsentRequestBody) throws OBErrorResponseException {
+        log.debug("Found an existing consent '{}' with the same x-idempotency-key '{}'.", existingConsent.getId(), xIdempotencyKey);
+        checkIdempotencyKeyExpiry(xIdempotencyKey, existingConsent.getId(), existingConsent.getCreated());
+        checkIdempotencyRequestBodyUnchanged(xIdempotencyKey, submittedRequestBody, existingConsentRequestBody.get(), existingConsent.getId());
     }
 
     /**

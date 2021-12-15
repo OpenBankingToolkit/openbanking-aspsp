@@ -43,7 +43,7 @@ public interface RCSConsentDecisionApi {
             consumes = { "application/json; charset=utf-8" },
             produces = { "application/json; charset=utf-8" },
             method = RequestMethod.POST)
-    ResponseEntity<RedirectionAction> decisionAccountSharing(
+    ResponseEntity<RedirectionAction> decision(
             @RequestBody String consentDecisionSerialised,
 
             @ApiParam(value = "Cookie containing the user session", required = true)

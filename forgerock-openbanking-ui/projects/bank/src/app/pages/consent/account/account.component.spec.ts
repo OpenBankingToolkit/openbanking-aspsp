@@ -15,6 +15,7 @@ import { SubmitBoxComponentModule } from '../components/submit-box/submit-box.mo
 import { AccountCheckboxModule } from '../components/account-checkbox/account-checkbox.module';
 
 import { AccountComponent } from './account.component';
+import {ConsentDecision} from "bank/src/app/types/ConsentDecision";
 
 describe('app:bank AccountComponent', () => {
   let component: AccountComponent;
@@ -55,7 +56,7 @@ describe('app:bank AccountComponent', () => {
     fixture.detectChanges();
 
     expect(component.formSubmit.emit).toHaveBeenCalledWith({
-      decision: 'deny',
+      decision: ConsentDecision.DENY,
       sharedAccounts: []
     });
   });
@@ -67,7 +68,7 @@ describe('app:bank AccountComponent', () => {
     fixture.detectChanges();
 
     expect(component.formSubmit.emit).toHaveBeenCalledWith({
-      decision: 'deny',
+      decision: ConsentDecision.DENY,
       sharedAccounts: []
     });
   });
@@ -79,7 +80,7 @@ describe('app:bank AccountComponent', () => {
     fixture.detectChanges();
 
     expect(component.formSubmit.emit).toHaveBeenCalledWith({
-      decision: 'allow',
+      decision: ConsentDecision.ALLOW,
       sharedAccounts: []
     });
   });

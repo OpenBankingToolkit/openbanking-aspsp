@@ -31,6 +31,7 @@ import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalpay
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalscheduledpayments.InternationalScheduledPaymentConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.internationalstandingorders.InternationalStandingOrderConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.singlepayments.SinglePaymentConsentDecisionFactory;
+import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.vrp.DomesticVRPConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.details.*;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.AccountWithBalance;
@@ -69,6 +70,8 @@ public class IntentTypeService {
     private RCSFundsConfirmationDetailsApi rcsFundsConfirmationDetailsApi;
     @Autowired
     private RCSFilePaymentDetailsApi rcsFilePaymentDetailsApi;
+    @Autowired
+    private RCSVrpPaymentDetailsApi rcsVrpPaymentDetailsApi;
 
     @Autowired
     private SinglePaymentConsentDecisionFactory singlePaymentConsentDecisionService;
@@ -90,39 +93,45 @@ public class IntentTypeService {
     private FundsConfirmationConsentDecisionFactory fundsConfirmationConsentDecisionFactory;
     @Autowired
     private FilePaymentConsentDecisionFactory filePaymentConsentDecisionFactory;
+    @Autowired
+    private DomesticVRPConsentDecisionFactory domesticVRPConsentDecisionFactory;
 
     public ConsentDecisionDelegate getConsentDecision(String intentId) throws OBErrorException {
         switch (IntentType.identify(intentId)) {
             case ACCOUNT_REQUEST:
             case ACCOUNT_ACCESS_CONSENT:
-                log.debug("It's an account consent request");
+                log.debug("It's an account consent decision request");
                 return accountAccessConsentDecisionApiController.create(intentId);
             case PAYMENT_SINGLE_REQUEST:
-                log.debug("It's a payment consent request");
+                log.debug("It's a payment consent decision request");
                 return singlePaymentConsentDecisionService.create(intentId);
             case PAYMENT_INTERNATIONAL_CONSENT:
-                log.debug("It's a international payment consent request");
+                log.debug("It's a international payment consent decision request");
                 return internationalPaymentConsentDecisionFactory.create(intentId);
             case PAYMENT_DOMESTIC_CONSENT:
-                log.debug("It's a domestic payment consent request");
+                log.debug("It's a domestic payment consent decision request");
                 return domesticPaymentConsentDecisionFactory.create(intentId);
             case PAYMENT_DOMESTIC_SCHEDULED_CONSENT:
-                log.debug("It's a domestic payment consent request");
+                log.debug("It's a domestic payment consent decision request");
                 return domesticScheduledPaymentConsentDecisionFactory.create(intentId);
             case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT:
-                log.debug("It's a domestic payment consent request");
+                log.debug("It's a domestic payment consent decision request");
                 return domesticStandingOrdersPaymentConsentDecisionFactory.create(intentId);
             case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT:
-                log.debug("It's an international scheduled payment consent request");
+                log.debug("It's an international scheduled payment consent decision request");
                 return internationalScheduledPaymentConsentDecisionFactory.create(intentId);
             case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT:
-                log.debug("It's an international standing order consent request");
+                log.debug("It's an international standing order consent decision request");
                 return internationalStandingOrderConsentDecisionFactory.create(intentId);
             case PAYMENT_FILE_CONSENT:
-                log.debug("It's an file payment consent request");
+                log.debug("It's an file payment consent decision request");
                 return filePaymentConsentDecisionFactory.create(intentId);
             case FUNDS_CONFIRMATION_CONSENT:
+                log.debug("It's an funds confirmation consent decision request");
                 return fundsConfirmationConsentDecisionFactory.create(intentId);
+            case DOMESTIC_VRP_PAYMENT_CONSENT:
+                log.debug("It's a VRP payment consent decision request");
+                return domesticVRPConsentDecisionFactory.create(intentId);
             default:
                 log.error("Invalid intent ID");
                 throw new OBErrorException(OBRIErrorType.RCS_CONSENT_REQUEST_INVALID,
@@ -139,35 +148,38 @@ public class IntentTypeService {
         switch (IntentType.identify(intentId)) {
             case ACCOUNT_REQUEST:
             case ACCOUNT_ACCESS_CONSENT:
-                log.debug("It's an account consent request");
+                log.debug("It's an account consent details request");
                 return rcsAccountDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             case PAYMENT_SINGLE_REQUEST:
-                log.debug("It's a payment consent request");
+                log.debug("It's a payment consent details request");
                 return rcsSinglePaymentDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             case PAYMENT_DOMESTIC_CONSENT:
-                log.debug("It's a domestic payment consent request");
+                log.debug("It's a domestic payment consent details request");
                 return rcsDomesticPaymentDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             case PAYMENT_INTERNATIONAL_CONSENT:
-                log.debug("It's an international payment consent request");
+                log.debug("It's an international payment consent details request");
                 return rcsInternationalPaymentDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             case PAYMENT_DOMESTIC_SCHEDULED_CONSENT:
-                log.debug("It's a domestic scheduled payment consent request");
+                log.debug("It's a domestic scheduled payment consent details request");
                 return rcsDomesticSchedulePaymentDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             case PAYMENT_DOMESTIC_STANDING_ORDERS_CONSENT:
-                log.debug("It's a domestic standing order payment consent request");
+                log.debug("It's a domestic standing order payment consent details request");
                 return rcsDomesticStandingOrderDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             case PAYMENT_INTERNATIONAL_SCHEDULED_CONSENT:
-                log.debug("It's an international scheduled payment consent request");
+                log.debug("It's an international scheduled payment consent details request");
                 return rcsInternationalScheduledPaymentDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             case PAYMENT_INTERNATIONAL_STANDING_ORDERS_CONSENT:
-                log.debug("It's an international standing order consent request");
+                log.debug("It's an international standing order consent details request");
                 return rcsInternationalStandingOrderPaymentDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             case PAYMENT_FILE_CONSENT:
-                log.debug("It's an file payment consent request");
+                log.debug("It's an file payment consent details request");
                 return rcsFilePaymentDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             case FUNDS_CONFIRMATION_CONSENT:
-                log.debug("It's a funds confirmation consent request");
+                log.debug("It's a funds confirmation consent details request");
                 return rcsFundsConfirmationDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
+            case DOMESTIC_VRP_PAYMENT_CONSENT:
+                log.debug("It's a VRP payment consent details request");
+                return rcsVrpPaymentDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             default:
                 log.error("Invalid intent ID");
                 return rcsErrorService.error(OBRIErrorType.RCS_CONSENT_REQUEST_INVALID,

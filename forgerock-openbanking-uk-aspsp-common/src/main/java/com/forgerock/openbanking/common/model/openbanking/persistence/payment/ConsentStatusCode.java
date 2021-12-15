@@ -38,12 +38,17 @@ public enum ConsentStatusCode {
     ACCEPTEDTECHNICALVALIDATION("AcceptedTechnicalValidation"),
     PENDING("Pending"),
     REVOKED("Revoked"),
-    AWAITINGUPLOAD("AwaitingUpload");
+    AWAITINGUPLOAD("AwaitingUpload"),
+    EXPIRED("Expired");
 
     private final String value;
 
     ConsentStatusCode(String value) {
         this.value = value;
+    }
+
+    public String getValue(){
+        return this.value;
     }
 
     public static ConsentStatusCode fromValue(String value) {

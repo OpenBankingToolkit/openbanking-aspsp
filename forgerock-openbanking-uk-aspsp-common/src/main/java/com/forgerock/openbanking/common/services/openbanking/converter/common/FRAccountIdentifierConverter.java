@@ -25,6 +25,7 @@ import com.forgerock.openbanking.common.services.openbanking.converter.FRModelMa
 import uk.org.openbanking.datamodel.account.*;
 import uk.org.openbanking.datamodel.fund.OBFundsConfirmationConsent1DataDebtorAccount;
 import uk.org.openbanking.datamodel.payment.*;
+import uk.org.openbanking.datamodel.vrp.OBCashAccountDebtorWithName;
 
 public class FRAccountIdentifierConverter {
 
@@ -77,6 +78,10 @@ public class FRAccountIdentifierConverter {
         return FRModelMapper.map(account, FRAccountIdentifier.class);
     }
 
+    public static FRAccountIdentifier toFRAccountIdentifier(uk.org.openbanking.datamodel.vrp.OBCashAccountCreditor3 account) {
+        return FRModelMapper.map(account, FRAccountIdentifier.class);
+    }
+
     public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccountDebtor1 account) {
         return account == null ? null : FRAccountIdentifier.builder()
                 .schemeName(account.getSchemeName() == null ? null : account.getSchemeName().getReference())
@@ -89,6 +94,15 @@ public class FRAccountIdentifierConverter {
     public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccountCreditor1 account) {
         return account == null ? null : FRAccountIdentifier.builder()
                 .schemeName(account.getSchemeName() == null ? null : account.getSchemeName().getReference())
+                .identification(account.getIdentification())
+                .name(account.getName())
+                .secondaryIdentification(account.getSecondaryIdentification())
+                .build();
+    }
+
+    public static FRAccountIdentifier toFRAccountIdentifier(OBCashAccountDebtorWithName account){
+        return account == null ? null : FRAccountIdentifier.builder()
+                .schemeName(account.getSchemeName())
                 .identification(account.getIdentification())
                 .name(account.getName())
                 .secondaryIdentification(account.getSecondaryIdentification())

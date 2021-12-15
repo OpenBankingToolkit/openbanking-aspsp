@@ -19,6 +19,7 @@ import { ExchangeRateItemComponent } from 'bank/src/app/pages/consent/components
 import { DateItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/date-item/date-item.component';
 import { AccountNumberItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/account-number-item/account-number-item.component';
 import { TransactionsPeriodItemComponent } from 'bank/src/app/pages/consent/components/consent-box/items/transactions-period-item/transactions-period-item.component';
+import {VrpAccountItemComponent} from "bank/src/app/pages/consent/components/consent-box/items/vrp-account-item/vrp-account-item.component";
 
 @Component({
   selector: 'app-dynamic-item',
@@ -74,6 +75,9 @@ export class DynamicItemComponent implements OnInit, OnChanges {
         break;
       case ItemType.TRANSACTION_PERIOD:
         componentInstance = TransactionsPeriodItemComponent;
+        break;
+      case ItemType.VRP_ACCOUNT_NUMBER:
+        componentInstance = VrpAccountItemComponent;
         break;
       default:
         console.error(`"${item.type}" consent type is not implemented yet`);

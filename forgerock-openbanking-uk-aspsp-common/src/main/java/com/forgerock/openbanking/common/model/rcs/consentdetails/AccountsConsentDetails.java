@@ -50,7 +50,7 @@ public class AccountsConsentDetails extends ConsentDetails {
     protected String username;
     protected String logo;
     protected String clientId;
-    protected String aispName;
+    protected String pispName;
     protected DateTime expiredDate;
 
     @Override

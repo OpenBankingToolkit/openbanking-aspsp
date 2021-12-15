@@ -1,0 +1,12 @@
+<app-key-value-item
+  *ngIf="payload.account"
+  [key]="payload.sortCodeLabel | translate"
+  [value]="payload.account | AccountSortCodeFormat"
+  [cssClass]="payload.cssClass"
+></app-key-value-item>
+<app-key-value-item
+  *ngIf="payload.account"
+  [key]="payload.accountNumberLabel | translate"
+  [value]="payload.account | AccountNumberFormat"
+  [cssClass]="payload.cssClass"
+></app-key-value-item>

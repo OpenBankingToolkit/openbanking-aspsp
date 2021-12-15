@@ -159,7 +159,7 @@ public class RCSConsentDecisionApiControllerTest {
         String consentDecisionSerialized = objectMapper.writeValueAsString(consentDecision);
 
         // When
-        ResponseEntity responseEntity = consentDecisionApiController.decisionAccountSharing(consentDecisionSerialized,
+        ResponseEntity responseEntity = consentDecisionApiController.decision(consentDecisionSerialized,
                 ssoToken);
 
         // Then

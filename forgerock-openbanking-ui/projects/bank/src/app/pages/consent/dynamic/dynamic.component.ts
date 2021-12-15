@@ -29,6 +29,7 @@ import {FundsConfirmationComponent} from 'bank/src/app/pages/consent/funds-confi
 import {FilePaymentComponent} from 'bank/src/app/pages/consent/file-payment/file-payment.component';
 import {CancelComponent} from "bank/src/app/pages/consent/components/cancel/cancel.component";
 import {RejectComponent} from "bank/src/app/pages/consent/components/reject/reject.component";
+import {VrpPaymentComponent} from "bank/src/app/pages/consent/vrp-payment/vrp-payment.component";
 
 const log = debug('consent:DynamicComponent');
 
@@ -55,7 +56,7 @@ export class DynamicComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: any) {
     console.log("Dynamic component")
-    if (this.response.canceledByUser) {
+    if (this.response.userActions?.rejectedByUser) {
       this.createComponent(CancelComponent);
     } else if (this.response.userActions?.rejectedByUser) {
       this.createComponent(RejectComponent);
@@ -104,6 +105,9 @@ export class DynamicComponent implements OnInit, OnChanges {
         break;
       case IntentType.FUNDS_CONFIRMATION_CONSENT:
         componentInstance = FundsConfirmationComponent;
+        break;
+      case IntentType.DOMESTIC_VRP_PAYMENT_CONSENT:
+        componentInstance = VrpPaymentComponent;
         break;
       default:
         log(`"${response.requestType}" consent type is not implemented yet`);
