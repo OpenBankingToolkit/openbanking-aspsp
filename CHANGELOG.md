@@ -21,6 +21,7 @@ Release/1.5.5 (#457)
 * Release candidate: prepare release 1.5.5
 
 * Release candidate: prepare for next development iteration
+
 [60ade108053dc75](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/60ade108053dc75) JamieB *2021-11-26 09:45:54*
 Release candidate: prepare release 1.5.6
 [cfe1045b2b47703](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/cfe1045b2b47703) JamieB *2021-11-26 09:08:26*
@@ -29,6 +30,7 @@ Release candidate: prepare release 1.5.6
 Some changes to VRP and Funds Conformation
 
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
 [eef7145f5305af3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eef7145f5305af3) JamieB *2021-10-12 06:53:39*
 Release candidate: prepare for next development iteration
 [104306b2f933965](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/104306b2f933965) JamieB *2021-09-24 12:45:20*
