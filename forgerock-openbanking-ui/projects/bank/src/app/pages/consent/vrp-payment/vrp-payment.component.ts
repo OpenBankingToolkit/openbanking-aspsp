@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {ApiResponses} from 'bank/src/app/types/api';
 import {IConsentEventEmitter, Item, ItemType} from 'bank/src/app/types/consentItem';
 import {ConsentDecision} from "bank/src/app/types/ConsentDecision";
 import {TranslateService} from "@ngx-translate/core";
 import _get from 'lodash-es/get';
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-vrp-payment',
@@ -109,7 +109,7 @@ export class VrpPaymentComponent implements OnInit {
       });
     }
     if (_get(this.response, 'controlParameters.periodicLimits[0]')) {
-      let periodicLimitsInstructedAmount = {
+      const periodicLimitsInstructedAmount = {
         Amount: this.response.controlParameters.periodicLimits[0].amount,
         Currency: this.response.controlParameters.periodicLimits[0].currency
       }
