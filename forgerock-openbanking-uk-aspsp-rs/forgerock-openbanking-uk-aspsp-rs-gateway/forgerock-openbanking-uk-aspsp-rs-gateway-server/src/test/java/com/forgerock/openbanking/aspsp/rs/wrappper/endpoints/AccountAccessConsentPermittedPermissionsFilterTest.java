@@ -31,11 +31,13 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AccountAccessConsentPermittedPermissionsFilterTest {
 
+
     @Test
     public void filter_disallow() {
         // Given
         AccountAccessConsentPermittedPermissionsFilter filter
-                = new AccountAccessConsentPermittedPermissionsFilter(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSDETAIL.toString()));
+                =
+                new AccountAccessConsentPermittedPermissionsFilter(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSDETAIL.toString()));
 
         // When
         assertThatThrownBy(() ->
@@ -50,7 +52,8 @@ public class AccountAccessConsentPermittedPermissionsFilterTest {
     public void filter_allow() throws Exception {
         // Given
         AccountAccessConsentPermittedPermissionsFilter filter
-                = new AccountAccessConsentPermittedPermissionsFilter(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSDETAIL.toString()));
+                =
+                new AccountAccessConsentPermittedPermissionsFilter(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSDETAIL.toString()));
 
         // When
         filter.filter(Arrays.asList(OBExternalPermissions1Code.READACCOUNTSBASIC, OBExternalPermissions1Code.READPRODUCTS));

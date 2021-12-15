@@ -45,7 +45,10 @@ public class DetachedJwsGenerator {
         this.mapper = mapper;
     }
 
-    public String generateDetachedJws(ResponseEntity response, OBVersion obVersion, String tan, String financialId) throws JsonProcessingException {
+    public String generateDetachedJws(ResponseEntity response, OBVersion obVersion, String tan, String financialId)
+            throws JsonProcessingException {
+        log.debug("generateDetachedJws() - creating detached jws for obVersion '{}'. tan; '{}', financialId: '{}'",
+                obVersion, tan, financialId);
         String jwsSignature = "";
 
         SigningRequest.CustomHeaderClaims.CustomHeaderClaimsBuilder claimsBuilder = SigningRequest.CustomHeaderClaims.builder()
@@ -60,8 +63,10 @@ public class DetachedJwsGenerator {
         SigningRequest signingRequest = SigningRequest.builder()
                 .customHeaderClaims(claimsBuilder.build())
                 .build();
+
         if (response.getBody() instanceof Resource) {
-            log.debug("JWT signing does not currently work for a file response which it just a file byte stream (currently XML or JSON)");
+            log.debug("generateDetachedJws() JWT signing does not currently work for a file response which it just a " +
+                    "file byte stream (currently XML or JSON)");
             jwsSignature = null;
         } else {
             CreateDetachedJwtResponse createDetachedJwtResponse = cryptoApiClient.signPayloadToDetachedJwt(signingRequest, financialId, mapper.writeValueAsString(response.getBody()));
@@ -69,7 +74,7 @@ public class DetachedJwsGenerator {
                 jwsSignature = createDetachedJwtResponse.getDetachedSignature();
             }
         }
-        log.debug("Signed response claims. Signature: {}", jwsSignature);
+        log.debug("generateDetachedJws() Signed response claims. Signature: '{}'", jwsSignature);
         return jwsSignature;
     }
 }

@@ -22,17 +22,16 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_0.ac
 
 import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
-import com.forgerock.openbanking.repositories.TppRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accountsaccessconsents.FRAccountAccessConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.repositories.TppRepository;
 import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -44,30 +43,37 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import uk.org.openbanking.OBHeaders;
-import uk.org.openbanking.datamodel.account.OBExternalRequestStatus1Code;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1;
-import uk.org.openbanking.datamodel.account.OBReadConsentResponse1Data;
-import uk.org.openbanking.datamodel.account.OBReadRequest1;
+import uk.org.openbanking.datamodel.account.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRReadConsentResponseConverter.toFRReadConsentResponse;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRReadConsentResponseConverter.toOBReadConsentResponse1;
 import static com.forgerock.openbanking.constants.OpenBankingConstants.HTTP_DATE_FORMAT;
 
+@Slf4j
 @Controller("AccountAccessConsentsApiV3.0")
 public class AccountAccessConsentApiController implements AccountAccessConsentApi {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountAccessConsentApiController.class);
+
+
+    private final TppRepository tppRepository;
+    private final FRAccountAccessConsentRepository frAccountAccessConsentRepository;
+    private final ConsentMetricService consentMetricService;
 
     @Autowired
-    private TppRepository tppRepository;
-    @Autowired
-    private FRAccountAccessConsentRepository frAccountAccessConsentRepository;
-    @Autowired
-    private ConsentMetricService consentMetricService;
+    public AccountAccessConsentApiController(TppRepository tppRepository,
+                                             FRAccountAccessConsentRepository frAccountAccessConsentRepository,
+                                             ConsentMetricService consentMetricService) {
+        this.tppRepository = tppRepository;
+        this.frAccountAccessConsentRepository = frAccountAccessConsentRepository;
+        this.consentMetricService = consentMetricService;
+    }
 
     @Override
     public ResponseEntity<OBReadConsentResponse1> createAccountAccessConsent(
@@ -102,10 +108,11 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
 
             HttpServletRequest request
             ) throws OBErrorResponseException {
-        LOGGER.info("Received a new account access consent");
-        String consentId = IntentType.ACCOUNT_ACCESS_CONSENT.generateIntentId();
-        LOGGER.info("Create a new Account access consent ID {}", consentId);
+        log.info("Received a new account access consent");
 
+        String consentId = createNewConsentId(body);
+        log.info("Create a new Account access consent ID {}", consentId);
+        
         OBReadConsentResponse1 response = new OBReadConsentResponse1()
                 .data(new OBReadConsentResponse1Data()
                         .consentId(consentId)
@@ -128,7 +135,7 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(accountAccessConsent.getId(), accountAccessConsent.getStatus().name()));
         accountAccessConsent = frAccountAccessConsentRepository.save(accountAccessConsent);
 
-        LOGGER.debug("Account access consent created {}",
+        log.debug("Account access consent created {}",
                 accountAccessConsent.getAccountAccessConsent());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -157,14 +164,14 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
                     .body("Account access consent '" + consentId + "' not found");
 
         }
-        LOGGER.debug("Account access consent revoked with id {}", consentId);
+        log.debug("Account access consent revoked with id {}", consentId);
         FRAccountAccessConsent frAccountAccessConsent = accountAccessConsent.get();
         frAccountAccessConsent.getAccountAccessConsent().getData().setStatus(FRExternalRequestStatusCode.REVOKED);
         consentMetricService.sendConsentActivity(
                 new ConsentStatusEntry(frAccountAccessConsent.getAccountAccessConsent().getData().getConsentId(),
                         frAccountAccessConsent.getAccountAccessConsent().getData().getStatus().name()));
         frAccountAccessConsentRepository.save(frAccountAccessConsent);
-        LOGGER.debug("Account access consent revoked");
+        log.debug("Account access consent revoked");
 
         return ResponseEntity.ok("Account access consent '" + consentId + "' deleted");
     }
@@ -193,13 +200,26 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent
     ) throws OBErrorResponseException {
-        LOGGER.debug("Read Account access consent with id {}", consentId);
+        log.debug("Read Account access consent with id {}", consentId);
         Optional<FRAccountAccessConsent> accountAccessConsent = frAccountAccessConsentRepository.findById(consentId);
-        LOGGER.debug("Read successful with id {}", consentId);
+        log.debug("Read successful with id {}", consentId);
         MultiValueMap<String, String> headers = new HttpHeaders();
         headers.put(OBHeaders.X_FAPI_INTERACTION_ID, Arrays.asList(xFapiInteractionId));
         OBReadConsentResponse1 consentResponse1 = toOBReadConsentResponse1(accountAccessConsent.get().getAccountAccessConsent());
         return new ResponseEntity<>(consentResponse1, headers, HttpStatus.OK);
     }
-
+    
+    private String createNewConsentId(@NotNull OBReadRequest1 requestBody){
+        String consentId;
+        @NotNull @Valid @Size(min = 1) List<OBExternalPermissions1Code> permissions = requestBody.getData().getPermissions();
+        
+        if(permissions.contains(OBExternalPermissions1Code.READCUSTOMERINFOCONSENT)){
+            log.debug("Creating Customer Info type consentId");
+            consentId = IntentType.CUSTOMER_INFO_CONSENT.generateIntentId();
+        } else {
+            log.debug("Creating Account Access type consentId");
+            consentId = IntentType.ACCOUNT_ACCESS_CONSENT.generateIntentId();
+        }
+        return consentId;
+    }
 }

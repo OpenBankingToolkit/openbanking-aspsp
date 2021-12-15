@@ -87,6 +87,9 @@ public class Discovery {
                     case EVENT:
                         discovery.addEventNotificationAPI(obDiscoveryAPI);
                         break;
+                    case INFO:
+                        discovery.addInfoAPI(obDiscoveryAPI);
+                        break;
                 }
             }
         }

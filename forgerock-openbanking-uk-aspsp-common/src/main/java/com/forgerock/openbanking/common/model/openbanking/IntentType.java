@@ -44,6 +44,7 @@ public enum IntentType {
     PAYMENT_FILE_CONSENT("PFC_", OBGroupName.PISP),
     FUNDS_CONFIRMATION_CONSENT("FCC_", OBGroupName.CBPII),
     DOMESTIC_VRP_PAYMENT_CONSENT("DVRP_", OBGroupName.PISP),
+    CUSTOMER_INFO_CONSENT("CIC", OBGroupName.INFO),
 
     @Deprecated
     PAYMENT_REQUEST_LEGACY("P", OBGroupName.PISP),

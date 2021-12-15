@@ -84,6 +84,7 @@ public class DomesticVrpApiControllerTest {
     private String ISSUER_ID = "issuerId";
     private String FINANCIAL_ID = "FinancialId";
     private String JWKS_URI = "jwks_uri";
+    private boolean CUSTOMER_INFO_ENABLE = false;
 
     private RSConfiguration rsConfiguration;
 
@@ -92,7 +93,7 @@ public class DomesticVrpApiControllerTest {
     @Before
     public void setUp()
     {
-         rsConfiguration = new RSConfiguration(ISSUER_ID, FINANCIAL_ID, JWKS_URI);
+         rsConfiguration = new RSConfiguration(ISSUER_ID, FINANCIAL_ID, JWKS_URI,CUSTOMER_INFO_ENABLE);
         domesticVrpController = new DomesticVrpsApiController(rsEndpointWrapperService, rsStoreGateway
                 , vrpConsentService);
         given(rsEndpointWrapperService.vrpPaymentEndpoint()).willReturn(domesticVrpPaymentsEndpointWrapper);

@@ -94,20 +94,25 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
         return (T) this;
     }
 
+
     public ResponseEntity execute(R main) throws OBErrorResponseException {
         log.info("execute method");
         try {
-            log.debug("Apply filters");
+            log.debug("execute() Apply filters");
             applyFilters();
             if (additionalFilter != null) {
                 additionalFilter.filter(this);
             }
-            log.debug("Filters applied");
+            log.debug("execute() Filters applied");
 
-            log.info("Call main lambda");
+            log.info("execute() Call main lambda");
             ResponseEntity response = run(main);
             String tan = rsEndpointWrapperService.getTan();
-            String jwsSignature = rsEndpointWrapperService.detachedJwsGenerator.generateDetachedJws(response, obVersion, tan, xFapiFinancialId);
+            // TODO: Does this mean we create jwsSignatures for all responses to RS calls? We don't need to sign
+            //  requests to accounts endpoints, although I guess it doesn't hurt if we do. Just wasteful in terms of
+            //  processing time etc.
+            String jwsSignature = rsEndpointWrapperService.generateDetachedJws(response, obVersion, tan,
+                    xFapiFinancialId);
 
             return ResponseEntity
                     .status(response.getStatusCode())
@@ -139,7 +144,7 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
         try {
             //Verify access token
             log.info("Verify the access token {}", authorization);
-            accessToken = rsEndpointWrapperService.amResourceServerService.verifyAccessToken(authorization);
+            accessToken = rsEndpointWrapperService.verifyAccessToken(authorization);
 
             String grantTypeSerialised = accessToken.getJWTClaimsSet().getStringClaim(OBConstants.OIDCClaim.GRANT_TYPE);
             if (grantTypeSerialised == null) {
@@ -183,7 +188,7 @@ public abstract class RSEndpointWrapper<T extends RSEndpointWrapper<T, R>, R> {
     }
 
     public void verifyFinancialId() throws OBErrorException {
-        if (!rsEndpointWrapperService.obHeaderCheckerService.verifyFinancialIdHeader(xFapiFinancialId)) {
+        if (!rsEndpointWrapperService.verifyFinancialIdHeader(xFapiFinancialId)) {
             log.warn("Financial ID received {} is not the one expected {}", xFapiFinancialId, rsEndpointWrapperService.rsConfiguration.financialId);
             throw new OBErrorException(OBRIErrorType.FINANCIAL_ID_INVALID,
                     rsEndpointWrapperService.rsConfiguration.financialId,

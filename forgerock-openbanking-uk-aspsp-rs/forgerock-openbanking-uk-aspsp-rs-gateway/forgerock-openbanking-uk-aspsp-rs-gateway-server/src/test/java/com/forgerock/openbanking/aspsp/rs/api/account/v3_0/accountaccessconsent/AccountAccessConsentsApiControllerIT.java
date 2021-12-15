@@ -101,13 +101,52 @@ public class AccountAccessConsentsApiControllerIT {
                         .status(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION)
                         .permissions(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSBASIC))
                 );
-        given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(readConsentResponse));
+        given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(
+                ResponseEntity.status(HttpStatus.CREATED).body(readConsentResponse));
         Tpp tpp = new Tpp();
         tpp.setAuthorisationNumber("test-tpp");
         given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
         final OBReadConsent1 obReadConsent = new OBReadConsent1()
                 .data(new OBReadData1().permissions(Collections.singletonList(OBExternalPermissions1Code.READACCOUNTSBASIC)))
                 .risk(new OBRisk2());
+
+        // When
+        HttpResponse<OBReadConsentResponse1> response = Unirest.post("https://rs-api:" + port + "/open-banking/v3.1/aisp/account-access-consents/")
+                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.X_IDEMPOTENCY_KEY, UUID.randomUUID().toString())
+                .header(OBHeaders.X_JWS_SIGNATURE, UUID.randomUUID().toString())
+                .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
+                .body(obReadConsent)
+                .asObject(OBReadConsentResponse1.class);
+
+        // Then
+        verify(accountAccessConsentPermittedPermissionsFilter, times(1)).filter(any());
+        assertThat(response.getStatus()).isEqualTo(201);
+    }
+
+    @Test
+    public void createCustomerInfoAccountAccessConsent() throws Exception {
+        // Given
+        String jws = jws("accounts", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        mockAccessTokenVerification(jws);
+        OBReadConsentResponse1 readConsentResponse = new OBReadConsentResponse1()
+                .data(new OBReadConsentResponse1Data()
+                        .consentId("AISP_3980298093280")
+                        .statusUpdateDateTime(DateTime.now())
+                        .status(OBExternalRequestStatus1Code.AWAITINGAUTHORISATION)
+                        .permissions(Collections.singletonList(OBExternalPermissions1Code.READCUSTOMERINFOCONSENT))
+                );
+        given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(
+                ResponseEntity.status(HttpStatus.CREATED).body(readConsentResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorisationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
+        final OBReadConsent1 obReadConsent = new OBReadConsent1()
+                .data(new OBReadData1().permissions(Collections.singletonList(OBExternalPermissions1Code.READCUSTOMERINFOCONSENT)))
+                .risk(new OBRisk2());
+
 
         // When
         HttpResponse<OBReadConsentResponse1> response = Unirest.post("https://rs-api:" + port + "/open-banking/v3.1/aisp/account-access-consents/")
