@@ -31,4 +31,9 @@ public class OpenBankingHttpHeaders {
      * Issued by OBIE and corresponds to the Organization Id of the ASPSP in the Open Banking Directory.
      */
     public static final String X_FAPI_FINANCIAL_ID = "x-fapi-financial-id";
+
+    /**
+     * Contains a flag to identify if the request is in mode test to adapt the behaviour for test purposes.
+     */
+    public static final String X_OB_MODE_TEST = "x-ob-mode-test";
 }

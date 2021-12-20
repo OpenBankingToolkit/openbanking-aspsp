@@ -1,6 +1,666 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#462](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/462) Intermediate checkin with new 3.1.9r3 datamodels
+[ef3db5f856d2af9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ef3db5f856d2af9) Jorge Sanchez Perez *2021-12-15 13:51:37*
+Feature/36 variable recurring payments for 3 1 8 (#469)
+
+* 45: Add VRP generated API and Controllers
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
+* commit before rebase master
+
+* 45: Use latest uk-datamodel with 3.1.8r5 swagger models
+
+Some changes to VRP and Funds Conformation
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
+* Release candidate: prepare release 1.5.6
+
+* Release candidate: prepare for next development iteration
+
+* after rebase master
+
+* 47: vrp consent controllers
+- Fix simbols
+- Fix Shortcuts annotations in VRP controller interfaces
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 47: VRP consent controllers
+- Fix VRP request Mapping controllers annotation
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Intermediate checkin with new 3.1.9r3 datamodels (#462)
+
+Some of the Consent stuff doesn't compile, but the VRP side now
+compiling
+
+* 47: vrp consent controllers (#463)
+
+* 47: vrp consent controllers
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* 47: vrp payment consent controller (#464)
+
+* 47: vrp consent controllers
+- rebase
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* 47: vrp payment consent controller
+- Updated discovery configuration
+- Updated resource link service to introduce the vrp links
+- Other improvements for vrp consent
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 48: Develop DomesticVrpApi and controllers
+
+Hand over to Jorge!
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
+
+* Issue/47 implementation of vrp payment consent controller (#466)
+
+* 47: vrp consent controllers
+- rebase
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Added store IT test
+
+* 36-47: VRP payment consent controller
+- Added Integration tests for VRP payment consent
+- Few fixes
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 36-47: VRP consent controller flow
+- Added implementation to consent details and decision to present data on Bank UI
+- Added implementation consent operations (Post, Get, delete)
+- Added Integration tests
+- Set the proper snapshot dependencies for development iteration on branch 36 (must be updated before merge on master)
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* VRP Funds confirmation
+
+* Fix Domestic consent controller constructor to delete unused service
+
+* Fix integration tests for VRP funds confirmation
+
+* 36: Add filters to test vrp Payments risk and initiation
+
+In accord with this spec;
+https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html#post-domestic-vrps
+
+Each VRP request need to test that the initiation and risk objects match
+those that were provided when the consent was created.
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+
+* 36: Further VRP request filters
+
+Add filters to ensure that Creditor is provided in the request if it
+doesn't exist in the consent
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+
+* 36-48: VRP payment controller validations
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
+
+* Vrp payment submission controller and integration tests
+
+* vrp payment contrller gateway server implementations
+
+* Fix node version github workflow to build and tests the UIs
+
+* Update version to 1.6.0
+
+* Fix npm tests for VRP payment component
+
+Co-authored-by: JamieB <jamie.bowen@forgerock.com>
+Co-authored-by: Jamie Bowen <jpublic@chantrycottage.net>
+### GitHub [#463](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/463) 47: vrp consent controllers
+[ef3db5f856d2af9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ef3db5f856d2af9) Jorge Sanchez Perez *2021-12-15 13:51:37*
+Feature/36 variable recurring payments for 3 1 8 (#469)
+
+* 45: Add VRP generated API and Controllers
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
+* commit before rebase master
+
+* 45: Use latest uk-datamodel with 3.1.8r5 swagger models
+
+Some changes to VRP and Funds Conformation
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
+* Release candidate: prepare release 1.5.6
+
+* Release candidate: prepare for next development iteration
+
+* after rebase master
+
+* 47: vrp consent controllers
+- Fix simbols
+- Fix Shortcuts annotations in VRP controller interfaces
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 47: VRP consent controllers
+- Fix VRP request Mapping controllers annotation
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Intermediate checkin with new 3.1.9r3 datamodels (#462)
+
+Some of the Consent stuff doesn't compile, but the VRP side now
+compiling
+
+* 47: vrp consent controllers (#463)
+
+* 47: vrp consent controllers
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* 47: vrp payment consent controller (#464)
+
+* 47: vrp consent controllers
+- rebase
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* 47: vrp payment consent controller
+- Updated discovery configuration
+- Updated resource link service to introduce the vrp links
+- Other improvements for vrp consent
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 48: Develop DomesticVrpApi and controllers
+
+Hand over to Jorge!
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
+
+* Issue/47 implementation of vrp payment consent controller (#466)
+
+* 47: vrp consent controllers
+- rebase
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Added store IT test
+
+* 36-47: VRP payment consent controller
+- Added Integration tests for VRP payment consent
+- Few fixes
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 36-47: VRP consent controller flow
+- Added implementation to consent details and decision to present data on Bank UI
+- Added implementation consent operations (Post, Get, delete)
+- Added Integration tests
+- Set the proper snapshot dependencies for development iteration on branch 36 (must be updated before merge on master)
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* VRP Funds confirmation
+
+* Fix Domestic consent controller constructor to delete unused service
+
+* Fix integration tests for VRP funds confirmation
+
+* 36: Add filters to test vrp Payments risk and initiation
+
+In accord with this spec;
+https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html#post-domestic-vrps
+
+Each VRP request need to test that the initiation and risk objects match
+those that were provided when the consent was created.
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+
+* 36: Further VRP request filters
+
+Add filters to ensure that Creditor is provided in the request if it
+doesn't exist in the consent
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+
+* 36-48: VRP payment controller validations
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
+
+* Vrp payment submission controller and integration tests
+
+* vrp payment contrller gateway server implementations
+
+* Fix node version github workflow to build and tests the UIs
+
+* Update version to 1.6.0
+
+* Fix npm tests for VRP payment component
+
+Co-authored-by: JamieB <jamie.bowen@forgerock.com>
+Co-authored-by: Jamie Bowen <jpublic@chantrycottage.net>
+### GitHub [#464](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/464) 47: vrp payment consent controller
+[ef3db5f856d2af9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ef3db5f856d2af9) Jorge Sanchez Perez *2021-12-15 13:51:37*
+Feature/36 variable recurring payments for 3 1 8 (#469)
+
+* 45: Add VRP generated API and Controllers
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
+* commit before rebase master
+
+* 45: Use latest uk-datamodel with 3.1.8r5 swagger models
+
+Some changes to VRP and Funds Conformation
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
+* Release candidate: prepare release 1.5.6
+
+* Release candidate: prepare for next development iteration
+
+* after rebase master
+
+* 47: vrp consent controllers
+- Fix simbols
+- Fix Shortcuts annotations in VRP controller interfaces
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 47: VRP consent controllers
+- Fix VRP request Mapping controllers annotation
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Intermediate checkin with new 3.1.9r3 datamodels (#462)
+
+Some of the Consent stuff doesn't compile, but the VRP side now
+compiling
+
+* 47: vrp consent controllers (#463)
+
+* 47: vrp consent controllers
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* 47: vrp payment consent controller (#464)
+
+* 47: vrp consent controllers
+- rebase
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* 47: vrp payment consent controller
+- Updated discovery configuration
+- Updated resource link service to introduce the vrp links
+- Other improvements for vrp consent
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 48: Develop DomesticVrpApi and controllers
+
+Hand over to Jorge!
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
+
+* Issue/47 implementation of vrp payment consent controller (#466)
+
+* 47: vrp consent controllers
+- rebase
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Added store IT test
+
+* 36-47: VRP payment consent controller
+- Added Integration tests for VRP payment consent
+- Few fixes
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 36-47: VRP consent controller flow
+- Added implementation to consent details and decision to present data on Bank UI
+- Added implementation consent operations (Post, Get, delete)
+- Added Integration tests
+- Set the proper snapshot dependencies for development iteration on branch 36 (must be updated before merge on master)
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* VRP Funds confirmation
+
+* Fix Domestic consent controller constructor to delete unused service
+
+* Fix integration tests for VRP funds confirmation
+
+* 36: Add filters to test vrp Payments risk and initiation
+
+In accord with this spec;
+https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html#post-domestic-vrps
+
+Each VRP request need to test that the initiation and risk objects match
+those that were provided when the consent was created.
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+
+* 36: Further VRP request filters
+
+Add filters to ensure that Creditor is provided in the request if it
+doesn't exist in the consent
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+
+* 36-48: VRP payment controller validations
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
+
+* Vrp payment submission controller and integration tests
+
+* vrp payment contrller gateway server implementations
+
+* Fix node version github workflow to build and tests the UIs
+
+* Update version to 1.6.0
+
+* Fix npm tests for VRP payment component
+
+Co-authored-by: JamieB <jamie.bowen@forgerock.com>
+Co-authored-by: Jamie Bowen <jpublic@chantrycottage.net>
+### GitHub [#466](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/466) Issue/47 implementation of vrp payment consent controller
+[ef3db5f856d2af9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ef3db5f856d2af9) Jorge Sanchez Perez *2021-12-15 13:51:37*
+Feature/36 variable recurring payments for 3 1 8 (#469)
+
+* 45: Add VRP generated API and Controllers
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
+* commit before rebase master
+
+* 45: Use latest uk-datamodel with 3.1.8r5 swagger models
+
+Some changes to VRP and Funds Conformation
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
+* Release candidate: prepare release 1.5.6
+
+* Release candidate: prepare for next development iteration
+
+* after rebase master
+
+* 47: vrp consent controllers
+- Fix simbols
+- Fix Shortcuts annotations in VRP controller interfaces
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 47: VRP consent controllers
+- Fix VRP request Mapping controllers annotation
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Intermediate checkin with new 3.1.9r3 datamodels (#462)
+
+Some of the Consent stuff doesn't compile, but the VRP side now
+compiling
+
+* 47: vrp consent controllers (#463)
+
+* 47: vrp consent controllers
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* 47: vrp payment consent controller (#464)
+
+* 47: vrp consent controllers
+- rebase
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* 47: vrp payment consent controller
+- Updated discovery configuration
+- Updated resource link service to introduce the vrp links
+- Other improvements for vrp consent
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 48: Develop DomesticVrpApi and controllers
+
+Hand over to Jorge!
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
+
+* Issue/47 implementation of vrp payment consent controller (#466)
+
+* 47: vrp consent controllers
+- rebase
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Added store IT test
+
+* 36-47: VRP payment consent controller
+- Added Integration tests for VRP payment consent
+- Few fixes
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 36-47: VRP consent controller flow
+- Added implementation to consent details and decision to present data on Bank UI
+- Added implementation consent operations (Post, Get, delete)
+- Added Integration tests
+- Set the proper snapshot dependencies for development iteration on branch 36 (must be updated before merge on master)
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* VRP Funds confirmation
+
+* Fix Domestic consent controller constructor to delete unused service
+
+* Fix integration tests for VRP funds confirmation
+
+* 36: Add filters to test vrp Payments risk and initiation
+
+In accord with this spec;
+https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html#post-domestic-vrps
+
+Each VRP request need to test that the initiation and risk objects match
+those that were provided when the consent was created.
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+
+* 36: Further VRP request filters
+
+Add filters to ensure that Creditor is provided in the request if it
+doesn't exist in the consent
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+
+* 36-48: VRP payment controller validations
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
+
+* Vrp payment submission controller and integration tests
+
+* vrp payment contrller gateway server implementations
+
+* Fix node version github workflow to build and tests the UIs
+
+* Update version to 1.6.0
+
+* Fix npm tests for VRP payment component
+
+Co-authored-by: JamieB <jamie.bowen@forgerock.com>
+Co-authored-by: Jamie Bowen <jpublic@chantrycottage.net>
+### GitHub [#469](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/469) Feature/36 variable recurring payments for 3 1 8
+[ef3db5f856d2af9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ef3db5f856d2af9) Jorge Sanchez Perez *2021-12-15 13:51:37*
+Feature/36 variable recurring payments for 3 1 8 (#469)
+
+* 45: Add VRP generated API and Controllers
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
+* commit before rebase master
+
+* 45: Use latest uk-datamodel with 3.1.8r5 swagger models
+
+Some changes to VRP and Funds Conformation
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
+
+* Release candidate: prepare release 1.5.6
+
+* Release candidate: prepare for next development iteration
+
+* after rebase master
+
+* 47: vrp consent controllers
+- Fix simbols
+- Fix Shortcuts annotations in VRP controller interfaces
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 47: VRP consent controllers
+- Fix VRP request Mapping controllers annotation
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Intermediate checkin with new 3.1.9r3 datamodels (#462)
+
+Some of the Consent stuff doesn't compile, but the VRP side now
+compiling
+
+* 47: vrp consent controllers (#463)
+
+* 47: vrp consent controllers
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* 47: vrp payment consent controller (#464)
+
+* 47: vrp consent controllers
+- rebase
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* 47: vrp payment consent controller
+- Updated discovery configuration
+- Updated resource link service to introduce the vrp links
+- Other improvements for vrp consent
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 48: Develop DomesticVrpApi and controllers
+
+Hand over to Jorge!
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
+
+* Issue/47 implementation of vrp payment consent controller (#466)
+
+* 47: vrp consent controllers
+- rebase
+- First approach to implement the consent controllers
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Delete uk-datamodel snapshot to use the parent snapshot in the development iteration of VRP payments
+
+* Added store IT test
+
+* 36-47: VRP payment consent controller
+- Added Integration tests for VRP payment consent
+- Few fixes
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* 36-47: VRP consent controller flow
+- Added implementation to consent details and decision to present data on Bank UI
+- Added implementation consent operations (Post, Get, delete)
+- Added Integration tests
+- Set the proper snapshot dependencies for development iteration on branch 36 (must be updated before merge on master)
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/47
+
+* VRP Funds confirmation
+
+* Fix Domestic consent controller constructor to delete unused service
+
+* Fix integration tests for VRP funds confirmation
+
+* 36: Add filters to test vrp Payments risk and initiation
+
+In accord with this spec;
+https://openbankinguk.github.io/read-write-api-site3/v3.1.8/resources-and-data-models/vrp/domestic-vrps.html#post-domestic-vrps
+
+Each VRP request need to test that the initiation and risk objects match
+those that were provided when the consent was created.
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+
+* 36: Further VRP request filters
+
+Add filters to ensure that Creditor is provided in the request if it
+doesn't exist in the consent
+
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+
+* 36-48: VRP payment controller validations
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
+
+* Vrp payment submission controller and integration tests
+
+* vrp payment contrller gateway server implementations
+
+* Fix node version github workflow to build and tests the UIs
+
+* Update version to 1.6.0
+
+* Fix npm tests for VRP payment component
+
+Co-authored-by: JamieB <jamie.bowen@forgerock.com>
+Co-authored-by: Jamie Bowen <jpublic@chantrycottage.net>
 [4833a4411f2b7f9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4833a4411f2b7f9) JamieB *2021-11-26 09:45:58*
 Release candidate: prepare for next development iteration
 ## 1.5.6
@@ -21,7 +681,6 @@ Release/1.5.5 (#457)
 * Release candidate: prepare release 1.5.5
 
 * Release candidate: prepare for next development iteration
-
 [60ade108053dc75](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/60ade108053dc75) JamieB *2021-11-26 09:45:54*
 Release candidate: prepare release 1.5.6
 [cfe1045b2b47703](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/cfe1045b2b47703) JamieB *2021-11-26 09:08:26*
@@ -30,7 +689,6 @@ Release candidate: prepare release 1.5.6
 Some changes to VRP and Funds Conformation
 
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/45
-
 [eef7145f5305af3](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/eef7145f5305af3) JamieB *2021-10-12 06:53:39*
 Release candidate: prepare for next development iteration
 [104306b2f933965](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/104306b2f933965) JamieB *2021-09-24 12:45:20*

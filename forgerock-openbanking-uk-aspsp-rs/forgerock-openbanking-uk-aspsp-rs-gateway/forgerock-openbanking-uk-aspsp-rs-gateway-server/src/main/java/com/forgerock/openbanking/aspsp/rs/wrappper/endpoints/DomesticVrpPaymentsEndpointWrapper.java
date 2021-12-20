@@ -49,13 +49,16 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
 
     private FRDomesticVRPConsent consent;
     private final OBRisk1Validator riskValidator;
-    private boolean isFundsConfirmationRequest;
+    private boolean isAuthorizationCodeGrantType;
+    private boolean isModeTest;
 
     public DomesticVrpPaymentsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
                                               TppStoreService tppStoreService,
                                               OBRisk1Validator riskValidator) {
         super(RSEndpointWrapperService, tppStoreService);
         this.riskValidator = riskValidator;
+        this.isAuthorizationCodeGrantType = false;
+        this.isModeTest = false;
     }
 
     public DomesticVrpPaymentsEndpointWrapper payment(FRDomesticVRPConsent consent) {
@@ -63,8 +66,13 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         return this;
     }
 
-    public DomesticVrpPaymentsEndpointWrapper isFundsConfirmationRequest(boolean isFundsConfirmationRequest) {
-        this.isFundsConfirmationRequest = isFundsConfirmationRequest;
+    public DomesticVrpPaymentsEndpointWrapper isAuthorizationCodeGrantType(boolean isAuthorizationCodeGrantType) {
+        this.isAuthorizationCodeGrantType = isAuthorizationCodeGrantType;
+        return this;
+    }
+
+    public DomesticVrpPaymentsEndpointWrapper isModeTest(boolean isModeTest) {
+        this.isModeTest = isModeTest;
         return this;
     }
 
@@ -78,7 +86,7 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
     protected void applyFilters() throws OBErrorException {
         List grantTypes = Arrays.asList(OIDCConstants.GrantType.CLIENT_CREDENTIAL);
         // the grant type for funds confirmation endpoint is different than the others payment endpoints
-        if (isFundsConfirmationRequest) {
+        if (isAuthorizationCodeGrantType) {
             grantTypes = Arrays.asList(
                     OIDCConstants.GrantType.AUTHORIZATION_CODE
             );
@@ -121,7 +129,7 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
     public void checkCreditorAccountIsInInstructionIfNotInConsent(OBDomesticVRPRequest vrpRequest,
                                                                   FRDomesticVRPConsent frConsent) throws OBErrorException {
         if (frConsent.getVrpDetails().getData().getInitiation().getCreditorAccount() == null) {
-            if (vrpRequest.getData().getInitiation().getCreditorAccount() == null) {
+            if (vrpRequest.getData().getInstruction().getCreditorAccount() == null) {
                 throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
             }
         }

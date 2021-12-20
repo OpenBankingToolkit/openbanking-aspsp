@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_8.vrp;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.DomesticVrpPaymentsEndpointWrapper;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.vrp.DomesticVrpPaymentConsentService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
@@ -69,6 +70,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .authorization(authorization)
                 .xFapiFinancialId(rsEndpointWrapperService.getRsConfiguration().financialId)
                 .principal(principal)
+                .obVersion(OBVersion.v3_1_8)
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
@@ -86,6 +88,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .authorization(authorization)
                 .xFapiFinancialId(rsEndpointWrapperService.getRsConfiguration().financialId)
                 .principal(principal)
+                .obVersion(OBVersion.v3_1_8)
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
@@ -130,9 +133,11 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         FRDomesticVRPConsent consent = vrpPaymentConsentService.getVrpPaymentConsent(consentId);
         DomesticVrpPaymentsEndpointWrapper vrpPaymentsEndpointWrapper = rsEndpointWrapperService.vrpPaymentEndpoint();
         vrpPaymentsEndpointWrapper.authorization(authorization);
+        vrpPaymentsEndpointWrapper.obVersion(OBVersion.v3_1_8);
         vrpPaymentsEndpointWrapper.xFapiFinancialId(rsEndpointWrapperService.getRsConfiguration().financialId);
         vrpPaymentsEndpointWrapper.principal(principal);
         vrpPaymentsEndpointWrapper.payment(consent);
+        vrpPaymentsEndpointWrapper.isAuthorizationCodeGrantType(true);
         vrpPaymentsEndpointWrapper.filters(f -> {
             f.verifyJwsDetachedSignature(xJwsSignature, request);
             f.validateRisk(obDomesticVRPRequest.getRisk());

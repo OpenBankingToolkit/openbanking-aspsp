@@ -172,6 +172,7 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
         // Create the request data
         OBDomesticVRPRequest vrpRequest = OBDomesticVRPRequestTestDataFactory.aValidOBDomesticVRPRequest();
         vrpRequest.getData().getInitiation().setCreditorAccount(null);
+        vrpRequest.getData().getInstruction().setCreditorAccount(null);
 
         // Create an FR Consent with slightly differing initiation data
         FRDomesticVRPConsent frConsent = FRVrpTestDataFactory.aValidFRDomesticVRPConsent();

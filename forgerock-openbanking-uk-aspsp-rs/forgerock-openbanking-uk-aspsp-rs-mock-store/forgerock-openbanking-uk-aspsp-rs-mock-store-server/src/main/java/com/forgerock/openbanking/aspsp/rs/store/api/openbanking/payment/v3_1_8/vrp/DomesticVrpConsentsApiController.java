@@ -27,6 +27,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.DomesticVRPConsen
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
 import com.forgerock.openbanking.common.conf.discovery.DiscoveryConfigurationProperties;
 import com.forgerock.openbanking.common.conf.discovery.ResourceLinkService;
+import com.forgerock.openbanking.common.constants.OpenBankingHttpHeaders;
 import com.forgerock.openbanking.common.model.openbanking.IntentType;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
@@ -43,6 +44,7 @@ import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksVrpPayment;
 import uk.org.openbanking.datamodel.vrp.*;
 
@@ -165,41 +167,48 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
             String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
-        log.debug("(store) Request to get a VRP funds confirmation, consentId '{}'", consentId);
-        Optional<FRDomesticVRPConsent> optional = domesticVRPConsentRepository.findById(consentId);
-        if (!optional.isPresent()) {
-            log.warn("(store) Domestic VRP payment consent '{}' to confirm funds can't be found", consentId);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment consent '" + consentId +
-                    "' to confirm funds can't be found");
-        }
-        FRDomesticVRPConsent domesticVrpConsent = optional.get();
-        if (!domesticVrpConsent.getStatus().equals(ConsentStatusCode.AUTHORISED)) {
-            log.error("(store) Funds confirmation for VRP payment consent Id '{}, with status '{}' can't be requested" +
-                            " because the consent status hasn't '{}'", consentId, domesticVrpConsent.getStatus().getValue(),
-                    ConsentStatusCode.AUTHORISED.getValue());
-            throw new OBErrorResponseException(
-                    HttpStatus.BAD_REQUEST,
-                    OBRIErrorResponseCategory.REQUEST_INVALID,
-                    OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consentId)
-            );
-        }
+        log.debug("(store) Request to get a VRP funds confirmation, consentId '{}', mode test '{}'",
+                consentId, StringUtils.hasLength(request.getHeader(OpenBankingHttpHeaders.X_OB_MODE_TEST)));
+        boolean areFundsAvailable = false;
+        // check header 'x-ob-mode-test' to restrict the behaviour for test purposes
+        if (StringUtils.hasLength(request.getHeader(OpenBankingHttpHeaders.X_OB_MODE_TEST))) {
+            areFundsAvailable = true;
+        } else {
+            Optional<FRDomesticVRPConsent> optional = domesticVRPConsentRepository.findById(consentId);
+            if (!optional.isPresent()) {
+                log.warn("(store) Domestic VRP payment consent '{}' to confirm funds can't be found", consentId);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment consent '" + consentId +
+                        "' to confirm funds can't be found");
+            }
+            FRDomesticVRPConsent domesticVrpConsent = optional.get();
+            if (!domesticVrpConsent.getStatus().equals(ConsentStatusCode.AUTHORISED)) {
+                log.error("(store) Funds confirmation for VRP payment consent Id '{}, with status '{}' can't be requested" +
+                                " because the consent status hasn't '{}'", consentId, domesticVrpConsent.getStatus().getValue(),
+                        ConsentStatusCode.AUTHORISED.getValue());
+                throw new OBErrorResponseException(
+                        HttpStatus.BAD_REQUEST,
+                        OBRIErrorResponseCategory.REQUEST_INVALID,
+                        OBRIErrorType.CONSENT_STATUS_NOT_AUTHORISED.toOBError1(consentId)
+                );
+            }
 
-        // Check if funds are available on the account selected in consent
-        String accountIdentification = domesticVrpConsent.getVrpDetails().getData().getInitiation().getDebtorAccount().getIdentification();
-        Collection<FRAccount> accountsByUserID = accountRepository.findByUserID(Objects.requireNonNull(domesticVrpConsent.getUserId()));
-        Optional<FRAccount> accountOptional = accountsByUserID.stream().filter(
-                account -> account.getAccount().getAccounts().stream().filter(
-                        a -> a.getIdentification().equals(accountIdentification)
-                ).findFirst().isPresent()
-        ).findFirst();
-        if (!accountOptional.isPresent()) {
-            log.warn("(store) VRP consent '{}', debtor account with identitication '{}' can't be found", consentId, accountIdentification);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("VRP consent '" + consentId + "', debtor account with identitication '" + accountIdentification +
-                    "' to confirm funds can't be found");
+            // Check if funds are available on the account selected in consent
+            String accountIdentification = domesticVrpConsent.getVrpDetails().getData().getInitiation().getDebtorAccount().getIdentification();
+            Collection<FRAccount> accountsByUserID = accountRepository.findByUserID(Objects.requireNonNull(domesticVrpConsent.getUserId()));
+            Optional<FRAccount> accountOptional = accountsByUserID.stream().filter(
+                    account -> account.getAccount().getAccounts().stream().filter(
+                            a -> a.getIdentification().equals(accountIdentification)
+                    ).findFirst().isPresent()
+            ).findFirst();
+            if (!accountOptional.isPresent()) {
+                log.warn("(store) VRP consent '{}', debtor account with identitication '{}' can't be found", consentId, accountIdentification);
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("VRP consent '" + consentId + "', debtor account with identitication '" + accountIdentification +
+                        "' to confirm funds can't be found");
+            }
+            areFundsAvailable = fundsAvailabilityService.isFundsAvailable(
+                    accountOptional.get().getId(),
+                    obVRPFundsConfirmationRequest.getData().getInstructedAmount().getAmount());
         }
-        boolean areFundsAvailable = fundsAvailabilityService.isFundsAvailable(
-                accountOptional.get().getId(),
-                obVRPFundsConfirmationRequest.getData().getInstructedAmount().getAmount());
         OBVRPFundsConfirmationRequestData data = obVRPFundsConfirmationRequest.getData();
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -226,7 +235,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                 .links(
                         resourceLinkService.toSelfLink(
                                 frDomesticVRPConsent,
-                                discovery -> getVersion(discovery).getCreateDomesticVrpPaymentConsent()
+                                discovery -> getVersion(discovery).getGetDomesticVrpPaymentConsent()
                         )
                 );
     }

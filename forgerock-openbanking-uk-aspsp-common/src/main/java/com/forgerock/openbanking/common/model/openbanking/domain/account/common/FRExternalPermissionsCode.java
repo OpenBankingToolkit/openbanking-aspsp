@@ -43,7 +43,8 @@ public enum FRExternalPermissionsCode {
     READTRANSACTIONSBASIC("ReadTransactionsBasic"),
     READTRANSACTIONSCREDITS("ReadTransactionsCredits"),
     READTRANSACTIONSDEBITS("ReadTransactionsDebits"),
-    READTRANSACTIONSDETAIL("ReadTransactionsDetail");
+    READTRANSACTIONSDETAIL("ReadTransactionsDetail"),
+    READCUSTOMERINFOCONSENT("ReadCustomerInfoPSU");
 
     private String value;
 

@@ -33,7 +33,7 @@
     <parent>
         <groupId>com.forgerock.openbanking</groupId>
         <artifactId>forgerock-openbanking-starter-parent</artifactId>
-        <version>1.2.7</version>
+        <version>1.2.8</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
 
@@ -44,10 +44,10 @@
     <url>http://www.forgerock.org</url>
 
     <properties>
-        <ob-common.version>1.3.0</ob-common.version>
-        <ob-clients.version>1.3.0</ob-clients.version>
-        <ob-jwkms.version>1.3.0</ob-jwkms.version>
-        <ob-auth.version>1.3.0</ob-auth.version>
+        <ob-common.version>1.3.1</ob-common.version>
+        <ob-clients.version>1.3.1</ob-clients.version>
+        <ob-jwkms.version>1.3.1</ob-jwkms.version>
+        <ob-auth.version>1.3.1</ob-auth.version>
         <maven-release-plugin.version>3.0.0-M1</maven-release-plugin.version>
         <main.basedir.license>${project.basedir}</main.basedir.license>
     </properties>
