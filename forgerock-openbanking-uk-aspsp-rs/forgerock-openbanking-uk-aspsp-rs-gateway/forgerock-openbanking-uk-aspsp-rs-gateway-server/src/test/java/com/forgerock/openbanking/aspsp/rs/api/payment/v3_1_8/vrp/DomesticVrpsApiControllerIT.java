@@ -112,9 +112,9 @@ public class DomesticVrpsApiControllerIT {
     }
 
     @Test
-    public void createVrpPaymentConsent() throws Exception {
+    public void createVrpPayment() throws Exception {
         // Given
-        String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
         FRDomesticVRPConsent frDomesticVRPConsent = aValidFRDomesticVRPConsent(
@@ -149,9 +149,9 @@ public class DomesticVrpsApiControllerIT {
     }
 
     @Test
-    public void createVrpPaymentConsentInitiationNotMatch() throws Exception {
+    public void createVrpPaymentInitiationNotMatch() throws Exception {
         // Given
-        String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
         FRDomesticVRPConsent frDomesticVRPConsent = aValidFRDomesticVRPConsent(
@@ -188,9 +188,9 @@ public class DomesticVrpsApiControllerIT {
     }
 
     @Test
-    public void createVrpPaymentConsentRiskNotMatch() throws Exception {
+    public void createVrpPaymentRiskNotMatch() throws Exception {
         // Given
-        String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
         FRDomesticVRPConsent frDomesticVRPConsent = aValidFRDomesticVRPConsent(
@@ -227,9 +227,9 @@ public class DomesticVrpsApiControllerIT {
     }
 
     @Test
-    public void createVrpPaymentConsentCreditorAccountNotProvided() throws Exception {
+    public void createVrpPaymentInstructedCreditorAccountNotProvided() throws Exception {
         // Given
-        String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
         FRDomesticVRPConsent frDomesticVRPConsent = aValidFRDomesticVRPConsent(
@@ -242,7 +242,7 @@ public class DomesticVrpsApiControllerIT {
         OBDomesticVRPRequest request = buildAValidOBDomesticVRPRequest(consentResponse);
         frDomesticVRPConsent.getVrpDetails().getData().getInitiation().setCreditorAccount(null);
         consentResponse.getData().getInitiation().setCreditorAccount(null);
-        request.getData().getInitiation().setCreditorAccount(null);
+        request.getData().getInstruction().setCreditorAccount(null);
 
         given(vrpPaymentConsentService.getVrpPaymentConsent(request.getData().getConsentId())).willReturn(frDomesticVRPConsent);
 
@@ -260,17 +260,17 @@ public class DomesticVrpsApiControllerIT {
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
         assertThat(response.getParsingError().get().getOriginalBody()).contains(
-                "{\"ErrorCode\":\"UK.OBIE.Resource.ConsentMismatch\""
+                "{\"ErrorCode\":\"UK.OBIE.Field.Invalid\""
         );
         assertThat(response.getParsingError().get().getOriginalBody()).contains(
-                "Creditor account must be specified in the VRP request when not provided in the consent"
+                "data.instruction.creditorAccount"
         );
     }
 
     @Test
-    public void createVrpPaymentConsentBreachLimitationMaxAmount() throws Exception {
+    public void createVrpPaymentBreachLimitationMaxAmount() throws Exception {
         // Given
-        String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
         FRDomesticVRPConsent frDomesticVRPConsent = aValidFRDomesticVRPConsent(

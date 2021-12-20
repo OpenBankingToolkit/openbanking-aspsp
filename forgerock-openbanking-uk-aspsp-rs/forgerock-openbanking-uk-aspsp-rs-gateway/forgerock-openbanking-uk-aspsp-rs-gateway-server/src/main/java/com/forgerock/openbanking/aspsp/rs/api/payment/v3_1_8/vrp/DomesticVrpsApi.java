@@ -25,6 +25,9 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_8.vrp;
 
+import com.forgerock.openbanking.api.annotations.OBGroupName;
+import com.forgerock.openbanking.api.annotations.OBReference;
+import com.forgerock.openbanking.api.annotations.OpenBankingAPI;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +45,11 @@ import java.security.Principal;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
 @Validated
 @Api(value = "domestic-vrps", description = "the domestic-vrps API")
+@OpenBankingAPI(
+        obVersion = "3.1.8",
+        obGroupName = OBGroupName.PISP,
+        obReference = OBReference.DOMESTIC_VRP_PAYMENTS
+)
 @RequestMapping(value = "/open-banking/v3.1.8/pisp")
 public interface DomesticVrpsApi {
 
@@ -80,6 +88,9 @@ public interface DomesticVrpsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
+    @OpenBankingAPI(
+            obReference = OBReference.GET_DOMESTIC_VRP_PAYMENT
+    )
     @RequestMapping(
             value = "/domestic-vrps/{DomesticVRPId}",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
@@ -144,6 +155,9 @@ public interface DomesticVrpsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
+    @OpenBankingAPI(
+            obReference = OBReference.GET_DOMESTIC_VRP_PAYMENT_DETAILS
+    )
     @RequestMapping(
             value = "/domestic-vrps/{DomesticVRPId}/payment-details",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},
@@ -211,6 +225,9 @@ public interface DomesticVrpsApi {
             @ApiResponse(code = 415, message = "Unsupported Media Type"),
             @ApiResponse(code = 429, message = "Too Many Requests"),
             @ApiResponse(code = 500, message = "Internal Server Error", response = OBErrorResponse1.class)})
+    @OpenBankingAPI(
+            obReference = OBReference.CREATE_DOMESTIC_VRP_PAYMENT
+    )
     @RequestMapping(
             value = "/domestic-vrps",
             produces = {"application/json; charset=utf-8", "application/json", "application/jose+jwe"},

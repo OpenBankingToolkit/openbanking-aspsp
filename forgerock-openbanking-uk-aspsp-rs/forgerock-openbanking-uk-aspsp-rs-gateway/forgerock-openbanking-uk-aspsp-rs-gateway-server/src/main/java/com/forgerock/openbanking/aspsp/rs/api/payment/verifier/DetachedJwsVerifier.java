@@ -73,11 +73,11 @@ public class DetachedJwsVerifier {
 
             // obVersion is only set from 3.1.3 onwards
             if ((obVersion == null || obVersion.isBeforeVersion(v3_1_4)) && isBase64Encoded(detachedJws)) {
-                log.warn("Invalid detached signature {}", detachedJws, "b64 claim header not set to false in version: " + obVersion);
+                log.warn("Invalid detached signature {}, {}", detachedJws, "b64 claim header not set to false in version: " + obVersion);
                 throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, "b64 claim header not set to false");
             }
             if (obVersion != null && obVersion.isAfterVersion(v3_1_3) && isB64ClaimHeaderPresent(detachedJws)) {
-                log.warn("Invalid detached signature {}", detachedJws, "b64 claim header must not be present in version: " + obVersion);
+                log.warn("Invalid detached signature {}, {}", detachedJws, "b64 claim header must not be present in version: " + obVersion);
                 throw new OBErrorException(OBRIErrorType.DETACHED_JWS_INVALID, detachedJws, "b64 claim header must not be present");
             }
 

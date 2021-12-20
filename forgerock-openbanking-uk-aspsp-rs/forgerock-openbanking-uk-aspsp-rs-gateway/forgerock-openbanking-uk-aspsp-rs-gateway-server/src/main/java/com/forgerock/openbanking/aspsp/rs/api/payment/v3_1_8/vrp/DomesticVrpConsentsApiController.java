@@ -21,6 +21,8 @@
 package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_8.vrp;
 
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
+import com.forgerock.openbanking.common.constants.OpenBankingHttpHeaders;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
@@ -59,6 +62,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiInteractionId)
                 .principal(principal)
+                .obVersion(OBVersion.v3_1_8)
                 .filters(f -> {
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
@@ -85,6 +89,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiInteractionId)
                 .principal(principal)
+                .obVersion(OBVersion.v3_1_8)
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
@@ -102,6 +107,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiInteractionId)
                 .principal(principal)
+                .obVersion(OBVersion.v3_1_8)
                 .execute(
                         (String tppId) -> {
                             HttpHeaders additionalHttpHeaders = new HttpHeaders();
@@ -127,11 +133,13 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                     "' path parameter does not match with the consent ID '" +
                     obVRPFundsConfirmationRequest.getData().getConsentId() + "' requested to confirm the funds.");
         }
+        log.debug("(domesticVrpConsentsFundsConfirmation) Request mode test: '{}'", StringUtils.hasLength(request.getHeader(OpenBankingHttpHeaders.X_OB_MODE_TEST)));
         return rsEndpointWrapperService.vrpPaymentEndpoint()
                 .authorization(authorization)
                 .xFapiFinancialId(xFapiInteractionId)
                 .principal(principal)
-                .isFundsConfirmationRequest(true)
+                .isAuthorizationCodeGrantType(true)
+                .obVersion(OBVersion.v3_1_8)
                 .filters(f -> {
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
                 })
