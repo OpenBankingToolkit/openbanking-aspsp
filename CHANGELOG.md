@@ -661,6 +661,13 @@ Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/48
 
 Co-authored-by: JamieB <jamie.bowen@forgerock.com>
 Co-authored-by: Jamie Bowen <jpublic@chantrycottage.net>
+### GitHub [#470](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/470) 36: VRP payments
+[edd48bf92c4daa5](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/edd48bf92c4daa5) Jorge Sanchez Perez *2021-12-20 16:45:02*
+36: VRP payments (#470)
+
+- Bumped latest dependencies
+- Few fixes to support VRP payments
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
 [4833a4411f2b7f9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4833a4411f2b7f9) JamieB *2021-11-26 09:45:58*
 Release candidate: prepare for next development iteration
 ## 1.5.6
