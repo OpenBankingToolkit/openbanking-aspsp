@@ -125,17 +125,21 @@ public class RSAPIsConfigurationProperties {
         try {
             for (BeanDefinition bd : scanner.findCandidateComponents("com.forgerock")) {
                 Class obRequestMappingClass = Class.forName(bd.getBeanClassName());
+                log.trace("obRequestMappingClass: {}", obRequestMappingClass.getName());
                 List<Class> obInterfaces = interfacesWithOBAPIAnnotation(obRequestMappingClass);
 
                 for (Class obInterface : obInterfaces) {
+                    log.trace("processing interface {}", obInterface.getName());
                     OpenBankingAPI classOpenBankingAPI = (OpenBankingAPI) obInterface.getAnnotation(OpenBankingAPI.class);
                     RequestMapping classRequestMapping = (RequestMapping) obInterface.getAnnotation(RequestMapping.class);
 
                     if (isVersionEnable(classOpenBankingAPI.obVersion())
                             && isAPIEnable(classOpenBankingAPI.obReference())
                             && isVersionOverrideEnable(classOpenBankingAPI.obVersion(), classOpenBankingAPI.obReference())) {
+                        log.trace("version is enabled, api is enabled and version everride enabled");
                         Method[] methods = obInterface.getMethods();
                         for (Method method : methods) {
+                            log.trace("processing method {}", method.getName());
                             OpenBankingAPI methodOpenBankingAPIAnnotation = method.getAnnotation(OpenBankingAPI.class);
                             RequestMapping methodRequestMappingAnnotation = method.getAnnotation(RequestMapping.class);
 

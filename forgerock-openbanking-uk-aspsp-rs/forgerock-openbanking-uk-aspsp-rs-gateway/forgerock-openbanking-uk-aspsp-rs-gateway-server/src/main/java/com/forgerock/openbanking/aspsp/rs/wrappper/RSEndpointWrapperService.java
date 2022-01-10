@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper;
 
 import brave.Tracer;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
 import com.forgerock.openbanking.am.services.AMResourceServerService;
@@ -32,22 +33,37 @@ import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.PaymPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.*;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.openbanking.OBHeaderCheckerService;
 import com.forgerock.openbanking.common.services.store.accountrequest.AccountRequestStoreService;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.services.token.AccessTokenService;
+import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
+import com.nimbusds.jwt.SignedJWT;
 import lombok.Data;
+import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-@Service
+import java.io.IOException;
+import java.text.ParseException;
+
+import static com.forgerock.openbanking.model.error.OBRIErrorType.SERVER_ERROR;
+
+
 /**
  * Bulk endpoint framework class. It will handle for you every things that every bulk request endpoint
  * would need to do, leaving you the "main" function to implement. You will be able to implement in the main and
  * concentrate on what your specific endpoint needs to provide.
  */
+@Service
+@Slf4j
 @Data
 public class RSEndpointWrapperService {
 
@@ -69,7 +85,7 @@ public class RSEndpointWrapperService {
     public PaymPaymentValidator paymPaymentValidator;
     public OBRisk1Validator riskValidator;
     public DetachedJwsVerifier detachedJwsVerifier;
-    public DetachedJwsGenerator detachedJwsGenerator;
+    private DetachedJwsGenerator detachedJwsGenerator;
 
     @Autowired
     public RSEndpointWrapperService(OBHeaderCheckerService obHeaderCheckerService,
@@ -163,6 +179,10 @@ public class RSEndpointWrapperService {
         return new AggregatedPollingApiEndpointWrapper(this, tppStoreService);
     }
 
+    public CustomerInfoApiEndpointWrapper getCustomerInfoEndpointWrapper() {
+        return new CustomerInfoApiEndpointWrapper(this, tppStoreService);
+    }
+
     public CryptoApiClient getCryptoApiClient() {
         return cryptoApiClient;
     }
@@ -178,4 +198,27 @@ public class RSEndpointWrapperService {
     public String getFinancialId() {
         return financialId;
     }
+
+    public SignedJWT verifyAccessToken(String accessTokenBearer) throws ParseException, InvalidTokenException, IOException {
+        return amResourceServerService.verifyAccessToken(accessTokenBearer);
+    }
+
+    public boolean verifyFinancialIdHeader(String xFapiFinancialId) {
+        return this.obHeaderCheckerService.verifyFinancialIdHeader(xFapiFinancialId);
+    }
+
+    public String generateDetachedJws(ResponseEntity response, OBVersion obVersion, String tan, String xFapiFinancialId)
+            throws OBErrorResponseException {
+        try {
+            return this.detachedJwsGenerator.generateDetachedJws(response, obVersion, tan, xFapiFinancialId);
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to process JSON response", e);
+            throw new OBErrorResponseException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    OBRIErrorResponseCategory.REQUEST_FILTER,
+                    SERVER_ERROR.toOBError1());
+        }
+    }
+
+
 }

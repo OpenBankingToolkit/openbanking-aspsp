@@ -39,6 +39,13 @@ public class DiscoveryConfigurationProperties {
         public FundsConfirmationApis fundsConfirmations;
         public EventNotificationApis eventNotifications;
         public VrpPaymentApis vrpPayments;
+        public CustomerInfoApis customerInfo;
+    }
+
+    @Data
+    @NoArgsConstructor
+    public static class CustomerInfoApis {
+        public OBDiscoveryAPILinksCustomerInfo1 v_1_0;
     }
 
     @Data

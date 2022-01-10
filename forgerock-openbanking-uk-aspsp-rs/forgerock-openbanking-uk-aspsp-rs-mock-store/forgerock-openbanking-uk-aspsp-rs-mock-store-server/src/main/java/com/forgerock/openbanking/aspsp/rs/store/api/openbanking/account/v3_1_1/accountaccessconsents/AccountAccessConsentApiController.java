@@ -20,8 +20,18 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1_1.accountaccessconsents;
 
+import com.forgerock.openbanking.analytics.services.ConsentMetricService;
+import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accountsaccessconsents.FRAccountAccessConsentRepository;
+import com.forgerock.openbanking.repositories.TppRepository;
 import org.springframework.stereotype.Controller;
 
 @Controller("AccountAccessConsentsApiV3.1.1")
-public class AccountAccessConsentApiController extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1.accountaccessconsents.AccountAccessConsentApiController implements AccountAccessConsentApi {
+public class AccountAccessConsentApiController
+        extends com.forgerock.openbanking.aspsp.rs.store.api.openbanking.account.v3_1.accountaccessconsents.AccountAccessConsentApiController
+        implements AccountAccessConsentApi {
+    public AccountAccessConsentApiController(TppRepository tppRepository,
+                                             FRAccountAccessConsentRepository frAccountAccessConsentRepository,
+                                             ConsentMetricService consentMetricService) {
+        super(tppRepository, frAccountAccessConsentRepository, consentMetricService);
+    }
 }

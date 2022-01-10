@@ -20,6 +20,10 @@
  */
 package com.forgerock.openbanking.aspsp.rs.api.account.v3_1_1.accountaccessconsent;
 
+import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.AccountAccessConsentBasicAndDetailPermissionsFilter;
+import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.AccountAccessConsentPermittedPermissionsFilter;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import org.springframework.stereotype.Controller;
 
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2017-10-16T08:37:28.078Z")
@@ -27,4 +31,7 @@ import org.springframework.stereotype.Controller;
 @Controller("AccountAccessConsentsApiV3.1.1")
 public class AccountAccessConsentsApiController
         extends com.forgerock.openbanking.aspsp.rs.api.account.v3_0.accountaccessconsent.AccountAccessConsentsApiController implements AccountAccessConsentsApi {
+    public AccountAccessConsentsApiController(RsStoreGateway rsStoreGateway, com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService RSEndpointWrapperService, AccountAccessConsentPermittedPermissionsFilter accountAccessConsentPermittedPermissionsFilter, AccountAccessConsentBasicAndDetailPermissionsFilter accountAccessConsentBasicAndDetailPermissionsFilter, RSConfiguration rsConfiguration) {
+        super(rsStoreGateway, RSEndpointWrapperService, accountAccessConsentPermittedPermissionsFilter, accountAccessConsentBasicAndDetailPermissionsFilter, rsConfiguration);
+    }
 }

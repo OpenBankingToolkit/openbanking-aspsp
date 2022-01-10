@@ -34,16 +34,20 @@ public class RSConfiguration implements ApplicationConfiguration {
     public final String issuerId;
     public final String financialId;
     public final String jwksUri;
+    public final boolean  customerInfoEnabled;
+
 
     private JWKSet jwkSet = null;
 
     public RSConfiguration(
             @Value("${rs.issuerid}") String issuerId,
             @Value("${rs.financial_id}") String financialId,
-            @Value("${rs.jwks_uri}") String jwksUri) {
+            @Value("${rs.jwks_uri}") String jwksUri,
+            @Value("${rs.customer-info.enable}") boolean customerInfoEnabled) {
         this.issuerId = issuerId;
         this.financialId = financialId;
         this.jwksUri = jwksUri;
+        this.customerInfoEnabled = customerInfoEnabled;
     }
 
     @Override
@@ -60,6 +64,14 @@ public class RSConfiguration implements ApplicationConfiguration {
             throw new RuntimeException("Can't parse RS-API JWKS", e);
         }
         return jwkSet;
+    }
+
+    public boolean isCustomerInfoEnabled(){
+        return this.customerInfoEnabled;
+    }
+
+    public String getFinancialId(){
+        return this.financialId;
     }
 
 }

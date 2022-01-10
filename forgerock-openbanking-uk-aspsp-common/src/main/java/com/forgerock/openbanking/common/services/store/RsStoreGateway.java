@@ -20,8 +20,7 @@
  */
 package com.forgerock.openbanking.common.services.store;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -42,8 +41,9 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class RsStoreGateway {
-    private static final Logger LOGGER = LoggerFactory.getLogger(RsStoreGateway.class);
+    
 
     private RestTemplate restTemplate;
     private String rsStoreRoot;
@@ -64,6 +64,7 @@ public class RsStoreGateway {
     public ResponseEntity toRsStore(HttpServletRequest httpServletRequest, HttpHeaders additionalHttpHeaders, Map<String, String> additionalParams, Class<?> type, Object body) {
         ServletServerHttpRequest request = new ServletServerHttpRequest(httpServletRequest);
         try {
+            log.debug("toRsStore called.");
             UriComponentsBuilder builder = UriComponentsBuilder
                     .fromHttpRequest(request)
                     .uri(new URI(rsStoreRoot));
@@ -72,21 +73,66 @@ public class RsStoreGateway {
             additionalHttpHeaders.forEach(httpHeaders::addAll);
             HttpEntity httpEntity = new HttpEntity(body, httpHeaders);
 
-            additionalParams.entrySet().stream().filter(e -> Objects.nonNull(e.getValue())).forEach(e -> builder.replaceQueryParam(e.getKey(), e.getValue()));
+            additionalParams.entrySet().stream().filter(e -> Objects.nonNull(e.getValue())).forEach(
+                    e -> builder.replaceQueryParam(e.getKey(), e.getValue()));
             URI uri = builder.build().encode().toUri();
-
+            log.debug("toRsStore() will call rs store with url '{}'", uri);
             try {
                 return restTemplate.exchange(uri, request.getMethod(), httpEntity, type);
                 // HttpClient errors will be handled in CustomRestExceptionHandler
             } catch (HttpClientErrorException e) {
+                log.info("toRsStore() caught exception. This is caused by a bad client request from the rs-api to the" +
+                                " rs-store", e);
+                return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+            } catch (HttpServerErrorException e) {
+                if (e.getStatusCode()==HttpStatus.NOT_IMPLEMENTED) {
+                    // Don't raise Exceptions for 'Not Implemented' as this is legitimate for backend services and
+                    // should be passed on to client
+                    return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
+                }
+                log.error("Can't proxy to rs store: {}", e.getResponseBodyAsString(), e);
+                log.debug("URI: {}, Method: {}, Headers: {}, Body: {}, Response Type: {}", uri, request.getMethod(),  httpEntity.getHeaders(), httpEntity.getBody(), type);
+                throw e;
+            }
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("RS store root path is not a URI", e);
+        }
+    }
+
+    public ResponseEntity toRsStoreWithNewUri(String newPath, HttpServletRequest httpServletRequest,
+                                              HttpHeaders additionalHttpHeaders,Map<String, String> additionalParams, Class<?> type, Object body) {
+        log.debug("toRsStoreWithNewUri() called with new path {}", newPath);
+        ServletServerHttpRequest request = new ServletServerHttpRequest(httpServletRequest);
+        try {
+            UriComponentsBuilder builder = UriComponentsBuilder
+                    //.fromHttpRequest(request)
+                    .fromUri(new URI(rsStoreRoot))
+                    .path(newPath);
+
+            HttpHeaders httpHeaders = request.getHeaders();
+            additionalHttpHeaders.forEach(httpHeaders::addAll);
+            HttpEntity httpEntity = new HttpEntity(body, httpHeaders);
+
+            additionalParams.entrySet().stream().filter(e -> Objects.nonNull(e.getValue())).forEach(
+                    e -> builder.replaceQueryParam(e.getKey(), e.getValue()));
+            URI uri = builder.build().encode().toUri();
+            log.debug("toRsStoreWithNewUri() request will be made to {}", uri);
+            try {
+                ResponseEntity<?> response = restTemplate.exchange(uri, request.getMethod(), httpEntity, type);
+                log.debug("toRSStoreWithNewUri() - got resposne from rs-store. Status is '{}'",
+                        response.getStatusCode());
+                return response;
+                // HttpClient errors will be handled in CustomRestExceptionHandler
+            } catch (HttpClientErrorException e) {
+                log.info("toRSStoreWithNewUri() Client Error calling rs-store", e);
                 return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
             } catch (HttpServerErrorException e) {
                 if (e.getStatusCode()==HttpStatus.NOT_IMPLEMENTED) {
                     // Don't raise Exceptions for 'Not Implemented' as this is legitimate for backend services and should be passed on to client
                     return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsString());
                 }
-                LOGGER.error("Can't proxy to rs store: {}", e.getResponseBodyAsString(), e);
-                LOGGER.debug("URI: {}, Method: {}, Headers: {}, Body: {}, Response Type: {}", uri, request.getMethod(),  httpEntity.getHeaders(), httpEntity.getBody(), type);
+                log.error("Can't proxy to rs store: {}", e.getResponseBodyAsString(), e);
+                log.debug("URI: {}, Method: {}, Headers: {}, Body: {}, Response Type: {}", uri, request.getMethod(),  httpEntity.getHeaders(), httpEntity.getBody(), type);
                 throw e;
             }
         } catch (URISyntaxException e) {

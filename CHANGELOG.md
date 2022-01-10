@@ -668,6 +668,15 @@ Co-authored-by: Jamie Bowen <jpublic@chantrycottage.net>
 - Bumped latest dependencies
 - Few fixes to support VRP payments
 Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/36
+### GitHub [#471](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/471) Release/1.6.0
+[4c3c6e8e8b6e351](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4c3c6e8e8b6e351) Jorge Sanchez Perez *2021-12-21 10:21:32*
+Release/1.6.0 (#471)
+
+* Release candidate: prepare release 1.6.0
+
+* Release candidate: prepare for next development iteration
+
+* Changelog updated
 [4833a4411f2b7f9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4833a4411f2b7f9) JamieB *2021-11-26 09:45:58*
 Release candidate: prepare for next development iteration
 ## 1.5.6

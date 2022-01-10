@@ -29,9 +29,8 @@ import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -42,8 +41,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWrapper<T, R>, R> extends  RSEndpointWrapper<T, R> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountsApiEndpointWrapper.class);
 
     protected List<FRExternalPermissionsCode> minimumPermissions;
     protected String page = "";
@@ -84,11 +83,11 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
 
     protected int getPageNumber() throws OBErrorException {
         if (page != null && !page.isEmpty()) {
-            LOGGER.info("Parse the page number {} received in string into an integer", page);
+            log.info("Parse the page number {} received in string into an integer", page);
             try {
                 return Integer.valueOf(page);
             } catch (NumberFormatException e) {
-                LOGGER.info("Page number {} wasn't an integer", page);
+                log.info("Page number {} wasn't an integer", page);
                 throw new OBErrorException(OBRIErrorType.INVALID_PAGE_NUMBER);
             }
         }
@@ -97,16 +96,16 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
 
     public void verifyMatlsFromAccountRequest() throws OBErrorException {
         //MTLS check. We verify that the certificate is associated with the expected AISP ID
-        LOGGER.debug("verifyMatlsFromAccountRequest() verifying account request token was issued to the Tpp indicated" +
+        log.debug("verifyMatlsFromAccountRequest() verifying account request token was issued to the Tpp indicated" +
                 " by the MATLS tranport certificate presented");
         UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
         AccountRequest accountRequest = getAccountRequest();
         String oauth2ClientIdFromAccountRequest = accountRequest.getClientId();
-        LOGGER.debug("verifyMatlsFromAccountRequest() oauth2 clientId from account request is '{}'",
+        log.debug("verifyMatlsFromAccountRequest() oauth2 clientId from account request is '{}'",
                 oauth2ClientIdFromAccountRequest);
         Optional<Tpp> isTpp = this.tppStoreService.findByClientId(oauth2ClientIdFromAccountRequest);
         if(isTpp.isEmpty()){
-            LOGGER.info("The OAuth2 client to which the accountAccessToken was issued no longer exists. ClientId is " +
+            log.info("The OAuth2 client to which the accountAccessToken was issued no longer exists. ClientId is " +
                     "'{}'", oauth2ClientIdFromAccountRequest);
             throw new OBErrorException(OBRIErrorType.MATLS_TPP_AUTHENTICATION_INVALID_FROM_ACCOUNT_REQUEST,
                     currentUser.getUsername(),
@@ -117,7 +116,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
             Tpp tpp = isTpp.get();
             String tppAuthorisationNumber = tpp.getAuthorisationNumber();
             if(!currentUser.getUsername().equals(tppAuthorisationNumber)){
-                LOGGER.warn("AISP ID from account request '{}' is not the one associated with the certificate '{}'",
+                log.warn("AISP ID from account request '{}' is not the one associated with the certificate '{}'",
                         tppAuthorisationNumber, currentUser.getUsername());
                 throw new OBErrorException(OBRIErrorType.MATLS_TPP_AUTHENTICATION_INVALID_FROM_ACCOUNT_REQUEST,
                         currentUser.getUsername(),
@@ -125,31 +124,36 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
                 );
             }
         }
-        LOGGER.info("Account Request with clientId of {} has been verified as belonging to X509 certificate (MTLS) " +
+        log.info("Account Request with clientId of {} has been verified as belonging to X509 certificate (MTLS) " +
                         "principal '{}'",
                 oauth2ClientIdFromAccountRequest, currentUser.getUsername());
     }
 
     public void verifyAccountRequestStatus() throws OBErrorException {
+        log.debug("verifyAccountRequestStatus() called");
         FRExternalRequestStatusCode status = getAccountRequest().getStatus();
         switch (status) {
             case AWAITINGAUTHORISATION:
-                LOGGER.info("Account request hasn't been authorised yet. Account request: {}", getAccountRequest());
+                log.info("verifyAccountRequestStatus() Account request hasn't been authorised yet. Account request: {}"
+                        , getAccountRequest());
                 throw new OBErrorException(OBRIErrorType.ACCOUNT_REQUEST_WAITING_PSU_CONSENT,
                         status
                 );
             case REJECTED:
-                LOGGER.info("Account request hasn't been rejected. Account request: {}", getAccountRequest());
+                log.info("verifyAccountRequestStatus() Account request hasn't been rejected. Account request: {}",
+                        getAccountRequest());
                 throw new OBErrorException(OBRIErrorType.ACCOUNT_REQUEST_REJECTED,
                         status
                 );
             case REVOKED:
-                LOGGER.info("Account request was revoked. Account request: {}", getAccountRequest());
+                log.info("verifyAccountRequestStatus() Account request was revoked. Account request: {}",
+                        getAccountRequest());
                 throw new OBErrorException(OBRIErrorType.ACCOUNT_REQUEST_REVOKED,
                         status
                 );
             case AUTHORISED:
-                LOGGER.info("Account request is authorised. Account request: {}", getAccountRequest());
+                log.info("verifyAccountRequestStatus() Account request is authorised. Account request: {}",
+                        getAccountRequest());
                 //The account request was indeed approved by the PSU!
         }
     }
@@ -158,7 +162,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
         @Valid DateTime expirationDateTime = getAccountRequest().getExpirationDateTime();
         if (expirationDateTime != null
                 && expirationDateTime.isBeforeNow()) {
-            LOGGER.debug("Account request {} expired", getAccountRequest().getId());
+            log.debug("Account request {} expired", getAccountRequest().getId());
             throw new OBErrorException(OBRIErrorType.ACCOUNT_REQUEST_EXPIRED,
                     expirationDateTime
             );
@@ -166,23 +170,22 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
     }
 
     public AccountRequest getAccountRequest() throws OBErrorException {
-
+        log.debug("getAccountRequest() called");
         if (accountRequest == null) {
             try {
-                LOGGER.info("We introspect the access token locally, as it is a JWS");
+                log.info("getAccountRequest() Introspecting the access token locally, as it is a JWS");
                 String accountRequestId = rsEndpointWrapperService.accessTokenService.getIntentId(accessToken);
-
-                LOGGER.info("Account request id {}", accountRequestId);
+                log.info("getAccountRequest() Account request id {}", accountRequestId);
                 Optional<AccountRequest> isAccountRequest = rsEndpointWrapperService.accountRequestStore.get(accountRequestId);
                 if (!isAccountRequest.isPresent()) {
-                    LOGGER.warn("Couldn't not find the account request {}", accountRequestId);
+                    log.warn("getAccountRequest() Couldn't not find the account request {}", accountRequestId);
                     throw new OBErrorException(OBRIErrorType.ACCOUNT_REQUEST_NOT_FOUND,
                             accountRequestId
                     );
                 }
                 accountRequest = isAccountRequest.get();
             } catch (ParseException | IOException e) {
-                LOGGER.warn("Could not parse the claims of the access token '{}'", accessToken.serialize());
+                log.warn("Could not parse the claims of the access token '{}'", accessToken.serialize());
                 throw new OBErrorException(OBRIErrorType.ACCESS_TOKEN_INVALID_FORMAT);
             }
         }
@@ -191,7 +194,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
 
     public void verifyAccountId() throws OBErrorException {
         if (accountId != null && !getAccountRequest().getAccountIds().contains(accountId)) {
-            LOGGER.warn("TPP is trying to access an account {} not allowed by this account request {}.", accountId, getAccountRequest());
+            log.warn("TPP is trying to access an account {} not allowed by this account request {}.", accountId, getAccountRequest());
             throw new OBErrorException(OBRIErrorType.UNAUTHORISED_ACCOUNT,
                     accountId,
                     getAccountRequest().getId(),
@@ -205,7 +208,7 @@ public abstract class AccountsApiEndpointWrapper<T extends AccountsApiEndpointWr
         try {
             rsEndpointWrapperService.accessTokenService.isAllowed(getAccountRequest(), minimumPermissions);
         } catch (PermissionDenyException e) {
-                LOGGER.warn("Permission deny for this endpoint. The AISP is not authorise to use this endpoint.");
+                log.warn("Permission deny for this endpoint. The AISP is not authorise to use this endpoint.");
             throw new OBErrorException(OBRIErrorType.PERMISSIONS_INVALID,
                     minimumPermissions,
                     getAccountRequest().getPermissions()

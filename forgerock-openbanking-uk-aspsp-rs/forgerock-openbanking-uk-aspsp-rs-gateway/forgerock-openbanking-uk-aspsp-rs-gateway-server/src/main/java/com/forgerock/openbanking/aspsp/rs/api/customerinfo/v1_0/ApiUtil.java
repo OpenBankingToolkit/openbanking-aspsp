@@ -18,25 +18,22 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1;
+package com.forgerock.openbanking.aspsp.rs.api.customerinfo.v1_0;
 
-import com.forgerock.openbanking.repositories.TppRepository;
-import com.forgerock.openbanking.model.Tpp;
+import org.springframework.web.context.request.NativeWebRequest;
 
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-public class PaymentTestHelper {
-
-    public static final String MOCK_CLIENT_ID = "pispId123";
-    public static final String MOCK_PISP_NAME = "testPisp";
-    public static final String MOCK_PISP_ID = "55555";
-
-    public static Tpp setupMockTpp(TppRepository tppRepository) {
-        Tpp tpp = new Tpp();
-        tpp.officialName = MOCK_PISP_NAME;
-        tpp.id = MOCK_PISP_ID;
-        when(tppRepository.findByClientId(eq(MOCK_CLIENT_ID))).thenReturn(tpp);
-        return tpp;
+public class ApiUtil {
+    public static void setExampleResponse(NativeWebRequest req, String contentType, String example) {
+        try {
+            HttpServletResponse res = req.getNativeResponse(HttpServletResponse.class);
+            res.setCharacterEncoding("UTF-8");
+            res.addHeader("Content-Type", contentType);
+            res.getWriter().print(example);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
