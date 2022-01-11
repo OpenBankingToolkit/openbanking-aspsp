@@ -31,7 +31,9 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpay
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.common.model.data.FRAccountData;
+import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRPartyData;
@@ -48,11 +50,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountBeneficiaryConverter.toOBBeneficiary5;
@@ -82,6 +80,7 @@ public class DataApiController implements DataApi {
     private final FRScheduledPaymentRepository scheduledPayment1Repository;
     private final FRPartyRepository partyRepository;
     private final FROfferRepository offerRepository;
+    private final FRCustomerInfoRepository customerInfoRepository;
     private final DataUpdater dataUpdater;
     private final DataCreator dataCreator;
 
@@ -89,6 +88,7 @@ public class DataApiController implements DataApi {
                              FRBalanceRepository balanceRepository, FRBeneficiaryRepository beneficiaryRepository,
                              FRProductRepository productRepository, FRStandingOrderRepository standingOrderRepository,
                              FRTransactionRepository transactionRepository, FRStatementRepository statementRepository,
+                             FRCustomerInfoRepository customerInfoRepository,
                              DataCreator dataCreator, FRScheduledPaymentRepository scheduledPayment1Repository,
                              FRPartyRepository partyRepository, DataUpdater dataUpdater, FROfferRepository offerRepository) {
         this.directDebitRepository = directDebitRepository;
@@ -102,6 +102,7 @@ public class DataApiController implements DataApi {
         this.dataCreator = dataCreator;
         this.scheduledPayment1Repository = scheduledPayment1Repository;
         this.partyRepository = partyRepository;
+        this.customerInfoRepository = customerInfoRepository;
         this.dataUpdater = dataUpdater;
         this.offerRepository = offerRepository;
     }
@@ -188,6 +189,12 @@ public class DataApiController implements DataApi {
             @RequestBody FRUserData userData
     ) {
         FRUserData userDataResponse = new FRUserData(userData.getUserName());
+
+        FRCustomerInfo requestCustomerInfo = userData.getCustomerInfo();
+        if(userData.getCustomerInfo() != null){
+            customerInfoRepository.save(requestCustomerInfo);
+        }
+
         if (userData.getParty() != null) {
             FRParty existingParty = partyRepository.findByUserId(userData.getUserName());
 
