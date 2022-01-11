@@ -23,10 +23,13 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.data;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accounts.FRAccountRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.balances.FRBalanceRepository;
+import com.forgerock.openbanking.aspsp.rs.store.utils.FRCustomerInfoTestHelper;
 import com.forgerock.openbanking.common.model.data.FRAccountData;
+import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -118,9 +121,21 @@ public class DataApiControllerIT {
                 .account(account)
                 .balances(Collections.singletonList(new OBCashBalance1()))
                 .build());
+        FRCustomerInfo frCustomerInfo = FRCustomerInfo.builder()
+                .address(FRCustomerInfoTestHelper.aValidFRCustomerInfoAddress())
+                .birthdate(new LocalDate())
+                .email("fred.titmus@forgerock.com")
+                .familyName("Titmus")
+                .givenName("Fred")
+                .initials("F R")
+                .title("Mr")
+                .partyId("partyId")
+                .phoneNumber("+44 3456 789789").build();
+
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(UUID.randomUUID().toString());
+        userData.setCustomerInfo(frCustomerInfo);
 
         // When
         mockMvc.perform(post("/api/data/user")

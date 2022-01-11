@@ -1,6 +1,6 @@
 /**
- * Copyright 2019 ForgeRock AS.
- *
+ * Copyright 2021 ForgeRock AS.
+ * <p>
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -8,9 +8,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -18,31 +18,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.common.model.data;
+package com.forgerock.openbanking.aspsp.rs.store.utils;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.account.OBParty2;
+import com.forgerock.openbanking.common.model.data.FRAddressTypeCode;
+import com.forgerock.openbanking.common.model.data.FRCustomerInfoAddress;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class FRUserData {
-
-    private String userName;
-    private FRCustomerInfo customerInfo;
-    private OBParty2 party;
-    private List<FRAccountData> accountDatas = new ArrayList<>();
-
-    public FRUserData(String userName) {
-        this.userName = userName;
-    }
-
-    public void addAccountData(FRAccountData accountData) {
-        accountDatas.add(accountData);
+public class FRCustomerInfoTestHelper {
+    public static FRCustomerInfoAddress aValidFRCustomerInfoAddress() {
+        return FRCustomerInfoAddress.builder()
+                .streetAddress(List.of("999", "Letsbe Avenue", "Chelmsford", "Essex"))
+                .addressType(FRAddressTypeCode.RESIDENTIAL)
+                .country("UK")
+                .postalCode("ES12 3RR").build();
     }
 }
