@@ -32,7 +32,11 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpay
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
+import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.common.conf.data.DataConfigurationProperties;
+import com.forgerock.openbanking.common.model.data.FRAddressTypeCode;
+import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
+import com.forgerock.openbanking.common.model.data.FRCustomerInfoAddress;
 import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.*;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRDirectDebitData.FRDirectDebitStatus;
@@ -49,7 +53,9 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.account.*;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
@@ -76,15 +82,10 @@ import java.math.RoundingMode;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 @Controller("FakeDataApi")
 public class FakeDataApiController implements FakeDataApi {
     private final static Logger LOGGER = LoggerFactory.getLogger(FakeDataApiController.class);
@@ -102,6 +103,8 @@ public class FakeDataApiController implements FakeDataApi {
 
     private final static NumberFormat FORMAT_AMOUNT = new DecimalFormat("#0.00");
 
+    @Autowired
+    FRCustomerInfoRepository customerInfoRepository;
     @Autowired
     private FRAccountRepository accountsRepository;
     @Autowired
@@ -145,9 +148,12 @@ public class FakeDataApiController implements FakeDataApi {
             @RequestParam("username") String username,
             @RequestParam(name = "profile", required = false) String profile
     ) throws OBErrorException {
+        log.debug("generateFakeData called for userId/username '{}:{}', with profile '{}' ", userId, username, profile);
         if (RANDOM_PROFILE_ID.equals(profile)) {
+            log.debug("generateFakeData() generating random data");
             return ResponseEntity.status(HttpStatus.CREATED).body(generateRandomData(userId, username));
         } else {
+            log.debug("generateFakeData() generating from profile '{}'", profile);
             Optional<DataConfigurationProperties.DataTemplateProfile> any =
                     dataConfig.getProfiles().stream().filter(t -> t.getId().equals(profile)).findAny();
             if (!any.isPresent()) {
@@ -175,10 +181,10 @@ public class FakeDataApiController implements FakeDataApi {
 
     private FRUserData generateRandomData(String userId, String username)
      {
-        LOGGER.debug("Generate data for user '{}'", userId);
+        LOGGER.debug("Generate random data for user '{}'", userId);
 
         if (accountsRepository.findByUserID(userId).size() > 0 ) {
-            LOGGER.debug("User {} already have some data", userId);
+            LOGGER.debug("User {} already has data", userId);
         }
         {
             Integer sortCode = ThreadLocalRandom.current().nextInt(0, 999999);
@@ -281,12 +287,33 @@ public class FakeDataApiController implements FakeDataApi {
             generateAccountData(accountPremierCard);
             generateParty(accountPremierCard, username);
             generateOfferLimitIncrease(accountPremierCard);
+            generateCustomerInfo(userId);
         }
 
         generateGlobalParty(userId, username);
 
         return dataController.exportUserData(userId).getBody();
      }
+
+    private void generateCustomerInfo(String userId) {
+        LocalDate birthdate = (new LocalDate()).minusYears(19);
+        FRCustomerInfoAddress address = FRCustomerInfoAddress.builder()
+                .streetAddress(List.of("999", "Letsbe Avenue", "Hull"))
+                .country("UK")
+                .postalCode("HU11 3FU")
+                .addressType(FRAddressTypeCode.RESIDENTIAL).build();
+        FRCustomerInfo customerInfo = FRCustomerInfo.builder()
+                .address(address)
+                .birthdate(birthdate)
+                .email("fred.blogs@acme.com")
+                .familyName("blogs")
+                .givenName("fred")
+                .partyId("r9082345kjf")
+                .initials("F. R.")
+                .title("Mr")
+                .userID(userId).build();
+        this.customerInfoRepository.save(customerInfo);
+    }
 
     private void generateAccountData(FRAccount account) {
         FRBalance balance = generateBalance(account, FRCreditDebitIndicator.DEBIT, null);

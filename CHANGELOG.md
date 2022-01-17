@@ -677,6 +677,66 @@ Release/1.6.0 (#471)
 * Release candidate: prepare for next development iteration
 
 * Changelog updated
+[0d5af55cab8e3ef](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0d5af55cab8e3ef) JamieB *2022-01-10 14:32:45*
+815: Filter AccountAccessConsents for CustomerInfo consent
+
+Also add empty controllers for the customer info endpoint
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/815
+
+Intermediate checking so I can rebase on master
+
+815: Creates customer info consents
+
+Route are in place for customer info endpoints, but the store endpoint
+is not implemented yet.
+
+Should be enough for Jorge to start implementing the Customer Info
+consent dialog.
+
+Building OBRI with;
+- this version of ASPSP
+- associated snapshot version of parent and commons
+
+Will allow the use of Postman to create a CustomerInfo type
+AccountAccessRequest with the following data;
+
+```
+{
+    "_id" : "CICf74150ba-24b6-4156-8647-0fddda685fe0",
+    "accountAccessConsent" : {
+        "data" : {
+            "consentId" : "CICf74150ba-24b6-4156-8647-0fddda685fe0",
+            "creationDateTime" : ISODate("2022-01-10T14:23:02.033Z"),
+            "status" : "AWAITINGAUTHORISATION",
+            "statusUpdateDateTime" : ISODate("2022-01-10T14:23:02.033Z"),
+            "permissions" : [
+                "READCUSTOMERINFOCONSENT"
+            ],
+            "expirationDateTime" : ISODate("2027-02-10T17:48:45.000Z"),
+            "transactionFromDateTime" : ISODate("2017-02-10T17:48:45.000Z"),
+            "transactionToDateTime" : ISODate("2027-02-10T17:48:45.000Z")
+        },
+        "risk" : {
+            "data" : "{}"
+        }
+    },
+    "clientId" : "fa7a9584-3396-489a-888f-a8d231d1e70a",
+    "aispId" : "fa7a9584-3396-489a-888f-a8d231d1e70a",
+    "aispName" : "Anonymous - 61dc40d5b3cb1f00112f2afa",
+    "consentId" : "CICf74150ba-24b6-4156-8647-0fddda685fe0",
+    "accountIds" : [],
+    "created" : ISODate("2022-01-10T14:23:02.039Z"),
+    "updated" : ISODate("2022-01-10T14:23:02.039Z"),
+    "obVersion" : "v3_1_8",
+    "_class" : "com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent"
+}
+```
+
+Note the consent ID starts with CIC rather than AAC denoting the need to
+gain consent using the CustomerInfoConsent dialog rather than the
+AccountAccess Consent dialog.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/815
 [4833a4411f2b7f9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4833a4411f2b7f9) JamieB *2021-11-26 09:45:58*
 Release candidate: prepare for next development iteration
 ## 1.5.6

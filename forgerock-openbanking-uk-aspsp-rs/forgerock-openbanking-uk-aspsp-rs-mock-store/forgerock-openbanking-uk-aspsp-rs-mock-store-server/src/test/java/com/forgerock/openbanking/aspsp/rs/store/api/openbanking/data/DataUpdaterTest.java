@@ -31,16 +31,13 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpay
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
-import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBeneficiary;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRDirectDebit;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FROffer;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRScheduledPayment;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStandingOrder;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRStatement;
-import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRTransaction;
+import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
+import com.forgerock.openbanking.aspsp.rs.store.utils.FRCustomerInfoTestHelper;
 import com.forgerock.openbanking.common.model.data.FRAccountData;
+import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
+import com.forgerock.openbanking.common.model.data.FRUserData;
+import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
+import com.forgerock.openbanking.common.model.openbanking.persistence.account.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,6 +51,7 @@ import uk.org.openbanking.datamodel.account.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRAccountBeneficiaryConverter.toFRAccountBeneficiary;
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRCashBalanceConverter.toFRCashBalance;
@@ -65,9 +63,7 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.ac
 import static com.forgerock.openbanking.common.services.openbanking.converter.account.FRTransactionConverter.toFRTransactionData;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
@@ -97,12 +93,38 @@ public class DataUpdaterTest {
     private FRPartyRepository partyRepository;
     @Mock
     private FROfferRepository offerRepository;
+    @Mock
+    private FRCustomerInfoRepository customerInfoRepository;
 
     @Before
     public void setUp() {
         dataUpdater = new DataUpdater(accountsRepository, balanceRepository, beneficiaryRepository,
                 directDebitRepository, productRepository, standingOrderRepository, transactionRepository,
-                statementRepository, scheduledPaymentRepository, partyRepository, offerRepository, 1000);
+                statementRepository, scheduledPaymentRepository, partyRepository, offerRepository,
+                customerInfoRepository, 1000);
+    }
+
+    @Test
+    public void updateCustomerInfoShouldThrowIfIDsDontMatch(){
+        // Given
+
+        FRCustomerInfo newCustomerInfo = FRCustomerInfoTestHelper.aValidFRCustomerInfo();
+        FRCustomerInfo existingCustomerInfo = FRCustomerInfoTestHelper.aValidFRCustomerInfo();
+        existingCustomerInfo.setId(UUID.randomUUID().toString());
+        FRUserData userData = new FRUserData();
+        userData.setUserName(newCustomerInfo.getUserID());
+        userData.setCustomerInfo(newCustomerInfo);
+
+                given(customerInfoRepository.findByUserID(newCustomerInfo.getUserID())).willReturn(existingCustomerInfo);
+
+
+        assertThatThrownBy(
+                // When
+                () -> dataUpdater.updateCustomerInfo(userData)
+        )
+        // Then
+                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED));
+
     }
 
     @Test

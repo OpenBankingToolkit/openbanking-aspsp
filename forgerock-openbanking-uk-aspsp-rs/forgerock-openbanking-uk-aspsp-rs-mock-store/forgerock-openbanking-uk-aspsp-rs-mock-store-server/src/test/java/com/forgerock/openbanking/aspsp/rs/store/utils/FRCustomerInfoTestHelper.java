@@ -1,6 +1,6 @@
 /**
- * Copyright 2021 ForgeRock AS.
- * <p>
+ * Copyright 2019 ForgeRock AS.
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -8,9 +8,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,7 +21,9 @@
 package com.forgerock.openbanking.aspsp.rs.store.utils;
 
 import com.forgerock.openbanking.common.model.data.FRAddressTypeCode;
+import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import com.forgerock.openbanking.common.model.data.FRCustomerInfoAddress;
+import org.joda.time.LocalDate;
 
 import java.util.List;
 
@@ -32,5 +34,20 @@ public class FRCustomerInfoTestHelper {
                 .addressType(FRAddressTypeCode.RESIDENTIAL)
                 .country("UK")
                 .postalCode("ES12 3RR").build();
+    }
+
+    public static FRCustomerInfo aValidFRCustomerInfo() {
+        return FRCustomerInfo.builder()
+                .id("3242-2343-23432-4323")
+                .userID("fredtitmus")
+                .address(FRCustomerInfoTestHelper.aValidFRCustomerInfoAddress())
+                .birthdate(new LocalDate())
+                .email("fred.titmus@forgerock.com")
+                .familyName("Titmus")
+                .givenName("Fred")
+                .initials("F R")
+                .title("Mr")
+                .partyId("partyId")
+                .phoneNumber("+44 3456 789789").build();
     }
 }

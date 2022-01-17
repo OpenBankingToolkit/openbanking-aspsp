@@ -32,6 +32,7 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorde
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.data.FRAccountData;
 import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import com.forgerock.openbanking.common.model.data.FRUserData;
@@ -83,6 +84,7 @@ public class DataApiController implements DataApi {
     private final FRCustomerInfoRepository customerInfoRepository;
     private final DataUpdater dataUpdater;
     private final DataCreator dataCreator;
+    private final RSConfiguration rsConfiguration;
 
     public DataApiController(FRDirectDebitRepository directDebitRepository, FRAccountRepository accountsRepository,
                              FRBalanceRepository balanceRepository, FRBeneficiaryRepository beneficiaryRepository,
@@ -90,7 +92,8 @@ public class DataApiController implements DataApi {
                              FRTransactionRepository transactionRepository, FRStatementRepository statementRepository,
                              FRCustomerInfoRepository customerInfoRepository,
                              DataCreator dataCreator, FRScheduledPaymentRepository scheduledPayment1Repository,
-                             FRPartyRepository partyRepository, DataUpdater dataUpdater, FROfferRepository offerRepository) {
+                             FRPartyRepository partyRepository, DataUpdater dataUpdater,
+                             FROfferRepository offerRepository, RSConfiguration rsConfiguration) {
         this.directDebitRepository = directDebitRepository;
         this.accountsRepository = accountsRepository;
         this.balanceRepository = balanceRepository;
@@ -105,6 +108,7 @@ public class DataApiController implements DataApi {
         this.customerInfoRepository = customerInfoRepository;
         this.dataUpdater = dataUpdater;
         this.offerRepository = offerRepository;
+        this.rsConfiguration = rsConfiguration;
     }
 
     @Override
@@ -136,6 +140,9 @@ public class DataApiController implements DataApi {
             userData.addAccountData(getAccount(account));
         }
 
+        FRCustomerInfo customerInfo = customerInfoRepository.findByUserID(userId);
+        userData.setCustomerInfo(customerInfo);
+
         FRParty byUserId = partyRepository.findByUserId(userId);
         if (byUserId != null) {
             userData.setParty(toOBParty2(byUserId.getParty()));
@@ -147,6 +154,10 @@ public class DataApiController implements DataApi {
     public ResponseEntity updateUserData(
             @RequestBody FRUserData userData
     ) {
+
+        if(rsConfiguration.isCustomerInfoEnabled()){
+            dataUpdater.updateCustomerInfo(userData);
+        }
 
         dataUpdater.updateParty(userData);
 
@@ -190,9 +201,17 @@ public class DataApiController implements DataApi {
     ) {
         FRUserData userDataResponse = new FRUserData(userData.getUserName());
 
-        FRCustomerInfo requestCustomerInfo = userData.getCustomerInfo();
-        if(userData.getCustomerInfo() != null){
-            customerInfoRepository.save(requestCustomerInfo);
+        if(rsConfiguration.isCustomerInfoEnabled()) {
+            FRCustomerInfo existingCustomerInfo = customerInfoRepository.findByUserID(userData.getUserName());
+            if(existingCustomerInfo != null){
+                userData.getCustomerInfo().setId(existingCustomerInfo.getId());
+            }
+
+            FRCustomerInfo requestCustomerInfo = userData.getCustomerInfo();
+            if (userData.getCustomerInfo() != null) {
+                FRCustomerInfo savedCustomerInfo = customerInfoRepository.save(requestCustomerInfo);
+                userDataResponse.setCustomerInfo(savedCustomerInfo);
+            }
         }
 
         if (userData.getParty() != null) {
@@ -255,6 +274,10 @@ public class DataApiController implements DataApi {
     public ResponseEntity<Boolean> deleteUserData(
             @RequestParam("userId") String userId
     ) {
+        customerInfoRepository.deleteByUserID(userId);
+
+        partyRepository.deleteFRPartyByUserId(userId);
+
         Collection<FRAccount> accounts = accountsRepository.findByUserID(userId);
         for (FRAccount account : accounts) {
             deleteAccount(account, userId);
@@ -263,6 +286,7 @@ public class DataApiController implements DataApi {
     }
 
     private void deleteAccount(FRAccount account, String userId) {
+        customerInfoRepository.deleteByUserID(userId);
         accountsRepository.deleteById(account.getId());
         balanceRepository.deleteBalanceByAccountId(account.getId());
         productRepository.deleteProductByAccountId(account.getId());
@@ -281,6 +305,7 @@ public class DataApiController implements DataApi {
     private FRAccountData getAccount(FRAccount account) {
         FRAccountData accountData = new FRAccountData();
         accountData.setAccount(toOBAccount6(account.getAccount()));
+
 
         Page<FRProduct> products = productRepository.findByAccountId(account.getId(), (PageRequest.of(0, 1)));
         if (!products.getContent().isEmpty()) {
