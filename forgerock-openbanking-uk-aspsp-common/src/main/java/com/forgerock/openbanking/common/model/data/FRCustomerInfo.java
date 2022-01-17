@@ -1,6 +1,6 @@
 /**
- * Copyright 2021 ForgeRock AS.
- * <p>
+ * Copyright 2019 ForgeRock AS.
+ *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -8,9 +8,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- * <p>
- * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
  * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -21,12 +21,13 @@
 package com.forgerock.openbanking.common.model.data;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.joda.time.LocalDate;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 import uk.org.openbanking.datamodel.customerinfo.CustomerInfo;
@@ -49,27 +50,21 @@ public class FRCustomerInfo {
         this.address = new FRCustomerInfoAddress(customerInfo.getAddress());
     }
 
+    @Id
+    public String id;
 
-    @JsonProperty("party_id")
+    @Indexed
+    String userID;
     private String partyId;
-    @JsonProperty("title")
     private String title;
-    @JsonProperty("initials")
     private String initials;
-    @JsonProperty("family_name")
     private String familyName;
-    @JsonProperty("given_name")
     private String givenName;
-    @JsonProperty("email")
     private String email;
-    @JsonProperty("phone_number")
     private String phoneNumber;
-    @JsonProperty("birthdate")
     @DateTimeFormat(
             iso = DateTimeFormat.ISO.DATE
     )
     private LocalDate birthdate;
-    @JsonProperty("address")
     private FRCustomerInfoAddress address;
-
 }

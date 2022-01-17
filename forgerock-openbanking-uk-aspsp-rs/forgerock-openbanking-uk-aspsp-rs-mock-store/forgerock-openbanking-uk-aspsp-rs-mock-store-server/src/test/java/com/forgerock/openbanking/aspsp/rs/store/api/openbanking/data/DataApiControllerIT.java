@@ -29,7 +29,6 @@ import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRBalance;
-import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,25 +115,18 @@ public class DataApiControllerIT {
     @Test
     public void shouldCreateNewData() throws Exception {
         // Given
+
         OBAccount6 account = new OBAccount6().accountId(UUID.randomUUID().toString());
         List<FRAccountData> accountDatas = Collections.singletonList(FRAccountData.builder()
                 .account(account)
                 .balances(Collections.singletonList(new OBCashBalance1()))
                 .build());
-        FRCustomerInfo frCustomerInfo = FRCustomerInfo.builder()
-                .address(FRCustomerInfoTestHelper.aValidFRCustomerInfoAddress())
-                .birthdate(new LocalDate())
-                .email("fred.titmus@forgerock.com")
-                .familyName("Titmus")
-                .givenName("Fred")
-                .initials("F R")
-                .title("Mr")
-                .partyId("partyId")
-                .phoneNumber("+44 3456 789789").build();
+        FRCustomerInfo frCustomerInfo = FRCustomerInfoTestHelper.aValidFRCustomerInfo();
 
         FRUserData userData = new FRUserData();
         userData.setAccountDatas(accountDatas);
         userData.setUserName(UUID.randomUUID().toString());
+        frCustomerInfo.setUserID(UUID.randomUUID().toString());
         userData.setCustomerInfo(frCustomerInfo);
 
         // When
@@ -145,6 +137,7 @@ public class DataApiControllerIT {
                 // Then
                 .andExpect(status()
                         .isOk());
+
     }
 
     @Test
