@@ -677,6 +677,10 @@ Release/1.6.0 (#471)
 * Release candidate: prepare for next development iteration
 
 * Changelog updated
+[321bcacbefee872](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/321bcacbefee872) JamieB *2022-01-11 15:46:32*
+815: /user/data API can now recieve and create FRCustomerInfo
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/815
 [0d5af55cab8e3ef](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0d5af55cab8e3ef) JamieB *2022-01-10 14:32:45*
 815: Filter AccountAccessConsents for CustomerInfo consent
 

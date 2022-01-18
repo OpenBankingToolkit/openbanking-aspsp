@@ -21,7 +21,10 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.customerinfo.v1_0;
 
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
-import com.forgerock.openbanking.common.services.store.account.AccountStoreService;
+import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
+import com.forgerock.openbanking.common.conf.RSConfiguration;
+import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
+import com.forgerock.openbanking.common.services.openbanking.customerinfo.FRCustomerInfoConverter;
 import com.forgerock.openbanking.repositories.TppRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +32,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import uk.org.openbanking.datamodel.customerinfo.CustomerInfo;
 import uk.org.openbanking.datamodel.customerinfo.ReadCustomerInfo;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-12-20T11:13:54.447312Z[Europe/London]")
@@ -37,20 +41,20 @@ import uk.org.openbanking.datamodel.customerinfo.ReadCustomerInfo;
 @RequestMapping("${openapi.customerInfoAPISpecification.base-path:/customer-info/v1.0}")
 public class InfoApiController implements InfoApi {
 
-    private final TppRepository tppRepository;
-
     private final ConsentMetricService consentMetricService;
 
-    private final AccountStoreService accountsStoreService;
+    private final RSConfiguration rsConfiguration;
+
+    private final FRCustomerInfoRepository customerInfoRepository;
 
 
 
     @Autowired
     public InfoApiController(TppRepository tppRepository, ConsentMetricService consentMetricService,
-                             AccountStoreService accountsStoreService) {
-        this.tppRepository = tppRepository;
+                             RSConfiguration rsConfiguration, FRCustomerInfoRepository customerInfoRepository) {
         this.consentMetricService = consentMetricService;
-        this.accountsStoreService = accountsStoreService;
+        this.rsConfiguration = rsConfiguration;
+        this.customerInfoRepository = customerInfoRepository;
     }
 
     @Override
@@ -61,7 +65,21 @@ public class InfoApiController implements InfoApi {
                                                             String xCustomerUserAgent,
                                                             String xObPsuUserId){
         log.debug("getCustomerInfo called()");
+        if(!rsConfiguration.isCustomerInfoEnabled()){
+            return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
+        } else {
 
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+            FRCustomerInfo frCustomerInfo = customerInfoRepository.findByUserID(xObPsuUserId);
+            if(frCustomerInfo != null){
+                CustomerInfo customerInfo = FRCustomerInfoConverter.toCustomerInfo(frCustomerInfo); //
+                ReadCustomerInfo readCustomerInfo = new ReadCustomerInfo();
+                readCustomerInfo.setData(customerInfo);
+                log.info("getCustomerInfo() returning customerInfo; '{}'", customerInfo);
+                return ResponseEntity.ok(readCustomerInfo);
+            } else {
+                log.info("getCustomerInfo() returning NO_CONTENT as no customerInfo found");
+                return ResponseEntity.noContent().build();
+            }
+        }
     }
 }
