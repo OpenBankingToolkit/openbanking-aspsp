@@ -43,7 +43,7 @@ public class RSConfiguration implements ApplicationConfiguration {
             @Value("${rs.issuerid}") String issuerId,
             @Value("${rs.financial_id}") String financialId,
             @Value("${rs.jwks_uri}") String jwksUri,
-            @Value("${rs.customer-info.enable}") boolean customerInfoEnabled) {
+            @Value("${rs.customer-info.enable:false}") boolean customerInfoEnabled) {
         this.issuerId = issuerId;
         this.financialId = financialId;
         this.jwksUri = jwksUri;

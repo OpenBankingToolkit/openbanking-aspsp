@@ -52,11 +52,12 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
     @Override
     public Optional get(String consentId) {
         switch (IntentType.identify(consentId)) {
-
             case ACCOUNT_REQUEST:
                 return getAccountRequest(consentId);
             case ACCOUNT_ACCESS_CONSENT:
                 return getAccountAccessConsent(consentId);
+            case CUSTOMER_INFO_CONSENT:
+                return getCustomerInfoAccountAccessConsent(consentId);
             default:
                 throw new IllegalArgumentException("Consent ID '" + consentId + "' doesn't correspond to an account access");
         }
@@ -70,6 +71,9 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
                 break;
             case ACCOUNT_ACCESS_CONSENT:
                 saveAccountAccessConsent((FRAccountAccessConsent) accountRequest);
+                break;
+            case CUSTOMER_INFO_CONSENT:
+                saveCustomerInfoAccountAccessConsent((FRAccountAccessConsent) accountRequest);
                 break;
             default:
                 throw new IllegalArgumentException("Consent ID '" + accountRequest.getId() + "' doesn't correspond to an account access");
@@ -94,6 +98,10 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
         return restTemplate.exchange(uri, HttpMethod.GET, null, ptr).getBody();
     }
 
+    private Optional<FRAccountAccessConsent> getCustomerInfoAccountAccessConsent(String consentId) {
+        return getAccountAccessConsent(consentId);
+    }
+
     private void saveAccountRequest(AccountRequest accountRequest) {
         HttpEntity<AccountRequest> request = new HttpEntity<>(accountRequest, new HttpHeaders());
         restTemplate.exchange(rsStoreRoot + "/api/account-requests/", HttpMethod.PUT,
@@ -109,5 +117,9 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
             LOGGER.debug("Error: {}", e.getResponseBodyAsString(), e);
             throw e;
         }
+    }
+
+    private void saveCustomerInfoAccountAccessConsent(FRAccountAccessConsent accountAccessConsent1) {
+        saveAccountAccessConsent(accountAccessConsent1);
     }
 }

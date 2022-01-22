@@ -31,13 +31,13 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpay
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.FRCustomerInfoTestHelper;
 import com.forgerock.openbanking.common.model.data.FRAccountData;
 import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRBalanceType;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.*;
+import com.forgerock.openbanking.common.repositories.customerinfo.FRCustomerInfoRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -105,7 +105,7 @@ public class DataUpdaterTest {
     }
 
     @Test
-    public void updateCustomerInfoShouldThrowIfIDsDontMatch(){
+    public void updateCustomerInfoShouldThrowIfIDsDontMatch() {
         // Given
 
         FRCustomerInfo newCustomerInfo = FRCustomerInfoTestHelper.aValidFRCustomerInfo();
@@ -115,15 +115,15 @@ public class DataUpdaterTest {
         userData.setUserName(newCustomerInfo.getUserID());
         userData.setCustomerInfo(newCustomerInfo);
 
-                given(customerInfoRepository.findByUserID(newCustomerInfo.getUserID())).willReturn(existingCustomerInfo);
+        given(customerInfoRepository.findByUserID(newCustomerInfo.getUserID())).willReturn(existingCustomerInfo);
 
 
         assertThatThrownBy(
                 // When
                 () -> dataUpdater.updateCustomerInfo(userData)
         )
-        // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED));
+                // Then
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.UNAUTHORIZED));
 
     }
 
@@ -140,7 +140,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateBalances(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -156,7 +156,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateBeneficiaries(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -172,7 +172,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateDirectDebits(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -188,7 +188,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateStandingOrders(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -204,7 +204,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateTransactions(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -220,7 +220,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateStatements(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -236,7 +236,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateScheduledPayments(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -252,7 +252,7 @@ public class DataUpdaterTest {
                 () -> dataUpdater.updateOffers(accountData, Collections.singleton("1"))
         )
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.PAYLOAD_TOO_LARGE));
     }
 
     @Test
@@ -455,7 +455,7 @@ public class DataUpdaterTest {
         })
 
                 // Then
-                .satisfies(t -> assertThat(((ResponseStatusException)t).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST));
+                .satisfies(t -> assertThat(((ResponseStatusException) t).getStatus()).isEqualTo(HttpStatus.BAD_REQUEST));
     }
 
     @Test

@@ -27,6 +27,7 @@ import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,14 +44,13 @@ import java.util.stream.Collectors;
                             date = "2021-12-20T11:13:54.447312Z[Europe/London]")
 @Controller
 @Slf4j
-@RequestMapping("${openapi.customerInfoAPISpecification.base-path:/customer-info/v1.0}")
 public class InfoApiController implements InfoApi {
 
     private final RsStoreGateway rsStoreGateway;
 
     private final RSEndpointWrapperService rsEndpointWrapperService;
 
-    @org.springframework.beans.factory.annotation.Autowired
+    @Autowired
     public InfoApiController(RsStoreGateway rsStoreGateway, RSEndpointWrapperService rsEndpointWrapperService) {
         this.rsStoreGateway = rsStoreGateway;
         this.rsEndpointWrapperService = rsEndpointWrapperService;

@@ -1,0 +1,35 @@
+<mat-card *ngIf="response">
+  <forgerock-customer-logo></forgerock-customer-logo>
+  {{ loading | json }}
+  <form [formGroup]="form">
+    <p [translate]="'CONSENT.CUSTOMER-INFO.TITLE'" [translateParams]="{ merchantName: response.merchantName }"></p>
+    <div *ngIf="response.logo" class="merchant-logo">
+      <img src="{{ response.logo }}" onerror="this.style.display='none'" />
+    </div>
+    <div class="divider"></div>
+    <app-consent-box [items]="items"></app-consent-box>
+        <div class="confirm-details example-radio-group">
+          <label fxLayout="row">
+            <div fxFlex>
+              <div class="confirm-details Aligner">
+                <span fxFlex></span>
+                <div class="Aligner">
+                  <mat-checkbox fxFlex class="Aligner-item" (change)="onChange($event)">
+                    {{ 'CONSENT.CUSTOMER-INFO.CONFIRM' | translate }}
+                  </mat-checkbox>
+                </div>
+              </div>
+            </div>
+          </label>
+        </div>
+    <app-submit-box
+      [loading]="_loading"
+      [form]="form"
+      [label]="'CONSENT.CUSTOMER-INFO.SUBMIT-LABEL'"
+      [proceedLabel]="'CONSENT.CUSTOMER-INFO.PROCEED'"
+      [cancelLabel]="'CONSENT.CUSTOMER-INFO.CANCEL'"
+      (accept)="submit(true)"
+      (deny)="submit(false)"
+    ></app-submit-box>
+  </form>
+</mat-card>

@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.rcs.services;
 
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.ConsentDecisionDelegate;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.accounts.AccountAccessConsentDecisionFactory;
+import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.customerinfo.CustomerInfoAccountAccessConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.domesticpayments.DomesticPaymentConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.domesticscheduledpayments.DomesticScheduledPaymentConsentDecisionFactory;
 import com.forgerock.openbanking.aspsp.rs.rcs.api.rcs.decisions.domesticstandingorders.DomesticStandingOrdersPaymentConsentDecisionFactory;
@@ -72,11 +73,13 @@ public class IntentTypeService {
     private RCSFilePaymentDetailsApi rcsFilePaymentDetailsApi;
     @Autowired
     private RCSVrpPaymentDetailsApi rcsVrpPaymentDetailsApi;
+    @Autowired
+    private RCSCustomerInfoDetailsApi rcsCustomerInfoDetailsApi;
 
     @Autowired
     private SinglePaymentConsentDecisionFactory singlePaymentConsentDecisionService;
     @Autowired
-    private AccountAccessConsentDecisionFactory accountAccessConsentDecisionApiController;
+    private AccountAccessConsentDecisionFactory accountAccessConsentDecisionFactory;
     @Autowired
     private InternationalPaymentConsentDecisionFactory internationalPaymentConsentDecisionFactory;
     @Autowired
@@ -95,13 +98,15 @@ public class IntentTypeService {
     private FilePaymentConsentDecisionFactory filePaymentConsentDecisionFactory;
     @Autowired
     private DomesticVRPConsentDecisionFactory domesticVRPConsentDecisionFactory;
+    @Autowired
+    private CustomerInfoAccountAccessConsentDecisionFactory customerInfoAccountAccessConsentDecisionFactory;
 
     public ConsentDecisionDelegate getConsentDecision(String intentId) throws OBErrorException {
         switch (IntentType.identify(intentId)) {
             case ACCOUNT_REQUEST:
             case ACCOUNT_ACCESS_CONSENT:
                 log.debug("It's an account consent decision request");
-                return accountAccessConsentDecisionApiController.create(intentId);
+                return accountAccessConsentDecisionFactory.create(intentId);
             case PAYMENT_SINGLE_REQUEST:
                 log.debug("It's a payment consent decision request");
                 return singlePaymentConsentDecisionService.create(intentId);
@@ -132,6 +137,9 @@ public class IntentTypeService {
             case DOMESTIC_VRP_PAYMENT_CONSENT:
                 log.debug("It's a VRP payment consent decision request");
                 return domesticVRPConsentDecisionFactory.create(intentId);
+            case CUSTOMER_INFO_CONSENT:
+                log.debug("It's an customer info account consent decision request");
+                return customerInfoAccountAccessConsentDecisionFactory.create(intentId);
             default:
                 log.error("Invalid intent ID");
                 throw new OBErrorException(OBRIErrorType.RCS_CONSENT_REQUEST_INVALID,
@@ -180,6 +188,9 @@ public class IntentTypeService {
             case DOMESTIC_VRP_PAYMENT_CONSENT:
                 log.debug("It's a VRP payment consent details request");
                 return rcsVrpPaymentDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
+            case CUSTOMER_INFO_CONSENT:
+                log.debug("It's a Customer Info account consent details request");
+                return rcsCustomerInfoDetailsApi.consentDetails(consentRequestJwt, accounts, username, intentId, clientId);
             default:
                 log.error("Invalid intent ID");
                 return rcsErrorService.error(OBRIErrorType.RCS_CONSENT_REQUEST_INVALID,

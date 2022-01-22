@@ -1,6 +1,7 @@
 import {OBAccount2, OBActiveOrHistoricCurrencyAndAmount, OBCashAccount3, OBCashBalance1} from './ob';
 import { IntentType } from 'bank/src/app/types/IntentType';
 import { OBAccountPermissions } from 'bank/src/app/types/OBAccountPermissions';
+import {CustomerInfo} from "bank/src/app/types/CustomerInfo";
 
 export interface FRAccountWithBalance {
   id: string;
@@ -57,6 +58,8 @@ export module ApiResponses {
     requestedExecutionDateTime?: string;
     currencyOfTransfer?: string;
     expirationDateTime?: string;
+    // customer info details
+    customerInfo?:CustomerInfo;
     // special ui treatment
     userActions?:UserActions;
     decisionResponse?: ConsentDecisionResponse;

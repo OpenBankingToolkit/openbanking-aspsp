@@ -21,9 +21,9 @@
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.customerinfo.v1_0;
 
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
-import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
+import com.forgerock.openbanking.common.repositories.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.common.services.openbanking.customerinfo.FRCustomerInfoConverter;
 import com.forgerock.openbanking.repositories.TppRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +48,6 @@ public class InfoApiController implements InfoApi {
     private final FRCustomerInfoRepository customerInfoRepository;
 
 
-
     @Autowired
     public InfoApiController(TppRepository tppRepository, ConsentMetricService consentMetricService,
                              RSConfiguration rsConfiguration, FRCustomerInfoRepository customerInfoRepository) {
@@ -63,14 +62,14 @@ public class InfoApiController implements InfoApi {
                                                             String xFapiCustomerIpAddress,
                                                             String xFapiInteractionId,
                                                             String xCustomerUserAgent,
-                                                            String xObPsuUserId){
+                                                            String xObPsuUserId) {
         log.debug("getCustomerInfo called()");
-        if(!rsConfiguration.isCustomerInfoEnabled()){
+        if (!rsConfiguration.isCustomerInfoEnabled()) {
             return new ResponseEntity(HttpStatus.NOT_IMPLEMENTED);
         } else {
 
             FRCustomerInfo frCustomerInfo = customerInfoRepository.findByUserID(xObPsuUserId);
-            if(frCustomerInfo != null){
+            if (frCustomerInfo != null) {
                 CustomerInfo customerInfo = FRCustomerInfoConverter.toCustomerInfo(frCustomerInfo); //
                 ReadCustomerInfo readCustomerInfo = new ReadCustomerInfo();
                 readCustomerInfo.setData(customerInfo);

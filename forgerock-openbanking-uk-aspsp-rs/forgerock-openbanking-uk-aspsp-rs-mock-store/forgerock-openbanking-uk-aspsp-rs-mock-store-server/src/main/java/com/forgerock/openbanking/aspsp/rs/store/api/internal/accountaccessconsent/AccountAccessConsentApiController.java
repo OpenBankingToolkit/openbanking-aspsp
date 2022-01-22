@@ -24,9 +24,8 @@ import com.forgerock.openbanking.analytics.model.entries.ConsentStatusEntry;
 import com.forgerock.openbanking.analytics.services.ConsentMetricService;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.accountsaccessconsents.FRAccountAccessConsentRepository;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.FRAccountAccessConsent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.forgerock.openbanking.common.repositories.customerinfo.FRCustomerInfoRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -36,20 +35,24 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Optional;
 
 @Controller
+@Slf4j
 public class AccountAccessConsentApiController implements AccountAccessConsentApi {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountAccessConsentApiController.class);
+    private final FRAccountAccessConsentRepository accountAccessConsent1Repository;
+    private final ConsentMetricService consentMetricService;
+    private final FRCustomerInfoRepository customerInfoRepository;
 
-    @Autowired
-    private FRAccountAccessConsentRepository accountAccessConsent1Repository;
-    @Autowired
-    private ConsentMetricService consentMetricService;
+    public AccountAccessConsentApiController(FRAccountAccessConsentRepository accountAccessConsent1Repository, ConsentMetricService consentMetricService, FRCustomerInfoRepository customerInfoRepository) {
+        this.accountAccessConsent1Repository = accountAccessConsent1Repository;
+        this.consentMetricService = consentMetricService;
+        this.customerInfoRepository = customerInfoRepository;
+    }
 
     @Override
     public ResponseEntity<FRAccountAccessConsent> save(
             @RequestBody FRAccountAccessConsent accountAccessConsent1
     ) {
-        LOGGER.debug("Create an account access consent {}", accountAccessConsent1);
+        log.debug("Create an account access consent {}", accountAccessConsent1);
         consentMetricService.sendConsentActivity(new ConsentStatusEntry(accountAccessConsent1.getConsentId(), accountAccessConsent1.getStatus().name()));
         return new ResponseEntity<>(accountAccessConsent1Repository.save(accountAccessConsent1), HttpStatus.OK);
     }
@@ -58,11 +61,10 @@ public class AccountAccessConsentApiController implements AccountAccessConsentAp
     public ResponseEntity read(
             @PathVariable("consentId") String consentId
     ) {
-        LOGGER.debug("get an account access consent {}", consentId);
+        log.debug("get an account access consent {}", consentId);
         Optional<FRAccountAccessConsent> isConsent = accountAccessConsent1Repository.findById(consentId);
         if (isConsent.isPresent()) {
             return ResponseEntity.ok(isConsent.get());
-
         } else {
             return ResponseEntity.notFound().build();
         }

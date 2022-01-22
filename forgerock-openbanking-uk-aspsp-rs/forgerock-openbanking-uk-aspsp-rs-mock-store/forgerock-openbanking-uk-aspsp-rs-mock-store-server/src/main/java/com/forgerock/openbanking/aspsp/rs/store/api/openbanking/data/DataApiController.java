@@ -31,7 +31,6 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpay
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.data.FRAccountData;
 import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
@@ -39,6 +38,7 @@ import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRFinancialAccount;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRPartyData;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.*;
+import com.forgerock.openbanking.common.repositories.customerinfo.FRCustomerInfoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -155,7 +155,7 @@ public class DataApiController implements DataApi {
             @RequestBody FRUserData userData
     ) {
 
-        if(rsConfiguration.isCustomerInfoEnabled()){
+        if (rsConfiguration.isCustomerInfoEnabled()) {
             dataUpdater.updateCustomerInfo(userData);
         }
 
@@ -201,9 +201,9 @@ public class DataApiController implements DataApi {
     ) {
         FRUserData userDataResponse = new FRUserData(userData.getUserName());
 
-        if(rsConfiguration.isCustomerInfoEnabled()) {
+        if (rsConfiguration.isCustomerInfoEnabled()) {
             FRCustomerInfo existingCustomerInfo = customerInfoRepository.findByUserID(userData.getUserName());
-            if(existingCustomerInfo != null){
+            if (existingCustomerInfo != null) {
                 userData.getCustomerInfo().setId(existingCustomerInfo.getId());
             }
 

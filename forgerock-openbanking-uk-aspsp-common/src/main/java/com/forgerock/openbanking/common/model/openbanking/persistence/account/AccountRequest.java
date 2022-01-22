@@ -20,6 +20,7 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
+import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
 import org.joda.time.DateTime;
@@ -58,4 +59,9 @@ public interface AccountRequest {
     List<String> getAccountIds();
 
     FRExternalRequestStatusCode getStatus();
+
+    // this method is used only for account access consents to retrieve the customer consent information
+    default FRCustomerInfo getCustomerInfo(){
+        return null;
+    }
 }

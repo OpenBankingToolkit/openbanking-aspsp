@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo;
+package com.forgerock.openbanking.common.repositories.customerinfo;
 
 import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import org.springframework.data.mongodb.repository.MongoRepository;

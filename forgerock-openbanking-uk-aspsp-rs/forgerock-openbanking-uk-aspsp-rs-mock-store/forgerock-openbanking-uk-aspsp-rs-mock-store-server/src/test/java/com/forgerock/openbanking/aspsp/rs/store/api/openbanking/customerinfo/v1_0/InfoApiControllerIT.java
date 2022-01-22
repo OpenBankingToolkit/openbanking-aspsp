@@ -22,10 +22,10 @@ package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.customerinfo.v1
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.FRCustomerInfoTestHelper;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
+import com.forgerock.openbanking.common.repositories.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
 import kong.unirest.HttpResponse;

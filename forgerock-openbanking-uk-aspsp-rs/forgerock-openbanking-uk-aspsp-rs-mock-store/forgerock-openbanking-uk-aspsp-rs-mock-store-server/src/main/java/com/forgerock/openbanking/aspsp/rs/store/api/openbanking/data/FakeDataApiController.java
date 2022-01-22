@@ -32,7 +32,6 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpay
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.common.conf.data.DataConfigurationProperties;
 import com.forgerock.openbanking.common.model.data.FRAddressTypeCode;
 import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
@@ -51,6 +50,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccoun
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.*;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
+import com.forgerock.openbanking.common.repositories.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
@@ -296,7 +296,7 @@ public class FakeDataApiController implements FakeDataApi {
      }
 
     private void generateCustomerInfo(String userId) {
-        LocalDate birthdate = (new LocalDate()).minusYears(19);
+        DateTime birthdate = DateTime.now().minusYears(19);
         FRCustomerInfoAddress address = FRCustomerInfoAddress.builder()
                 .streetAddress(List.of("999", "Letsbe Avenue", "Hull"))
                 .country("UK")
@@ -306,6 +306,7 @@ public class FakeDataApiController implements FakeDataApi {
                 .address(address)
                 .birthdate(birthdate)
                 .email("fred.blogs@acme.com")
+                .phoneNumber("07123123123")
                 .familyName("blogs")
                 .givenName("fred")
                 .partyId("r9082345kjf")
