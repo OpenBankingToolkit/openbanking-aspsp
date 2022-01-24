@@ -27,6 +27,7 @@ import { AccountSelectionComponentModule } from './components/account-selection/
 import { AccountCheckboxModule } from './components/account-checkbox/account-checkbox.module';
 import { RejectComponent } from './components/reject/reject.component';
 import { VrpPaymentComponent } from './vrp-payment/vrp-payment.component';
+import { CustomerInfoComponent } from './customer-info/customer-info.component';
 
 @NgModule({
   imports: [
@@ -54,6 +55,7 @@ import { VrpPaymentComponent } from './vrp-payment/vrp-payment.component';
     FundsConfirmationComponent,
     FilePaymentComponent,
     VrpPaymentComponent,
+    CustomerInfoComponent,
     DynamicComponent,
     PermissionsComponent,
     CancelComponent,
@@ -71,6 +73,7 @@ import { VrpPaymentComponent } from './vrp-payment/vrp-payment.component';
     FundsConfirmationComponent,
     FilePaymentComponent,
     VrpPaymentComponent,
+    CustomerInfoComponent,
     CancelComponent,
     RejectComponent
   ],
@@ -87,6 +90,7 @@ import { VrpPaymentComponent } from './vrp-payment/vrp-payment.component';
     FundsConfirmationComponent,
     FilePaymentComponent,
     VrpPaymentComponent,
+    CustomerInfoComponent,
     DynamicComponent,
     PermissionsComponent,
     CancelComponent,

@@ -677,6 +677,19 @@ Release/1.6.0 (#471)
 * Release candidate: prepare for next development iteration
 
 * Changelog updated
+[3f95a06597a5266](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3f95a06597a5266) JamieB *2022-01-18 09:10:35*
+815: Returns customer info objects
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/815
+[952035d7215dad6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/952035d7215dad6) JamieB *2022-01-17 11:28:01*
+815: Further CustomerInfo update work
+
+Now deletes CustomerInfo if it exists when DELETE /api/data/user
+Update for existing CustomerInfo added.
+
+findByUserId and deleteByUserId added to FRCustomerInfoRepository
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/815
 [321bcacbefee872](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/321bcacbefee872) JamieB *2022-01-11 15:46:32*
 815: /user/data API can now recieve and create FRCustomerInfo
 

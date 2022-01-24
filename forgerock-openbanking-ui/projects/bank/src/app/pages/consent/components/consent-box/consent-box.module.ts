@@ -21,6 +21,7 @@ import {TransactionsPeriodItemComponent} from 'bank/src/app/pages/consent/compon
 import {BankPipesModule} from 'bank/src/app/pipes/pipes.module';
 import {ForgerockPipesModule} from '@forgerock/openbanking-ngx-common/pipes';
 import {VrpAccountItemComponent} from "bank/src/app/pages/consent/components/consent-box/items/vrp-account-item/vrp-account-item.component";
+import {AddressItemComponent} from "bank/src/app/pages/consent/components/consent-box/items/adress-item/address-item.component";
 
 @NgModule({
   imports: [
@@ -46,6 +47,7 @@ import {VrpAccountItemComponent} from "bank/src/app/pages/consent/components/con
     DynamicItemComponent,
     TransactionsPeriodItemComponent,
     VrpAccountItemComponent,
+    AddressItemComponent,
     KeyValueItemComponent
   ],
   entryComponents: [
@@ -57,6 +59,7 @@ import {VrpAccountItemComponent} from "bank/src/app/pages/consent/components/con
     FinalPaymentItemComponent,
     AccountNumberItemComponent,
     VrpAccountItemComponent,
+    AddressItemComponent,
     ExchangeRateItemComponent,
     RateAmountItemComponent,
     DynamicItemComponent,

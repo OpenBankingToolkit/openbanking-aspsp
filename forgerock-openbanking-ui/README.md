@@ -48,3 +48,30 @@ docker build -t <IMAGE_NAME> -f projects/analytics/docker/Dockerfile .
 # Build Analytics Server
 docker build -t <IMAGE_NAME> -f projects/analytics/docker/Dockerfile-server .
 ```
+
+### Troubleshooting
+When you try to create a new component (`ng g c path/component`) and you get the error: `Could not find an NgModule. Use the skip-import option to skip importing in NgModule.`
+is because no there is defined a default project, try `ng g c path/component --project {{projectName}}`.
+
+Example for `bank` project
+
+(Angular file project definition part)
+```json
+"projects": {
+    "bank": {
+      "root": "projects/bank/",
+      "sourceRoot": "projects/bank/src",
+      "projectType": "application",
+      "prefix": "app",
+```
+```shell
+ng g c pages/consent/customer-info --project bank --dry-run
+```
+Out
+```shell
+CREATE projects/bank/src/app/pages/consent/customer-info/customer-info.component.scss (0 bytes)
+CREATE projects/bank/src/app/pages/consent/customer-info/customer-info.component.html (32 bytes)
+CREATE projects/bank/src/app/pages/consent/customer-info/customer-info.component.spec.ts (671 bytes)
+CREATE projects/bank/src/app/pages/consent/customer-info/customer-info.component.ts (297 bytes)
+UPDATE projects/bank/src/app/pages/consent/consent.module.ts (4360 bytes)
+```

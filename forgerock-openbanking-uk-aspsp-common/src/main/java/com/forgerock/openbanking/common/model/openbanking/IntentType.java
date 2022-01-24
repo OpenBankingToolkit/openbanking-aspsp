@@ -90,7 +90,7 @@ public enum IntentType {
         }
     }
 
-    public static List<IntentType> byOBGroupeName(OBGroupName obGroupName) {
+    public static List<IntentType> byOBGroupName(OBGroupName obGroupName) {
         return Arrays.asList(IntentType.values()).stream().filter(i -> i.obGroupName == obGroupName).collect(Collectors.toList());
     }
 }

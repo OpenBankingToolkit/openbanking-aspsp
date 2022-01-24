@@ -25,6 +25,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -46,7 +47,7 @@ public class FRCustomerInfo {
         this.givenName = customerInfo.getGivenName();
         this.email = customerInfo.getEmail();
         this.phoneNumber = customerInfo.getPhoneNumber();
-        this.birthdate = customerInfo.getBirthdate();
+        this.birthdate = customerInfo.getBirthdate().toDateTimeAtCurrentTime();
         this.address = new FRCustomerInfoAddress(customerInfo.getAddress());
     }
 
@@ -65,6 +66,6 @@ public class FRCustomerInfo {
     @DateTimeFormat(
             iso = DateTimeFormat.ISO.DATE
     )
-    private LocalDate birthdate;
+    private DateTime birthdate;
     private FRCustomerInfoAddress address;
 }

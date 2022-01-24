@@ -21,6 +21,7 @@
 package com.forgerock.openbanking.common.model.openbanking.persistence.account;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.FRReadConsentResponse;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalPermissionsCode;
 import com.forgerock.openbanking.common.model.openbanking.domain.account.common.FRExternalRequestStatusCode;
@@ -52,6 +53,7 @@ public class FRAccountAccessConsent implements AccountRequest, Persistable<Strin
     @Indexed
     public String id;
     private FRReadConsentResponse accountAccessConsent;
+    private FRCustomerInfo customerInfo;
     @Indexed
     private String clientId;
     private String aispId;

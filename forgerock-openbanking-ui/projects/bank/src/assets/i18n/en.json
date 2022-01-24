@@ -6,6 +6,9 @@
   "SIGNOUT": "Sign out",
   "SIGNED_OUT": "You have been signed out",
   "CREATE_ACCOUNT": "Create Account",
+  "LABELS": {
+    "ADDRESS": "Address"
+  },
   "COMPONENT": {
     "CANCEL": {
       "APPLICATION": "Application requesting access",
@@ -55,6 +58,18 @@
     "PASSWORD_UPDATE_ERROR": "Could not update password"
   },
   "CONSENT": {
+    "CUSTOMER-INFO": {
+      "TITLE": "You're about to share your details with {{merchantName}}",
+      "CONFIRM": "I confirm these details are accurate and consent to sharing them",
+      "NAME": "Name",
+      "ADDRESS": "Address",
+      "EMAIL": "Email",
+      "PHONE": "Phone",
+      "BIRTHDATE": "Date of birth",
+      "CANCEL": "Cancel",
+      "PROCEED": "Continue >",
+      "SUBMIT-LABEL": ""
+    },
     "VRP-PAYMENT": {
       "TITLE": "{{merchantName}} needs your permission to make VRP payment(s) from your account within the payment limits below.",
       "PAYER_DETAILS": "Payer Details",

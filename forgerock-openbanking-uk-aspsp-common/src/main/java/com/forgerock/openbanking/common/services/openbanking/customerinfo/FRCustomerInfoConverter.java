@@ -31,7 +31,7 @@ public class FRCustomerInfoConverter {
     public static CustomerInfo toCustomerInfo(FRCustomerInfo frCustomerInfo){
         CustomerInfo customerInfo = new CustomerInfo();
         customerInfo.setInitials(frCustomerInfo.getInitials());
-        customerInfo.setBirthdate(frCustomerInfo.getBirthdate());
+        customerInfo.setBirthdate(frCustomerInfo.getBirthdate().toLocalDate());
         customerInfo.setEmail(frCustomerInfo.getEmail());
         customerInfo.setFamilyName(frCustomerInfo.getFamilyName());
         customerInfo.setGivenName(frCustomerInfo.getGivenName());

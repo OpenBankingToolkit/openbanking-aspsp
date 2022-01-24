@@ -31,7 +31,6 @@ import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.scheduledpay
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.standingorders.FRStandingOrderRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.statements.FRStatementRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.accounts.transactions.FRTransactionRepository;
-import com.forgerock.openbanking.aspsp.rs.store.repository.customerinfo.FRCustomerInfoRepository;
 import com.forgerock.openbanking.common.model.data.FRAccountData;
 import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import com.forgerock.openbanking.common.model.data.FRUserData;
@@ -40,6 +39,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.account.common.
 import com.forgerock.openbanking.common.model.openbanking.persistence.account.*;
 import com.forgerock.openbanking.common.model.openbanking.status.ScheduledPaymentStatus;
 import com.forgerock.openbanking.common.model.openbanking.status.StandingOrderStatus;
+import com.forgerock.openbanking.common.repositories.customerinfo.FRCustomerInfoRepository;
 import com.google.common.collect.ImmutableList;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -105,43 +105,43 @@ public class DataUpdater {
         this.customerInfoRepository = customerInfoRepository;
     }
 
-    void updateCustomerInfo(FRUserData userData){
+    void updateCustomerInfo(FRUserData userData) {
         FRCustomerInfo existingCustomerInfo = customerInfoRepository.findByUserID(userData.getUserName());
-        if(existingCustomerInfo != null){
+        if (existingCustomerInfo != null) {
             FRCustomerInfo newCustomerInfo = userData.getCustomerInfo();
-            if(!newCustomerInfo.getId().equals(existingCustomerInfo.getId())){
+            if (!newCustomerInfo.getId().equals(existingCustomerInfo.getId())) {
                 String errorMessage = String.format("The customerInfo ID '%s' in the provided data does not match " +
                                 "that in the existing data '%s' for user '%s'", newCustomerInfo.getId(),
                         existingCustomerInfo.getId(), userData.getUserName());
-                log.info("updateCustomerInfo() - {}",  errorMessage);
+                log.info("updateCustomerInfo() - {}", errorMessage);
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
                         errorMessage);
             }
-            if(newCustomerInfo.getAddress() != null){
+            if (newCustomerInfo.getAddress() != null) {
                 existingCustomerInfo.setAddress(newCustomerInfo.getAddress());
             }
-            if(newCustomerInfo.getPartyId() != null){
+            if (newCustomerInfo.getPartyId() != null) {
                 existingCustomerInfo.setPartyId(newCustomerInfo.getPartyId());
             }
-            if(newCustomerInfo.getBirthdate() != null){
+            if (newCustomerInfo.getBirthdate() != null) {
                 existingCustomerInfo.setBirthdate(newCustomerInfo.getBirthdate());
             }
-            if(newCustomerInfo.getEmail() != null){
+            if (newCustomerInfo.getEmail() != null) {
                 existingCustomerInfo.setEmail(newCustomerInfo.getEmail());
             }
-            if(newCustomerInfo.getFamilyName() != null){
+            if (newCustomerInfo.getFamilyName() != null) {
                 existingCustomerInfo.setFamilyName(newCustomerInfo.getFamilyName());
             }
-            if(newCustomerInfo.getGivenName() != null){
+            if (newCustomerInfo.getGivenName() != null) {
                 existingCustomerInfo.setGivenName(existingCustomerInfo.getGivenName());
             }
-            if(newCustomerInfo.getInitials() != null){
+            if (newCustomerInfo.getInitials() != null) {
                 existingCustomerInfo.setInitials(newCustomerInfo.getInitials());
             }
-            if(newCustomerInfo.getPhoneNumber() != null){
+            if (newCustomerInfo.getPhoneNumber() != null) {
                 existingCustomerInfo.setPhoneNumber(newCustomerInfo.getPhoneNumber());
             }
-            if(newCustomerInfo.getTitle() != null){
+            if (newCustomerInfo.getTitle() != null) {
                 existingCustomerInfo.setTitle(newCustomerInfo.getTitle());
             }
             customerInfoRepository.save(existingCustomerInfo);

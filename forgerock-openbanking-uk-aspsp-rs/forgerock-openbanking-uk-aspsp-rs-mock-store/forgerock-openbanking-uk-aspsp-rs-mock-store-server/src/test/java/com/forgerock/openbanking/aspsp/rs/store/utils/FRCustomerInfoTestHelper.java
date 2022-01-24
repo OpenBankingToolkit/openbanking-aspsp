@@ -23,6 +23,7 @@ package com.forgerock.openbanking.aspsp.rs.store.utils;
 import com.forgerock.openbanking.common.model.data.FRAddressTypeCode;
 import com.forgerock.openbanking.common.model.data.FRCustomerInfo;
 import com.forgerock.openbanking.common.model.data.FRCustomerInfoAddress;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import java.util.List;
@@ -41,7 +42,7 @@ public class FRCustomerInfoTestHelper {
                 .id("3242-2343-23432-4323")
                 .userID("fredtitmus")
                 .address(FRCustomerInfoTestHelper.aValidFRCustomerInfoAddress())
-                .birthdate(new LocalDate())
+                .birthdate(new DateTime().minusYears(19))
                 .email("fred.titmus@forgerock.com")
                 .familyName("Titmus")
                 .givenName("Fred")
