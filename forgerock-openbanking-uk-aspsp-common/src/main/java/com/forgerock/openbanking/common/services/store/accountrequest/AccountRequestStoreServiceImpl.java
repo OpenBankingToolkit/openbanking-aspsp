@@ -55,6 +55,7 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
             case ACCOUNT_REQUEST:
                 return getAccountRequest(consentId);
             case ACCOUNT_ACCESS_CONSENT:
+            case CUSTOMER_INFO_CONSENT:
                 return getAccountAccessConsent(consentId);
             case CUSTOMER_INFO_CONSENT:
                 return getCustomerInfoAccountAccessConsent(consentId);
@@ -70,6 +71,7 @@ public class AccountRequestStoreServiceImpl implements AccountRequestStoreServic
                 saveAccountRequest(accountRequest);
                 break;
             case ACCOUNT_ACCESS_CONSENT:
+            case CUSTOMER_INFO_CONSENT:
                 saveAccountAccessConsent((FRAccountAccessConsent) accountRequest);
                 break;
             case CUSTOMER_INFO_CONSENT:

@@ -33,11 +33,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.format.annotation.DateTimeFormat;
 import uk.org.openbanking.datamodel.customerinfo.CustomerInfo;
 
-@Document
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Document
 public class FRCustomerInfo {
     public FRCustomerInfo(CustomerInfo customerInfo){
         this.partyId = customerInfo.getPartyId();
@@ -52,10 +52,11 @@ public class FRCustomerInfo {
     }
 
     @Id
+    @Indexed
     public String id;
 
     @Indexed
-    String userID;
+    public  String userID;
     private String partyId;
     private String title;
     private String initials;

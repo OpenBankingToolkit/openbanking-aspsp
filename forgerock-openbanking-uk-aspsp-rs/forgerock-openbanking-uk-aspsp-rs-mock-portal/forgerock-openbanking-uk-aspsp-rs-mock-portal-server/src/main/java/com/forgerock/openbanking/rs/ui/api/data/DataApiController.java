@@ -23,19 +23,21 @@ package com.forgerock.openbanking.rs.ui.api.data;
 import com.forgerock.openbanking.analytics.model.entries.PsuCounterEntry;
 import com.forgerock.openbanking.analytics.services.PsuCounterEntryKPIService;
 import com.forgerock.openbanking.common.conf.data.DataConfigurationProperties;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.common.services.store.data.UserDataService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
+import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
+import com.forgerock.openbanking.rs.ui.api.services.DataApiHelperService;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
@@ -47,42 +49,70 @@ import java.util.Optional;
 @Slf4j
 public class DataApiController implements DataApi {
 
-    @Autowired
     private UserDataService userDataService;
-    @Autowired
     private DataConfigurationProperties dataConfig;
-    @Autowired
     private PsuCounterEntryKPIService psuCounterEntryKPIService;
+    private final CryptoApiClient cryptoApiClient;
+    private final DataApiHelperService dataApiHelperService;
+
+    @Autowired
+    public DataApiController(UserDataService userDataService, DataConfigurationProperties dataConfig,
+                             PsuCounterEntryKPIService psuCounterEntryKPIService, CryptoApiClient cryptoApiClient,
+                             DataApiHelperService dataApiHelperService) {
+        this.userDataService = userDataService;
+        this.dataConfig = dataConfig;
+        this.psuCounterEntryKPIService = psuCounterEntryKPIService;
+        this.cryptoApiClient = cryptoApiClient;
+        this.dataApiHelperService = dataApiHelperService;
+    }
+
 
     @Override
     public ResponseEntity hasData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    ) {
-        return ResponseEntity.ok(userDataService.hasData(principal.getName()));
+    ) throws OAuth2InvalidClientException, OBErrorException {
+        log.debug("hasData() called");
+        String tppName = dataApiHelperService.getTppName(principal);
+        String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+        log.info("hasData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
+        return ResponseEntity.ok(userDataService.hasData(psuName));
     }
 
     @Override
     public ResponseEntity exportUserData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    ) {
-        UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-        String username = currentUser.getUsername();
-        return ResponseEntity.ok(userDataService.exportUserData(username));
+    ) throws OAuth2InvalidClientException, OBErrorException {
+        log.debug("exportUserData() called");
+        String tppName = dataApiHelperService.getTppName(principal);
+        String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+        log.info("exportUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
+        return ResponseEntity.ok(userDataService.exportUserData(psuName));
     }
 
     @Override
     public ResponseEntity updateUserData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             @ApiParam(value = "User financial data", required = true)
             @RequestBody FRUserData userData,
 
             Principal principal
-    ) throws OBErrorException {
+    ) throws OBErrorException, OAuth2InvalidClientException {
        try {
-           UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-           String username = currentUser.getUsername();
+           log.debug("updateUserData() called");
+           String tppName = dataApiHelperService.getTppName(principal);
+           String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+           log.info("updateUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
 
-           userData.setUserName(username);
-           if (!userDataService.hasData(username)) {
+           userData.setUserName(psuName);
+           if (!userDataService.hasData(psuName)) {
                psuCounterEntryKPIService.pushPsuCounterEntry(PsuCounterEntry.builder()
                        .count(1l)
                        .day(DateTime.now())
@@ -106,23 +136,26 @@ public class DataApiController implements DataApi {
 
     @Override
     public ResponseEntity createUserData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             @ApiParam(value = "User financial data", required = true)
             @RequestBody FRUserData userData,
 
             Principal principal
-    ) throws OBErrorException {
+    ) throws OBErrorException, OAuth2InvalidClientException {
         try {
-            UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-            String username = currentUser.getUsername();
-
-            userData.setUserName(username);
-            if (!userDataService.hasData(username)) {
+            log.debug("createUserData() called");
+            String tppName = dataApiHelperService.getTppName(principal);
+            String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+            log.info("createUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
+            userData.setUserName(psuName);
+            if (!userDataService.hasData(psuName)) {
                 psuCounterEntryKPIService.pushPsuCounterEntry(PsuCounterEntry.builder()
                         .count(1l)
                         .day(DateTime.now())
                         .build());
             }
-
             return ResponseEntity.status(HttpStatus.CREATED).body(userDataService.createUserData(userData));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
@@ -139,14 +172,19 @@ public class DataApiController implements DataApi {
 
     @Override
     public ResponseEntity deleteUserData(
-            Principal principal
-    ) throws OBErrorException {
-        try {
-            UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-            String username = currentUser.getUsername();
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
 
-            userDataService.deleteUserData(username);
-            return ResponseEntity.ok(userDataService.exportUserData(username));
+            Principal principal
+    ) throws OBErrorException, OAuth2InvalidClientException {
+        try {
+            log.debug("deleteUserData() called");
+            String tppName = dataApiHelperService.getTppName(principal);
+            String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+            log.info("deleteUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
+
+            userDataService.deleteUserData(psuName);
+            return ResponseEntity.ok(userDataService.exportUserData(psuName));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 log.debug("TPP bad request: {}", e.getResponseBodyAsString(), e);
@@ -162,14 +200,19 @@ public class DataApiController implements DataApi {
 
     @Override
     public ResponseEntity generateData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             @ApiParam(value = "Data profile", required = false)
             @RequestParam(name = "profile", required = false) String profile,
 
             Principal principal
-    ) throws OBErrorException {
+    ) throws OBErrorException, OAuth2InvalidClientException {
         try {
-            UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-            String username = currentUser.getUsername();
+            log.debug("generateData() called");
+            String tppName = dataApiHelperService.getTppName(principal);
+            String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+            log.info("generateUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
 
             final String defaultProfile = profile != null ? profile : dataConfig.getDefaultProfile();
 
@@ -180,13 +223,14 @@ public class DataApiController implements DataApi {
                 );
             }
 
-            if (!userDataService.deleteUserData(username)) {
+            if (!userDataService.deleteUserData(psuName)) {
                 psuCounterEntryKPIService.pushPsuCounterEntry(PsuCounterEntry.builder()
                         .count(1l)
                         .day(DateTime.now())
                         .build());
             }
-            return ResponseEntity.status(HttpStatus.CREATED).body(userDataService.generateUserData(username, defaultProfile));
+            return ResponseEntity.status(HttpStatus.CREATED).body(userDataService.generateUserData(psuName,
+                    defaultProfile));
         } catch (HttpClientErrorException e) {
             if (e.getStatusCode() == HttpStatus.BAD_REQUEST) {
                 log.debug("TPP bad request: {}", e.getResponseBodyAsString(), e);

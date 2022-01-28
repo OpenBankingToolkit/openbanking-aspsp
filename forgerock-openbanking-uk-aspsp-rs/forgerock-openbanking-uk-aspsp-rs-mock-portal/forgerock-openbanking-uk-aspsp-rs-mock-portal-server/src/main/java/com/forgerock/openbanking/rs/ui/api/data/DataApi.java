@@ -20,20 +20,13 @@
  */
 package com.forgerock.openbanking.rs.ui.api.data;
 
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.exceptions.OBErrorException;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import io.swagger.annotations.Authorization;
+import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
@@ -60,8 +53,11 @@ public interface DataApi {
             method = RequestMethod.GET
     )
     ResponseEntity<FRUserData> hasData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    );
+    ) throws OAuth2InvalidClientException, OBErrorException;
 
     @ApiOperation(
             value = "Export User Data",
@@ -82,8 +78,11 @@ public interface DataApi {
             method = RequestMethod.GET
     )
     ResponseEntity<FRUserData> exportUserData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    );
+    ) throws OAuth2InvalidClientException, OBErrorException;
 
 
 
@@ -110,11 +109,14 @@ public interface DataApi {
             method = RequestMethod.PUT
     )
     ResponseEntity<FRUserData> updateUserData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             @ApiParam(value = "User financial data", required = true)
             @RequestBody FRUserData userData,
 
             Principal principal
-    ) throws OBErrorException;
+    ) throws OBErrorException, OAuth2InvalidClientException;
 
 
     @ApiOperation(
@@ -139,11 +141,13 @@ public interface DataApi {
             method = RequestMethod.POST
     )
     ResponseEntity<FRUserData> createUserData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             @ApiParam(value = "User financial data", required = true)
             @RequestBody FRUserData userData,
-
             Principal principal
-    ) throws OBErrorException;
+    ) throws OBErrorException, OAuth2InvalidClientException;
 
 
     @ApiOperation(
@@ -165,8 +169,11 @@ public interface DataApi {
             method = RequestMethod.DELETE
     )
     ResponseEntity deleteUserData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    ) throws OBErrorException;
+    ) throws OBErrorException, OAuth2InvalidClientException;
 
     @ApiOperation(
             value = "Generate new financial Data",
@@ -187,11 +194,14 @@ public interface DataApi {
             method = RequestMethod.POST
     )
     ResponseEntity generateData(
+            @ApiParam(value = "PSU User session")
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             @ApiParam(value = "Data profile", required = false)
             @RequestParam(name = "profile", required = false) String profile,
 
             Principal principal
-    ) throws OBErrorException;
+    ) throws OBErrorException, OAuth2InvalidClientException;
 
     @ApiOperation(value = "Get the user profile for the registration",
             authorizations = {})

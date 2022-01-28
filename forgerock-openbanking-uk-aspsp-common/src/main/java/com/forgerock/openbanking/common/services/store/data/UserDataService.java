@@ -46,7 +46,7 @@ public class UserDataService {
     private String rsStoreRoot;
 
     public Boolean hasData(String userId) {
-        LOGGER.debug("Export data for user {}", userId);
+        LOGGER.debug("Has data for user {}", userId);
 
         HttpEntity request = new HttpEntity<>(null, new HttpHeaders());
 
