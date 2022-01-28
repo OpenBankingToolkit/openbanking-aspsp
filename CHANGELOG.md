@@ -1,6 +1,21 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[db333fcd652ec61](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/db333fcd652ec61) JamieB *2022-02-25 11:56:16*
+Release candidate: prepare for next development iteration
+## 1.7.3
+[245a5786d31f8a9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/245a5786d31f8a9) JamieB *2022-02-25 11:56:12*
+Release candidate: prepare release 1.7.3
+[d5efb5f10ea9be4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/d5efb5f10ea9be4) JamieB *2022-02-25 11:46:10*
+Release in preparation for Q1 2022 deployments
+
+CustomerInfo
+Manual Registration Fix
+[a7421a55b8fd851](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a7421a55b8fd851) JamieB *2022-02-24 17:19:20*
+Release candidate: prepare for next development iteration
+## 1.7.2
+[0126f5d37d1e03e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0126f5d37d1e03e) JamieB *2022-02-24 17:19:16*
+Release candidate: prepare release 1.7.2
 [baac3a29fd7297b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/baac3a29fd7297b) JamieB *2022-02-24 17:02:48*
 830: Manual Registation now works
 

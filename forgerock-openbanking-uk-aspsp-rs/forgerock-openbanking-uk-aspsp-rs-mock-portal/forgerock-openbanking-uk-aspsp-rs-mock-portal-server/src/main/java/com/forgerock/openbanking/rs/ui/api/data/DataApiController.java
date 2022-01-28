@@ -89,6 +89,7 @@ public class DataApiController implements DataApi {
             Principal principal
     ) throws OAuth2InvalidClientException, OBErrorException {
         log.debug("exportUserData() called");
+
         String tppName = psd2WithSessionApiHelperService.getTppName(principal);
         String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
         log.info("exportUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
