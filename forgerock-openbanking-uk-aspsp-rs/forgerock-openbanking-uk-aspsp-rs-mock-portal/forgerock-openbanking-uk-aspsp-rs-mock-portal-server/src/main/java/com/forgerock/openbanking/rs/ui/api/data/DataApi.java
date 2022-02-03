@@ -20,10 +20,12 @@
  */
 package com.forgerock.openbanking.rs.ui.api.data;
 
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageInvalidTokenException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.data.FRUserData;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import io.swagger.annotations.*;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -56,8 +58,11 @@ public interface DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             Principal principal
-    ) throws OAuth2InvalidClientException, OBErrorException;
+    ) throws OAuth2InvalidClientException, OBErrorException, OAuth2BearerTokenUsageInvalidTokenException;
 
     @ApiOperation(
             value = "Export User Data",
@@ -81,8 +86,11 @@ public interface DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             Principal principal
-    ) throws OAuth2InvalidClientException, OBErrorException;
+    ) throws OAuth2InvalidClientException, OBErrorException, OAuth2BearerTokenUsageInvalidTokenException;
 
 
 
@@ -112,11 +120,14 @@ public interface DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             @ApiParam(value = "User financial data", required = true)
             @RequestBody FRUserData userData,
 
             Principal principal
-    ) throws OBErrorException, OAuth2InvalidClientException;
+    ) throws OBErrorException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException;
 
 
     @ApiOperation(
@@ -144,10 +155,13 @@ public interface DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             @ApiParam(value = "User financial data", required = true)
             @RequestBody FRUserData userData,
             Principal principal
-    ) throws OBErrorException, OAuth2InvalidClientException;
+    ) throws OBErrorException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException;
 
 
     @ApiOperation(
@@ -172,8 +186,11 @@ public interface DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             Principal principal
-    ) throws OBErrorException, OAuth2InvalidClientException;
+    ) throws OBErrorException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException;
 
     @ApiOperation(
             value = "Generate new financial Data",
@@ -197,11 +214,14 @@ public interface DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             @ApiParam(value = "Data profile", required = false)
             @RequestParam(name = "profile", required = false) String profile,
 
             Principal principal
-    ) throws OBErrorException, OAuth2InvalidClientException;
+    ) throws OBErrorException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException;
 
     @ApiOperation(value = "Get the user profile for the registration",
             authorizations = {})

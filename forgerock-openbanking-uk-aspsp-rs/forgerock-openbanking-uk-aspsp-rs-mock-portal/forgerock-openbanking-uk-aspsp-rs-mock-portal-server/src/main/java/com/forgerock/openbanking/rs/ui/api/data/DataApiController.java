@@ -23,26 +23,34 @@ package com.forgerock.openbanking.rs.ui.api.data;
 import com.forgerock.openbanking.analytics.model.entries.PsuCounterEntry;
 import com.forgerock.openbanking.analytics.services.PsuCounterEntryKPIService;
 import com.forgerock.openbanking.common.conf.data.DataConfigurationProperties;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageInvalidTokenException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.data.FRUserData;
+import com.forgerock.openbanking.common.services.security.Psd2WithSessionApiHelperService;
 import com.forgerock.openbanking.common.services.store.data.UserDataService;
+import com.forgerock.openbanking.common.services.token.AccessTokenService;
+import com.forgerock.openbanking.constants.OIDCConstants;
+import com.forgerock.openbanking.constants.OpenBankingConstants;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
-import com.forgerock.openbanking.common.services.security.Psd2WithSessionApiHelperService;
+import com.nimbusds.jwt.SignedJWT;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.security.Principal;
+import java.util.List;
 import java.util.Optional;
 
 @Controller
@@ -54,16 +62,20 @@ public class DataApiController implements DataApi {
     private PsuCounterEntryKPIService psuCounterEntryKPIService;
     private final CryptoApiClient cryptoApiClient;
     private final Psd2WithSessionApiHelperService psd2WithSessionApiHelperService;
+    private final AccessTokenService accessTokenService;
+
 
     @Autowired
     public DataApiController(UserDataService userDataService, DataConfigurationProperties dataConfig,
                              PsuCounterEntryKPIService psuCounterEntryKPIService, CryptoApiClient cryptoApiClient,
-                             Psd2WithSessionApiHelperService psd2WithSessionApiHelperService) {
+                             Psd2WithSessionApiHelperService psd2WithSessionApiHelperService,
+                             AccessTokenService accessTokenService) {
         this.userDataService = userDataService;
         this.dataConfig = dataConfig;
         this.psuCounterEntryKPIService = psuCounterEntryKPIService;
         this.cryptoApiClient = cryptoApiClient;
         this.psd2WithSessionApiHelperService = psd2WithSessionApiHelperService;
+        this.accessTokenService = accessTokenService;
     }
 
 
@@ -72,11 +84,15 @@ public class DataApiController implements DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             Principal principal
-    ) throws OAuth2InvalidClientException, OBErrorException {
+    ) throws OAuth2InvalidClientException, OBErrorException, OAuth2BearerTokenUsageInvalidTokenException {
         log.debug("hasData() called");
         String tppName = psd2WithSessionApiHelperService.getTppName(principal);
         String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
+        verifyAccessTokenAndVerifyTppIdentity(authorization, tppName);
         log.info("hasData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
         return ResponseEntity.ok(userDataService.hasData(psuName));
     }
@@ -86,12 +102,16 @@ public class DataApiController implements DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             Principal principal
-    ) throws OAuth2InvalidClientException, OBErrorException {
+    ) throws OAuth2InvalidClientException, OBErrorException, OAuth2BearerTokenUsageInvalidTokenException {
         log.debug("exportUserData() called");
 
         String tppName = psd2WithSessionApiHelperService.getTppName(principal);
         String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
+        verifyAccessTokenAndVerifyTppIdentity(authorization, tppName);
         log.info("exportUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
         return ResponseEntity.ok(userDataService.exportUserData(psuName));
     }
@@ -101,15 +121,19 @@ public class DataApiController implements DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             @ApiParam(value = "User financial data", required = true)
             @RequestBody FRUserData userData,
 
             Principal principal
-    ) throws OBErrorException, OAuth2InvalidClientException {
+    ) throws OBErrorException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException {
        try {
            log.debug("updateUserData() called");
            String tppName = psd2WithSessionApiHelperService.getTppName(principal);
            String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
+           verifyAccessTokenAndVerifyTppIdentity(authorization, tppName);
            log.info("updateUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
 
            userData.setUserName(psuName);
@@ -140,15 +164,19 @@ public class DataApiController implements DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             @ApiParam(value = "User financial data", required = true)
             @RequestBody FRUserData userData,
 
             Principal principal
-    ) throws OBErrorException, OAuth2InvalidClientException {
+    ) throws OBErrorException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException {
         try {
             log.debug("createUserData() called");
             String tppName = psd2WithSessionApiHelperService.getTppName(principal);
             String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
+            verifyAccessTokenAndVerifyTppIdentity(authorization, tppName);
             log.info("createUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
             userData.setUserName(psuName);
             if (!userDataService.hasData(psuName)) {
@@ -176,12 +204,16 @@ public class DataApiController implements DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             Principal principal
-    ) throws OBErrorException, OAuth2InvalidClientException {
+    ) throws OBErrorException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException {
         try {
             log.debug("deleteUserData() called");
             String tppName = psd2WithSessionApiHelperService.getTppName(principal);
             String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
+            verifyAccessTokenAndVerifyTppIdentity(authorization, tppName);
             log.info("deleteUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
 
             userDataService.deleteUserData(psuName);
@@ -204,15 +236,19 @@ public class DataApiController implements DataApi {
             @ApiParam(value = "PSU User session")
             @CookieValue(value = "obri-session", required = true) String obriSession,
 
+            @ApiParam(value = "The access token")
+            @RequestHeader(name = HttpHeaders.AUTHORIZATION, required = true) String authorization,
+
             @ApiParam(value = "Data profile", required = false)
             @RequestParam(name = "profile", required = false) String profile,
 
             Principal principal
-    ) throws OBErrorException, OAuth2InvalidClientException {
+    ) throws OBErrorException, OAuth2InvalidClientException, OAuth2BearerTokenUsageInvalidTokenException {
         try {
             log.debug("generateData() called");
             String tppName = psd2WithSessionApiHelperService.getTppName(principal);
             String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
+            verifyAccessTokenAndVerifyTppIdentity(authorization, tppName);
             log.info("generateUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
 
             final String defaultProfile = profile != null ? profile : dataConfig.getDefaultProfile();
@@ -243,6 +279,15 @@ public class DataApiController implements DataApi {
                 throw new OBErrorException(OBRIErrorType.SERVER_ERROR);
             }
         }
+    }
+
+    private void verifyAccessTokenAndVerifyTppIdentity(String authorization, String tppName) throws OBErrorException, OAuth2BearerTokenUsageInvalidTokenException {
+        String accessTokenEncoded = accessTokenService.getAccessTokenFromBearerAuthorizationValue(authorization);
+        SignedJWT accessToken = accessTokenService.validateAccessTokenWithAM(accessTokenEncoded);
+        accessTokenService.verifyAccessTokenGrantTypes(List.of(OIDCConstants.GrantType.CLIENT_CREDENTIAL),
+                accessToken);
+        accessTokenService.verifyAccessTokenScopes(List.of(OpenBankingConstants.Scope.OPENID), accessToken);
+        accessTokenService.verifyMatlsFromAccessToken(accessToken, tppName);
     }
 
     @Override

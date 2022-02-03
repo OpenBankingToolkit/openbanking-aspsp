@@ -74,6 +74,7 @@ public class DataApiHelperService {
         try {
             SignedJWT session = cryptoApiClient.decryptJwe(obriSession);
             String psuName = session.getJWTClaimsSet().getSubject();
+            log.debug("getPsuNameFromSession returning '{}'", psuName);
             return psuName;
         } catch (Exception e) {
             log.info("getPsuNameFromSession() caught exception getting psu name from session '{};", obriSession, e);
