@@ -677,7 +677,6 @@ Release/1.6.0 (#471)
 * Release candidate: prepare for next development iteration
 
 * Changelog updated
-
 ### GitHub [#476](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/476) 824: Customer info consent dialog
 [a0e8e1171d51f8a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a0e8e1171d51f8a) Jorge Sanchez Perez *2022-01-24 09:08:28*
 824: Customer info consent dialog (#476)
@@ -685,11 +684,22 @@ Release/1.6.0 (#471)
 - Implementation of details and decisions for customer info account access consent
 - Implementation of customer info angular components dialog
 Issue: https://github.com/ForgeCloud/ob-deploy/issues/824
+### GitHub [#478](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/478) Release/1.7.0
+[cbe3984920dd8d4](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/cbe3984920dd8d4) Jorge Sanchez Perez *2022-01-24 11:45:36*
+Release/1.7.0 (#478)
+
+* Release 1.7.0
+- Development version update to 1.7.0-SNAPSHOT
+
+* Release candidate: prepare release 1.7.0
+
+* Release candidate: prepare for next development iteration
+
+* Changelog updated
 [3f95a06597a5266](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3f95a06597a5266) JamieB *2022-01-18 09:10:35*
 815: Returns customer info objects
 
 Issue: https://github.com/ForgeCloud/ob-deploy/issues/815
-
 [952035d7215dad6](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/952035d7215dad6) JamieB *2022-01-17 11:28:01*
 815: Further CustomerInfo update work
 

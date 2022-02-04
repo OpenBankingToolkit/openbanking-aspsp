@@ -105,7 +105,6 @@ public class IntentTypeService {
         switch (IntentType.identify(intentId)) {
             case ACCOUNT_REQUEST:
             case ACCOUNT_ACCESS_CONSENT:
-            case CUSTOMER_INFO_CONSENT:
                 log.debug("It's an account consent decision request");
                 return accountAccessConsentDecisionFactory.create(intentId);
             case PAYMENT_SINGLE_REQUEST:
