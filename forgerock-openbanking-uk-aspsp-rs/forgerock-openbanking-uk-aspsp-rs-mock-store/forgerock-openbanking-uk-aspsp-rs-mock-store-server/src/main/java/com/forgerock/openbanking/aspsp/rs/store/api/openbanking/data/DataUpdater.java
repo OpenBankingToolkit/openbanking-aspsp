@@ -109,42 +109,45 @@ public class DataUpdater {
         FRCustomerInfo existingCustomerInfo = customerInfoRepository.findByUserID(userData.getUserName());
         if (existingCustomerInfo != null) {
             FRCustomerInfo newCustomerInfo = userData.getCustomerInfo();
-            if (!newCustomerInfo.getId().equals(existingCustomerInfo.getId())) {
-                String errorMessage = String.format("The customerInfo ID '%s' in the provided data does not match " +
-                                "that in the existing data '%s' for user '%s'", newCustomerInfo.getId(),
-                        existingCustomerInfo.getId(), userData.getUserName());
-                log.info("updateCustomerInfo() - {}", errorMessage);
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-                        errorMessage);
+
+            if(newCustomerInfo != null) {
+                if (!newCustomerInfo.getId().equals(existingCustomerInfo.getId())) {
+                    String errorMessage = String.format("The customerInfo ID '%s' in the provided data does not match " +
+                                    "that in the existing data '%s' for user '%s'", newCustomerInfo.getId(),
+                            existingCustomerInfo.getId(), userData.getUserName());
+                    log.info("updateCustomerInfo() - {}", errorMessage);
+                    throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                            errorMessage);
+                }
+                if (newCustomerInfo.getAddress() != null) {
+                    existingCustomerInfo.setAddress(newCustomerInfo.getAddress());
+                }
+                if (newCustomerInfo.getPartyId() != null) {
+                    existingCustomerInfo.setPartyId(newCustomerInfo.getPartyId());
+                }
+                if (newCustomerInfo.getBirthdate() != null) {
+                    existingCustomerInfo.setBirthdate(newCustomerInfo.getBirthdate());
+                }
+                if (newCustomerInfo.getEmail() != null) {
+                    existingCustomerInfo.setEmail(newCustomerInfo.getEmail());
+                }
+                if (newCustomerInfo.getFamilyName() != null) {
+                    existingCustomerInfo.setFamilyName(newCustomerInfo.getFamilyName());
+                }
+                if (newCustomerInfo.getGivenName() != null) {
+                    existingCustomerInfo.setGivenName(existingCustomerInfo.getGivenName());
+                }
+                if (newCustomerInfo.getInitials() != null) {
+                    existingCustomerInfo.setInitials(newCustomerInfo.getInitials());
+                }
+                if (newCustomerInfo.getPhoneNumber() != null) {
+                    existingCustomerInfo.setPhoneNumber(newCustomerInfo.getPhoneNumber());
+                }
+                if (newCustomerInfo.getTitle() != null) {
+                    existingCustomerInfo.setTitle(newCustomerInfo.getTitle());
+                }
+                customerInfoRepository.save(existingCustomerInfo);
             }
-            if (newCustomerInfo.getAddress() != null) {
-                existingCustomerInfo.setAddress(newCustomerInfo.getAddress());
-            }
-            if (newCustomerInfo.getPartyId() != null) {
-                existingCustomerInfo.setPartyId(newCustomerInfo.getPartyId());
-            }
-            if (newCustomerInfo.getBirthdate() != null) {
-                existingCustomerInfo.setBirthdate(newCustomerInfo.getBirthdate());
-            }
-            if (newCustomerInfo.getEmail() != null) {
-                existingCustomerInfo.setEmail(newCustomerInfo.getEmail());
-            }
-            if (newCustomerInfo.getFamilyName() != null) {
-                existingCustomerInfo.setFamilyName(newCustomerInfo.getFamilyName());
-            }
-            if (newCustomerInfo.getGivenName() != null) {
-                existingCustomerInfo.setGivenName(existingCustomerInfo.getGivenName());
-            }
-            if (newCustomerInfo.getInitials() != null) {
-                existingCustomerInfo.setInitials(newCustomerInfo.getInitials());
-            }
-            if (newCustomerInfo.getPhoneNumber() != null) {
-                existingCustomerInfo.setPhoneNumber(newCustomerInfo.getPhoneNumber());
-            }
-            if (newCustomerInfo.getTitle() != null) {
-                existingCustomerInfo.setTitle(newCustomerInfo.getTitle());
-            }
-            customerInfoRepository.save(existingCustomerInfo);
         }
     }
 

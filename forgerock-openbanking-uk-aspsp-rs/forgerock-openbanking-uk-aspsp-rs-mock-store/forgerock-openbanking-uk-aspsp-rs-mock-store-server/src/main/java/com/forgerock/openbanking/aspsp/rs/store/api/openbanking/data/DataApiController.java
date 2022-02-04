@@ -199,23 +199,25 @@ public class DataApiController implements DataApi {
     public ResponseEntity importUserData(
             @RequestBody FRUserData userData
     ) {
-        FRUserData userDataResponse = new FRUserData(userData.getUserName());
+        String username = userData.getUserName();
+        log.debug("importUserData() called with data for user '{}'", userData);
+        FRUserData userDataResponse = new FRUserData(username);
 
-        if (rsConfiguration.isCustomerInfoEnabled()) {
-            FRCustomerInfo existingCustomerInfo = customerInfoRepository.findByUserID(userData.getUserName());
-            if (existingCustomerInfo != null) {
-                userData.getCustomerInfo().setId(existingCustomerInfo.getId());
-            }
 
+        if(rsConfiguration.isCustomerInfoEnabled()) {
             FRCustomerInfo requestCustomerInfo = userData.getCustomerInfo();
             if (userData.getCustomerInfo() != null) {
+                FRCustomerInfo existingCustomerInfo = customerInfoRepository.findByUserID(username);
+                if(existingCustomerInfo != null){
+                    requestCustomerInfo.setId(existingCustomerInfo.getId());
+                }
                 FRCustomerInfo savedCustomerInfo = customerInfoRepository.save(requestCustomerInfo);
                 userDataResponse.setCustomerInfo(savedCustomerInfo);
             }
         }
 
         if (userData.getParty() != null) {
-            FRParty existingParty = partyRepository.findByUserId(userData.getUserName());
+            FRParty existingParty = partyRepository.findByUserId(username);
 
             //Party
             if (existingParty != null) {
@@ -223,14 +225,14 @@ public class DataApiController implements DataApi {
             }
 
             FRParty newParty = new FRParty();
-            newParty.setUserId(userData.getUserName());
+            newParty.setUserId(username);
             newParty.setParty(toFRPartyData(userData.getParty()));
             newParty.setId(userData.getParty().getPartyId());
             FRPartyData newPartyData = partyRepository.save(newParty).getParty();
             userDataResponse.setParty(toOBParty2(newPartyData));
         }
 
-        Set<String> existingAccountIds = accountsRepository.findByUserID(userData.getUserName())
+        Set<String> existingAccountIds = accountsRepository.findByUserID(username)
                 .stream()
                 .map(FRAccount::getId)
                 .collect(Collectors.toSet());
@@ -240,7 +242,7 @@ public class DataApiController implements DataApi {
 
             //Account
             if (accountData.getAccount() != null) {
-                FRFinancialAccount frAccount = dataCreator.createAccount(accountData, userData.getUserName()).getAccount();
+                FRFinancialAccount frAccount = dataCreator.createAccount(accountData, username).getAccount();
                 accountDataResponse.setAccount(toOBAccount6(frAccount));
                 existingAccountIds.add(accountDataResponse.getAccount().getAccountId());
             }
@@ -274,7 +276,8 @@ public class DataApiController implements DataApi {
     public ResponseEntity<Boolean> deleteUserData(
             @RequestParam("userId") String userId
     ) {
-        customerInfoRepository.deleteByUserID(userId);
+        log.debug("deleteUserData() userId '{}'", userId);
+        customerInfoRepository.deleteFRCustomerInfoByUserID(userId);
 
         partyRepository.deleteFRPartyByUserId(userId);
 
@@ -286,7 +289,7 @@ public class DataApiController implements DataApi {
     }
 
     private void deleteAccount(FRAccount account, String userId) {
-        customerInfoRepository.deleteByUserID(userId);
+        customerInfoRepository.deleteFRCustomerInfoByUserID(userId);
         accountsRepository.deleteById(account.getId());
         balanceRepository.deleteBalanceByAccountId(account.getId());
         productRepository.deleteProductByAccountId(account.getId());

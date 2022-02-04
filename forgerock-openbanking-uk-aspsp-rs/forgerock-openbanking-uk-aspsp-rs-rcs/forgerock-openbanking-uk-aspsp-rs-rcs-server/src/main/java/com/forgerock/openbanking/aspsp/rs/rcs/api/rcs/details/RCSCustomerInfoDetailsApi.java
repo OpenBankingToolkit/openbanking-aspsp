@@ -33,6 +33,7 @@ import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +51,10 @@ public class RCSCustomerInfoDetailsApi implements RCSDetailsApi {
     private final AccountRequestStoreService accountRequestStoreService;
     private final FRCustomerInfoRepository customerInfoRepository;
 
-    public RCSCustomerInfoDetailsApi(RCSErrorService rcsErrorService, TppStoreService tppStoreService, AccountRequestStoreService accountRequestStoreService, FRCustomerInfoRepository customerInfoRepository) {
+    @Autowired
+    public RCSCustomerInfoDetailsApi(RCSErrorService rcsErrorService, TppStoreService tppStoreService,
+                                     AccountRequestStoreService accountRequestStoreService,
+                                     FRCustomerInfoRepository customerInfoRepository) {
         this.rcsErrorService = rcsErrorService;
         this.tppStoreService = tppStoreService;
         this.accountRequestStoreService = accountRequestStoreService;

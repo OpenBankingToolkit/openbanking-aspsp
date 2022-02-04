@@ -28,6 +28,6 @@ public interface FRCustomerInfoRepository extends MongoRepository<FRCustomerInfo
 
     FRCustomerInfo findByUserID(@Param("userID") String userID);
 
-    FRCustomerInfo deleteByUserID(@Param("userID") String userID);
+    Long deleteFRCustomerInfoByUserID(@Param("userID") String userID);
 
 }

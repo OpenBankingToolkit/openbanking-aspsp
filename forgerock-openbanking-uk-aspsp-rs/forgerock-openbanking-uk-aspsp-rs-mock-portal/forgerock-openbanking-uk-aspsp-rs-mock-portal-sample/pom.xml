@@ -28,7 +28,7 @@
 	<artifactId>forgerock-openbanking-uk-aspsp-rs-mock-portal-sample</artifactId>
 	<packaging>jar</packaging>
 
-	<name>rs-mock-portal</name>
+	<name>rs-mock-portal-sample</name>
 	<description>Mock the bank portal sample</description>
 
 	<parent>
