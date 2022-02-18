@@ -22,8 +22,8 @@ package com.forgerock.openbanking.aspsp.as.migration.tppschema;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementFactory;
+import com.forgerock.openbanking.common.services.onboarding.configuration.OpenBankingDirectoryConfiguration;
+import com.forgerock.openbanking.common.services.onboarding.registrationrequest.DirectorySoftwareStatementFactory;
 import com.forgerock.openbanking.model.DirectorySoftwareStatement;
 import com.forgerock.openbanking.model.Tpp;
 import com.github.mongobee.changeset.ChangeLog;

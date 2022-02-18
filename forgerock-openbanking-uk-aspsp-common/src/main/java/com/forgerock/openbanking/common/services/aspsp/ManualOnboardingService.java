@@ -43,9 +43,13 @@ public class ManualOnboardingService {
     @Autowired
     private RestTemplate restTemplate;
 
-    public OIDCRegistrationResponse registerApplication(JwtAuthentication authentication, String aspspManualOnboardingEndpoint, ManualRegistrationRequest manualRegistrationRequest) {
+    public OIDCRegistrationResponse registerApplication(JwtAuthentication authentication,
+                                                        String aspspManualOnboardingEndpoint,
+                                                        ManualRegistrationRequest manualRegistrationRequest) {
+        log.debug("registerApplication() called. aspspManualOnboardingEndpoint is '{}'", aspspManualOnboardingEndpoint);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("userId", ((UserDetails)authentication.getPrincipal()).getUsername());
+
 
         try {
             String directoryID = authentication.getJwtClaimsSet().getStringClaim("directoryID");

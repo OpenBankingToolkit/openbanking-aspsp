@@ -25,7 +25,7 @@
  */
 package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
 
-import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
+import com.forgerock.openbanking.common.services.onboarding.apiclient.ApiClientException;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageInvalidTokenException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageMissingAuthInfoException;

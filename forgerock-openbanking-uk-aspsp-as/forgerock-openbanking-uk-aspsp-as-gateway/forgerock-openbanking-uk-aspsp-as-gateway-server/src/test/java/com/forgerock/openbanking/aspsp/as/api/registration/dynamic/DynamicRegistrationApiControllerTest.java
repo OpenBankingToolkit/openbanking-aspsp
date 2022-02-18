@@ -25,22 +25,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
 import com.forgerock.cert.psd2.Psd2Role;
 import com.forgerock.cert.psd2.RoleOfPsp;
-import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
 import com.forgerock.openbanking.aspsp.as.api.registration.CertificateTestSpec;
-import com.forgerock.openbanking.aspsp.as.configuration.OpenBankingDirectoryConfiguration;
-import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
-import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
-import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
-import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.DirectorySoftwareStatementFactory;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
+import com.forgerock.openbanking.common.TestHelperFunctions;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.*;
+import com.forgerock.openbanking.common.services.onboarding.TppRegistrationService;
+import com.forgerock.openbanking.common.services.onboarding.apiclient.ApiClientException;
+import com.forgerock.openbanking.common.services.onboarding.apiclient.ApiClientIdentity;
+import com.forgerock.openbanking.common.services.onboarding.apiclient.ApiClientIdentityFactory;
+import com.forgerock.openbanking.common.services.onboarding.configuration.OpenBankingDirectoryConfiguration;
+import com.forgerock.openbanking.common.services.onboarding.registrationrequest.DirectorySoftwareStatementFactory;
+import com.forgerock.openbanking.common.services.onboarding.registrationrequest.RegistrationRequest;
+import com.forgerock.openbanking.common.services.onboarding.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.utils.extractor.TokenExtractor;
-import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
@@ -55,7 +54,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.io.IOException;
@@ -181,12 +179,11 @@ public class DynamicRegistrationApiControllerTest {
     }
 
     @Test
-    public void throwsOAuth2InvalidClientExceptionWhenClientIdIsNull_unregister() throws OBErrorResponseException {
+    public void throwsOAuth2InvalidClientExceptionWhenClientIdIsNull_unregister() throws OAuth2InvalidClientException {
         // given
         String clientId = null;
         Principal principal = mock(Principal.class);
-        given(principal.getName()).willReturn(tppName);
-        given(tppStoreService.findByClientId(tppName)).willReturn(Optional.of(this.getValidTpp()));
+
 
         // when
         OAuth2InvalidClientException exception = catchThrowableOfType(()->
@@ -199,31 +196,17 @@ public class DynamicRegistrationApiControllerTest {
     }
 
     @Test
-    public void throwsOAuth2ClientExceptionWhenTppNotRegistered_unregister(){
+    public void throwsOAuth2BearerTokenUsageInvalidTokenExceptionWhenInvalidAuthorizationString_unregister()
+            throws OAuth2InvalidClientException, OAuth2BearerTokenUsageMissingAuthInfoException,
+            OAuth2BearerTokenUsageInvalidTokenException {
         // given
         String clientId = this.clientId;
         Principal principal = mock(Principal.class);
+        Tpp tpp = this.getValidTpp();
         given(principal.getName()).willReturn(tppName);
-        given(tppStoreService.findByClientId(tppName)).willReturn(Optional.empty());
-
-        // when
-        OAuth2InvalidClientException exception = catchThrowableOfType(()->
-                dynamicRegistrationApiController.deleteRegistration(clientId, this.authorizationString, principal),
-                OAuth2InvalidClientException.class);
-        // then
-        assertThat(exception).isNotNull();
-        assertThat(exception.getHttpStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(exception.getRfc6750ErrorCode()).isEqualTo(OAuth2Exception.INVALID_CLIENT);
-    }
-
-    @Test
-    public void throwsOAuth2BearerTokenUsageInvalidTokenExceptionWhenInvalidAuthorizationString_unregister() {
-        // given
-        String clientId = this.clientId;
-        Principal principal = mock(Principal.class);
-        given(principal.getName()).willReturn(tppName);
-        given(tppStoreService.findByClientId(clientId)).willReturn(Optional.of(this.getValidTpp()));
-        given(tokenExtractor.extract(this.authorizationString)).willThrow(new AuthenticationServiceException("test"));
+        given(tppRegistrationService.getTpp(clientId)).willReturn(tpp);
+        given(tppRegistrationService.validateAccessTokenIsValidForOidcRegistration(tpp, authorizationString))
+                .willThrow( new OAuth2BearerTokenUsageInvalidTokenException("test"));
 
         // when
         OAuth2BearerTokenUsageInvalidTokenException exception = catchThrowableOfType(()->
@@ -242,14 +225,19 @@ public class DynamicRegistrationApiControllerTest {
      * is requesting the deletion of a client registration they didn't make.
      */
     @Test
-    public void throwsOAuth2BearerTokenUsageInvalidTokenExceptionWhenNotOwner_unregister() {
+    public void throwsOAuth2BearerTokenUsageInvalidTokenExceptionWhenNotOwner_unregister()
+            throws OAuth2InvalidClientException, OAuth2BearerTokenUsageMissingAuthInfoException,
+            OAuth2BearerTokenUsageInvalidTokenException {
         // given
         String clientId = this.clientId;
         Principal principal = mock(Principal.class);
+        Tpp tpp = this.getValidTpp();
         given(principal.getName()).willReturn(tppName);
-        given(tppStoreService.findByClientId(this.clientId)).willReturn(Optional.of(this.getValidTpp()));
+        given(tppRegistrationService.getTpp(clientId)).willReturn(tpp);
         String accessToken = "not-the-tpps-registration-access-token";
-        given(tokenExtractor.extract(this.authorizationString)).willReturn(accessToken);
+        given(tppRegistrationService.validateAccessTokenIsValidForOidcRegistration(tpp, this.authorizationString)).willThrow(
+                new OAuth2BearerTokenUsageInvalidTokenException("Invalid token"));
+
 
         // when
         OAuth2BearerTokenUsageInvalidTokenException exception = catchThrowableOfType(()->
@@ -269,7 +257,7 @@ public class DynamicRegistrationApiControllerTest {
         String clientId = this.clientId;
         Principal principal = mock(Principal.class);
         given(principal.getName()).willReturn(tppName);
-        given(tppStoreService.findByClientId(clientId)).willReturn(Optional.of(this.getValidTpp()));
+        given(tppRegistrationService.getTpp(clientId)).willReturn(this.getValidTpp());
         String accessToken = "tpps-registration-access-token";
         given(tokenExtractor.extract(this.authorizationString)).willReturn(accessToken);
 
@@ -315,7 +303,9 @@ public class DynamicRegistrationApiControllerTest {
         OIDCRegistrationResponse registrationResponse = new OIDCRegistrationResponse();
         registrationResponse.setRegistrationAccessToken(authToken);
         tpp.setRegistrationResponse(registrationResponse);
-        given(tppStoreService.findByClientId(clientId)).willReturn(Optional.of(tpp));
+        given(tppRegistrationService.getTpp(clientId)).willReturn(tpp);
+        given(tppRegistrationService.validateAccessTokenIsValidForOidcRegistration(tpp, authTokenHeaderValue))
+                .willReturn(authToken);
         given(this.tppRegistrationService.updateTpp(any(ApiClientIdentity.class), eq(tpp), eq(authToken),
                 any(RegistrationRequest.class))).willReturn(tpp);
         given(tokenExtractor.extract(authTokenHeaderValue)).willReturn(authToken);
@@ -476,5 +466,4 @@ public class DynamicRegistrationApiControllerTest {
         tpp.setAuthorisationNumber(this.tppName);
         return tpp;
     }
-
 }
