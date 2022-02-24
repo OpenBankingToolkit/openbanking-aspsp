@@ -20,50 +20,106 @@
  */
 package com.forgerock.openbanking.register.api.manual;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageInvalidTokenException;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageMissingAuthInfoException;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationApplication;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
 import com.forgerock.openbanking.common.services.aspsp.ManualOnboardingService;
-import com.forgerock.openbanking.constants.OpenBankingConstants;
+import com.forgerock.openbanking.common.services.onboarding.TppRegistrationService;
+import com.forgerock.openbanking.common.services.onboarding.apiclient.ApiClientException;
+import com.forgerock.openbanking.common.services.onboarding.apiclient.ApiClientIdentity;
+import com.forgerock.openbanking.common.services.onboarding.apiclient.ApiClientIdentityFactory;
+import com.forgerock.openbanking.common.services.onboarding.registrationrequest.RegistrationRequest;
+import com.forgerock.openbanking.common.services.onboarding.registrationrequest.RegistrationRequestFactory;
+import com.forgerock.openbanking.common.services.security.Psd2WithSessionApiHelperService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
-import com.forgerock.openbanking.register.model.ManualRegUser;
 import com.forgerock.openbanking.register.service.ManualRegistrationApplicationService;
-import com.forgerock.spring.security.multiauth.model.authentication.JwtAuthentication;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.encoder.org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StreamUtils;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.security.Principal;
-import java.text.ParseException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
 public class ManualRegistrationApiController implements ManualRegistrationApi {
 
     @Autowired
-    private ManualOnboardingService manualOnboardingService;
-    @Value("${manual-onboarding.aspspManualOnboardingEndpoint}")
-    private String aspspManualOnboardingEndpoint;
-    @Autowired
-    private ManualRegistrationApplicationService manualRegistrationApplicationService;
+    public ManualRegistrationApiController(ManualOnboardingService manualOnboardingService,
+                                           @Value("${manual-onboarding.aspspManualOnboardingEndpoint}")
+                                           String aspspManualOnboardingEndpoint,
+                                           ManualRegistrationApplicationService manualRegistrationApplicationService,
+                                           Psd2WithSessionApiHelperService psd2WithSessionApiHelperService,
+                                           ApiClientIdentityFactory identityFactory,
+                                           TppRegistrationService tppRegistrationService,
+                                           RegistrationRequestFactory registrationRequestFactory,
+                                           ObjectMapper objectMapper,
+                                           @Value("${manual-onboarding.registration-request-base}")
+                                                   Resource registrationRequestFile) {
+        this.manualOnboardingService = manualOnboardingService;
+        this.aspspManualOnboardingEndpoint = aspspManualOnboardingEndpoint;
+        this.manualRegistrationApplicationService = manualRegistrationApplicationService;
+        this.psd2WithSessionApiHelperService = psd2WithSessionApiHelperService;
+        this.identityFactory = identityFactory;
+        this.tppRegistrationService = tppRegistrationService;
+        this.registrationRequestFactory = registrationRequestFactory;
+        this.objectMapper = objectMapper;
+        this.registrationRequestFile = registrationRequestFile;
+    }
+
+
+    private final ManualOnboardingService manualOnboardingService;
+    private final String aspspManualOnboardingEndpoint;
+    private final ManualRegistrationApplicationService manualRegistrationApplicationService;
+    private final Psd2WithSessionApiHelperService psd2WithSessionApiHelperService;
+    private final ApiClientIdentityFactory identityFactory;
+    private final TppRegistrationService tppRegistrationService;
+    private final RegistrationRequestFactory registrationRequestFactory;
+    ObjectMapper objectMapper;
+    Resource registrationRequestFile;
+
+    private String registrationRequestFileContent = null;
+
+    @Override
+    public ResponseEntity<String> getOrganizationIdentifier(
+            Principal principal
+    ) throws OAuth2InvalidClientException {
+        try{
+            ApiClientIdentity apiClientIdentity = identityFactory.getApiClientIdentity(principal);
+            String organizationIdentifier =
+                    apiClientIdentity.getAuthorisationNumber().orElseThrow(
+                            () -> new OAuth2InvalidClientException("Could not get OrganizationIdentifier from  " +
+                                    "certificate"));
+            return ResponseEntity.status(HttpStatus.OK).body(organizationIdentifier);
+        } catch (ApiClientException e) {
+            log.info("getOrganizationIdentifier() caught ApiClientException; ", e);
+            throw new OAuth2InvalidClientException("Failed to obtain OrganizationIdentifier from certificate");
+        }
+    }
 
     @Override
     public ResponseEntity<ManualRegistrationApplication> registerApplication(
@@ -71,63 +127,55 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
             @Valid
             @RequestBody ManualRegistrationRequest manualRegistrationRequest,
 
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    ) throws OBErrorResponseException, OBErrorException {
-        JwtAuthentication jwtAuthentication = (JwtAuthentication) principal;
-        ManualRegUser manualRegUser = fromAuthentication(jwtAuthentication);
+    ) throws OAuth2InvalidClientException {
+        log.debug("registerApplication called. manualRegistrationRequest is '{}'", manualRegistrationRequest);
+
+        ApiClientIdentity apiClientIdentity = null;
         try {
-            String softwareClientId;
-            if (!"EIDAS".equals(manualRegUser.getDirectoryID())) {
-                SignedJWT ssaJws = SignedJWT.parse(manualRegistrationRequest.getSoftwareStatementAssertion());
-                //Convert in json for convenience
-                JWTClaimsSet ssaClaims = ssaJws.getJWTClaimsSet();
-                //Verify the SSA wasn't already used
-                softwareClientId = ssaClaims.getStringClaim(OpenBankingConstants.SSAClaims.SOFTWARE_CLIENT_ID);
-            } else {
-                softwareClientId = manualRegUser.getAppId();
-                manualRegistrationRequest.setAppId(manualRegUser.getAppId());
-                manualRegistrationRequest.setOrganisationId(manualRegUser.getOrganisationId());
-                manualRegistrationRequest.setPsd2Roles(manualRegUser.getPsd2Roles());
-            }
+            String userNameOfSessionHolder = this.getUserNameFromSession(obriSession);
+            apiClientIdentity = identityFactory.getApiClientIdentity(principal);
+            log.debug("ApiClientIdentity is '{}'", apiClientIdentity);
 
-            Optional<ManualRegistrationApplication> bySoftwareClientId = manualRegistrationApplicationService.findBySoftwareClientId(softwareClientId);
-            if (bySoftwareClientId.isPresent()) {
-                ManualRegistrationApplication manualRegistrationApplication = bySoftwareClientId.get();
-                if (!"EIDAS".equals(manualRegUser.getDirectoryID())) {
+            //Prepare the request
+            String registrationRequestDefaultJsonClaims = getRegistrationRequestDefaultJsonClaims();
+            RegistrationRequest registrationRequest =
+                    registrationRequestFactory.getRegistrationRequestFromManualRegistrationJson(
+                            registrationRequestDefaultJsonClaims, manualRegistrationRequest, objectMapper);
 
-                    log.debug("The SSA was already used for application {}", manualRegistrationApplication);
-                    throw new OBErrorResponseException(
-                            OBRIErrorType.MANUAL_ONBOARDING_SOFTWARE_STATEMENT_ALREADY_ONBOARD.getHttpStatus(),
-                            OBRIErrorResponseCategory.MANUAL_ONBOARDING,
-                            OBRIErrorType.MANUAL_ONBOARDING_SOFTWARE_STATEMENT_ALREADY_ONBOARD.toOBError1());
-                } else {
-                    log.debug("The EIDAS was already used for application {}", manualRegistrationApplication);
-                    throw new OBErrorResponseException(
-                            OBRIErrorType.MANUAL_ONBOARDING_EIDAS_ALREADY_ONBOARD.getHttpStatus(),
-                            OBRIErrorResponseCategory.MANUAL_ONBOARDING,
-                            OBRIErrorType.MANUAL_ONBOARDING_EIDAS_ALREADY_ONBOARD.toOBError1());
-                }
-            }
-            OIDCRegistrationResponse oidcRegistrationResponse = manualOnboardingService.registerApplication(
-                    jwtAuthentication,
-                    aspspManualOnboardingEndpoint,
-                    manualRegistrationRequest);
+            registrationRequest.overwriteRegistrationRequestFieldsFromSSAClaims(apiClientIdentity);
+            log.debug("The OIDC registration request we are going to send to AM {}", registrationRequest);
 
-            //Register the manual on-boarding application wrapper around it
-            ManualRegistrationApplication application = ManualRegistrationApplication.builder()
-                    .userId(((UserDetails)jwtAuthentication.getPrincipal()).getUsername())
+            //Register the TPP
+            String tppIdentifier = registrationRequest.getSoftwareIdFromSSA();
+            Tpp tpp = tppRegistrationService.registerTpp(apiClientIdentity, registrationRequest);
+
+            log.debug("Successfully performed manual onboarding! the tpp resulting: {}", tpp);
+
+
+            ManualRegistrationApplication manualRegistrationApplication = ManualRegistrationApplication.builder()
+                    .userId(userNameOfSessionHolder)
                     .manualRegistrationRequest(manualRegistrationRequest)
                     .description(manualRegistrationRequest.getApplicationDescription())
-                    .softwareClientId(softwareClientId)
-                    .oidcRegistrationResponse(oidcRegistrationResponse)
+                    .softwareClientId(tpp.getClientId())
+                    .oidcRegistrationResponse(tpp.getRegistrationResponse())
                     .build();
+
             return ResponseEntity.status(HttpStatus.CREATED)
-                .body(manualRegistrationApplicationService.createApplication(application));
-        } catch (ParseException e) {
-            log.error("Couldn't parse registration request", e);
-            throw new OBErrorException(OBRIErrorType.TPP_REGISTRATION_REQUEST_INVALID_FORMAT);
+                .body(manualRegistrationApplicationService.createApplication(manualRegistrationApplication));
+
+        } catch (ApiClientException e) {
+            log.info("registerApplication() caught ApiClientException; ", e);
+            throw new OAuth2InvalidClientException(e.getMessage());
+        } catch (DynamicClientRegistrationException e) {
+            log.info("registerApplication() caught DynamicClientRegistrationException; ", e);
+            throw new OAuth2InvalidClientException(e.getMessage());
         }
     }
+
+
 
     @Override
     public ResponseEntity<ManualRegistrationApplication> unregisterApplication(
@@ -135,13 +183,36 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
             @Valid
             @PathVariable(value = "applicationId") String applicationId,
 
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    ) throws OBErrorResponseException {
-        UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-        ManualRegistrationApplication application = verifyApplicationOwner(applicationId, currentUser);
-        manualOnboardingService.unregisterApplication(currentUser.getUsername(), aspspManualOnboardingEndpoint, application.getOidcRegistrationResponse().getClientId());
-        manualRegistrationApplicationService.deleteApplication(application);
-        return ResponseEntity.ok(application);
+    ) throws OBErrorResponseException, OAuth2InvalidClientException, OAuth2BearerTokenUsageMissingAuthInfoException,
+            OAuth2BearerTokenUsageInvalidTokenException {
+        String methodName = "unregisterApplication()";
+        log.info("{} called for ClientId '{}', tpp is '{}'", methodName, applicationId, principal.getName());
+
+        String userNameOfSessionHolder = this.getUserNameFromSession(obriSession);
+        ManualRegistrationApplication manualRegistrationApplication =
+                getManualApplicationIfOwnedBySessionOwner(applicationId, userNameOfSessionHolder);
+
+
+        String oauth2ClientId = manualRegistrationApplication.getOidcRegistrationResponse().getClientId();
+        Tpp tpp = tppRegistrationService.getTpp(oauth2ClientId);
+        tppRegistrationService.ensureTppOwnsOidcRegistration(tpp, principal.getName());
+
+
+        if(!sessionHolderOwnsManualRegistration(userNameOfSessionHolder, manualRegistrationApplication)){
+            log.info("unregisterApplication() logged in user does not own this manual registration application");
+            throw new OAuth2InvalidClientException("Logged in user does not own this manual registration application");
+        }
+
+
+        tppRegistrationService.deleteOAuth2RegistrationAndTppRecord(tpp);
+        log.info("{} Unregistered ClientId '{}'", methodName, applicationId);
+
+        manualRegistrationApplicationService.deleteApplication(manualRegistrationApplication);
+
+        return ResponseEntity.ok(manualRegistrationApplication);
     }
 
     @Override
@@ -150,31 +221,79 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
             @Valid
             @PathVariable(value = "applicationId") String applicationId,
 
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    ) throws OBErrorResponseException {
-        UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-        ManualRegistrationApplication application = verifyApplicationOwner(applicationId, currentUser);
+    ) throws OBErrorResponseException, OAuth2InvalidClientException {
+        log.info("getApplication() called for applicationId '{}' by tpp '{}'", applicationId, principal.getName());
+        String userNameOfSessionHolder = this.getUserNameFromSession(obriSession);
+        log.debug("getApplication() username of session owner is '{}'", userNameOfSessionHolder);
+        ManualRegistrationApplication application = getManualApplicationIfOwnedBySessionOwner(
+                applicationId, userNameOfSessionHolder);
+        ensurePrincipalOwnsTppRegistrations(List.of(application), principal);
+
+        log.debug("getApplication() returning application id '{}'", application.getId());
         return ResponseEntity.ok(application);
     }
 
+
     @Override
     public ResponseEntity<Collection<ManualRegistrationApplication>> getApplications(
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    ) {
-        UserDetails currentUser = (UserDetails) ((Authentication) principal).getPrincipal();
-        return ResponseEntity.ok(manualRegistrationApplicationService.getAllApplications(currentUser.getUsername()));
+    ) throws OAuth2InvalidClientException {
+        log.info("getApplications() called by tpp '{}'", principal.getName());
+        String userNameOfSessionHolder = this.getUserNameFromSession(obriSession);
+        log.debug("getApplications() username of session owner is '{}'", userNameOfSessionHolder);
+        Collection<ManualRegistrationApplication> applications =
+                manualRegistrationApplicationService.getAllApplications(userNameOfSessionHolder);
+        ensurePrincipalOwnsTppRegistrations(applications, principal);
+
+        return ResponseEntity.ok(applications);
     }
 
-    private ManualRegistrationApplication verifyApplicationOwner(String applicationId, UserDetails currentUser) throws OBErrorResponseException {
-        Optional<ManualRegistrationApplication> isApplication = manualRegistrationApplicationService.findById(applicationId);
-        if (!isApplication.isPresent()) {
+    private void ensurePrincipalOwnsTppRegistrations(Collection<ManualRegistrationApplication> applications,
+                                                    Principal principal) throws OAuth2InvalidClientException {
+        log.debug("ensurePrincipalOwnsTppRegistrations() checking that '{}' applications are owned by '{}'",
+                applications.size(), principal.getName());
+        for(ManualRegistrationApplication application : applications) {
+            OIDCRegistrationResponse regResponse = application.getOidcRegistrationResponse();
+            if (regResponse == null) {
+                String errorString = "Failed to determine if MATLS client cert belongs to the TPP that owns the " +
+                        "application with id ";
+                log.info("principalOwnsTppRegistration() {}'{}'", errorString, application.getId());
+                throw new OAuth2InvalidClientException(errorString + application.getId() + "'");
+            }
+            String oauth2ClientId = regResponse.getClientId();
+            Tpp tpp = tppRegistrationService.getTpp(oauth2ClientId);
+            tppRegistrationService.ensureTppOwnsOidcRegistration(tpp, principal.getName());
+        }
+        log.debug("ensurePrincipalOwnsTppRegistrations() all application's OAuth2 clients owned by '{}'",
+                principal.getName());
+    }
+
+
+    private boolean sessionHolderOwnsManualRegistration(
+            String userNameOfSessionHolder, ManualRegistrationApplication manualRegistrationApplication) {
+        String usernameOfManualRegistrationOwner = manualRegistrationApplication.getUserId();
+        return StringUtils.isNotBlank(userNameOfSessionHolder) &&
+                userNameOfSessionHolder.equals(usernameOfManualRegistrationOwner);
+    }
+
+    private ManualRegistrationApplication getManualApplicationIfOwnedBySessionOwner(
+            String applicationId, String usernameOfSessionHolder) throws OBErrorResponseException {
+        Optional<ManualRegistrationApplication> isApplication =
+                manualRegistrationApplicationService.findById(applicationId);
+        if (isApplication.isEmpty()) {
             throw new OBErrorResponseException(
                     OBRIErrorType.MANUAL_ONBOARDING_APPLICATION_NOT_FOUND.getHttpStatus(),
                     OBRIErrorResponseCategory.MANUAL_ONBOARDING,
                     OBRIErrorType.MANUAL_ONBOARDING_APPLICATION_NOT_FOUND.toOBError1(applicationId));
         }
+
         ManualRegistrationApplication application = isApplication.get();
-        if (!application.getUserId().equals(currentUser.getUsername())) {
+        if (!sessionHolderOwnsManualRegistration(usernameOfSessionHolder, application)) {
             throw new OBErrorResponseException(
                     OBRIErrorType.MANUAL_ONBOARDING_WRONG_USER.getHttpStatus(),
                     OBRIErrorResponseCategory.MANUAL_ONBOARDING,
@@ -183,21 +302,26 @@ public class ManualRegistrationApiController implements ManualRegistrationApi {
         return application;
     }
 
-    public ManualRegUser fromAuthentication(JwtAuthentication jwtAuthentication) {
-        ManualRegUser user = new ManualRegUser();
-        user.setId(((UserDetails)jwtAuthentication.getPrincipal()).getUsername().toLowerCase());
-        user.setAuthorities(jwtAuthentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
-        try {
-            String directoryID = jwtAuthentication.getJwtClaimsSet().getStringClaim("directoryID");
-            user.setDirectoryID(directoryID);
-            if ("EIDAS".equals(directoryID)) {
-                user.setAppId(jwtAuthentication.getJwtClaimsSet().getStringClaim("app_id"));
-                user.setOrganisationId(jwtAuthentication.getJwtClaimsSet().getStringClaim("org_id"));
-                user.setPsd2Roles(jwtAuthentication.getJwtClaimsSet().getStringClaim("psd2_roles"));
+
+    private String getRegistrationRequestDefaultJsonClaims() {
+        if (registrationRequestFileContent == null) {
+            try {
+                registrationRequestFileContent = StreamUtils.copyToString(registrationRequestFile.getInputStream(),
+                        Charset.defaultCharset());
+            } catch (IOException e) {
+                log.error("Can't read registration request resource", e);
+                throw new RuntimeException(e);
             }
-        } catch (ParseException e) {
-            log.error("Couldn't read claims from user context", e);
         }
-        return user;
+        return registrationRequestFileContent;
+    }
+
+    private String getUserNameFromSession(String session) throws OAuth2InvalidClientException{
+        try {
+            return this.psd2WithSessionApiHelperService.getPsuNameFromSession(session);
+        } catch (OBErrorException e) {
+            log.info("getUserNameFromSession() failed getting username from session. caught OBErrorException; ", e);
+            throw new OAuth2InvalidClientException("Failed to get username from session");
+        }
     }
 }

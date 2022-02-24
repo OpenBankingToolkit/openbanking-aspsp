@@ -25,6 +25,9 @@
  */
 package com.forgerock.openbanking.register.api.manual;
 
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageInvalidTokenException;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageMissingAuthInfoException;
+import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationApplication;
 import com.forgerock.openbanking.common.model.onboarding.ManualRegistrationRequest;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -33,10 +36,7 @@ import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -45,6 +45,24 @@ import java.util.Collection;
 
 @Api(tags = "Registration", description = "the manual registration API")
 public interface ManualRegistrationApi {
+
+    @ApiOperation(
+            value = "Determine the organisational Identifier of the certificate presented",
+            notes = "The user of the register endpoint will see all of the applications registered for their " +
+                    "organisation",
+            tags = {"Registration"}
+    )
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Organizational Identifier returned with success", response = String.class),
+        @ApiResponse(code = 400, message = "Bad Request", response = Void.class),
+        @ApiResponse(code = 401, message = "Unauthorized", response = Void.class),
+        @ApiResponse(code = 429, message = "Too Many Requests", response = Void.class),
+        @ApiResponse(code = 500, message = "Internal Server Error", response = Void.class)
+    })
+    ResponseEntity<String> getOrganizationIdentifier(
+        Principal principal
+    ) throws OAuth2InvalidClientException;
+
 
     @ApiOperation(
             value = "Register a new TPP via manual onboarding",
@@ -75,8 +93,15 @@ public interface ManualRegistrationApi {
             @Valid
             @RequestBody ManualRegistrationRequest manualRegistrationRequest,
 
+//            @ApiParam(value="The SSL tranport pem used to connect to this endpoint", required = true)
+//            @Valid
+//            @RequestHeader(value="x-client-pem-cert", required = true) String clientPem,
+
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
+
             Principal principal
-    ) throws OBErrorResponseException, OBErrorException;
+    ) throws OBErrorResponseException, OBErrorException, OAuth2InvalidClientException;
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     @RequestMapping(
@@ -88,8 +113,10 @@ public interface ManualRegistrationApi {
             @Valid
             @PathVariable(value = "applicationId") String applicationId,
 
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    ) throws OBErrorResponseException;
+    ) throws OBErrorResponseException, OAuth2InvalidClientException, OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2BearerTokenUsageInvalidTokenException;
 
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
@@ -102,8 +129,10 @@ public interface ManualRegistrationApi {
             @Valid
             @PathVariable(value = "applicationId") String applicationId,
 
+            @CookieValue(value = "obri-session", required = true) String obriSession,
+
             Principal principal
-    ) throws OBErrorResponseException;
+    ) throws OBErrorResponseException, OAuth2InvalidClientException;
 
     @PreAuthorize("hasAnyAuthority('ROLE_USER')")
     @RequestMapping(
@@ -111,6 +140,7 @@ public interface ManualRegistrationApi {
             method = RequestMethod.GET
     )
     ResponseEntity<Collection<ManualRegistrationApplication>> getApplications(
+            @CookieValue(value = "obri-session", required = true) String obriSession,
             Principal principal
-    ) throws OBErrorResponseException;
+    ) throws OBErrorResponseException, OAuth2InvalidClientException;
 }

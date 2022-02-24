@@ -22,7 +22,7 @@ package com.forgerock.openbanking.aspsp.as.api.registration;
 
 import com.forgerock.cert.Psd2CertInfo;
 import com.forgerock.cert.exception.InvalidPsd2EidasCertificate;
-import com.forgerock.openbanking.aspsp.as.TestHelperFunctions;
+import com.forgerock.openbanking.common.TestHelperFunctions;
 import com.forgerock.spring.security.multiauth.model.authentication.PSD2Authentication;
 import com.forgerock.spring.security.multiauth.model.authentication.X509Authentication;
 import org.springframework.security.core.GrantedAuthority;

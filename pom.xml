@@ -80,6 +80,13 @@
             </dependency>
             <dependency>
                 <groupId>com.forgerock.openbanking.aspsp</groupId>
+                <artifactId>forgerock-openbanking-uk-aspsp-common</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.forgerock.openbanking.aspsp</groupId>
                 <artifactId>integration-test-support</artifactId>
                 <version>${project.version}</version>
                 <scope>test</scope>

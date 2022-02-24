@@ -20,7 +20,7 @@
  */
 package com.forgerock.openbanking.aspsp.as.service;
 
-import com.forgerock.openbanking.aspsp.as.api.registration.dynamic.dto.RegistrationError;
+import com.forgerock.openbanking.common.services.onboarding.RegistrationError;
 
 public class OIDCException extends Exception {
 

@@ -1,6 +1,9 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[3275f0cd2200648](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3275f0cd2200648) JamieB *2022-02-04 11:27:57*
+Release candidate: prepare for next development iteration
+## 1.7.1
 ### GitHub [#462](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/462) Intermediate checkin with new 3.1.9r3 datamodels
 [ef3db5f856d2af9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ef3db5f856d2af9) Jorge Sanchez Perez *2021-12-15 13:51:37*
 Feature/36 variable recurring payments for 3 1 8 (#469)
@@ -696,6 +699,17 @@ Release/1.7.0 (#478)
 * Release candidate: prepare for next development iteration
 
 * Changelog updated
+[08724336f0c4f41](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/08724336f0c4f41) JamieB *2022-02-04 11:27:53*
+Release candidate: prepare release 1.7.1
+[0c4d7e87843b85e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0c4d7e87843b85e) JamieB *2022-02-04 10:48:42*
+Fixes to auto merge after rebasing onto master!
+[ac74c7f5aa9aa80](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ac74c7f5aa9aa80) JamieB *2022-02-03 15:51:31*
+831: User data gets created against PSU not TPP user name
+
+It was found that the /user/data api was creating user data against the
+TPP user (taken from the PSD2 transport cert) rather than from the
+obri-session cookie.
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/831
 [3f95a06597a5266](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3f95a06597a5266) JamieB *2022-01-18 09:10:35*
 815: Returns customer info objects
 

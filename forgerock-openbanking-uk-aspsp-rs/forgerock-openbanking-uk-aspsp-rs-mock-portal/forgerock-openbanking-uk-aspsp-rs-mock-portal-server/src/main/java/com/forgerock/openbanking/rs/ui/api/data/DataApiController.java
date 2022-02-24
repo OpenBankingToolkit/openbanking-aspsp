@@ -29,7 +29,7 @@ import com.forgerock.openbanking.common.services.store.data.UserDataService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
-import com.forgerock.openbanking.rs.ui.api.services.DataApiHelperService;
+import com.forgerock.openbanking.common.services.security.Psd2WithSessionApiHelperService;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
@@ -53,17 +53,17 @@ public class DataApiController implements DataApi {
     private DataConfigurationProperties dataConfig;
     private PsuCounterEntryKPIService psuCounterEntryKPIService;
     private final CryptoApiClient cryptoApiClient;
-    private final DataApiHelperService dataApiHelperService;
+    private final Psd2WithSessionApiHelperService psd2WithSessionApiHelperService;
 
     @Autowired
     public DataApiController(UserDataService userDataService, DataConfigurationProperties dataConfig,
                              PsuCounterEntryKPIService psuCounterEntryKPIService, CryptoApiClient cryptoApiClient,
-                             DataApiHelperService dataApiHelperService) {
+                             Psd2WithSessionApiHelperService psd2WithSessionApiHelperService) {
         this.userDataService = userDataService;
         this.dataConfig = dataConfig;
         this.psuCounterEntryKPIService = psuCounterEntryKPIService;
         this.cryptoApiClient = cryptoApiClient;
-        this.dataApiHelperService = dataApiHelperService;
+        this.psd2WithSessionApiHelperService = psd2WithSessionApiHelperService;
     }
 
 
@@ -75,8 +75,8 @@ public class DataApiController implements DataApi {
             Principal principal
     ) throws OAuth2InvalidClientException, OBErrorException {
         log.debug("hasData() called");
-        String tppName = dataApiHelperService.getTppName(principal);
-        String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+        String tppName = psd2WithSessionApiHelperService.getTppName(principal);
+        String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
         log.info("hasData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
         return ResponseEntity.ok(userDataService.hasData(psuName));
     }
@@ -89,8 +89,8 @@ public class DataApiController implements DataApi {
             Principal principal
     ) throws OAuth2InvalidClientException, OBErrorException {
         log.debug("exportUserData() called");
-        String tppName = dataApiHelperService.getTppName(principal);
-        String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+        String tppName = psd2WithSessionApiHelperService.getTppName(principal);
+        String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
         log.info("exportUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
         return ResponseEntity.ok(userDataService.exportUserData(psuName));
     }
@@ -107,8 +107,8 @@ public class DataApiController implements DataApi {
     ) throws OBErrorException, OAuth2InvalidClientException {
        try {
            log.debug("updateUserData() called");
-           String tppName = dataApiHelperService.getTppName(principal);
-           String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+           String tppName = psd2WithSessionApiHelperService.getTppName(principal);
+           String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
            log.info("updateUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
 
            userData.setUserName(psuName);
@@ -146,8 +146,8 @@ public class DataApiController implements DataApi {
     ) throws OBErrorException, OAuth2InvalidClientException {
         try {
             log.debug("createUserData() called");
-            String tppName = dataApiHelperService.getTppName(principal);
-            String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+            String tppName = psd2WithSessionApiHelperService.getTppName(principal);
+            String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
             log.info("createUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
             userData.setUserName(psuName);
             if (!userDataService.hasData(psuName)) {
@@ -179,8 +179,8 @@ public class DataApiController implements DataApi {
     ) throws OBErrorException, OAuth2InvalidClientException {
         try {
             log.debug("deleteUserData() called");
-            String tppName = dataApiHelperService.getTppName(principal);
-            String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+            String tppName = psd2WithSessionApiHelperService.getTppName(principal);
+            String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
             log.info("deleteUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
 
             userDataService.deleteUserData(psuName);
@@ -210,8 +210,8 @@ public class DataApiController implements DataApi {
     ) throws OBErrorException, OAuth2InvalidClientException {
         try {
             log.debug("generateData() called");
-            String tppName = dataApiHelperService.getTppName(principal);
-            String psuName = dataApiHelperService.getPsuNameFromSession(obriSession);
+            String tppName = psd2WithSessionApiHelperService.getTppName(principal);
+            String psuName = psd2WithSessionApiHelperService.getPsuNameFromSession(obriSession);
             log.info("generateUserData() called with session for psu '{}' by tpp '{}'", psuName, tppName);
 
             final String defaultProfile = profile != null ? profile : dataConfig.getDefaultProfile();

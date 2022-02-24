@@ -21,20 +21,19 @@
 package com.forgerock.openbanking.aspsp.as.api.registration.dynamic;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.forgerock.openbanking.aspsp.as.service.TppRegistrationService;
-import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientException;
-import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentity;
-import com.forgerock.openbanking.aspsp.as.service.apiclient.ApiClientIdentityFactory;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequest;
-import com.forgerock.openbanking.aspsp.as.service.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationErrorType;
 import com.forgerock.openbanking.common.error.exception.dynamicclientregistration.DynamicClientRegistrationException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageInvalidTokenException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2BearerTokenUsageMissingAuthInfoException;
 import com.forgerock.openbanking.common.error.exception.oauth2.OAuth2InvalidClientException;
+import com.forgerock.openbanking.common.services.onboarding.TppRegistrationService;
+import com.forgerock.openbanking.common.services.onboarding.apiclient.ApiClientException;
+import com.forgerock.openbanking.common.services.onboarding.apiclient.ApiClientIdentity;
+import com.forgerock.openbanking.common.services.onboarding.apiclient.ApiClientIdentityFactory;
+import com.forgerock.openbanking.common.services.onboarding.registrationrequest.RegistrationRequest;
+import com.forgerock.openbanking.common.services.onboarding.registrationrequest.RegistrationRequestFactory;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.utils.extractor.TokenExtractor;
-import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.oidc.OIDCRegistrationResponse;
 import io.swagger.annotations.ApiParam;
@@ -43,17 +42,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.annotation.Nullable;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.security.Principal;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -142,12 +138,13 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             OAuth2BearerTokenUsageInvalidTokenException {
         String methodName = "deleteRegistration()";
         log.info("{} called for ClientId '{}'", methodName, clientId);
+        if(StringUtils.isEmpty(clientId)) throw new OAuth2InvalidClientException("ClientId is null");
         checkAuthArgsContainValidInformation(principal, authorization);
         
-        Tpp tpp = getTpp(clientId);
-        ensureTppOwnsOidcRegistration(tpp, principal.getName());
+        Tpp tpp = tppRegistrationService.getTpp(clientId);
+        tppRegistrationService.ensureTppOwnsOidcRegistration(tpp, principal.getName());
 
-        String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
+        String accessToken = tppRegistrationService.validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
 
         tppRegistrationService.deleteOAuth2RegistrationAndTppRecord(tpp);
         log.info("{} Unregistered ClientId '{}'", methodName, clientId);
@@ -205,9 +202,9 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
             throw new OAuth2InvalidClientException("No client id provided. Request must be of the form " +
                     "/register/{clientId) where client Id is taken from the client_id in the registration response");
         }
-        Tpp tpp = getTpp(clientId);
-        ensureTppOwnsOidcRegistration(tpp, principal.getName());
-        String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
+        Tpp tpp = tppRegistrationService.getTpp(clientId);
+        tppRegistrationService.ensureTppOwnsOidcRegistration(tpp, principal.getName());
+        String accessToken = tppRegistrationService.validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
         OIDCRegistrationResponse registrationResponse = tppRegistrationService.getOIDCClient(accessToken, tpp);
         log.info("Successfully returning registration information for clientId {}", registrationResponse.getClientId());
         return ResponseEntity.ok(registrationResponse);
@@ -256,9 +253,10 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
                 throw new OAuth2InvalidClientException(errorString);
             }
 
-            Tpp tpp = getTpp(clientId);
-            ensureTppOwnsOidcRegistration(tpp, principal.getName());
-            String accessToken = validateAccessTokenIsValidForOidcRegistration(tpp, authorization);
+            Tpp tpp = tppRegistrationService.getTpp(clientId);
+            tppRegistrationService.ensureTppOwnsOidcRegistration(tpp, principal.getName());
+            String accessToken = tppRegistrationService.validateAccessTokenIsValidForOidcRegistration(tpp,
+                    authorization);
 
             //Override client ID
             registrationRequest.setClientId(clientId);
@@ -412,31 +410,6 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         log.trace("verifyRegistrationRequest() registration request is valid");
     }
 
-    /**
-     * Tests to see if the tpp's authorisationNumber matches a specific authorisationNumber.
-     *
-     * @param tpp - The tpp that made the request as identified by MATLS, cookie etc.
-     * @param authorisationNumber the authorisationNumber to test
-     * @throws OBErrorResponseException - if the oidcClientIDFromRequest does not match the client Id registered when
-     * the TPP onboarded.
-     */
-    private void ensureTppOwnsOidcRegistration(@NotNull Tpp tpp, String authorisationNumber)
-            throws OAuth2InvalidClientException {
-        log.debug("ensureTppOwnsOidcRegistration() stored tpp clientId is '{}', authorisationNumber is '{}'",
-                tpp==null?"tpp is null!":tpp.getClientId(),authorisationNumber);
-
-        Optional<String> tppsAuthorisationNumber = getAuthorisationNumber(tpp);
-        if (authorisationNumber == null || tppsAuthorisationNumber.isEmpty() || !tppsAuthorisationNumber.get().equals(authorisationNumber)) {
-            String errorMessage =
-                    "The clientId specified in the request url belongs to a different Tpp from the one indicated by " +
-                            "the authorisationNumber in the transport certificate. authorisationNumber from cert was" +
-                            " '" + authorisationNumber + "'. Please use a certificate associated with the Tpp that " +
-                            "performed the registration.";
-            log.info("{}; tpp; '{}', authorisationNumber; '{}'", errorMessage, tpp, authorisationNumber);
-            throw new OAuth2InvalidClientException(errorMessage);
-        }
-        log.debug("ensureTppOwnsOidcRegistration() - success - TPP owns the clientId specified in request URL");
-    }
 
     private Optional<String> getAuthorisationNumber(Tpp tpp){
         return Optional.ofNullable(tpp.getAuthorisationNumber());
@@ -460,96 +433,74 @@ public class DynamicRegistrationApiController implements DynamicRegistrationApi 
         }
     }
 
-    /**
-     * getTpp returns the tpp associated with the principal. If not tpp can be found will throw.
-     * @param clientId the principal as obtained from the client MATLS certificate used to make the request
-     * @return a Tpp object belonging to the principal. If no tpp can be found then will throw
-     * OAuth2InvalidClientException
-     * @throws OAuth2InvalidClientException
-     */
-    private @NotNull Tpp getTpp(String clientId) throws OAuth2InvalidClientException {
-        //Todo: this next line looks odd. findByClientId but passing the principal.getName which I would think would
-        // return the name pulled from the MATLS certificate?
-        Optional<Tpp> optionalTpp = tppStoreService.findByClientId(clientId);
-        if (optionalTpp.isEmpty()) {
-            String errorMessage = "No registration exists for the clientId in the request path. clientId was '" +
-                    clientId + "'";
-            log.info("getTpp() {}", errorMessage);
-            throw new OAuth2InvalidClientException(errorMessage);
-        }
-        Tpp tpp = optionalTpp.get();
-        log.debug("getTpp(): Tpp is {}", tpp);
-        return tpp;
-    }
-
-    /**
-     * The registration_access_token was provided to the client in response to a successful registration request.
-     * @param tpp - the tpp associated with the MATLS client certificate used to make the request. Required: true,
-     *            NotNull: true
-     * @param authorization - the Authorization header value from the request
-     * @return the access token if valid
-     * @throws OAuth2BearerTokenUsageMissingAuthInfoException
-     * @throws OAuth2BearerTokenUsageInvalidTokenException
-     */
-    private String validateAccessTokenIsValidForOidcRegistration(@NotNull Tpp tpp, String authorization)
-            throws OAuth2BearerTokenUsageMissingAuthInfoException,OAuth2BearerTokenUsageInvalidTokenException {
-        log.debug("validateAccessTokenIsValidForOidcRegistration() tpp is '{}', authorization is '{}'", tpp==null?
-                        "null":tpp.getClientId(),
-                authorization);
-        // Told you tpp must not be null!
-        Objects.requireNonNull(tpp);
-
-        String accessToken = getAccessTokenFromAuthHeaderValue(authorization);
-        validateBearerTokenBelongsToTpp(accessToken, tpp);
-
-        log.debug("validateAccessTokenIsValidForOidcRegistration() Tpp '{}' has valid accessToken.", tpp.getClientId());
-        return accessToken;
-    }
-
-
-    private String getAccessTokenFromAuthHeaderValue(String authorization)
-            throws OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2BearerTokenUsageInvalidTokenException {
-        String accessToken = null;
-        if(StringUtils.isEmpty(authorization)){
-            String errorMessage = "AuthorizationHeader is empty. It should contain a Bearer OAuth2 token. See rfc-6750";
-            log.info("getAccessTokenFromAuthHeaderValue() {}", errorMessage);
-            throw new OAuth2BearerTokenUsageMissingAuthInfoException(errorMessage);
-        } else {
-            try {
-                accessToken = tokenExtractor.extract(authorization);
-            } catch (AuthenticationServiceException re) {
-                String errorMessage = String.format("Failed to extract Bearer token from authorization header: " +
-                                "'%s'. Error was %s. Authorization header should contain an OAuth2 Bearer token. " +
-                                "See rfc-6750", authorization, re.getMessage());
-                log.info("validateAccessTokenIsValidForOidcRegistration() {}", errorMessage);
-                throw new OAuth2BearerTokenUsageInvalidTokenException(errorMessage);
-            }
-        }
-        log.debug("getAccessTokenFromAuthHeaderValue() got access token");
-        return accessToken;
-    }
-
-    private void validateBearerTokenBelongsToTpp(String accessToken, @NotNull Tpp tpp)
-            throws OAuth2BearerTokenUsageInvalidTokenException {
-        // Told you tpp must not be null!
-        Objects.requireNonNull(tpp);
-        log.debug("validateBearerTokenBelongsToTpp() validate access token in request belongs to {}",
-                tpp.getClientId());
-
-        boolean accessTokenBelongsToTpp = false;
-        Optional<String> registrationAccessToken = tpp.getRegistrationAccessToken();
-        if(registrationAccessToken.isPresent()) {
-            accessTokenBelongsToTpp = registrationAccessToken.get().equals(accessToken);
-        }
-        if(!accessTokenBelongsToTpp){
-            String errorMessage = "Authorization Bearer token is not the bearer token issued to the TPP " +
-                    "identified by the MATLS client certificate used to make this request. Please use the " +
-                    "registration_access_token that was provided in your successful request to the POST /register" +
-                    " endpoint. i.e. When you successfully performed dynamic client registration.";
-            log.info("validateAccessTokenIsValidForOidcRegistration() {}", errorMessage);
-            throw new OAuth2BearerTokenUsageInvalidTokenException(errorMessage);
-        } else {
-            log.debug("validateBearerTokenBelongsToTpp() access token does belong to Tpp");
-        }
-    }
+//    /**
+//     * The registration_access_token was provided to the client in response to a successful registration request.
+//     * @param tpp - the tpp associated with the MATLS client certificate used to make the request. Required: true,
+//     *            NotNull: true
+//     * @param authorization - the Authorization header value from the request
+//     * @return the access token if valid
+//     * @throws OAuth2BearerTokenUsageMissingAuthInfoException
+//     * @throws OAuth2BearerTokenUsageInvalidTokenException
+//     */
+//    private String validateAccessTokenIsValidForOidcRegistration(@NotNull Tpp tpp, String authorization)
+//            throws OAuth2BearerTokenUsageMissingAuthInfoException,OAuth2BearerTokenUsageInvalidTokenException {
+//        log.debug("validateAccessTokenIsValidForOidcRegistration() tpp is '{}', authorization is '{}'", tpp==null?
+//                        "null":tpp.getClientId(),
+//                authorization);
+//        // Told you tpp must not be null!
+//        Objects.requireNonNull(tpp);
+//
+//        String accessToken = getAccessTokenFromAuthHeaderValue(authorization);
+//        validateBearerTokenBelongsToTpp(accessToken, tpp);
+//
+//        log.debug("validateAccessTokenIsValidForOidcRegistration() Tpp '{}' has valid accessToken.", tpp.getClientId());
+//        return accessToken;
+//    }
+//
+//
+//    private String getAccessTokenFromAuthHeaderValue(String authorization)
+//            throws OAuth2BearerTokenUsageMissingAuthInfoException, OAuth2BearerTokenUsageInvalidTokenException {
+//        String accessToken = null;
+//        if(StringUtils.isEmpty(authorization)){
+//            String errorMessage = "AuthorizationHeader is empty. It should contain a Bearer OAuth2 token. See rfc-6750";
+//            log.info("getAccessTokenFromAuthHeaderValue() {}", errorMessage);
+//            throw new OAuth2BearerTokenUsageMissingAuthInfoException(errorMessage);
+//        } else {
+//            try {
+//                accessToken = tokenExtractor.extract(authorization);
+//            } catch (AuthenticationServiceException re) {
+//                String errorMessage = String.format("Failed to extract Bearer token from authorization header: " +
+//                                "'%s'. Error was %s. Authorization header should contain an OAuth2 Bearer token. " +
+//                                "See rfc-6750", authorization, re.getMessage());
+//                log.info("validateAccessTokenIsValidForOidcRegistration() {}", errorMessage);
+//                throw new OAuth2BearerTokenUsageInvalidTokenException(errorMessage);
+//            }
+//        }
+//        log.debug("getAccessTokenFromAuthHeaderValue() got access token");
+//        return accessToken;
+//    }
+//
+//    private void validateBearerTokenBelongsToTpp(String accessToken, @NotNull Tpp tpp)
+//            throws OAuth2BearerTokenUsageInvalidTokenException {
+//        // Told you tpp must not be null!
+//        Objects.requireNonNull(tpp);
+//        log.debug("validateBearerTokenBelongsToTpp() validate access token in request belongs to {}",
+//                tpp.getClientId());
+//
+//        boolean accessTokenBelongsToTpp = false;
+//        Optional<String> registrationAccessToken = tpp.getRegistrationAccessToken();
+//        if(registrationAccessToken.isPresent()) {
+//            accessTokenBelongsToTpp = registrationAccessToken.get().equals(accessToken);
+//        }
+//        if(!accessTokenBelongsToTpp){
+//            String errorMessage = "Authorization Bearer token is not the bearer token issued to the TPP " +
+//                    "identified by the MATLS client certificate used to make this request. Please use the " +
+//                    "registration_access_token that was provided in your successful request to the POST /register" +
+//                    " endpoint. i.e. When you successfully performed dynamic client registration.";
+//            log.info("validateAccessTokenIsValidForOidcRegistration() {}", errorMessage);
+//            throw new OAuth2BearerTokenUsageInvalidTokenException(errorMessage);
+//        } else {
+//            log.debug("validateBearerTokenBelongsToTpp() access token does belong to Tpp");
+//        }
+//    }
 }

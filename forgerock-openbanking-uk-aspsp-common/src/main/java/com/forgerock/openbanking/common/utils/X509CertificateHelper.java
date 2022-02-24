@@ -26,8 +26,12 @@ import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.bouncycastle.asn1.x500.style.IETFUtils;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
 
+import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.util.Base64;
 
 public class X509CertificateHelper {
 
@@ -39,6 +43,25 @@ public class X509CertificateHelper {
         } catch (CertificateEncodingException e) {
             return null;
         }
+    }
+
+    public static X509Certificate getCertificatesFromPemString(String certificateString) throws CertificateException {
+        X509Certificate certificate = null;
+        CertificateFactory cf = null;
+        try {
+            if (certificateString != null && !certificateString.trim().isEmpty()) {
+                certificateString = certificateString.replace("-----BEGIN CERTIFICATE-----", "")
+                        .replace("-----END CERTIFICATE-----", ""); // NEED FOR PEM FORMAT CERT STRING
+                byte[] certificateData = Base64.getDecoder().decode(certificateString);
+                cf = CertificateFactory.getInstance("X509");
+                certificate = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(certificateData));
+            } else {
+                throw new IllegalArgumentException("certificateString must not be null or empty");
+            }
+        } catch (CertificateException e) {
+            throw new CertificateException(e);
+        }
+        return certificate;
     }
 
 }
