@@ -1,6 +1,24 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+[baac3a29fd7297b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/baac3a29fd7297b) JamieB *2022-02-24 17:02:48*
+830: Manual Registation now works
+
+Addressing the issue here that the register app had to call the as-api
+manual registration endpoint, which in turn created the TPP.
+
+Better to do all the checks in the registration application and create
+the TPP and ManualRegistration application from there.
+
+We expect the browser to be configured to use an OBWac belonging to the
+same OB Directory organisation as found in the SSA used in the
+registration.
+
+The ManualRegistrationApplication store in mongo is used to allow us to
+record which logged in user owns which applications. A logged in user
+can only see their own applications.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/830
 [3275f0cd2200648](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/3275f0cd2200648) JamieB *2022-02-04 11:27:57*
 Release candidate: prepare for next development iteration
 ## 1.7.1
