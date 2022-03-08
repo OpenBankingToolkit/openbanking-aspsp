@@ -109,7 +109,6 @@ public class DataUpdater {
         FRCustomerInfo existingCustomerInfo = customerInfoRepository.findByUserID(userData.getUserName());
         if (existingCustomerInfo != null) {
             FRCustomerInfo newCustomerInfo = userData.getCustomerInfo();
-
             if(newCustomerInfo != null) {
                 if (!newCustomerInfo.getId().equals(existingCustomerInfo.getId())) {
                     String errorMessage = String.format("The customerInfo ID '%s' in the provided data does not match " +

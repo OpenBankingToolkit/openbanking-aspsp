@@ -203,7 +203,6 @@ public class DataApiController implements DataApi {
         log.debug("importUserData() called with data for user '{}'", userData);
         FRUserData userDataResponse = new FRUserData(username);
 
-
         if(rsConfiguration.isCustomerInfoEnabled()) {
             FRCustomerInfo requestCustomerInfo = userData.getCustomerInfo();
             if (userData.getCustomerInfo() != null) {
