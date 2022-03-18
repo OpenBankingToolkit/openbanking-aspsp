@@ -21,7 +21,8 @@
     <logger name="com.forgerock" level="DEBUG"/>
     <logger name="org.springframework" level="INFO"/>
     <logger name="org.forgerock.openbanking.commons.auth" level="TRACE"/>
-
+    <logger name="com.forgerock.openbanking.aspsp.rs.api.discovery" level="TRACE"/>
+    <logger name="com.forgerock.openbanking.common.conf.discovery" level="TRACE"/>
 
     <springProfile name="console-logging">
         <logger name="org.springframework" level="INFO"/>

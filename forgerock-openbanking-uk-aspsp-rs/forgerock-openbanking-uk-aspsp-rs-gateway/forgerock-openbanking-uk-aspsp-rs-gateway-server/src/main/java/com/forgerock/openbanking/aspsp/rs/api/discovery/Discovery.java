@@ -29,6 +29,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -65,34 +66,47 @@ public class Discovery {
             method = RequestMethod.GET
     )
     public ResponseEntity<OBDiscoveryResponse> discovery() {
-        OBDiscoveryResponse response = new OBDiscoveryResponse();
-        OBDiscovery discovery = new OBDiscovery();
-        discovery.setFinancialId(rsConfiguration.getFinancialID());
-
-        for (Map.Entry<OBGroupName, Map<String, OBDiscoveryAPI>> byGroup : rsConfiguration.getDiscoveryApisByVersionAndGroupName().entrySet()) {
-            if (byGroup.getValue().isEmpty()) {
-                continue;
+        try {
+            OBDiscoveryResponse response = new OBDiscoveryResponse();
+            OBDiscovery discovery = new OBDiscovery();
+            discovery.setFinancialId(rsConfiguration.getFinancialID());
+            Map<OBGroupName, Map<String, OBDiscoveryAPI>> apisByVersionAndGroupName = rsConfiguration.getDiscoveryApisByVersionAndGroupName();
+            if(apisByVersionAndGroupName == null){
+                log.debug("discovery() no discovery apis by version in version group names");
+                throw new Exception("no discovery apis by version in version and group names");
             }
-            for (OBDiscoveryAPI obDiscoveryAPI : byGroup.getValue().values()) {
-                switch (byGroup.getKey()) {
-                    case AISP:
-                        discovery.addAccountAndTransactionAPI(obDiscoveryAPI);
-                        break;
-                    case PISP:
-                        discovery.addPaymentInitiationAPI(obDiscoveryAPI);
-                        break;
-                    case CBPII:
-                        discovery.addFundsConfirmationAPI(obDiscoveryAPI);
-                        break;
-                    case EVENT:
-                        discovery.addEventNotificationAPI(obDiscoveryAPI);
-                        break;
-                    case INFO:
-                        discovery.addInfoAPI(obDiscoveryAPI);
-                        break;
+            for (Map.Entry<OBGroupName, Map<String, OBDiscoveryAPI>> byGroup : apisByVersionAndGroupName.entrySet()) {
+                if (byGroup.getValue().isEmpty()) {
+                    log.debug("discovery() this group value is empty {}", byGroup.getKey());
+                    continue;
+                }
+                log.debug("discovery() processing key {}", byGroup.getKey());
+                for (OBDiscoveryAPI obDiscoveryAPI : byGroup.getValue().values()) {
+                    log.debug("discovery() obDiscoveryAPI version {}, links: {} ", obDiscoveryAPI.getVersion(),
+                            obDiscoveryAPI.getLinks());
+                    switch (byGroup.getKey()) {
+                        case AISP:
+                            discovery.addAccountAndTransactionAPI(obDiscoveryAPI);
+                            break;
+                        case PISP:
+                            discovery.addPaymentInitiationAPI(obDiscoveryAPI);
+                            break;
+                        case CBPII:
+                            discovery.addFundsConfirmationAPI(obDiscoveryAPI);
+                            break;
+                        case EVENT:
+                            discovery.addEventNotificationAPI(obDiscoveryAPI);
+                            break;
+                        case INFO:
+                            discovery.addInfoAPI(obDiscoveryAPI);
+                            break;
+                    }
                 }
             }
+            return ResponseEntity.ok(response.data(discovery));
+
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        return ResponseEntity.ok(response.data(discovery));
     }
 }
