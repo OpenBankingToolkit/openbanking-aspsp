@@ -205,8 +205,8 @@ public class DataApiController implements DataApi {
 
         if(rsConfiguration.isCustomerInfoEnabled()) {
             FRCustomerInfo requestCustomerInfo = userData.getCustomerInfo();
-            requestCustomerInfo.setUserID(username);
-            if (userData.getCustomerInfo() != null) {
+            if (requestCustomerInfo != null) {
+                requestCustomerInfo.setUserID(username);
                 FRCustomerInfo existingCustomerInfo = customerInfoRepository.findByUserID(username);
                 if(existingCustomerInfo != null){
                     requestCustomerInfo.setId(existingCustomerInfo.getId());
