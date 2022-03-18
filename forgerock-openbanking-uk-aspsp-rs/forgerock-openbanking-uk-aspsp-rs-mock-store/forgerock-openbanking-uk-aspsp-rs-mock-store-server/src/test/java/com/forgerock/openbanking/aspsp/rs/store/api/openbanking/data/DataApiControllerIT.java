@@ -65,6 +65,7 @@ public class DataApiControllerIT {
     @Autowired
     private FRBalanceRepository frBalanceRepository;
 
+
     @Test
     public void shouldReturnPayloadTooLargeWhenCreatingNewData() throws Exception {
         // Given
