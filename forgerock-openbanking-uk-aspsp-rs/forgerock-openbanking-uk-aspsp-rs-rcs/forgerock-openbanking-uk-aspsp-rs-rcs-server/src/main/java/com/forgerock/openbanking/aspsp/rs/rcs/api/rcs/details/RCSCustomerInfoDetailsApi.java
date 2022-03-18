@@ -98,7 +98,7 @@ public class RCSCustomerInfoDetailsApi implements RCSDetailsApi {
         accountRequestStoreService.save(customerInfoAccountConsent);
 
         log.debug("Populate the model with the customer info and consent data");
-        log.debug("get the customer info to add it in account consent data.");
+        log.debug("get the customer info for user {} to add it in account consent data.", username);
         FRCustomerInfo customerInfo = customerInfoRepository.findByUserID(username);
         log.debug("customer info data {}", customerInfo);
         if (customerInfo == null) {

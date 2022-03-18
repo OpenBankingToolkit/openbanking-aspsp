@@ -110,6 +110,7 @@ public class DataUpdater {
         if (existingCustomerInfo != null) {
             FRCustomerInfo newCustomerInfo = userData.getCustomerInfo();
             if(newCustomerInfo != null) {
+                newCustomerInfo.setUserID(userData.getUserName());
                 if (!newCustomerInfo.getId().equals(existingCustomerInfo.getId())) {
                     String errorMessage = String.format("The customerInfo ID '%s' in the provided data does not match " +
                                     "that in the existing data '%s' for user '%s'", newCustomerInfo.getId(),

@@ -136,7 +136,7 @@ public class RSAPIsConfigurationProperties {
                     if (isVersionEnable(classOpenBankingAPI.obVersion())
                             && isAPIEnable(classOpenBankingAPI.obReference())
                             && isVersionOverrideEnable(classOpenBankingAPI.obVersion(), classOpenBankingAPI.obReference())) {
-                        log.trace("version is enabled, api is enabled and version everride enabled");
+                        log.trace("version is enabled, api is enabled and version override enabled");
                         Method[] methods = obInterface.getMethods();
                         for (Method method : methods) {
                             log.trace("processing method {}", method.getName());
