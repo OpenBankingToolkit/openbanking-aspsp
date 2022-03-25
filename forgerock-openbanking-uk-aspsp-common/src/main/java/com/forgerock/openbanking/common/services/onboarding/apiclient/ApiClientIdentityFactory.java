@@ -45,6 +45,10 @@ public class ApiClientIdentityFactory {
             "ST=Avon,C=UK";
 
     public ApiClientIdentity getApiClientIdentity(Principal principal) throws ApiClientException, OAuth2InvalidClientException {
+        if(principal == null){
+            log.info("getApiClientIdentity() - No principal supplied.");
+            throw new ApiClientException("No principal supplied. No way to identitify ApiClient");
+        }
 
         ApiClientIdentity apiClientIdentity = null;
         if (principal instanceof PSD2Authentication) {
@@ -79,7 +83,7 @@ public class ApiClientIdentityFactory {
             apiClientIdentity = createOBTransportIdentity(authentication);
         } else {
             log.info("getApiClientIdentity() Principal is not of recognised type. Class name is '{}'",
-                    apiClientIdentity.getClass().getName());
+                    principal.getClass().getName());
             throw new ApiClientException("Unrecognised Principal type. Was expecting a PSDAuthentication or a " +
                     "X509Authentication");
         }
