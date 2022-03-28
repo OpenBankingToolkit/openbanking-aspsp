@@ -36,6 +36,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
@@ -100,6 +101,20 @@ public class ApiClientIdentityFactoryTest {
 
         // then
         assertThat(identity).isInstanceOf(ApiClientIdentityQWac.class);
+    }
+
+    @Test
+    public void nullPrincipal_getApiClientIdentity() throws CertificateException, IOException,
+            InvalidPsd2EidasCertificate, ApiClientException, OAuth2InvalidClientException {
+        // given
+        ApiClientIdentityFactory identityFactory = new ApiClientIdentityFactory();
+
+        // when
+        ApiClientException e = catchThrowableOfType(()-> identityFactory.getApiClientIdentity(null),
+                ApiClientException.class);
+
+        // then
+        assertThat(e).isNotNull();
     }
 
 }
