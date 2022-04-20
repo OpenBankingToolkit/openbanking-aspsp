@@ -33,7 +33,7 @@ public class EventSubscriptionsApiController extends com.forgerock.openbanking.a
 
     @Autowired
     public EventSubscriptionsApiController(EventSubscriptionsRepository eventSubscriptionsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService) {
-        super(eventSubscriptionsRepository, tppRepository, resourceLinkService, new EventResponseUtil(resourceLinkService, OBVersion.v3_1_6, true));
+        super(eventSubscriptionsRepository, tppRepository, resourceLinkService, new EventResponseUtil(resourceLinkService, OBVersion.v3_1_8, true));
     }
 
     public EventSubscriptionsApiController(EventSubscriptionsRepository eventSubscriptionsRepository, TppRepository tppRepository, ResourceLinkService resourceLinkService, EventResponseUtil eventResponseUtil) {
