@@ -1,7 +1,62 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#492](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/492) Release 1.7.5
+[37135dff95feaaf](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/37135dff95feaaf) Jamie Bowen *2022-03-18 18:33:51*
+Release 1.7.5 (#492)
+
+* Release candidate: prepare release 1.7.5
+
+* Release candidate: prepare for next development iteration
+[93bcac56172e3da](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/93bcac56172e3da) JamieB *2022-03-28 09:28:01*
+852: Empty commit as github actions got stuck!
+
+Github must have been broken because the checks for the PR didn't run
+and so it is unmergable!
+[37ace169efa5f56](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/37ace169efa5f56) JamieB *2022-03-25 15:56:59*
+852: These errors occurred when testing
+
+While testing I saw a NPE which I thought I'd fix
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/852
+[a69918d695a8ed0](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a69918d695a8ed0) JamieB *2022-03-18 16:37:17*
+859: Fix failing DataApiControlerIT tests
+
+When no Customer data exists in the source data there was a null
+pointer when trying to set it's username!
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/859
+[a115bf1d52f0899](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a115bf1d52f0899) JamieB *2022-03-18 14:36:42*
+859: Fix import of CustomerInfo data
+
+When created via the import apis `/api/user/data`, the CustomerInfo did
+not have the required `username` field in it. This needs to be added
+from the UserData recived with the data. It's absence meant that the RCS
+could not find the CustomerInfo for a specific PSU.
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/859
+[1855b3c68fc954a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1855b3c68fc954a) JamieB *2022-03-08 12:12:05*
+Release candidate: prepare for next development iteration
+## 1.7.4
+[259f6f33a76c78e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/259f6f33a76c78e) JamieB *2022-03-08 12:12:00*
+Release candidate: prepare release 1.7.4
+[a2cd0ec55788dde](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a2cd0ec55788dde) JamieB *2022-03-08 11:39:25*
+831: /data/user api now performs matls
+
+The API must now be used with an access token obtained by the same TPP
+that owns the OBWac transport certificate
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/831
+[23ed1f48a938b5a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/23ed1f48a938b5a) JamieB *2022-03-08 11:31:40*
+831: User data gets created against PSU not TPP user name
+
+It was found that the /user/data api was creating user data against the
+TPP user (taken from the PSD2 transport cert) rather than from the
+obri-session cookie.
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/831
 [db333fcd652ec61](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/db333fcd652ec61) JamieB *2022-02-25 11:56:16*
+Release candidate: prepare for next development iteration
+[a7421a55b8fd851](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a7421a55b8fd851) JamieB *2022-02-24 17:19:20*
 Release candidate: prepare for next development iteration
 ## 1.7.3
 [245a5786d31f8a9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/245a5786d31f8a9) JamieB *2022-02-25 11:56:12*
@@ -11,8 +66,6 @@ Release in preparation for Q1 2022 deployments
 
 CustomerInfo
 Manual Registration Fix
-[a7421a55b8fd851](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/a7421a55b8fd851) JamieB *2022-02-24 17:19:20*
-Release candidate: prepare for next development iteration
 ## 1.7.2
 [0126f5d37d1e03e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/0126f5d37d1e03e) JamieB *2022-02-24 17:19:16*
 Release candidate: prepare release 1.7.2

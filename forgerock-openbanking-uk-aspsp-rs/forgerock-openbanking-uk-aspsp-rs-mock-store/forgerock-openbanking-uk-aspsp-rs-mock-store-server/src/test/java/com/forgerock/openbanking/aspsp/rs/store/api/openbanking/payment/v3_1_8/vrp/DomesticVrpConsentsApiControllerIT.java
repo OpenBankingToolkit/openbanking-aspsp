@@ -383,13 +383,6 @@ public class DomesticVrpConsentsApiControllerIT {
         }
 
         assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-//        OBVRPFundsConfirmationResponseData responseData = response.getBody().getData();
-//        OBVRPFundsConfirmationRequestData requestData = request.getData();
-//        assertThat(responseData.getConsentId()).isEqualTo(requestData.getConsentId());
-//        assertThat(responseData.getReference()).isEqualTo(requestData.getReference());
-//        assertThat(responseData.getFundsConfirmationId()).isNotNull();
-//        assertThat(responseData.getInstructedAmount()).isEqualTo(requestData.getInstructedAmount());
-//        assertThat(responseData.getFundsAvailableResult().getFundsAvailable()).isEqualTo(OBPAFundsAvailableResult1.FundsAvailableEnum.NOTAVAILABLE);
     }
 
     private FRDomesticVRPConsent saveFRConsent(String consentId, FRReadRefundAccount frReadRefundAccount, ConsentStatusCode consentStatusCode) {
