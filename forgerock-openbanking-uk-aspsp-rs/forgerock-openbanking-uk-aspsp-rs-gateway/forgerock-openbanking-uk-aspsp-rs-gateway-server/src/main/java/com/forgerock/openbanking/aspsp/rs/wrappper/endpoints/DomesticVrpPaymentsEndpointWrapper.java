@@ -25,6 +25,9 @@ import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPControlParameters;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRPeriodicLimits;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRPeriodicLimits.PeriodAlignmentEnum;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRPeriodicLimits.PeriodTypeEnum;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRWriteDomesticVRPDataInitiation;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
@@ -39,7 +42,10 @@ import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBDomesticVRPInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBRisk1;
@@ -51,6 +57,7 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
     private final OBRisk1Validator riskValidator;
     private boolean isAuthorizationCodeGrantType;
     private boolean isModeTest;
+    private final PeriodicLimitBreachResponseSimulator periodicLimitBreachResponseSimulator;
 
     public DomesticVrpPaymentsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
                                               TppStoreService tppStoreService,
@@ -59,6 +66,7 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         this.riskValidator = riskValidator;
         this.isAuthorizationCodeGrantType = false;
         this.isModeTest = false;
+        this.periodicLimitBreachResponseSimulator = new PeriodicLimitBreachResponseSimulator();
     }
 
     public DomesticVrpPaymentsEndpointWrapper payment(FRDomesticVRPConsent consent) {
@@ -135,14 +143,21 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         }
     }
 
-    // When a payment would breach a limitation set by one or more ControlParameters,
-    // the ASPSP must return an error with code UK.OBIE.Rules.FailsControlParameters
-    // and pass in the control parameter field that caused the error
-    public void checkControlParameters(
-            OBDomesticVRPRequest vrpRequest, FRDomesticVRPConsent frConsent
-    ) throws OBErrorException {
+    /**
+     * When a payment would breach a limitation set by one or more ControlParameters, the ASPSP must return an error
+     * with code UK.OBIE.Rules.FailsControlParameters and pass in the control parameter field that caused the error.
+     *
+     * The following checks are supported:
+     * - validating that the requested payment amount is less than the configured maximum individual amount
+     * - Optionally, simulating a periodic payment limit breach, if xVrpLimitBreachResponseSimulation param is supplied.
+     */
+    public void checkControlParameters(OBDomesticVRPRequest vrpRequest, FRDomesticVRPConsent frConsent,
+                                       String xVrpLimitBreachResponseSimulation) throws OBErrorException {
         // TODO Shall we validate the instructed amount against the control parameter periodic limits?
         validateMaximumIndividualAmount(vrpRequest, frConsent);
+        if (xVrpLimitBreachResponseSimulation != null) {
+            periodicLimitBreachResponseSimulator.processRequest(xVrpLimitBreachResponseSimulation, consent);
+        }
     }
 
     private void validateMaximumIndividualAmount(
@@ -163,4 +178,56 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         ResponseEntity run(String tppId) throws OBErrorException;
     }
 
+    /**
+     * Simulates VRP payment breaches for PeriodicLimits specified in the consent.
+     *
+     * This allows TPPs to test their error handling for this condition, the simulator can be triggered by specifying
+     * a custom header on the payment request.
+     */
+    static class PeriodicLimitBreachResponseSimulator {
+        private static final Set<String> LIMIT_BREACH_HEADER_VALUES;
+        static {
+            final Set<String> limitBreaches = new HashSet<>();
+            for (PeriodTypeEnum periodType : PeriodTypeEnum.values()) {
+                for (PeriodAlignmentEnum periodAlignment : PeriodAlignmentEnum.values()) {
+                    limitBreaches.add(periodType.getValue() + "-" + periodAlignment.getValue());
+                }
+            }
+            LIMIT_BREACH_HEADER_VALUES = Collections.unmodifiableSet(limitBreaches);
+        }
+
+        void processRequest(String xVrpLimitBreachResponseSimulation, FRDomesticVRPConsent consent) throws OBErrorException {
+            if (LIMIT_BREACH_HEADER_VALUES.contains(xVrpLimitBreachResponseSimulation)) {
+                final FRPeriodicLimits periodicLimits = findPeriodicLimitsForHeader(xVrpLimitBreachResponseSimulation, consent);
+                simulateLimitBreachResponse(periodicLimits);
+            } else {
+                throw new OBErrorException(OBRIErrorType.REQUEST_VRP_LIMIT_BREACH_SIMULATION_INVALID_HEADER_VALUE,
+                                           xVrpLimitBreachResponseSimulation);
+            }
+        }
+
+        private FRPeriodicLimits findPeriodicLimitsForHeader(String xVrpLimitBreachResponseSimulation,
+                                                             FRDomesticVRPConsent consent) throws OBErrorException {
+            final List<FRPeriodicLimits> periodicLimits = consent.getVrpDetails().getData().getControlParameters().getPeriodicLimits();
+            if (periodicLimits != null) {
+                final int separatorIndex = xVrpLimitBreachResponseSimulation.indexOf('-');
+                final String periodType = xVrpLimitBreachResponseSimulation.substring(0, separatorIndex);
+                final String periodAlignment = xVrpLimitBreachResponseSimulation.substring(separatorIndex + 1);
+                for (FRPeriodicLimits periodicLimit : periodicLimits) {
+                    if (periodicLimit.getPeriodAlignment().getValue().equals(periodAlignment)
+                            && periodicLimit.getPeriodType().getValue().equals(periodType)) {
+                        return periodicLimit;
+                    }
+                }
+            }
+            throw new OBErrorException(OBRIErrorType.REQUEST_VRP_LIMIT_BREACH_SIMULATION_NO_MATCHING_LIMIT_IN_CONSENT,
+                                       xVrpLimitBreachResponseSimulation);
+        }
+
+        private void simulateLimitBreachResponse(FRPeriodicLimits periodicLimits) throws OBErrorException {
+            throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_PAYMENT_PERIODIC_LIMIT_BREACH,
+                                       periodicLimits.getAmount(), periodicLimits.getCurrency(),
+                                       periodicLimits.getPeriodType(), periodicLimits.getPeriodAlignment());
+        }
+    }
 }

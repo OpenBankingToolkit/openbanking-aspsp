@@ -117,7 +117,7 @@ public class DomesticVrpApiControllerTest {
         // When
         ResponseEntity<OBDomesticVRPResponse> response = domesticVrpController.domesticVrpPost("test", "test_sig",
                 obDomesticVRPRequest,  new DateTime().toString(),
-                "127..0.0.1", "x-fapi-interaction_id", "user-agent", request, principal);
+                "127..0.0.1", "x-fapi-interaction_id", "user-agent", null, request, principal);
 
         // Then
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);

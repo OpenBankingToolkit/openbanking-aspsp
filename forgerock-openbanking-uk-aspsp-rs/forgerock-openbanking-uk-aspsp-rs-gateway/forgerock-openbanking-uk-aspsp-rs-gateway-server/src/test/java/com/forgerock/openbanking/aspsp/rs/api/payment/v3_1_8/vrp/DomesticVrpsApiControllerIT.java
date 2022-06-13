@@ -37,6 +37,8 @@ import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
+import com.forgerock.openbanking.model.error.ErrorCode;
+import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.error.VRPErrorControlParametersFields;
 import com.github.jsonzou.jmockdata.JMockData;
 import com.nimbusds.jwt.SignedJWT;
@@ -45,6 +47,7 @@ import kong.unirest.JacksonObjectMapper;
 import kong.unirest.Unirest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,10 +60,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.account.Links;
+import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.vrp.*;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVRPResponseTestDataFactory;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -309,6 +315,92 @@ public class DomesticVrpsApiControllerIT {
                 VRPErrorControlParametersFields.ConsentControlFields.MAX_INDIVIDUAL_AMOUNT
         );
         assertThat(response.getParsingError().get().getOriginalBody()).contains(expectedMessage);
+    }
+
+    @Test
+    public void simulateVrpLimitBreachResponse() throws Exception {
+        // Given
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        FRDomesticVRPConsent frDomesticVRPConsent = aValidFRDomesticVRPConsent(
+                IntentType.DOMESTIC_VRP_PAYMENT_CONSENT.generateIntentId(),
+                ConsentStatusCode.AUTHORISED
+        );
+
+        OBDomesticVRPConsentResponse consentResponse = FRDomesticVRPConsentConverter.toOBDomesticVRPConsentResponse(frDomesticVRPConsent);
+
+        OBDomesticVRPRequest request = buildAValidOBDomesticVRPRequest(consentResponse);
+
+        OBDomesticVRPResponse rsStoreResponse = aValidOBDomesticVRPResponse(request);
+        given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(rsStoreResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorisationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
+        given(vrpPaymentConsentService.getVrpPaymentConsent(request.getData().getConsentId())).willReturn(frDomesticVRPConsent);
+
+        // When
+        HttpResponse<OBErrorResponse1> response = Unirest.post(HOST + port + VRP_CONTXT_PATH)
+                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                .header(OBHeaders.X_IDEMPOTENCY_KEY, IDEMPOTENCY_KEY)
+                .header(OBHeaders.X_JWS_SIGNATURE, jws)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .header("x-vrp-limit-breach-response-simulation", "Month-Calendar")
+                .body(request)
+                .asObject(OBErrorResponse1.class);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        List<OBError1> errors = response.getBody().getErrors();
+        Assert.assertEquals("OBError1 objects in response", 1, errors.size());
+        OBError1 error = errors.get(0);
+        Assert.assertEquals(OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_PAYMENT_PERIODIC_LIMIT_BREACH.getCode().getValue(), error.getErrorCode());
+        Assert.assertEquals("Unable to complete payment due to payment limit breach, periodic limit of '10.01' 'GBP' for period 'Month' 'Calendar' has been breached",
+                error.getMessage());
+    }
+
+    @Test
+    public void simulateVrpLimitBreachResponseInvalidHeader() throws Exception {
+        // Given
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        FRDomesticVRPConsent frDomesticVRPConsent = aValidFRDomesticVRPConsent(
+                IntentType.DOMESTIC_VRP_PAYMENT_CONSENT.generateIntentId(),
+                ConsentStatusCode.AUTHORISED
+        );
+
+        OBDomesticVRPConsentResponse consentResponse = FRDomesticVRPConsentConverter.toOBDomesticVRPConsentResponse(frDomesticVRPConsent);
+
+        OBDomesticVRPRequest request = buildAValidOBDomesticVRPRequest(consentResponse);
+
+        OBDomesticVRPResponse rsStoreResponse = aValidOBDomesticVRPResponse(request);
+        given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(rsStoreResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorisationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
+        given(vrpPaymentConsentService.getVrpPaymentConsent(request.getData().getConsentId())).willReturn(frDomesticVRPConsent);
+
+        // When
+        HttpResponse<OBErrorResponse1> response = Unirest.post(HOST + port + VRP_CONTXT_PATH)
+                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                .header(OBHeaders.X_IDEMPOTENCY_KEY, IDEMPOTENCY_KEY)
+                .header(OBHeaders.X_JWS_SIGNATURE, jws)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .header("x-vrp-limit-breach-response-simulation", "badLimitBreachValue")
+                .body(request)
+                .asObject(OBErrorResponse1.class);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        List<OBError1> errors = response.getBody().getErrors();
+        Assert.assertEquals("OBError1 objects in response", 1, errors.size());
+        OBError1 error = errors.get(0);
+        Assert.assertEquals(ErrorCode.OBRI_REQUEST_VRP_LIMIT_BREACH_SIMULATION_INVALID_HEADER_VALUE.getValue(), error.getErrorCode());
+        Assert.assertEquals("Invalid Header value 'badLimitBreachValue', unable to simulate the payment limitation breach",
+                error.getMessage());
     }
 
     private FRDomesticVRPConsent aValidFRDomesticVRPConsent(String consentId, ConsentStatusCode consentStatusCode) {

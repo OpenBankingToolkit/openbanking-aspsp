@@ -200,6 +200,7 @@ public interface DomesticVrpsApi {
      * @param xFapiCustomerIpAddress The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
      * @param xFapiInteractionId An RFC4122 UID used as a correlation id. (optional)
      * @param xCustomerUserAgent Indicates the user-agent that the PSU is using. (optional)
+     * @param xVrpLimitBreachResponseSimulation Custom header used to simulate a PeriodicLimit breach response for testing purposes. Values should be of the form PeriodType-PeriodAlignment e.g. Year-Calendar. (optional)
      * @return Default response (status code 201)
      *         or Bad request (status code 400)
      *         or Unauthorized (status code 401)
@@ -257,6 +258,9 @@ public interface DomesticVrpsApi {
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+
+            @ApiParam(value = "Custom header used to simulate a PeriodicLimit breach response for testing purposes. Values should be of the form PeriodType-PeriodAlignment e.g. Year-Calendar.")
+            @RequestHeader(value = "x-vrp-limit-breach-response-simulation", required = false) String xVrpLimitBreachResponseSimulation,
 
             HttpServletRequest request,
 

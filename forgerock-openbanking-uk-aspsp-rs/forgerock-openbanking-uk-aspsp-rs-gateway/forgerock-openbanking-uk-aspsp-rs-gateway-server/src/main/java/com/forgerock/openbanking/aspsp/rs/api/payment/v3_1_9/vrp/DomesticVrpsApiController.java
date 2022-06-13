@@ -121,10 +121,14 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
      *
      *             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
      *             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+     *
+     *             @ApiParam(value = "Custom header used to simulate a PeriodicLimit breach response for testing purposes. Values should be of the form PeriodType-PeriodAlignment e.g. Year-Calendar.")
+     *             @RequestHeader(value = "x-vrp-limit-breach-response-simulation", required = false) String xVrpLimitBreachResponseSimulation
      */
     public ResponseEntity<OBDomesticVRPResponse> domesticVrpPost(
             String authorization, String xJwsSignature, OBDomesticVRPRequest obDomesticVRPRequest, String xFapiAuthDate,
             String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
+            String xVrpLimitBreachResponseSimulation,
             HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
         log.debug("domesticVrpPost() Recieved OBDomesticVrpRequest {}", obDomesticVRPRequest);
@@ -144,7 +148,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             f.validateRisk(obDomesticVRPRequest.getRisk());
             f.checkRequestAndConsentInitiationMatch(initiation, consent);
             f.checkRequestAndConsentRiskMatch(obDomesticVRPRequest, consent);
-            f.checkControlParameters(obDomesticVRPRequest, consent);
+            f.checkControlParameters(obDomesticVRPRequest, consent, xVrpLimitBreachResponseSimulation);
             f.checkCreditorAccountIsInInstructionIfNotInConsent(obDomesticVRPRequest, consent);
         });
         ResponseEntity responseEntity = vrpPaymentsEndpointWrapper.execute((String tppId) -> {
