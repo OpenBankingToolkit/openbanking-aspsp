@@ -8,6 +8,34 @@ Release 1.7.5 (#492)
 * Release candidate: prepare release 1.7.5
 
 * Release candidate: prepare for next development iteration
+### GitHub [#495](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/495) 41: Implementation of OB read/write apis v3.1.9
+[cb691356ceffbd1](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/cb691356ceffbd1) Jorge Sanchez Perez *2022-04-20 12:46:43*
+41: Implementation of OB read/write apis v3.1.9 (#495)
+
+- Created common objects for read/write apis v3.1.9
+- Creaated Controllers for read/write apis v3.1.9
+- Created tests for read/write apis v3.1.9
+- Discovery objects updated to support read/write apis v3.1.9
+Issue: https://github.com/OpenBankingToolkit/openbanking-toolkit/issues/41
+### GitHub [#496](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/496) Release/2.0.0
+[8bae17bdb9b1bae](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/8bae17bdb9b1bae) Jorge Sanchez Perez *2022-04-20 13:28:12*
+Release/2.0.0 (#496)
+
+* Release candidate: prepare release 2.0.0
+
+* Release candidate: prepare for next development iteration
+[ae10ae0f561bd5b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ae10ae0f561bd5b) Dan Badham *2022-06-13 15:11:19*
+870: Support TPP testing VRP periodic limits breaches
+- Updating ob dependencies to 1.4.1 release
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/870
+[08b130e3bdbb866](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/08b130e3bdbb866) Dan Badham *2022-06-09 14:33:30*
+870: Support TPP testing VRP periodic limits breaches
+- Adding a simulator which can simulate a periodic limit breach response when the TPP requests it
+- DomesticVrpApi has a new optional header: x-vrp-limit-breach-response-simulation which is used to control the simulator
+- Simulator support is added for payment API versions 3.1.8 and 3.1.9
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/870
 [93bcac56172e3da](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/93bcac56172e3da) JamieB *2022-03-28 09:28:01*
 852: Empty commit as github actions got stuck!
 
