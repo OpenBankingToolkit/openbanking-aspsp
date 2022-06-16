@@ -193,6 +193,7 @@ public interface DomesticVrpsApi {
      * Create a domestic VRP
      *
      * @param authorization An Authorisation Token as per https://tools.ietf.org/html/rfc6750 (required)
+     * @param xIdempotencyKey Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours.  (required)
      * @param xJwsSignature A detached JWS signature of the body of the payload. (required)
      * @param obDomesticVRPRequest Default (required)
      * @param xFapiAuthDate The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are
@@ -238,6 +239,9 @@ public interface DomesticVrpsApi {
     ResponseEntity<OBDomesticVRPResponse> domesticVrpPost(
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
+
+            @ApiParam(value = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true)
+            @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
 
             @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,

@@ -20,8 +20,14 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.repository.vrp;
 
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVrpPaymentSubmission;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.query.Param;
+
+import java.util.Optional;
 
 public interface FRDomesticVrpPaymentSubmissionRepository extends MongoRepository<FRDomesticVrpPaymentSubmission, String> {
+
+    Optional<FRDomesticVrpPaymentSubmission> findByIdempotencyKeyAndPispId(@Param("idempotencyKey") String idempotencyKey, @Param("pispId") String pispId);
 }

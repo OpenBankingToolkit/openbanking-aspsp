@@ -33,6 +33,7 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDome
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.repositories.TppRepository;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -45,6 +46,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +58,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_CLIENT_ID;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.setupMockTpp;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toFRDomesticVRPConsentDetails;
@@ -89,6 +92,9 @@ public class DomesticVrpsApiControllerIT {
     @Autowired
     private SpringSecForTest springSecForTest;
 
+    @MockBean
+    private TppRepository tppRepository;
+
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
@@ -97,6 +103,8 @@ public class DomesticVrpsApiControllerIT {
     @Test
     public void createVrpPaymentSubmission() throws UnirestException {
         // Given
+        setupMockTpp(tppRepository);
+
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         OBDomesticVRPRequest request = aValidOBDomesticVRPRequest();
         FRDomesticVRPConsent consent = saveFRConsent(
@@ -123,10 +131,10 @@ public class DomesticVrpsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         OBDomesticVRPResponse vrpResponse = response.getBody();
         FRDomesticVrpPaymentSubmission paymentSubmission = paymentSubmissionRepository.findById(
-                vrpResponse.getData().getConsentId()
+                vrpResponse.getData().getDomesticVRPId()
         ).get();
-        assertThat(paymentSubmission.getId()).isEqualTo(consent.getId());
-        assertThat(paymentSubmission.getId()).isEqualTo(request.getData().getConsentId());
+        assertThat(paymentSubmission.id).isEqualTo(vrpResponse.getData().getDomesticVRPId());
+        assertThat(paymentSubmission.domesticVrpPayment.data.consentId).isEqualTo(request.getData().getConsentId());
         assertThat(vrpResponse.getData().getStatus()).isEqualTo(OBDomesticVRPResponseData.StatusEnum.PENDING);
         assertThat(paymentSubmission.getStatus()).isEqualTo(vrpResponse.getData().getStatus());
     }
