@@ -81,7 +81,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment '" + domesticVRPId + "' " +
                     "can't be found");
         }
-        Optional<FRDomesticVRPConsent> frDomesticVRPConsent = domesticVRPConsentRepository.findById(domesticVRPId);
+        final String consentId = optionalVrpPayment.get().getDomesticVrpPayment().getData().getConsentId();
+        Optional<FRDomesticVRPConsent> frDomesticVRPConsent = domesticVRPConsentRepository.findById(consentId);
         if (!frDomesticVRPConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("VRP Payment consent behind payment submission '" + domesticVRPId + "' can't be found");
         }
