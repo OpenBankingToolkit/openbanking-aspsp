@@ -21,6 +21,8 @@
 package com.forgerock.openbanking.common.services.openbanking;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.*;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPRequest;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVrpPaymentSubmission;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.VrpPaymentConsent;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
@@ -69,6 +71,12 @@ public class IdempotencyService {
         log.debug("Found an existing consent '{}' with the same x-idempotency-key '{}'.", existingConsent.getId(), xIdempotencyKey);
         checkIdempotencyKeyExpiry(xIdempotencyKey, existingConsent.getId(), existingConsent.getCreated());
         checkIdempotencyRequestBodyUnchanged(xIdempotencyKey, submittedRequestBody, existingConsentRequestBody.get(), existingConsent.getId());
+    }
+
+    public static void validateIdempotencyRequest(String xIdempotencyKey, FRDomesticVRPRequest newRequest, FRDomesticVrpPaymentSubmission existingSubmission) throws OBErrorResponseException {
+        log.debug("Found an existing vrpPayment '{}' with the same x-idempotency-key '{}", existingSubmission.getId(), xIdempotencyKey);
+        checkIdempotencyKeyExpiry(xIdempotencyKey, existingSubmission.getId(), new DateTime(existingSubmission.getCreated()));
+        checkIdempotencyRequestBodyUnchanged(xIdempotencyKey, newRequest, existingSubmission.getDomesticVrpPayment(), existingSubmission.getId());
     }
 
     /**
