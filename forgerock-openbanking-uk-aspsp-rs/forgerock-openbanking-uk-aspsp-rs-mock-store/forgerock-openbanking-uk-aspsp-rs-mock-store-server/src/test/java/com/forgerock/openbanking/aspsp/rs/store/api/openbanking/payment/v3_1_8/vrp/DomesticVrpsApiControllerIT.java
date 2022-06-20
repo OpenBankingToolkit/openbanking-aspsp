@@ -132,7 +132,7 @@ public class DomesticVrpsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         OBDomesticVRPResponse vrpResponse = response.getBody();
         FRDomesticVrpPaymentSubmission paymentSubmission = paymentSubmissionRepository.findById(
-                vrpResponse.getData().getConsentId()
+                vrpResponse.getData().getDomesticVRPId()
         ).get();
         assertThat(paymentSubmission.getId()).isNotNull();
         assertThat(paymentSubmission.getDomesticVrpPayment().getData().getConsentId()).isEqualTo(request.getData().getConsentId());
@@ -172,7 +172,7 @@ public class DomesticVrpsApiControllerIT {
             assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
             OBDomesticVRPResponse vrpResponse = response.getBody();
             FRDomesticVrpPaymentSubmission paymentSubmission = paymentSubmissionRepository.findById(
-                    vrpResponse.getData().getConsentId()).get();
+                    vrpResponse.getData().getDomesticVRPId()).get();
             assertThat(paymentSubmission.getId()).isEqualTo(vrpResponse.getData().getDomesticVRPId());
             domesticVrpIds.add(vrpResponse.getData().getDomesticVRPId());
 
