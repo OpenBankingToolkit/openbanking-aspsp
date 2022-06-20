@@ -223,7 +223,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         OBDomesticVRPResponse response = new OBDomesticVRPResponse()
                 .data(
                         new OBDomesticVRPResponseData()
-                                .consentId(paymentSubmission.getDomesticVrpPayment().getData().getConsentId())
+                                .consentId(frDomesticVRPConsent.getId())
                                 .domesticVRPId(paymentSubmission.getId())
                                 .status(paymentSubmission.getStatus())
                                 .creationDateTime(new DateTime(paymentSubmission.getCreated()))
