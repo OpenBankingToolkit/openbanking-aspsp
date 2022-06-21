@@ -20,7 +20,6 @@
  */
 package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_8.vrp;
 
-import com.forgerock.openbanking.aspsp.rs.store.repository.IdempotentRepositoryAdapter;
 import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.DomesticVRPConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.FRDomesticVrpPaymentSubmissionRepository;
 import com.forgerock.openbanking.aspsp.rs.store.utils.VersionPathExtractor;
@@ -31,8 +30,10 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDome
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPRequest;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVrpPaymentSubmission;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
+import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
+import com.forgerock.openbanking.repositories.TppRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -61,11 +62,13 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     private final FRDomesticVrpPaymentSubmissionRepository paymentSubmissionRepository;
     private final DomesticVRPConsentRepository domesticVRPConsentRepository;
     private final ResourceLinkService resourceLinkService;
+    private final TppRepository tppRepository;
 
-    public DomesticVrpsApiController(FRDomesticVrpPaymentSubmissionRepository paymentSubmissionRepository, DomesticVRPConsentRepository domesticVRPConsentRepository, ResourceLinkService resourceLinkService) {
+    public DomesticVrpsApiController(FRDomesticVrpPaymentSubmissionRepository paymentSubmissionRepository, DomesticVRPConsentRepository domesticVRPConsentRepository, ResourceLinkService resourceLinkService, TppRepository tppRepository) {
         this.paymentSubmissionRepository = paymentSubmissionRepository;
         this.domesticVRPConsentRepository = domesticVRPConsentRepository;
         this.resourceLinkService = resourceLinkService;
+        this.tppRepository = tppRepository;
     }
 
     @Override
@@ -78,7 +81,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Domestic VRP payment '" + domesticVRPId + "' " +
                     "can't be found");
         }
-        Optional<FRDomesticVRPConsent> frDomesticVRPConsent = domesticVRPConsentRepository.findById(domesticVRPId);
+        final String consentId = optionalVrpPayment.get().getDomesticVrpPayment().getData().getConsentId();
+        Optional<FRDomesticVRPConsent> frDomesticVRPConsent = domesticVRPConsentRepository.findById(consentId);
         if (!frDomesticVRPConsent.isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("VRP Payment consent behind payment submission '" + domesticVRPId + "' can't be found");
         }
@@ -148,10 +152,13 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
      *
      *             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
      *             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+     *
+     *             @ApiParam(value = "The PISP ID" )
+     *             @RequestHeader(value="x-ob-client-id") String clientId,
      */
     public ResponseEntity<OBDomesticVRPResponse> domesticVrpPost(
             String authorization, String xJwsSignature, OBDomesticVRPRequest obDomesticVRPRequest, String xFapiAuthDate,
-            String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
+            String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String clientId,
             HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received VRP payment submission: '{}'", obDomesticVRPRequest);
@@ -164,16 +171,23 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 );
         log.debug("Found VRP consent '{}' to match this consent id: {} ", frDomesticVRPConsent, consentId);
         FRDomesticVRPRequest frDomesticVRPRequest = toFRDomesticVRPRequest(obDomesticVRPRequest);
+
+        final Tpp tpp = tppRepository.findByClientId(clientId);
+        // There is a bug in the OBIE spec for v3.1.8, no x-idempotency-key header is specified for this operation
+        // For consistency with later implementations, we will generate a UUID to use as the idempotencyKey
+        // NOTE: This means that this operation is NOT idempotent, API v3.1.9 and above should be used if idempotency is desired.
+        final String idempotencyKey = UUID.randomUUID().toString();
+
         FRDomesticVrpPaymentSubmission vrpPaymentSubmission = FRDomesticVrpPaymentSubmission.builder()
-                .id(consentId)
+                .idempotencyKey(idempotencyKey)
+                .pispId(tpp.getId())
                 .domesticVrpPayment(frDomesticVRPRequest)
                 .status(OBDomesticVRPResponseData.StatusEnum.PENDING)
                 .created(new Date())
                 .updated(new Date())
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
                 .build();
-        vrpPaymentSubmission = new IdempotentRepositoryAdapter<>(paymentSubmissionRepository)
-                .idempotentSave(vrpPaymentSubmission);
+        vrpPaymentSubmission = paymentSubmissionRepository.save(vrpPaymentSubmission);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(obDomesticVRPRequest, vrpPaymentSubmission, frDomesticVRPConsent));
 
@@ -193,7 +207,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         OBDomesticVRPResponse response = new OBDomesticVRPResponse()
                 .data(
                         new OBDomesticVRPResponseData()
-                                .consentId(paymentSubmission.getId())
+                                .consentId(frDomesticVRPConsent.getId())
                                 .domesticVRPId(paymentSubmission.getId())
                                 .status(paymentSubmission.getStatus())
                                 .creationDateTime(new DateTime(paymentSubmission.getCreated()))

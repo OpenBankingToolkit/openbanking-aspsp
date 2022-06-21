@@ -42,6 +42,12 @@ public class FRDomesticVrpPaymentSubmission implements PaymentSubmission {
     @Indexed
     public String id;
 
+    @Indexed
+    public String pispId;
+
+    @Indexed
+    public String idempotencyKey;
+
     public FRDomesticVRPRequest domesticVrpPayment;
 
     public OBDomesticVRPResponseData.StatusEnum status;

@@ -33,6 +33,7 @@ import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDome
 import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.model.OBRIRole;
+import com.forgerock.openbanking.repositories.TppRepository;
 import com.github.jsonzou.jmockdata.JMockData;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -45,6 +46,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,11 +54,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.vrp.*;
 
-import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.MOCK_CLIENT_ID;
+import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1.PaymentTestHelper.setupMockTpp;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toFRDomesticVRPConsentDetails;
@@ -90,6 +94,9 @@ public class DomesticVrpsApiControllerIT {
     @Autowired
     private SpringSecForTest springSecForTest;
 
+    @MockBean
+    private TppRepository tppRepository;
+
     @Before
     public void setUp() {
         Unirest.config().setObjectMapper(new JacksonObjectMapper(objectMapper)).verifySsl(false);
@@ -97,6 +104,8 @@ public class DomesticVrpsApiControllerIT {
 
     @Test
     public void createVrpPaymentSubmission() throws UnirestException {
+        setupMockTpp(tppRepository);
+
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         OBDomesticVRPRequest request = aValidOBDomesticVRPRequest();
@@ -108,7 +117,6 @@ public class DomesticVrpsApiControllerIT {
         HttpResponse<OBDomesticVRPResponse> response = Unirest.post(RS_STORE_URL + port + CONTEXT_PATH)
                 .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
                 .header(OBHeaders.AUTHORIZATION, "token")
-                .header(OBHeaders.X_IDEMPOTENCY_KEY, UUID.randomUUID().toString())
                 .header(OBHeaders.X_JWS_SIGNATURE, "x-jws-signature")
                 .header("x-ob-client-id", MOCK_CLIENT_ID)
                 .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
@@ -124,12 +132,56 @@ public class DomesticVrpsApiControllerIT {
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         OBDomesticVRPResponse vrpResponse = response.getBody();
         FRDomesticVrpPaymentSubmission paymentSubmission = paymentSubmissionRepository.findById(
-                vrpResponse.getData().getConsentId()
+                vrpResponse.getData().getDomesticVRPId()
         ).get();
-        assertThat(paymentSubmission.getId()).isEqualTo(consent.getId());
-        assertThat(paymentSubmission.getId()).isEqualTo(request.getData().getConsentId());
+        assertThat(paymentSubmission.getId()).isNotNull();
+        assertThat(paymentSubmission.getDomesticVrpPayment().getData().getConsentId()).isEqualTo(request.getData().getConsentId());
         assertThat(vrpResponse.getData().getStatus()).isEqualTo(OBDomesticVRPResponseData.StatusEnum.PENDING);
         assertThat(paymentSubmission.getStatus()).isEqualTo(vrpResponse.getData().getStatus());
+    }
+
+    @Test
+    public void createVrpPaymentSubmissionMultiplePerConsent() throws UnirestException {
+        // Given
+        setupMockTpp(tppRepository);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        OBDomesticVRPRequest request = aValidOBDomesticVRPRequest();
+        final String consentId = request.getData().getConsentId();
+        saveFRConsent(consentId, FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED);
+
+        // When
+        final int numPayments = 10;
+        final Set<String> domesticVrpIds = new HashSet<>();
+        for (int i = 0; i < numPayments; i++) {
+            // Submit the same payment multiple times
+            HttpResponse<OBDomesticVRPResponse> response = Unirest.post(RS_STORE_URL + port + CONTEXT_PATH)
+                    .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                    .header(OBHeaders.AUTHORIZATION, "token")
+                    .header(OBHeaders.X_JWS_SIGNATURE, "x-jws-signature")
+                    .header("x-ob-client-id", MOCK_CLIENT_ID)
+                    .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
+                    .body(request)
+                    .asObject(OBDomesticVRPResponse.class);
+
+            // Then
+            log.debug("Response {}:{}  {}", response.getStatus(), response.getStatusText(), response.getBody());
+            if (response.getParsingError().isPresent()) {
+                log.error("Parsing error", response.getParsingError().get());
+            }
+
+            assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
+            OBDomesticVRPResponse vrpResponse = response.getBody();
+            FRDomesticVrpPaymentSubmission paymentSubmission = paymentSubmissionRepository.findById(
+                    vrpResponse.getData().getDomesticVRPId()).get();
+            assertThat(paymentSubmission.getId()).isEqualTo(vrpResponse.getData().getDomesticVRPId());
+            domesticVrpIds.add(vrpResponse.getData().getDomesticVRPId());
+
+            assertThat(paymentSubmission.getDomesticVrpPayment().getData().getConsentId()).isEqualTo(consentId);
+            assertThat(vrpResponse.getData().getStatus()).isEqualTo(OBDomesticVRPResponseData.StatusEnum.PENDING);
+            assertThat(paymentSubmission.getStatus()).isEqualTo(vrpResponse.getData().getStatus());
+        }
+        // Verify all ids were unique
+        assertThat(domesticVrpIds.size()).isEqualTo(numPayments);
     }
 
     @Test

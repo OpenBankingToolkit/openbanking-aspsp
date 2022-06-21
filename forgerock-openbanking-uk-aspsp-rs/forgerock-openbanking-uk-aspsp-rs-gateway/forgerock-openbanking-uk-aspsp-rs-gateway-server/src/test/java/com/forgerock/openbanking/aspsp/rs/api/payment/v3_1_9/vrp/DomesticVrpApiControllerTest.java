@@ -117,7 +117,7 @@ public class DomesticVrpApiControllerTest {
                 new ResponseEntity(domesticVRPResponse, HttpStatus.CREATED);
         given(domesticVrpPaymentsEndpointWrapper.execute(any())).willReturn(validResponse);
         // When
-        ResponseEntity<OBDomesticVRPResponse> response = domesticVrpController.domesticVrpPost("test", "test_sig",
+        ResponseEntity<OBDomesticVRPResponse> response = domesticVrpController.domesticVrpPost("test", "idempotencyKey1", "test_sig",
                 obDomesticVRPRequest,  new DateTime().toString(),
                 "127..0.0.1", "x-fapi-interaction_id", "user-agent", null, request, principal);
 

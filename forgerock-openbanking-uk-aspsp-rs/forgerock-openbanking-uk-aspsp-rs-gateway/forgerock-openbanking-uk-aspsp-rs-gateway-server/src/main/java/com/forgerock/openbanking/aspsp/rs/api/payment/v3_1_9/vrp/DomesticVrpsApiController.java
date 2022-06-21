@@ -100,8 +100,11 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
     @Override
     /**
-     *         @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+     *             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
      *             @RequestHeader(value = "Authorization", required = true) String authorization,
+     *
+     *             @ApiParam(value = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true)
+     *             @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
      *
      *             @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
      *             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
@@ -126,8 +129,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
      *             @RequestHeader(value = "x-vrp-limit-breach-response-simulation", required = false) String xVrpLimitBreachResponseSimulation
      */
     public ResponseEntity<OBDomesticVRPResponse> domesticVrpPost(
-            String authorization, String xJwsSignature, OBDomesticVRPRequest obDomesticVRPRequest, String xFapiAuthDate,
-            String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
+            String authorization, String xIdempotencyKey, String xJwsSignature, OBDomesticVRPRequest obDomesticVRPRequest,
+            String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent,
             String xVrpLimitBreachResponseSimulation,
             HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
@@ -144,6 +147,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         vrpPaymentsEndpointWrapper.payment(consent);
         vrpPaymentsEndpointWrapper.isAuthorizationCodeGrantType(true);
         vrpPaymentsEndpointWrapper.filters(f -> {
+            f.verifyIdempotencyKeyLength(xIdempotencyKey);
             f.verifyJwsDetachedSignature(xJwsSignature, request);
             f.validateRisk(obDomesticVRPRequest.getRisk());
             f.checkRequestAndConsentInitiationMatch(initiation, consent);

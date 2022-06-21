@@ -178,12 +178,14 @@ public interface DomesticVrpsApi {
      * Create a domestic VRP
      *
      * @param authorization An Authorisation Token as per https://tools.ietf.org/html/rfc6750 (required)
+     * @param xIdempotencyKey Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours.  (required)
      * @param xJwsSignature A detached JWS signature of the body of the payload. (required)
      * @param obDomesticVRPRequest Default (required)
      * @param xFapiAuthDate The time when the PSU last logged in with the TPP.  All dates in the HTTP headers are represented as RFC 7231 Full Dates. An example is below:  Sun, 10 Sep 2017 19:43:31 UTC (optional)
      * @param xFapiCustomerIpAddress The PSU&#39;s IP address if the PSU is currently logged in with the TPP. (optional)
      * @param xFapiInteractionId An RFC4122 UID used as a correlation id. (optional)
      * @param xCustomerUserAgent Indicates the user-agent that the PSU is using. (optional)
+     * @param clientId The PISP ID
      * @return Default response (status code 201)
      *         or Bad request (status code 400)
      *         or Unauthorized (status code 401)
@@ -218,6 +220,9 @@ public interface DomesticVrpsApi {
             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
             @RequestHeader(value = "Authorization", required = true) String authorization,
 
+            @ApiParam(value = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true)
+            @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
+
             @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
 
@@ -236,6 +241,9 @@ public interface DomesticVrpsApi {
 
             @ApiParam(value = "Indicates the user-agent that the PSU is using.")
             @RequestHeader(value = "x-customer-user-agent", required = false) String xCustomerUserAgent,
+
+            @ApiParam(value = "The PISP ID" )
+            @RequestHeader(value="x-ob-client-id", required=true) String clientId,
 
             HttpServletRequest request,
 
