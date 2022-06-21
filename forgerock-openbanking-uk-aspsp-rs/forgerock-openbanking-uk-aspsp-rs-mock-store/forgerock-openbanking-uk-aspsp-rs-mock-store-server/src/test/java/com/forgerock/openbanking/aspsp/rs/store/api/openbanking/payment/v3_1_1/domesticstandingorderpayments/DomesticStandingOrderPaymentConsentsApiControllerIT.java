@@ -195,7 +195,7 @@ public class DomesticStandingOrderPaymentConsentsApiControllerIT {
         OBWriteDomesticStandingOrderConsent5 consentRequest = JMockData.mock(OBWriteDomesticStandingOrderConsent5.class);
         setupTestConsentInitiation(consentRequest.getData().getInitiation());
         consentRequest.getData().authorisation(new OBWriteDomesticConsent4DataAuthorisation().authorisationType(OBExternalAuthorisation1Code.ANY).completionDateTime(DateTime.now()));
-        consentRequest.getRisk().merchantCategoryCode("ABCD")
+        consentRequest.getRisk().paymentPurposeCode(null).merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
                 .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))

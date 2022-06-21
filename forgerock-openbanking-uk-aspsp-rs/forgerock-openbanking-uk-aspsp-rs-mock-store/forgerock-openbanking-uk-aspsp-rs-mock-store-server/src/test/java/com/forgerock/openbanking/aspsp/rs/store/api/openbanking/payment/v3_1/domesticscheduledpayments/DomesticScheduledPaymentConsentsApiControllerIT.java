@@ -141,7 +141,7 @@ public class DomesticScheduledPaymentConsentsApiControllerIT {
         OBWriteDomesticScheduledConsent2 consentRequest = JMockData.mock(OBWriteDomesticScheduledConsent2.class);
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consentRequest.getData().getInitiation().getCreditorPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
-        consentRequest.getRisk().merchantCategoryCode("ABCD")
+        consentRequest.getRisk().paymentPurposeCode(null).merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
                 .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
