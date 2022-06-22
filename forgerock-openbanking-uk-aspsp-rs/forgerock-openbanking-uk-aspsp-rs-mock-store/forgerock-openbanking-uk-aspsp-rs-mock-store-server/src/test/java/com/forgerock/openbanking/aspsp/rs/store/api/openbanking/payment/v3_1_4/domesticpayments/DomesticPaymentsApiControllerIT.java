@@ -304,6 +304,7 @@ public class DomesticPaymentsApiControllerIT {
         consent.getInitiation().setSupplementaryData(FRSupplementaryData.builder().data("{}").build());
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
+        consent.getRisk().setPaymentPurposeCode(null);
         consent.setStatus(ConsentStatusCode.ACCEPTEDSETTLEMENTCOMPLETED);
         consentRepository.save(consent);
         return consent;

@@ -20,8 +20,10 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.payment;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRExternalExtendedAccountType;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRExternalPaymentContextCode;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPaymentRisk;
+import uk.org.openbanking.datamodel.payment.OBExternalExtendedAccountType1Code;
 import uk.org.openbanking.datamodel.payment.OBExternalPaymentContext1Code;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.payment.OBRisk1DeliveryAddress;
@@ -34,7 +36,15 @@ public class FRPaymentRiskConverter {
                 .merchantCategoryCode(obRisk1.getMerchantCategoryCode())
                 .merchantCustomerIdentification(obRisk1.getMerchantCustomerIdentification())
                 .paymentContextCode(toFRExternalPaymentContextCode(obRisk1.getPaymentContextCode()))
+                .beneficiaryAccountType(toFRExternalExtendedAccountType(obRisk1.getBeneficiaryAccountType()))
+                .paymentPurposeCode(obRisk1.getPaymentPurposeCode())
+                .contractPresentIndicator(obRisk1.getContractPresentInidicator())
+                .beneficiaryPrepopulatedIndicator(obRisk1.getBeneficiaryPrepopulatedIndicator())
                 .build();
+    }
+
+    public static FRExternalExtendedAccountType toFRExternalExtendedAccountType(OBExternalExtendedAccountType1Code obExternalExtendedAccountType1Code) {
+        return obExternalExtendedAccountType1Code == null ? null : FRExternalExtendedAccountType.fromValue(obExternalExtendedAccountType1Code.getValue());
     }
 
     public static FRPaymentRisk.FRRiskDeliveryAddress toFRRiskDeliveryAddress(OBRisk1DeliveryAddress obRisk1DeliveryAddress) {
@@ -58,7 +68,15 @@ public class FRPaymentRiskConverter {
                 .deliveryAddress(toOBRisk1DeliveryAddress(frPaymentRisk.getDeliveryAddress()))
                 .merchantCategoryCode(frPaymentRisk.getMerchantCategoryCode())
                 .merchantCustomerIdentification(frPaymentRisk.getMerchantCustomerIdentification())
-                .paymentContextCode(toOBExternalPaymentContext1Code(frPaymentRisk.getPaymentContextCode()));
+                .paymentContextCode(toOBExternalPaymentContext1Code(frPaymentRisk.getPaymentContextCode()))
+                .paymentPurposeCode(frPaymentRisk.getPaymentPurposeCode())
+                .beneficiaryPrepopulatedIndicator(frPaymentRisk.getBeneficiaryPrepopulatedIndicator())
+                .contractPresentInidicator(frPaymentRisk.getContractPresentIndicator())
+                .beneficiaryAccountType(toOBExternalExtendedAccountType1Code(frPaymentRisk.getBeneficiaryAccountType()));
+    }
+
+    public static OBExternalExtendedAccountType1Code toOBExternalExtendedAccountType1Code(FRExternalExtendedAccountType frExternalExtendedAccountType) {
+        return frExternalExtendedAccountType == null ? null : OBExternalExtendedAccountType1Code.fromValue(frExternalExtendedAccountType.getValue());
     }
 
     public static OBRisk1DeliveryAddress toOBRisk1DeliveryAddress(FRPaymentRisk.FRRiskDeliveryAddress frDeliveryAddress) {
