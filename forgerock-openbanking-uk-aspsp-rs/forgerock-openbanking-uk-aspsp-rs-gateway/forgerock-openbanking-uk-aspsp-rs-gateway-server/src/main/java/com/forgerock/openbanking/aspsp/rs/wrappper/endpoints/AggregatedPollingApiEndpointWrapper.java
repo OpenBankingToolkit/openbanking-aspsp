@@ -25,6 +25,7 @@ import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
+import com.forgerock.openbanking.constants.OpenBankingConstants.Scope;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
@@ -107,9 +108,11 @@ public class AggregatedPollingApiEndpointWrapper extends RSEndpointWrapper<Aggre
         // Do not verify financial id as it is not required for events API from 3.1.2 onwards
         List scopes;
         if(obVersion.isBeforeVersion(OBVersion.v3_1_4)){
-            scopes = Arrays.asList(OpenBankingConstants.Scope.EVENT_POLLING);
+            scopes = Arrays.asList(Scope.EVENT_POLLING);
+        } else if (obVersion.isBeforeVersion(OBVersion.v3_1_10)){
+            scopes = Arrays.asList(Scope.ACCOUNTS, Scope.FUNDS_CONFIRMATIONS);
         } else {
-            scopes = Arrays.asList(OpenBankingConstants.Scope.ACCOUNTS, OpenBankingConstants.Scope.FUNDS_CONFIRMATIONS);
+            scopes = Arrays.asList(Scope.ACCOUNTS, Scope.FUNDS_CONFIRMATIONS, Scope.PAYMENTS);
         }
         verifyAccessToken(scopes,
                 Collections.singletonList(

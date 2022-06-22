@@ -26,6 +26,7 @@ import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.constants.OpenBankingConstants;
+import com.forgerock.openbanking.constants.OpenBankingConstants.Scope;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
 import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
@@ -170,29 +171,35 @@ public class AggregatedPollingApiControllerIT {
 
     @Test
     public void pollEvents_v3_1_4_wrong_scope() throws Exception {
-        // Given
-        String jws = jws(OpenBankingConstants.Scope.EVENT_POLLING, OIDCConstants.GrantType.CLIENT_CREDENTIAL);
-        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
-        mockAccessTokenVerification(jws);
+        String[] invalidScopes = new String[] {
+                Scope.EVENT_POLLING, Scope.PAYMENTS, Scope.GROUP, "blah"
+        };
 
-        OBEventPollingResponse1 obEventPollingResponse = new OBEventPollingResponse1()
-                .sets(Map.of("asdfasdfas","eyJhbG....asefasefa","asdfasdfas2","eyJhbG2....asefasefa"))
-                .moreAvailable(false);
-        given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.ok(obEventPollingResponse));
-        OBEventPolling1 obEventPolling = new OBEventPolling1().returnImmediately(true);
+        for (String invalidScope : invalidScopes) {
+            // Given
+            String jws = jws(invalidScope, OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+            springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+            mockAccessTokenVerification(jws);
 
-        // When
-        HttpResponse<OBEventPollingResponse1> response = Unirest.post("https://rs-api:" + port + "/open-banking/v3.1.4/events")
-                .body(obEventPolling)
-                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
-                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
-                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
-                .asObject(OBEventPollingResponse1.class);
+            OBEventPollingResponse1 obEventPollingResponse = new OBEventPollingResponse1()
+                    .sets(Map.of("asdfasdfas","eyJhbG....asefasefa","asdfasdfas2","eyJhbG2....asefasefa"))
+                    .moreAvailable(false);
+            given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.ok(obEventPollingResponse));
+            OBEventPolling1 obEventPolling = new OBEventPolling1().returnImmediately(true);
 
-        // Then
-        assertThat(response.getStatus()).isEqualTo(403);
-        assertThat(response.getParsingError().get().getOriginalBody()).contains("Invalid access token. Missing scopes: [accounts, fundsconfirmations]");
-        assertThat(response.getParsingError().get().getOriginalBody()).contains(OBRIErrorType.ACCESS_TOKEN_INVALID_SCOPE.getCode().getValue());
+            // When
+            HttpResponse<OBEventPollingResponse1> response = Unirest.post("https://rs-api:" + port + "/open-banking/v3.1.4/events")
+                    .body(obEventPolling)
+                    .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                    .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                    .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                    .asObject(OBEventPollingResponse1.class);
+
+            // Then
+            assertThat(response.getStatus()).isEqualTo(403);
+            assertThat(response.getParsingError().get().getOriginalBody()).contains("Invalid access token. Missing scopes: [accounts, fundsconfirmations]");
+            assertThat(response.getParsingError().get().getOriginalBody()).contains(OBRIErrorType.ACCESS_TOKEN_INVALID_SCOPE.getCode().getValue());
+        }
     }
 
     @Test
@@ -213,6 +220,34 @@ public class AggregatedPollingApiControllerIT {
 
         // When
         HttpResponse<OBEventPollingResponse1> response = Unirest.post("https://rs-api:" + port + "/open-banking/v3.1.4/events")
+                .body(obEventPolling)
+                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .asObject(OBEventPollingResponse1.class);
+
+        // Then
+        assertThat(response.getStatus()).isEqualTo(200);
+    }
+
+    @Test
+    public void pollEvents_v3_1_10() throws Exception {
+        // Given
+        String jws = jws(Scope.PAYMENTS, OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_AISP);
+        mockAccessTokenVerification(jws);
+
+        OBEventPollingResponse1 obEventPollingResponse = new OBEventPollingResponse1()
+                .sets(Map.of("asdfasdfas","eyJhbG....asefasefa","asdfasdfas2","eyJhbG2....asefasefa"))
+                .moreAvailable(false);
+        given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.ok(obEventPollingResponse));
+        Tpp tpp = new Tpp();
+        tpp.setAuthorisationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
+        OBEventPolling1 obEventPolling = new OBEventPolling1().returnImmediately(true);
+
+        // When
+        HttpResponse<OBEventPollingResponse1> response = Unirest.post("https://rs-api:" + port + "/open-banking/v3.1.10/events")
                 .body(obEventPolling)
                 .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
                 .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
