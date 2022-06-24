@@ -24,7 +24,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uk.org.openbanking.datamodel.vrp.namespace.OBVRPAuthenticationMethods;
 
 @Data
 @NoArgsConstructor
@@ -35,4 +34,6 @@ public class FRDomesticVRPRequestData {
     public String psuAuthenticationMethod;
     public FRWriteDomesticVRPDataInitiation initiation;
     public FRDomesticVRPInstruction instruction;
+    public FRVRPInteractionType psuInteractionType;
+
 }

@@ -23,14 +23,14 @@ package com.forgerock.openbanking.common.model.openbanking.persistence.vrp;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum FRVRPInteractionTypes {
+public enum FRVRPInteractionType {
     INSESSION("InSession"),
 
     OFFSESSION("OffSession");
 
     private String value;
 
-    FRVRPInteractionTypes(String value) {
+    FRVRPInteractionType(String value) {
         this.value = value;
     }
 
@@ -45,8 +45,8 @@ public enum FRVRPInteractionTypes {
     }
 
     @JsonCreator
-    public static FRVRPInteractionTypes fromValue(String value) {
-        for (FRVRPInteractionTypes b : FRVRPInteractionTypes.values()) {
+    public static FRVRPInteractionType fromValue(String value) {
+        for (FRVRPInteractionType b : FRVRPInteractionType.values()) {
             if (b.value.equals(value)) {
                 return b;
             }

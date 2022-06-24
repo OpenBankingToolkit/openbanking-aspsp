@@ -21,7 +21,7 @@
 package com.forgerock.openbanking.common.services.openbanking.converter.vrp;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPControlParameters;
-import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRVRPInteractionTypes;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRVRPInteractionType;
 import com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
@@ -62,11 +62,11 @@ public class FRDomesticVRPControlParametersConverter {
 
     }
 
-    public static List<FRVRPInteractionTypes> toFRVRPInteractionTypes(List<OBVRPInteractionTypes> psUInteractionTypes) {
-        return psUInteractionTypes == null ? null : psUInteractionTypes.stream().map(it -> FRVRPInteractionTypes.fromValue(it.getValue())).collect(Collectors.toList());
+    public static List<FRVRPInteractionType> toFRVRPInteractionTypes(List<OBVRPInteractionTypes> psUInteractionTypes) {
+        return psUInteractionTypes == null ? null : psUInteractionTypes.stream().map(it -> FRVRPInteractionType.fromValue(it.getValue())).collect(Collectors.toList());
     }
 
-    public static List<OBVRPInteractionTypes> toOBVRPInteractionTypes(List<FRVRPInteractionTypes> interactionTypes) {
+    public static List<OBVRPInteractionTypes> toOBVRPInteractionTypes(List<FRVRPInteractionType> interactionTypes) {
         return interactionTypes == null ? null : interactionTypes.stream().map(it -> OBVRPInteractionTypes.fromValue(it.getValue())).collect(Collectors.toList());
     }
 }

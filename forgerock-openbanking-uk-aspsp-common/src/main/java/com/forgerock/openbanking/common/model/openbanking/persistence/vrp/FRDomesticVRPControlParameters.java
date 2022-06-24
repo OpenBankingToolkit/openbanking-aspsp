@@ -52,5 +52,5 @@ public class FRDomesticVRPControlParameters {
     private FRAmount maximumIndividualAmount;
     private List<FRPeriodicLimits> periodicLimits;
     private FRSupplementaryData supplementaryData;
-    private List<FRVRPInteractionTypes> psUInteractionTypes;
+    private List<FRVRPInteractionType> psUInteractionTypes;
 }

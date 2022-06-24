@@ -27,10 +27,8 @@ import com.forgerock.openbanking.common.services.openbanking.converter.payment.F
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter;
 import lombok.extern.slf4j.Slf4j;
 import uk.org.openbanking.datamodel.vrp.*;
-import uk.org.openbanking.datamodel.vrp.namespace.OBVRPAuthenticationMethods;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toFRAccountIdentifier;
-import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter.toOBCashAccount3;
 import static com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter.toFRAmount;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toOBSupplementaryData1;
@@ -80,7 +78,12 @@ public class FRDomesticVRPConverters {
                 .initiation(FRWriteDomesticVRPDataInitiationConverter.toFRWriteDomesticVRPDataInitiation(obDomesticVRPRequestData.getInitiation()))
                 .psuAuthenticationMethod(obDomesticVRPRequestData.getPsUAuthenticationMethod())
                 .instruction(toFRDomesticVRPInstruction(obDomesticVRPRequestData.getInstruction()))
+                .psuInteractionType(toFRVRPInteractionType(obDomesticVRPRequestData.getPsUInteractionType()))
                 .build();
+    }
+
+    public static FRVRPInteractionType toFRVRPInteractionType(OBVRPInteractionTypes interactionTypes) {
+        return interactionTypes == null ? null : FRVRPInteractionType.fromValue(interactionTypes.getValue());
     }
 
     public static FRDomesticVRPInstruction toFRDomesticVRPInstruction(OBDomesticVRPInstruction instruction) {
@@ -153,7 +156,13 @@ public class FRDomesticVRPConverters {
         return data == null ? null : new uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequestData()
                 .consentId(data.getConsentId())
                 .initiation(toOBDomesticVRPInitiationv3_1_10(data.getInitiation()))
-                .instruction(toOBDomesticVRPInstructionv3_1_10(data.getInstruction()));
+                .instruction(toOBDomesticVRPInstructionv3_1_10(data.getInstruction()))
+                .psUInteractionType(toOBVRPInteractionTypes(data.psuInteractionType))
+                .psUAuthenticationMethod(data.psuAuthenticationMethod);
+    }
+
+    public static OBVRPInteractionTypes toOBVRPInteractionTypes(FRVRPInteractionType interactionType) {
+        return interactionType == null ? null : OBVRPInteractionTypes.fromValue(interactionType.getValue());
     }
 
     public static OBDomesticVRPInitiation toOBDomesticVRPInitiation(FRWriteDomesticVRPDataInitiation initiation){
