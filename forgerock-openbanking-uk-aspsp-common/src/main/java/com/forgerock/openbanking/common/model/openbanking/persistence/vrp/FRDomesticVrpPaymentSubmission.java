@@ -50,7 +50,8 @@ public class FRDomesticVrpPaymentSubmission implements PaymentSubmission {
 
     public FRDomesticVRPRequest domesticVrpPayment;
 
-    public OBDomesticVRPResponseData.StatusEnum status;
+    // Represent OBDomesticVRPResponseData.StatusEnum as .name()
+    public String status;
 
     @CreatedDate
     public Date created;

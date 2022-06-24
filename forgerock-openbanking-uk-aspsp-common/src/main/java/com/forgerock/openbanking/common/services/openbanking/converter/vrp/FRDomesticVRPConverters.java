@@ -53,10 +53,31 @@ public class FRDomesticVRPConverters {
         return frDomesticVRPRequest;
     }
 
+    public static FRDomesticVRPRequest toFRDomesticVRPRequest(
+            uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest obDomesticVRPRequest
+    ) {
+        FRDomesticVRPRequest frDomesticVRPRequest = obDomesticVRPRequest == null ? null : FRDomesticVRPRequest.builder()
+                .data(toFRDomesticVRPRequestData(obDomesticVRPRequest.getData()))
+                .risk(toFRRisk(obDomesticVRPRequest.getRisk()))
+                .build();
+        log.trace("toFRDomesticVRPRequest() converted OBDomesticVRPRequest to FRDomesticVrpRequest; '{}'",
+                frDomesticVRPRequest);
+        return frDomesticVRPRequest;
+    }
+
     public static FRDomesticVRPRequestData toFRDomesticVRPRequestData(OBDomesticVRPRequestData obDomesticVRPRequestData){
         return obDomesticVRPRequestData == null ? null : FRDomesticVRPRequestData.builder()
                 .consentId(obDomesticVRPRequestData.getConsentId())
-                .initiation(toFRDomesticVRPInitiation(obDomesticVRPRequestData.getInitiation()))
+                .initiation(FRWriteDomesticVRPDataInitiationConverter.toFRWriteDomesticVRPDataInitiation(obDomesticVRPRequestData.getInitiation()))
+                .psuAuthenticationMethod(obDomesticVRPRequestData.getPsUAuthenticationMethod())
+                .instruction(toFRDomesticVRPInstruction(obDomesticVRPRequestData.getInstruction()))
+                .build();
+    }
+
+    public static FRDomesticVRPRequestData toFRDomesticVRPRequestData(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequestData obDomesticVRPRequestData){
+        return obDomesticVRPRequestData == null ? null : FRDomesticVRPRequestData.builder()
+                .consentId(obDomesticVRPRequestData.getConsentId())
+                .initiation(FRWriteDomesticVRPDataInitiationConverter.toFRWriteDomesticVRPDataInitiation(obDomesticVRPRequestData.getInitiation()))
                 .psuAuthenticationMethod(obDomesticVRPRequestData.getPsUAuthenticationMethod())
                 .instruction(toFRDomesticVRPInstruction(obDomesticVRPRequestData.getInstruction()))
                 .build();
@@ -76,16 +97,18 @@ public class FRDomesticVRPConverters {
         return frInstruction;
     }
 
-
-
-    public static FRWriteDomesticVRPDataInitiation toFRDomesticVRPInitiation(OBDomesticVRPInitiation initiation) {
-        FRWriteDomesticVRPDataInitiation frInitiation = FRWriteDomesticVRPDataInitiation.builder()
-                .creditorAccount(toFRAccountIdentifier(initiation.getCreditorAccount()))
-                .debtorAccount(toFRAccountIdentifier(initiation.getDebtorAccount()))
-                .creditorAgent(toFRFinancialAgent(initiation.getCreditorAgent()))
-                .remittanceInformation(FRRemittanceInformationConverter.toFRRemittanceInformation(initiation.getRemittanceInformation()))
+    public static FRDomesticVRPInstruction toFRDomesticVRPInstruction(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPInstruction instruction) {
+        FRDomesticVRPInstruction frInstruction = FRDomesticVRPInstruction.builder()
+                .creditorAccount(toFRAccountIdentifier(instruction.getCreditorAccount()))
+                .instructionIdentification(instruction.getInstructionIdentification())
+                .endToEndIdentification(instruction.getEndToEndIdentification())
+                .creditorPostalAddress(toFRPostalAddress(instruction.getCreditorPostalAddress()))
+                .instructedAmount(toFRAmount(instruction.getInstructedAmount()))
+                .localInstrument(instruction.getLocalInstrument())
+                .remittanceInformation(FRRemittanceInformationConverter.toFRRemittanceInformation(instruction.getRemittanceInformation()))
+                .supplementaryData(FRPaymentSupplementaryDataConverter.toFRSupplementaryData(instruction.getSupplementaryData()))
                 .build();
-        return frInitiation;
+        return frInstruction;
     }
 
     public static FRPostalAddress toFRPostalAddress(uk.org.openbanking.datamodel.vrp.OBPostalAddress6 obPostalAddress6) {
@@ -113,11 +136,24 @@ public class FRDomesticVRPConverters {
                 .risk(toOBRisk1(frDomesticVRPRequest.getRisk()));
     }
 
+    public static uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest toOBDomesticVRPRequestv3_1_10(FRDomesticVRPRequest frDomesticVRPRequest){
+        return frDomesticVRPRequest == null ? null : new uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest()
+                .data(toOBDomesticVRPRequestDatav3_1_10(frDomesticVRPRequest.getData()))
+                .risk(toOBRisk1(frDomesticVRPRequest.getRisk()));
+    }
+
     public static OBDomesticVRPRequestData toOBDomesticVRPRequestData(FRDomesticVRPRequestData data){
         return data == null ? null : new OBDomesticVRPRequestData()
                 .consentId(data.getConsentId())
                 .initiation(toOBDomesticVRPInitiation(data.getInitiation()))
                 .instruction(toOBDomesticVRPInstruction(data.getInstruction()));
+    }
+
+    public static uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequestData toOBDomesticVRPRequestDatav3_1_10(FRDomesticVRPRequestData data){
+        return data == null ? null : new uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequestData()
+                .consentId(data.getConsentId())
+                .initiation(toOBDomesticVRPInitiationv3_1_10(data.getInitiation()))
+                .instruction(toOBDomesticVRPInstructionv3_1_10(data.getInstruction()));
     }
 
     public static OBDomesticVRPInitiation toOBDomesticVRPInitiation(FRWriteDomesticVRPDataInitiation initiation){
@@ -137,6 +173,19 @@ public class FRDomesticVRPConverters {
                 .localInstrument(instruction.getLocalInstrument())
                 .creditorAccount(toOBCashAccountCreditor3(instruction.getCreditorAccount()))
                 .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(instruction.getCreditorAgent()))
+                .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(instruction.getInstructedAmount()))
+                .remittanceInformation(toOBVRPRemittanceInformation(instruction.getRemittanceInformation()))
+                .supplementaryData(toOBSupplementaryData1(instruction.getSupplementaryData()));
+    }
+
+    public static uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPInstruction toOBDomesticVRPInstructionv3_1_10(FRDomesticVRPInstruction instruction){
+        return instruction == null ? null : new uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPInstruction()
+                .endToEndIdentification(instruction.getEndToEndIdentification())
+                .instructionIdentification(instruction.getInstructionIdentification())
+                .localInstrument(instruction.getLocalInstrument())
+                .creditorAccount(toOBCashAccountCreditor3(instruction.getCreditorAccount()))
+                // TODO support mapping old data
+                .creditorPostalAddress(toOBPostalAddress6(instruction.getCreditorPostalAddress()))
                 .instructedAmount(toOBActiveOrHistoricCurrencyAndAmount(instruction.getInstructedAmount()))
                 .remittanceInformation(toOBVRPRemittanceInformation(instruction.getRemittanceInformation()))
                 .supplementaryData(toOBSupplementaryData1(instruction.getSupplementaryData()));

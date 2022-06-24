@@ -18,7 +18,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_8.vrp;
+package com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_10.vrp;
 
 import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.DomesticVRPConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.FRDomesticVrpPaymentSubmissionRepository;
@@ -29,6 +29,7 @@ import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPRequest;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVrpPaymentSubmission;
+import com.forgerock.openbanking.common.services.openbanking.IdempotencyService;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import com.forgerock.openbanking.model.Tpp;
 import com.forgerock.openbanking.model.error.OBRIErrorResponseCategory;
@@ -41,7 +42,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import uk.org.openbanking.datamodel.account.Meta;
 import uk.org.openbanking.datamodel.discovery.OBDiscoveryAPILinksVrpPayment;
-import uk.org.openbanking.datamodel.vrp.*;
+import uk.org.openbanking.datamodel.vrp.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.vrp.OBChargeBearerType1Code;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetails;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsData;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatus;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataStatusDetail;
+import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseDataCharges;
+import uk.org.openbanking.datamodel.vrp.OBExternalPaymentChargeType1Code;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPResponse;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPResponseData;
 
 import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
@@ -52,10 +63,10 @@ import java.util.UUID;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConverters.toFRDomesticVRPRequest;
-import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConverters.toOBDomesticVRPRequest;
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConverters.toOBDomesticVRPRequestv3_1_10;
 
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2021-11-17T13:54:56.728Z[Europe/London]")
-@Controller("DomesticVrpsApiV3.1.8")
+@Controller("DomesticVrpsApiV3.1.10")
 @Slf4j
 public class DomesticVrpsApiController implements DomesticVrpsApi {
 
@@ -131,8 +142,11 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
 
     @Override
     /**
-     *         @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
+     *             @ApiParam(value = "An Authorisation Token as per https://tools.ietf.org/html/rfc6750", required = true)
      *             @RequestHeader(value = "Authorization", required = true) String authorization,
+     *
+     *             @ApiParam(value = "Every request will be processed only once per x-idempotency-key.  The Idempotency Key will be valid for 24 hours. ", required = true)
+     *             @RequestHeader(value = "x-idempotency-key", required = true) String xIdempotencyKey,
      *
      *             @ApiParam(value = "A detached JWS signature of the body of the payload.", required = true)
      *             @RequestHeader(value = "x-jws-signature", required = true) String xJwsSignature,
@@ -157,8 +171,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
      *             @RequestHeader(value="x-ob-client-id") String clientId,
      */
     public ResponseEntity<OBDomesticVRPResponse> domesticVrpPost(
-            String authorization, String xJwsSignature, OBDomesticVRPRequest obDomesticVRPRequest, String xFapiAuthDate,
-            String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String clientId,
+            String authorization, String xIdempotencyKey, String xJwsSignature, OBDomesticVRPRequest obDomesticVRPRequest,
+            String xFapiAuthDate, String xFapiCustomerIpAddress, String xFapiInteractionId, String xCustomerUserAgent, String clientId,
             HttpServletRequest request, Principal principal
     ) throws OBErrorResponseException {
         log.debug("Received VRP payment submission: '{}'", obDomesticVRPRequest);
@@ -173,13 +187,16 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         FRDomesticVRPRequest frDomesticVRPRequest = toFRDomesticVRPRequest(obDomesticVRPRequest);
 
         final Tpp tpp = tppRepository.findByClientId(clientId);
-        // There is a bug in the OBIE spec for v3.1.8, no x-idempotency-key header is specified for this operation
-        // For consistency with later implementations, we will generate a UUID to use as the idempotencyKey
-        // NOTE: This means that this operation is NOT idempotent, API v3.1.9 and above should be used if idempotency is desired.
-        final String idempotencyKey = UUID.randomUUID().toString();
+        Optional<FRDomesticVrpPaymentSubmission> vrpPaymentSubmissionByIdempotencyKey = paymentSubmissionRepository.findByIdempotencyKeyAndPispId(xIdempotencyKey, tpp.getId());
+        if (vrpPaymentSubmissionByIdempotencyKey.isPresent()) {
+            final FRDomesticVrpPaymentSubmission frDomesticVrpPaymentSubmission = vrpPaymentSubmissionByIdempotencyKey.get();
+            IdempotencyService.validateIdempotencyRequest(xIdempotencyKey, frDomesticVRPRequest, frDomesticVrpPaymentSubmission);
+            log.info("Idempotent request for VRP payment is valid. Returning [201 CREATED] but take no further action.");
+            return createOBDomesticVRPResponse(obDomesticVRPRequest, frDomesticVRPConsent, frDomesticVrpPaymentSubmission);
+        }
 
         FRDomesticVrpPaymentSubmission vrpPaymentSubmission = FRDomesticVrpPaymentSubmission.builder()
-                .idempotencyKey(idempotencyKey)
+                .idempotencyKey(xIdempotencyKey)
                 .pispId(tpp.getId())
                 .domesticVrpPayment(frDomesticVRPRequest)
                 .status(OBDomesticVRPResponseData.StatusEnum.PENDING.name())
@@ -189,14 +206,20 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .build();
         vrpPaymentSubmission = paymentSubmissionRepository.save(vrpPaymentSubmission);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseEntity(obDomesticVRPRequest, vrpPaymentSubmission, frDomesticVRPConsent));
+        return createOBDomesticVRPResponse(obDomesticVRPRequest, frDomesticVRPConsent, vrpPaymentSubmission);
+    }
 
+    private ResponseEntity<OBDomesticVRPResponse> createOBDomesticVRPResponse(OBDomesticVRPRequest obDomesticVRPRequest,
+                                                                              FRDomesticVRPConsent frDomesticVRPConsent,
+                                                                              FRDomesticVrpPaymentSubmission frDomesticVrpPaymentSubmission) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(responseEntity(obDomesticVRPRequest, frDomesticVrpPaymentSubmission, frDomesticVRPConsent));
     }
 
     private OBDomesticVRPResponse responseEntity(
             FRDomesticVrpPaymentSubmission paymentSubmission,
             FRDomesticVRPConsent frDomesticVRPConsent) {
-        OBDomesticVRPRequest obDomesticVRPRequest = toOBDomesticVRPRequest(paymentSubmission.getDomesticVrpPayment());
+        OBDomesticVRPRequest obDomesticVRPRequest = toOBDomesticVRPRequestv3_1_10(paymentSubmission.getDomesticVrpPayment());
         return responseEntity(obDomesticVRPRequest, paymentSubmission, frDomesticVRPConsent);
     }
 
@@ -225,8 +248,9 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             response.getData().refund(obDomesticVRPRequest.getData().getInitiation().getDebtorAccount());
         }
         // just to meet the expected data defined by the spec
-        response.getData().expectedExecutionDateTime(DateTime.now())
-                .expectedSettlementDateTime(DateTime.now())
+        final DateTime creationDateTime = response.getData().getCreationDateTime();
+        response.getData().expectedExecutionDateTime(creationDateTime.plusMinutes(1))
+                .expectedSettlementDateTime(creationDateTime.plusMinutes(5))
                 .charges(List.of(
                         new OBDomesticVRPResponseDataCharges()
                                 .type(OBExternalPaymentChargeType1Code.BALANCETRANSFEROUT)
@@ -242,6 +266,6 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
     }
 
     protected OBDiscoveryAPILinksVrpPayment getVersion(DiscoveryConfigurationProperties.VrpPaymentApis discovery) {
-        return discovery.getV_3_1_8();
+        return discovery.getV_3_1_10();
     }
 }

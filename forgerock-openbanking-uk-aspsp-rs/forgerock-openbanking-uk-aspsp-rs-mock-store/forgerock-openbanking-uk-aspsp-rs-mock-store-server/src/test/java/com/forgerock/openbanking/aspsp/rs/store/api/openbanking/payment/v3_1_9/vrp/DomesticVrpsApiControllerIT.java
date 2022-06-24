@@ -396,7 +396,7 @@ public class DomesticVrpsApiControllerIT {
         assertThat(paymentSubmission.id).isEqualTo(vrpResponse.getData().getDomesticVRPId());
         assertThat(paymentSubmission.domesticVrpPayment.data.consentId).isEqualTo(request.getData().getConsentId());
         assertThat(vrpResponse.getData().getStatus()).isEqualTo(OBDomesticVRPResponseData.StatusEnum.PENDING);
-        assertThat(paymentSubmission.getStatus()).isEqualTo(vrpResponse.getData().getStatus());
+        assertThat(paymentSubmission.getStatus()).isEqualTo(vrpResponse.getData().getStatus().name());
     }
 
     private FRDomesticVRPConsent saveFRConsent(String consentId, FRReadRefundAccount frReadRefundAccount, ConsentStatusCode consentStatusCode) {
@@ -421,7 +421,7 @@ public class DomesticVrpsApiControllerIT {
         FRDomesticVrpPaymentSubmission paymentSubmission = FRDomesticVrpPaymentSubmission.builder()
                 .id(consentId)
                 .domesticVrpPayment(toFRDomesticVRPRequest(request))
-                .status(OBDomesticVRPResponseData.StatusEnum.PENDING)
+                .status(OBDomesticVRPResponseData.StatusEnum.PENDING.name())
                 .created(new Date())
                 .updated(new Date())
                 .obVersion(OBVersion.v3_1_9)

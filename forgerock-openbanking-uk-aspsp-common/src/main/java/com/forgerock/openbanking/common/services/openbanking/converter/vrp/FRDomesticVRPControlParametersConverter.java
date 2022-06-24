@@ -21,15 +21,20 @@
 package com.forgerock.openbanking.common.services.openbanking.converter.vrp;
 
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPControlParameters;
+import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRVRPInteractionTypes;
 import com.forgerock.openbanking.common.services.openbanking.converter.common.FRAmountConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParameters;
+import uk.org.openbanking.datamodel.vrp.OBVRPInteractionTypes;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FRDomesticVRPControlParametersConverter {
 
     public static FRDomesticVRPControlParameters toFRDomesticVRPControlParameters(
             OBDomesticVRPControlParameters controlParameters
-    ){
+    ) {
         return controlParameters == null ? null : FRDomesticVRPControlParameters.builder()
                 .psuAuthenticationMethods(controlParameters.getPsUAuthenticationMethods())
                 .vrpType(controlParameters.getVrPType())
@@ -41,4 +46,27 @@ public class FRDomesticVRPControlParametersConverter {
                 .build();
     }
 
+    public static FRDomesticVRPControlParameters toFRDomesticVRPControlParameters(
+            uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPControlParameters controlParameters
+    ) {
+        return controlParameters == null ? null : FRDomesticVRPControlParameters.builder()
+                .psuAuthenticationMethods(controlParameters.getPsUAuthenticationMethods())
+                .vrpType(controlParameters.getVrPType())
+                .validFromDateTime(controlParameters.getValidFromDateTime())
+                .validToDateTime(controlParameters.getValidToDateTime())
+                .maximumIndividualAmount(FRAmountConverter.toFRAmount(controlParameters.getMaximumIndividualAmount()))
+                .periodicLimits(FRPeriodicLimitsConverter.toFRPeriodicLimits(controlParameters.getPeriodicLimits()))
+                .supplementaryData(FRPaymentSupplementaryDataConverter.toFRSupplementaryData(controlParameters.getSupplementaryData()))
+                .psUInteractionTypes(toFRVRPInteractionTypes(controlParameters.getPsUInteractionTypes()))
+                .build();
+
+    }
+
+    public static List<FRVRPInteractionTypes> toFRVRPInteractionTypes(List<OBVRPInteractionTypes> psUInteractionTypes) {
+        return psUInteractionTypes == null ? null : psUInteractionTypes.stream().map(it -> FRVRPInteractionTypes.fromValue(it.getValue())).collect(Collectors.toList());
+    }
+
+    public static List<OBVRPInteractionTypes> toOBVRPInteractionTypes(List<FRVRPInteractionTypes> interactionTypes) {
+        return interactionTypes == null ? null : interactionTypes.stream().map(it -> OBVRPInteractionTypes.fromValue(it.getValue())).collect(Collectors.toList());
+    }
 }

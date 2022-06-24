@@ -48,6 +48,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBDomesticVRPInitiation;
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBDomesticVRPInitiationv3_1_10;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBRisk1;
 
 @Slf4j
@@ -123,6 +124,16 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         }
     }
 
+    public void checkRequestAndConsentInitiationMatch(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPInitiation requestInitiation,
+                                                      FRDomesticVRPConsent consent)
+            throws OBErrorException {
+        FRWriteDomesticVRPDataInitiation consentFRInitiation = consent.getInitiation();
+        uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPInitiation consentOBInitiation = toOBDomesticVRPInitiationv3_1_10(consentFRInitiation);
+        if (!consentOBInitiation.equals(requestInitiation)) {
+            throw new OBErrorException(OBRIErrorType.REQUEST_VRP_INITIATION_DOESNT_MATCH_CONSENT);
+        }
+    }
+
     // The Risk section must matches the values specified in the consent.
     public void checkRequestAndConsentRiskMatch(OBDomesticVRPRequest request, FRDomesticVRPConsent frConsent)
             throws OBErrorException {
@@ -133,8 +144,28 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         }
     }
 
+    // TODO - Review: v3.1.10 support, required to workaround breaking changes in OB spec
+    public void checkRequestAndConsentRiskMatch(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest request,
+                                                FRDomesticVRPConsent frConsent)
+            throws OBErrorException {
+        OBRisk1 requestRisk = request.getRisk();
+        OBRisk1 consentRisk = toOBRisk1(frConsent.getRisk());
+        if (!requestRisk.equals(consentRisk)) {
+            throw new OBErrorException(OBRIErrorType.REQUEST_VRP_RISK_DOESNT_MATCH_CONSENT);
+        }
+    }
+
     // If the CreditorAccount was not specified in the consent, the CreditorAccount must be specified in the instruction
     public void checkCreditorAccountIsInInstructionIfNotInConsent(OBDomesticVRPRequest vrpRequest,
+                                                                  FRDomesticVRPConsent frConsent) throws OBErrorException {
+        if (frConsent.getVrpDetails().getData().getInitiation().getCreditorAccount() == null) {
+            if (vrpRequest.getData().getInstruction().getCreditorAccount() == null) {
+                throw new OBErrorException(OBRIErrorType.REQUEST_VRP_CREDITOR_ACCOUNT_NOT_SPECIFIED);
+            }
+        }
+    }
+
+    public void checkCreditorAccountIsInInstructionIfNotInConsent(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest vrpRequest,
                                                                   FRDomesticVRPConsent frConsent) throws OBErrorException {
         if (frConsent.getVrpDetails().getData().getInitiation().getCreditorAccount() == null) {
             if (vrpRequest.getData().getInstruction().getCreditorAccount() == null) {
@@ -160,12 +191,29 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         }
     }
 
-    private void validateMaximumIndividualAmount(
-            OBDomesticVRPRequest vrpRequest, FRDomesticVRPConsent frConsent
-    ) throws OBErrorException {
+    public void checkControlParameters(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest vrpRequest,
+                                       FRDomesticVRPConsent frConsent, String xVrpLimitBreachResponseSimulation) throws OBErrorException {
+        // TODO Shall we validate the instructed amount against the control parameter periodic limits?
+        validateMaximumIndividualAmount(vrpRequest, frConsent);
+        if (xVrpLimitBreachResponseSimulation != null) {
+            periodicLimitBreachResponseSimulator.processRequest(xVrpLimitBreachResponseSimulation, consent);
+        }
+    }
+
+    private void validateMaximumIndividualAmount(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest vrpRequest,
+                                                 FRDomesticVRPConsent frConsent) throws OBErrorException {
+        Double requestAmount = Double.valueOf(vrpRequest.getData().getInstruction().getInstructedAmount().getAmount());
+        validateMaximumIndividualAmount(frConsent, requestAmount);
+    }
+
+    private void validateMaximumIndividualAmount(OBDomesticVRPRequest vrpRequest, FRDomesticVRPConsent frConsent) throws OBErrorException {
+        Double requestAmount = Double.valueOf(vrpRequest.getData().getInstruction().getInstructedAmount().getAmount());
+        validateMaximumIndividualAmount(frConsent, requestAmount);
+    }
+
+    private void validateMaximumIndividualAmount(FRDomesticVRPConsent frConsent, Double requestAmount) throws OBErrorException {
         FRDomesticVRPControlParameters controlParameters = frConsent.getVrpDetails().getData().getControlParameters();
         Double consentAmount = Double.valueOf(controlParameters.getMaximumIndividualAmount().getAmount());
-        Double requestAmount = Double.valueOf(vrpRequest.getData().getInstruction().getInstructedAmount().getAmount());
         if(requestAmount.compareTo(consentAmount) > 0){
             throw new OBErrorException(
                     OBRIErrorType.REQUEST_VRP_CONTROL_PARAMETERS_RULES,

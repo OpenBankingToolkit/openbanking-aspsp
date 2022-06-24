@@ -103,8 +103,8 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
         log.debug("Found VRP payment '{}'", domesticVRPId);
         // Build the response object with data just to meet the expected data defined by the spec
         FRDomesticVrpPaymentSubmission paymentSubmission = optionalVrpPayment.get();
-        OBDomesticVRPDetailsDataPaymentStatus.StatusEnum status = OBDomesticVRPDetailsDataPaymentStatus.StatusEnum.fromValue(
-                paymentSubmission.getStatus().getValue()
+        OBDomesticVRPDetailsDataPaymentStatus.StatusEnum status = OBDomesticVRPDetailsDataPaymentStatus.StatusEnum.valueOf(
+                paymentSubmission.getStatus()
         );
 
         OBDomesticVRPDetailsDataStatusDetail.StatusReasonEnum statusReasonEnum = OBDomesticVRPDetailsDataStatusDetail.StatusReasonEnum.PENDINGSETTLEMENT;
@@ -189,7 +189,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                 .idempotencyKey(xIdempotencyKey)
                 .pispId(tpp.getId())
                 .domesticVrpPayment(frDomesticVRPRequest)
-                .status(OBDomesticVRPResponseData.StatusEnum.PENDING)
+                .status(OBDomesticVRPResponseData.StatusEnum.PENDING.name())
                 .created(new Date())
                 .updated(new Date())
                 .obVersion(VersionPathExtractor.getVersionFromPath(request))
@@ -222,7 +222,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
                         new OBDomesticVRPResponseData()
                                 .consentId(frDomesticVRPConsent.getId())
                                 .domesticVRPId(paymentSubmission.getId())
-                                .status(paymentSubmission.getStatus())
+                                .status(OBDomesticVRPResponseData.StatusEnum.valueOf(paymentSubmission.getStatus()))
                                 .creationDateTime(new DateTime(paymentSubmission.getCreated()))
                                 .debtorAccount(obDomesticVRPRequest.getData().getInitiation().getDebtorAccount())
                                 .initiation(obDomesticVRPRequest.getData().getInitiation())
