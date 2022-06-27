@@ -228,7 +228,11 @@ public class FRDomesticVRPConsentConverter {
                 .deliveryAddress(toOBRisk1DeliveryAddress(frPaymentRisk.getDeliveryAddress()))
                 .merchantCategoryCode(frPaymentRisk.getMerchantCategoryCode())
                 .merchantCustomerIdentification(frPaymentRisk.getMerchantCustomerIdentification())
-                .paymentContextCode(toOBExternalPaymentContext1Code(frPaymentRisk.getPaymentContextCode()));
+                .paymentContextCode(toOBExternalPaymentContext1Code(frPaymentRisk.getPaymentContextCode()))
+                .paymentPurposeCode(frPaymentRisk.getPaymentPurposeCode())
+                .beneficiaryPrepopulatedIndicator(frPaymentRisk.getBeneficiaryPrepopulatedIndicator())
+                .contractPresentInidicator(frPaymentRisk.getContractPresentIndicator())
+                .beneficiaryAccountType(toOBExternalExtendedAccountType1Code(frPaymentRisk.getBeneficiaryAccountType()));
     }
 
     // FR to OB response

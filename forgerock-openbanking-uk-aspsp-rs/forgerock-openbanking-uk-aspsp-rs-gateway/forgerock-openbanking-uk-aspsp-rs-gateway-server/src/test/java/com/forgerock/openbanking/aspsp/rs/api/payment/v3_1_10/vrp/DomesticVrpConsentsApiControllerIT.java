@@ -22,7 +22,6 @@ package com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_10.vrp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.am.services.AMResourceServerService;
-import com.forgerock.openbanking.aspsp.rs.api.payment.v3_1_10.vrp.DomesticVrpConsentsApiController;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
@@ -132,6 +131,7 @@ public class DomesticVrpConsentsApiControllerIT {
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response.getBody()).isEqualTo(rsStoreResponse);
+        assertThat(response.getBody().getRisk()).isEqualTo(request.getRisk());
     }
 
     @Test

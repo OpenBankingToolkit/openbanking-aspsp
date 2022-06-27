@@ -24,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.DomesticVRPConsentRepository;
 import com.forgerock.openbanking.aspsp.rs.store.repository.vrp.FRDomesticVrpPaymentSubmissionRepository;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
-import com.forgerock.openbanking.common.model.openbanking.IntentType;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRExternalPaymentContextCode;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRReadRefundAccount;
 import com.forgerock.openbanking.common.model.openbanking.persistence.payment.ConsentStatusCode;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
@@ -57,9 +57,9 @@ import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.vrp.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetails;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPDetailsDataPaymentStatus;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponse;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPResponseData;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPResponse;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPResponseData;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -73,14 +73,15 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAccountIdentifierTestDataFactory.aValidFRAccountIdentifier;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toFRDomesticVRPConsentDetails;
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConsentConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConverters.toFRDomesticVRPRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest;
-import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPRequestTestDataFactory.aValidOBDomesticVRPRequest;
+import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentRequestTestDataFactory3_1_10.aValidOBDomesticVRPConsentRequest;
+import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPRequestTestDataFactory3_1_10.aValidOBDomesticVRPRequest;
 
 /**
  * Integration test for {@link DomesticVrpsApiController}
@@ -121,11 +122,9 @@ public class DomesticVrpsApiControllerIT {
         setupMockTpp(tppRepository);
 
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        OBDomesticVRPRequest request = aValidOBDomesticVRPRequest();
-        FRDomesticVRPConsent consent = saveFRConsent(
-                request.getData().getConsentId(),
-                FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED
-        );
+
+        FRDomesticVRPConsent consent = saveFRConsent(FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED);
+        OBDomesticVRPRequest request = createOBDomesticVRPRequest(consent);
         // When
         HttpResponse<OBDomesticVRPResponse> response = postVrpRequest(request, UUID.randomUUID().toString());
 
@@ -134,14 +133,21 @@ public class DomesticVrpsApiControllerIT {
         validateSuccessVRPPaymentResponse(request, response);
     }
 
+    private OBDomesticVRPRequest createOBDomesticVRPRequest(FRDomesticVRPConsent consent) {
+        OBDomesticVRPRequest request = aValidOBDomesticVRPRequest();
+        request.setRisk(toOBRisk1(consent.getRisk()));
+        request.getData().setConsentId(consent.getId());
+        return request;
+    }
+
     @Test
     public void createMultiplePaymentsForConsent() {
         // Given
         setupMockTpp(tppRepository);
 
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        OBDomesticVRPRequest request = aValidOBDomesticVRPRequest();
-        saveFRConsent(request.getData().getConsentId(), FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED);
+        FRDomesticVRPConsent consent = saveFRConsent(FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED);
+        OBDomesticVRPRequest request = createOBDomesticVRPRequest(consent);
 
         // When
         int numPayments = 10;
@@ -161,11 +167,8 @@ public class DomesticVrpsApiControllerIT {
     public void testSubmittingSameVrpPaymentTwiceIsIdempotent() {
         setupMockTpp(tppRepository);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        OBDomesticVRPRequest request = aValidOBDomesticVRPRequest();
-        FRDomesticVRPConsent consent = saveFRConsent(
-                request.getData().getConsentId(),
-                FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED
-        );
+        FRDomesticVRPConsent consent = saveFRConsent(FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED);
+        OBDomesticVRPRequest request = createOBDomesticVRPRequest(consent);
 
         final String idempotencyKey = UUID.randomUUID().toString();
         final HttpResponse<OBDomesticVRPResponse> initialResponse = postVrpRequest(request, idempotencyKey);
@@ -185,20 +188,15 @@ public class DomesticVrpsApiControllerIT {
         setupMockTpp(tppRepository);
 
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
-        OBDomesticVRPRequest request = aValidOBDomesticVRPRequest();
-        final String consentId = request.getData().getConsentId();
-        FRDomesticVRPConsent consent = saveFRConsent(
-                consentId,
-                FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED
-        );
+        FRDomesticVRPConsent consent = saveFRConsent(FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED);
+        OBDomesticVRPRequest request = createOBDomesticVRPRequest(consent);
         // When
         final String idempotencyKey = UUID.randomUUID().toString();
         HttpResponse<OBDomesticVRPResponse> response = postVrpRequest(request, idempotencyKey);
         validateSuccessVRPPaymentResponse(request, response);
 
         // Create a new request, using the same consentId
-        OBDomesticVRPRequest differentRequest = aValidOBDomesticVRPRequest();
-        differentRequest.getData().setConsentId(consentId);
+        OBDomesticVRPRequest differentRequest = createOBDomesticVRPRequest(consent);
         differentRequest.getData().getInstruction().setInstructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("12.34").currency("GBP"));
 
         // Post with same idempotencyKey
@@ -244,14 +242,10 @@ public class DomesticVrpsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
 
-        FRDomesticVRPConsent consent = saveFRConsent(
-                IntentType.DOMESTIC_VRP_PAYMENT_CONSENT.generateIntentId(),
-                FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED
-        );
+        FRDomesticVRPConsent consent = saveFRConsent(FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED);
+        createOBDomesticVRPRequest(consent);
 
-        FRDomesticVrpPaymentSubmission paymentSubmission = savePaymentSubmission(
-                consent.getId()
-        );
+        FRDomesticVrpPaymentSubmission paymentSubmission = savePaymentSubmission(consent);
 
         // When
         HttpResponse<OBDomesticVRPResponse> response = Unirest.get(RS_STORE_URL + port + CONTEXT_PATH + paymentSubmission.getId())
@@ -298,9 +292,15 @@ public class DomesticVrpsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         OBDomesticVRPRequest request = aValidOBDomesticVRPRequest();
-        FRDomesticVrpPaymentSubmission paymentSubmission = savePaymentSubmission(
-                request.getData().getConsentId()
-        );
+        FRDomesticVrpPaymentSubmission paymentSubmission = FRDomesticVrpPaymentSubmission.builder()
+                .id(request.getData().getConsentId())
+                .domesticVrpPayment(toFRDomesticVRPRequest(request))
+                .status(OBDomesticVRPResponseData.StatusEnum.PENDING.name())
+                .created(new Date())
+                .updated(new Date())
+                .obVersion(OBVersion.v3_1_10)
+                .build();
+        paymentSubmissionRepository.save(paymentSubmission);
 
         // When
         HttpResponse<ResponseEntity> response = Unirest.get(RS_STORE_URL + port + CONTEXT_PATH + paymentSubmission.getId())
@@ -324,9 +324,8 @@ public class DomesticVrpsApiControllerIT {
         // Given
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
 
-        FRDomesticVrpPaymentSubmission paymentSubmission = savePaymentSubmission(
-                IntentType.DOMESTIC_VRP_PAYMENT_CONSENT.generateIntentId()
-        );
+        FRDomesticVRPConsent consent = saveFRConsent(FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED);
+        FRDomesticVrpPaymentSubmission paymentSubmission = savePaymentSubmission(consent);
 
         // When
         HttpResponse<OBDomesticVRPDetails> response = Unirest.get(
@@ -402,29 +401,34 @@ public class DomesticVrpsApiControllerIT {
         assertThat(paymentSubmission.domesticVrpPayment.data.consentId).isEqualTo(request.getData().getConsentId());
         assertThat(vrpResponse.getData().getStatus()).isEqualTo(OBDomesticVRPResponseData.StatusEnum.PENDING);
         assertThat(paymentSubmission.getStatus()).isEqualTo(vrpResponse.getData().getStatus().name());
+        assertThat(vrpResponse.getRisk()).isEqualTo(request.getRisk());
+        assertThat(vrpResponse.getData().getInstruction()).isEqualTo(request.getData().getInstruction());
+        assertThat(vrpResponse.getData().getInitiation()).isEqualTo(request.getData().getInitiation());
     }
 
-    private FRDomesticVRPConsent saveFRConsent(String consentId, FRReadRefundAccount frReadRefundAccount, ConsentStatusCode consentStatusCode) {
+    private FRDomesticVRPConsent saveFRConsent(FRReadRefundAccount frReadRefundAccount, ConsentStatusCode consentStatusCode) {
         FRDomesticVRPConsentDetails details = toFRDomesticVRPConsentDetails(aValidOBDomesticVRPConsentRequest());
         FRDomesticVRPConsent consent = JMockData.mock(FRDomesticVRPConsent.class);
         consent.setVrpDetails(details);
         consent.getVrpDetails().getData().setReadRefundAccount(frReadRefundAccount);
         consent.getVrpDetails().getData().getInitiation().setDebtorAccount(aValidFRAccountIdentifier());
-        consent.setId(consentId);
         consent.setIdempotencyKey(UUID.randomUUID().toString());
         consent.setStatus(consentStatusCode);
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
+        consent.getRisk().setPaymentContextCode(FRExternalPaymentContextCode.BILLPAYMENT);
+        consent.getRisk().setBeneficiaryPrepopulatedIndicator(false);
+        consent.getRisk().setContractPresentIndicator(false);
+        consent.getRisk().setPaymentPurposeCode("ABCD");
         consent.setObVersion(OBVersion.v3_1_10);
         consentRepository.save(consent);
         return consent;
     }
 
-    private FRDomesticVrpPaymentSubmission savePaymentSubmission(String consentId) {
-        OBDomesticVRPRequest request = aValidOBDomesticVRPRequest();
-        request.getData().setConsentId(consentId);
+    private FRDomesticVrpPaymentSubmission savePaymentSubmission(FRDomesticVRPConsent consent) {
+        OBDomesticVRPRequest request = createOBDomesticVRPRequest(consent);
         FRDomesticVrpPaymentSubmission paymentSubmission = FRDomesticVrpPaymentSubmission.builder()
-                .id(consentId)
+                .id(consent.getId())
                 .domesticVrpPayment(toFRDomesticVRPRequest(request))
                 .status(OBDomesticVRPResponseData.StatusEnum.PENDING.name())
                 .created(new Date())

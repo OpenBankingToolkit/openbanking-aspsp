@@ -63,6 +63,7 @@ import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsuppo
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRAmountTestDataFactory.aValidFRAmount;
 import static com.forgerock.openbanking.aspsp.rs.store.api.openbanking.testsupport.domain.FRRiskTestDataFactory.aValidFRRisk;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toFRRisk;
+import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.toOBRisk1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toFRWriteDomesticDataInitiation;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRWriteDomesticConsentConverter.toOBWriteDomestic2DataInitiation;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -157,6 +158,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         assertThat(response.getBody().getData().getConsentId()).isEqualTo(consent.getId());
         assertThat(toFRWriteDomesticDataInitiation(response.getBody().getData().getInitiation())).isEqualTo(consent.getInitiation());
         assertThat(response.getBody().getData().getStatus().getValue()).isEqualTo(consent.getStatus().toOBExternalConsentStatus2Code().toString());
+        assertThat(response.getBody().getRisk()).isEqualTo(toOBRisk1(consent.getRisk()));
 
     }
 
