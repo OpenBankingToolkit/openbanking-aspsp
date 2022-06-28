@@ -69,7 +69,7 @@ import static com.forgerock.openbanking.common.services.openbanking.converter.pa
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4;
+import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4_3_1_10;
 
 /**
  * Integration test for {@link com.forgerock.openbanking.aspsp.rs.store.api.openbanking.payment.v3_1_10.domesticpayments.DomesticPaymentConsentsApiController}.
@@ -119,7 +119,7 @@ public class DomesticPaymentConsentsApiControllerIT {
                 .header(OBHeaders.X_JWS_SIGNATURE, "x-jws-signature")
                 .header("x-ob-client-id", MOCK_CLIENT_ID)
                 .header(OBHeaders.CONTENT_TYPE, "application/json; charset=utf-8")
-                .body(aValidOBWriteDomesticConsent4())
+                .body(aValidOBWriteDomesticConsent4_3_1_10())
                 .asObject(OBWriteDomesticConsentResponse5.class);
 
         // Then
