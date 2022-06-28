@@ -125,6 +125,7 @@ public class DomesticVrpsApiControllerIT {
 
         FRDomesticVRPConsent consent = saveFRConsent(FRReadRefundAccount.YES, ConsentStatusCode.AUTHORISED);
         OBDomesticVRPRequest request = createOBDomesticVRPRequest(consent);
+        request.getData().setPsUAuthenticationMethod("UK.OBIE.SCANotRequired");
         // When
         HttpResponse<OBDomesticVRPResponse> response = postVrpRequest(request, UUID.randomUUID().toString());
 
@@ -404,6 +405,7 @@ public class DomesticVrpsApiControllerIT {
         assertThat(vrpResponse.getRisk()).isEqualTo(request.getRisk());
         assertThat(vrpResponse.getData().getInstruction()).isEqualTo(request.getData().getInstruction());
         assertThat(vrpResponse.getData().getInitiation()).isEqualTo(request.getData().getInitiation());
+        assertThat(paymentSubmission.getDomesticVrpPayment().getData().getPsuAuthenticationMethod()).isEqualTo(request.getData().getPsUAuthenticationMethod());
     }
 
     private FRDomesticVRPConsent saveFRConsent(FRReadRefundAccount frReadRefundAccount, ConsentStatusCode consentStatusCode) {
