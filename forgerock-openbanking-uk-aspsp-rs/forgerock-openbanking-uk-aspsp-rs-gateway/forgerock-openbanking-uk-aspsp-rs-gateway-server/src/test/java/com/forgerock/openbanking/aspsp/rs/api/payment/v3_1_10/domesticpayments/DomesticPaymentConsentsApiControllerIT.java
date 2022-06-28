@@ -63,7 +63,7 @@ import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4;
+import static uk.org.openbanking.testsupport.payment.OBWriteDomesticConsentTestDataFactory.aValidOBWriteDomesticConsent4_3_1_10;
 
 /**
  * Integration test for {@link DomesticPaymentConsentsApiController}.
@@ -110,7 +110,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
         given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
-        OBWriteDomesticConsent4 request = aValidOBWriteDomesticConsent4();
+        OBWriteDomesticConsent4 request = aValidOBWriteDomesticConsent4_3_1_10();
         OBWriteDomesticConsentResponse5 rsStoreResponse = aValidOBWriteDomesticConsentResponse5(request);
         given(rsStoreGateway.toRsStore(any(), any(), any(), any(), any())).willReturn(ResponseEntity.status(HttpStatus.CREATED).body(rsStoreResponse));
         Tpp tpp = new Tpp();

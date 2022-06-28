@@ -80,7 +80,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.org.openbanking.testsupport.payment.OBRisk1TestDataFactory.aValidOBRisk1;
-import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest;
+import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentRequestTestDataFactory3_1_10.aValidOBDomesticVRPConsentRequest;
 import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPRequestTestDataFactory3_1_10.aValidOBDomesticVRPRequest;
 
 

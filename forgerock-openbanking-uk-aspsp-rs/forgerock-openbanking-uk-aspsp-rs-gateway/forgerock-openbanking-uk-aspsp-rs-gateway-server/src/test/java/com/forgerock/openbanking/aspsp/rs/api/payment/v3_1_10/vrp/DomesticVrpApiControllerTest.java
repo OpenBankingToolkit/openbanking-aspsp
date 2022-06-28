@@ -50,7 +50,7 @@ import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.org.openbanking.testsupport.payment.OBRisk1TestDataFactory.aValidOBRisk1;
+import static uk.org.openbanking.testsupport.payment.OBRisk1TestDataFactory.aValidOBRisk1_3_1_10;
 
 /**
  * Integration test for {@link DomesticVrpConsentsApiController}
@@ -130,7 +130,7 @@ public class DomesticVrpApiControllerTest {
     private OBDomesticVRPResponse aValidOBDomesticVRPResponse(OBDomesticVRPRequest request) {
         return (new OBDomesticVRPResponse())
                 .data(OBDomesticVRPResponseTestDataFactory3_1_10.aValidOBDomesticVRPResponseData(request))
-                .risk(aValidOBRisk1())
+                .risk(aValidOBRisk1_3_1_10())
                 .links(new Links().self(HOST + PORT + VRP_CONTXT_PATH));
     }
 }

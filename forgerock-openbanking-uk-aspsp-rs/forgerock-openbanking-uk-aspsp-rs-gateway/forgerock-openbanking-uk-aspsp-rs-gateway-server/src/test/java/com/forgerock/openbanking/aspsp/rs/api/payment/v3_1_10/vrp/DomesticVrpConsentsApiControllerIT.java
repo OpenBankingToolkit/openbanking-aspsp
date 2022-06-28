@@ -50,12 +50,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.vrp.Links;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequest;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentRequestData;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponse;
-import uk.org.openbanking.datamodel.vrp.OBDomesticVRPConsentResponseData;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentRequestData;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponse;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponseData;
 import uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBVRPFundsConfirmationRequest;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponseData;
 
@@ -67,8 +67,8 @@ import static com.forgerock.openbanking.integration.test.support.JWT.jws;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentRequestTestDataFactory.aValidOBDomesticVRPConsentRequest;
-import static uk.org.openbanking.testsupport.vrp.OBVRPFundsConfirmationRequestTestDataFactory.aValidOBVRPFundsConfirmationRequest;
+import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentRequestTestDataFactory3_1_10.aValidOBDomesticVRPConsentRequest;
+import static uk.org.openbanking.testsupport.vrp.OBVRPFundsConfirmationRequestTestDataFactory3_1_10.aValidOBVRPFundsConfirmationRequest;
 
 /**
  * Integration test for {@link DomesticVrpConsentsApiController}

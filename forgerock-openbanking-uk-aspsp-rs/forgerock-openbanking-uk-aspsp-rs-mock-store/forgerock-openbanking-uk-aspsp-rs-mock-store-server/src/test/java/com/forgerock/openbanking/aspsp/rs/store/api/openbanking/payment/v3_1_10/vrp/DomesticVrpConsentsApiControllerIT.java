@@ -57,8 +57,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequest;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationRequestData;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBVRPFundsConfirmationRequest;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBVRPFundsConfirmationRequestData;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
 import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponseData;
 
@@ -79,7 +79,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static uk.org.openbanking.testsupport.vrp.OBDomesticVRPConsentRequestTestDataFactory3_1_10.aValidOBDomesticVRPConsentRequest;
-import static uk.org.openbanking.testsupport.vrp.OBVRPFundsConfirmationRequestTestDataFactory.aValidOBVRPFundsConfirmationRequest;
+import static uk.org.openbanking.testsupport.vrp.OBVRPFundsConfirmationRequestTestDataFactory3_1_10.aValidOBVRPFundsConfirmationRequest;
 
 /**
  * Integration test for {@link DomesticVrpConsentsApiController}.
