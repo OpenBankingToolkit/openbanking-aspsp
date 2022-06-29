@@ -30,6 +30,7 @@ import uk.org.openbanking.datamodel.vrp.OBDomesticVRPControlParametersPeriodicLi
 import uk.org.openbanking.datamodel.vrp.namespace.OBVRPConsentType;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPControlParameters;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBVRPFundsConfirmationRequest;
 
 import java.math.BigDecimal;
@@ -55,7 +56,7 @@ public class DefaultVrpExtensionValidator implements VrpExtensionValidator {
     }
 
     @Override
-    public void validatePaymentRequest(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest request) throws OBErrorException {
+    public void validatePaymentRequest(OBDomesticVRPRequest request) throws OBErrorException {
         checkMaximum2DecimalPlaces("InstructedAmount", request.getData().getInstruction().getInstructedAmount().getAmount());
     }
 
@@ -66,11 +67,13 @@ public class DefaultVrpExtensionValidator implements VrpExtensionValidator {
     }
 
     @Override
-    public void validateFundsConfirmationRequest(OBVRPFundsConfirmationRequest fundsConfirmationRequest) throws OBErrorException {
+    public void validateFundsConfirmationRequest(OBVRPFundsConfirmationRequest fundsConfirmationRequest)
+            throws OBErrorException {
         checkMaximum2DecimalPlaces("InstructedAmount", fundsConfirmationRequest.getData().getInstructedAmount().getAmount());
     }
 
-    private void validateMaximumIndividualAmount(OBActiveOrHistoricCurrencyAndAmount maximumIndividualAmount) throws OBErrorException {
+    private void validateMaximumIndividualAmount(OBActiveOrHistoricCurrencyAndAmount maximumIndividualAmount)
+            throws OBErrorException {
         checkMaximum2DecimalPlaces("MaximumIndividualAmount", maximumIndividualAmount.getAmount());
         final BigDecimal minimumAmount = BigDecimal.ONE;
         if (new BigDecimal(maximumIndividualAmount.getAmount()).compareTo(minimumAmount) < 0) {
@@ -108,14 +111,16 @@ public class DefaultVrpExtensionValidator implements VrpExtensionValidator {
         }
     }
 
-    private void validatePeriodicLimits(List<OBDomesticVRPControlParametersPeriodicLimits> periodicLimits) throws OBErrorException {
+    private void validatePeriodicLimits(List<OBDomesticVRPControlParametersPeriodicLimits> periodicLimits)
+            throws OBErrorException {
         for (OBDomesticVRPControlParametersPeriodicLimits periodicLimit : periodicLimits) {
             checkMaximum2DecimalPlaces("PeriodicLimits.Amount", periodicLimit.getAmount());
         }
     }
 
     private void validatePaymentContextCodes(OBDomesticVRPConsentRequest consentRequest) throws OBErrorException {
-        if (consentRequest.getRisk().getPaymentContextCode() == null || !validPaymentContextCodes.contains(consentRequest.getRisk().getPaymentContextCode())) {
+        if (consentRequest.getRisk().getPaymentContextCode() == null ||
+                !validPaymentContextCodes.contains(consentRequest.getRisk().getPaymentContextCode())) {
             throw new OBErrorException(OBRIErrorType.REQUEST_VRP_RISK_PAYMENT_CONTEXT_CODE_INVALID);
         }
     }
