@@ -21,10 +21,10 @@
 package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
+import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.VrpExtensionValidator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRWriteDomesticVRPDataInitiation;
-import com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConverters;
 import com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRWriteDomesticVRPDataInitiationConverter;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
@@ -56,11 +56,19 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
     @Mock
     OBRisk1Validator riskValidator;
 
+    @Mock
+    VrpExtensionValidator vrpExtensionValidator;
+
+    private DomesticVrpPaymentsEndpointWrapper createWrapper() {
+        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper =
+                new DomesticVrpPaymentsEndpointWrapper(endpointWrapperService, tppStoreService, riskValidator, vrpExtensionValidator);
+        return domesticVrpPaymentsEndpointWrapper;
+    }
+
     @Test
     public void success_validateRisk() throws OBErrorException {
         // Given
-        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper =
-                new DomesticVrpPaymentsEndpointWrapper(endpointWrapperService, tppStoreService, riskValidator);
+        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper = createWrapper();
         OBDomesticVRPRequest vrpRequest = OBDomesticVRPRequestTestDataFactory.aValidOBDomesticVRPRequest();
         FRDomesticVRPConsent vrpConsent = FRVrpTestDataFactory.aValidFRDomesticVRPConsent();
         vrpRequest.setRisk(toOBRisk1(vrpConsent.getRisk()));
@@ -72,11 +80,11 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
         // If no exception then we're good
     }
 
+
     @Test
     public void fail_validateRisk() throws OBErrorException {
         // Given
-        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper =
-                new DomesticVrpPaymentsEndpointWrapper(endpointWrapperService, tppStoreService, riskValidator);
+        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper = createWrapper();
         OBDomesticVRPRequest vrpRequest = OBDomesticVRPRequestTestDataFactory.aValidOBDomesticVRPRequest();
         FRDomesticVRPConsent vrpConsent = FRVrpTestDataFactory.aValidFRDomesticVRPConsent();
         vrpRequest.setRisk(toOBRisk1(vrpConsent.getRisk()));
@@ -95,8 +103,7 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
     @Test
     public void success_checkRequestAndConsentInitiationMatch() throws OBErrorException {
         // Given
-        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper =
-                new DomesticVrpPaymentsEndpointWrapper(endpointWrapperService, tppStoreService, riskValidator);
+        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper = createWrapper();
         OBDomesticVRPInitiation requestInitiation = OBDomesticVRPCommonTestDataFactory.aValidOBDomesticVRPInitiation();
         FRDomesticVRPConsent frConsent = FRVrpTestDataFactory.aValidFRDomesticVRPConsent();
         FRWriteDomesticVRPDataInitiation matchingInitiation = FRWriteDomesticVRPDataInitiationConverter.toFRWriteDomesticVRPDataInitiation(requestInitiation);
@@ -112,9 +119,7 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
     @Test
     public void fail_checkRequestAndConsentInitiationMatch() throws OBErrorException {
         // Given
-        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper =
-                new DomesticVrpPaymentsEndpointWrapper(endpointWrapperService, tppStoreService,
-                        riskValidator);
+        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper = createWrapper();
           // Create the request data
         OBDomesticVRPInitiation requestInitiation = OBDomesticVRPCommonTestDataFactory.aValidOBDomesticVRPInitiation();
           // Create an FR Consent with slightly differing initiation data
@@ -140,9 +145,7 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
     @Test
     public void success_checkCreditorAccountIsInInstructionIfNotInConsent() throws OBErrorException {
         // Given
-        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper =
-                new DomesticVrpPaymentsEndpointWrapper(endpointWrapperService, tppStoreService,
-                        riskValidator);
+        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper = createWrapper();
             // Create the request data
         OBDomesticVRPRequest vrpRequest = OBDomesticVRPRequestTestDataFactory.aValidOBDomesticVRPRequest();
 
@@ -165,9 +168,7 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
     @Test
     public void fail_checkCreditorAccountIsInInstructionIfNotInConsent() throws OBErrorException {
         // Given
-        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper =
-                new DomesticVrpPaymentsEndpointWrapper(endpointWrapperService, tppStoreService,
-                        riskValidator);
+        DomesticVrpPaymentsEndpointWrapper domesticVrpPaymentsEndpointWrapper = createWrapper();
         // Create the request data
         OBDomesticVRPRequest vrpRequest = OBDomesticVRPRequestTestDataFactory.aValidOBDomesticVRPRequest();
         vrpRequest.getData().getInitiation().setCreditorAccount(null);
@@ -189,5 +190,4 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
         assertThat(exception.getOBError().getErrorCode()).isEqualTo(OBStandardErrorCodes1.UK_OBIE_RESOURCE_CONSENT_MISMATCH.toString());
 
     }
-
 }

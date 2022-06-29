@@ -27,10 +27,13 @@ import com.forgerock.openbanking.am.config.AMOpenBankingConfiguration;
 import com.forgerock.openbanking.am.services.AMResourceServerService;
 import com.forgerock.openbanking.aspsp.rs.api.payment.DetachedJwsGenerator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.BalanceTransferPaymentValidator;
+import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.DefaultVrpExtensionValidator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.DetachedJwsVerifier;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.MoneyTransferPaymentValidator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.PaymPaymentValidator;
+import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.VrpExtensionValidator;
+import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.VrpExtensionValidator.NoOpVrpExtensionValidator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.endpoints.*;
 import com.forgerock.openbanking.common.conf.RSConfiguration;
 import com.forgerock.openbanking.common.model.version.OBVersion;
@@ -87,6 +90,8 @@ public class RSEndpointWrapperService {
     public DetachedJwsVerifier detachedJwsVerifier;
     private DetachedJwsGenerator detachedJwsGenerator;
 
+    private final VrpExtensionValidator vrpExtensionValidator;
+
     @Autowired
     public RSEndpointWrapperService(OBHeaderCheckerService obHeaderCheckerService,
                                     CryptoApiClient cryptoApiClient,
@@ -106,7 +111,8 @@ public class RSEndpointWrapperService {
                                     PaymPaymentValidator paymPaymentValidator,
                                     OBRisk1Validator riskValidator,
                                     DetachedJwsVerifier detachedJwsVerifier,
-                                    DetachedJwsGenerator detachedJwsGenerator
+                                    DetachedJwsGenerator detachedJwsGenerator,
+                                    @Value("${rs.vrp.extended.validation.enable:true}") boolean enabledExtendedVrpValidation
     ) {
         this.obHeaderCheckerService = obHeaderCheckerService;
         this.cryptoApiClient = cryptoApiClient;
@@ -127,6 +133,7 @@ public class RSEndpointWrapperService {
         this.riskValidator = riskValidator;
         this.detachedJwsVerifier = detachedJwsVerifier;
         this.detachedJwsGenerator = detachedJwsGenerator;
+        this.vrpExtensionValidator = enabledExtendedVrpValidation ? new DefaultVrpExtensionValidator() : new NoOpVrpExtensionValidator();
     }
 
     public AccountsAndTransactionsEndpointWrapper accountAndTransactionEndpoint() {
@@ -148,7 +155,7 @@ public class RSEndpointWrapperService {
     }
 
     public DomesticVrpPaymentsEndpointWrapper vrpPaymentEndpoint(){
-        return new DomesticVrpPaymentsEndpointWrapper(this, tppStoreService, riskValidator);
+        return new DomesticVrpPaymentsEndpointWrapper(this, tppStoreService, riskValidator, vrpExtensionValidator);
     }
 
     public FilePaymentsApiEndpointWrapper filePaymentEndpoint() {

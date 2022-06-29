@@ -22,6 +22,7 @@ package com.forgerock.openbanking.aspsp.rs.wrappper.endpoints;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.OBRisk1Validator;
+import com.forgerock.openbanking.aspsp.rs.api.payment.verifier.VrpExtensionValidator;
 import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPControlParameters;
@@ -40,6 +41,8 @@ import org.springframework.http.ResponseEntity;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPRequest;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentRequest;
+import uk.org.openbanking.datamodel.vrp.v3_1_10.OBVRPFundsConfirmationRequest;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -60,11 +63,15 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
     private boolean isModeTest;
     private final PeriodicLimitBreachResponseSimulator periodicLimitBreachResponseSimulator;
 
+    private final VrpExtensionValidator extensionValidator;
+
     public DomesticVrpPaymentsEndpointWrapper(RSEndpointWrapperService RSEndpointWrapperService,
                                               TppStoreService tppStoreService,
-                                              OBRisk1Validator riskValidator) {
+                                              OBRisk1Validator riskValidator,
+                                              VrpExtensionValidator extensionValidator) {
         super(RSEndpointWrapperService, tppStoreService);
         this.riskValidator = riskValidator;
+        this.extensionValidator = extensionValidator;
         this.isAuthorizationCodeGrantType = false;
         this.isModeTest = false;
         this.periodicLimitBreachResponseSimulator = new PeriodicLimitBreachResponseSimulator();
@@ -144,6 +151,7 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
         }
     }
 
+
     // TODO - Review: v3.1.10 support, required to workaround breaking changes in OB spec
     public void checkRequestAndConsentRiskMatch(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest request,
                                                 FRDomesticVRPConsent frConsent)
@@ -220,6 +228,18 @@ public class DomesticVrpPaymentsEndpointWrapper extends RSEndpointWrapper<Domest
                     VRPErrorControlParametersFields.RequestControlFields.MAX_INDIVIDUAL_AMOUNT,
                     VRPErrorControlParametersFields.ConsentControlFields.MAX_INDIVIDUAL_AMOUNT);
         }
+    }
+
+    public void applyExtendedConsentValidation(OBDomesticVRPConsentRequest obDomesticVRPConsentRequest) throws OBErrorException {
+        extensionValidator.validateConsent(obDomesticVRPConsentRequest);
+    }
+
+    public void applyExtendedPaymentRequestValidation(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest vrpRequest) throws OBErrorException {
+        extensionValidator.validatePaymentRequest(vrpRequest);
+    }
+
+    public void applyExtendedFundsConfirmationRequestValidation(OBVRPFundsConfirmationRequest fundsConfirmationRequest) throws OBErrorException {
+        extensionValidator.validateFundsConfirmationRequest(fundsConfirmationRequest);
     }
 
     public interface DomesticVrpPaymentRestEndpointContent {
