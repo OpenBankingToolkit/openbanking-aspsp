@@ -254,6 +254,7 @@ public class InternationalStandingOrderPaymentsApiControllerIT {
         setupTestConsentInitiation(consent.getInitiation());
         consent.getRisk().setMerchantCategoryCode(aValidFRRisk().getMerchantCategoryCode());
         consent.getRisk().setDeliveryAddress(aValidFRRisk().getDeliveryAddress());
+        consent.getRisk().setPaymentPurposeCode(null);
         consent.setStatus(ConsentStatusCode.CONSUMED);
         consentRepository.save(consent);
         return consent;

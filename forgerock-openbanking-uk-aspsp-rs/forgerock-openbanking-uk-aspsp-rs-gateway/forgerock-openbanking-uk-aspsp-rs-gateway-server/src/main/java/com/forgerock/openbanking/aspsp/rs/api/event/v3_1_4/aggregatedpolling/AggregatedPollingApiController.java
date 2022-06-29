@@ -26,7 +26,9 @@ import com.forgerock.openbanking.common.model.version.OBVersion;
 import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.exceptions.OBErrorResponseException;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.AuthorizationScope;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -45,10 +47,17 @@ import java.util.Collections;
 public class AggregatedPollingApiController implements AggregatedPollingApi {
     private final RSEndpointWrapperService rsEndpointWrapperService;
     private final RsStoreGateway rsStoreGateway;
+    private final OBVersion version;
 
+    @Autowired
     public AggregatedPollingApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway) {
+        this(rsEndpointWrapperService, rsStoreGateway, OBVersion.v3_1_4);
+    }
+
+    protected AggregatedPollingApiController(RSEndpointWrapperService rsEndpointWrapperService, RsStoreGateway rsStoreGateway, OBVersion version) {
         this.rsEndpointWrapperService = rsEndpointWrapperService;
         this.rsStoreGateway = rsStoreGateway;
+        this.version = version;
     }
 
     @Override
@@ -68,7 +77,7 @@ public class AggregatedPollingApiController implements AggregatedPollingApi {
             Principal principal
     ) throws OBErrorResponseException {
         return rsEndpointWrapperService.aggregatedPollingEndpoint()
-                .obVersion(OBVersion.v3_1_4)
+                .obVersion(version)
                 .authorization(authorization)
                 .principal(principal)
                 .execute(

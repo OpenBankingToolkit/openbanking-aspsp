@@ -20,8 +20,10 @@
  */
 package com.forgerock.openbanking.common.services.openbanking.converter.vrp;
 
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPostalAddress;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRWriteDomesticVRPDataInitiation;
 import com.forgerock.openbanking.common.services.openbanking.converter.common.FRAccountIdentifierConverter;
+import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentPostalAddressConverter;
 import com.forgerock.openbanking.common.services.openbanking.converter.payment.FRRemittanceInformationConverter;
 import uk.org.openbanking.datamodel.vrp.OBDomesticVRPInitiation;
 
@@ -34,6 +36,17 @@ public class FRWriteDomesticVRPDataInitiationConverter {
                 .creditorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(initiation.getCreditorAccount()))
                 .debtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(initiation.getDebtorAccount()))
                 .creditorAgent(FRDomesticVRPFinancialAgentConverter.toFRFinancialAgent(initiation.getCreditorAgent()))
+                .remittanceInformation(FRRemittanceInformationConverter.toFRRemittanceInformation(initiation.getRemittanceInformation()))
+                .build();
+    }
+
+    public static FRWriteDomesticVRPDataInitiation toFRWriteDomesticVRPDataInitiation(
+            uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPInitiation initiation
+    ) {
+        return initiation == null ? null : FRWriteDomesticVRPDataInitiation.builder()
+                .creditorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(initiation.getCreditorAccount()))
+                .debtorAccount(FRAccountIdentifierConverter.toFRAccountIdentifier(initiation.getDebtorAccount()))
+                .creditorPostalAddress(FRPaymentPostalAddressConverter.toFRPostalAddress(initiation.getCreditorPostalAddress()))
                 .remittanceInformation(FRRemittanceInformationConverter.toFRRemittanceInformation(initiation.getRemittanceInformation()))
                 .build();
     }

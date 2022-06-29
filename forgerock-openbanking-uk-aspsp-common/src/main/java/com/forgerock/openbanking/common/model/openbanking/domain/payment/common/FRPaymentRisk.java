@@ -24,6 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uk.org.openbanking.datamodel.payment.OBExternalExtendedAccountType1Code;
 
 import java.util.List;
 
@@ -46,6 +47,10 @@ public class FRPaymentRisk {
     private String merchantCategoryCode;
     private String merchantCustomerIdentification;
     private FRRiskDeliveryAddress deliveryAddress;
+    private Boolean contractPresentIndicator;
+    private Boolean beneficiaryPrepopulatedIndicator;
+    private String paymentPurposeCode;
+    private FRExternalExtendedAccountType beneficiaryAccountType;
 
     /**
      * Represents an equivalent object in the OB data model. It is stored within mongo (instead of the OB object), in order to make it easier to introduce new

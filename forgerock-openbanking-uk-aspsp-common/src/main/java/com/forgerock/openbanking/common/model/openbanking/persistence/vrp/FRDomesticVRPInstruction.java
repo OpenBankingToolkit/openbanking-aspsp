@@ -20,10 +20,10 @@
  */
 package com.forgerock.openbanking.common.model.openbanking.persistence.vrp;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAmount;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAgent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPostalAddress;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRSupplementaryData;
 import lombok.AllArgsConstructor;
@@ -36,20 +36,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class FRDomesticVRPInstruction {
-    @JsonProperty("InstructionIdentification")
     private String instructionIdentification;
-    @JsonProperty("EndToEndIdentification")
     private String endToEndIdentification;
-    @JsonProperty("RemittanceInformation")
     private FRRemittanceInformation remittanceInformation;
-    @JsonProperty("LocalInstrument")
     private String localInstrument;
-    @JsonProperty("InstructedAmount")
     private FRAmount instructedAmount;
-    @JsonProperty("CreditorAgent")
     private FRFinancialAgent creditorAgent;
-    @JsonProperty("CreditorAccount")
     private FRAccountIdentifier creditorAccount;
-    @JsonProperty("SupplementaryData")
     private FRSupplementaryData supplementaryData;
+    private FRPostalAddress creditorPostalAddress;
 }

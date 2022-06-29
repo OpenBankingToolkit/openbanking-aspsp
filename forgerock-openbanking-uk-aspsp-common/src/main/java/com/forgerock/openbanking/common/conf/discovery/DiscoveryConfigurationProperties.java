@@ -53,6 +53,7 @@ public class DiscoveryConfigurationProperties {
     public static class VrpPaymentApis {
         public OBDiscoveryAPILinksVrpPayment v_3_1_8;
         public OBDiscoveryAPILinksVrpPayment v_3_1_9;
+        public OBDiscoveryAPILinksVrpPayment v_3_1_10;
     }
 
     @Data
@@ -69,6 +70,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_7;
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_8;
         public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_9;
+        public OBDiscoveryAPILinksFundsConfirmation3 v_3_1_10;
 
         public OBDiscoveryAPILinksFundsConfirmation3 getVersion(OBVersion version){
             switch (version){
@@ -83,6 +85,7 @@ public class DiscoveryConfigurationProperties {
                 case v3_1_7: return v_3_1_7;
                 case v3_1_8: return v_3_1_8;
                 case v3_1_9: return v_3_1_9;
+                case v3_1_10: return v_3_1_10;
                 default: return null;
             }
         }
@@ -102,6 +105,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksEventNotification4 v_3_1_7;
         public OBDiscoveryAPILinksEventNotification4 v_3_1_8;
         public OBDiscoveryAPILinksEventNotification4 v_3_1_9;
+        public OBDiscoveryAPILinksEventNotification4 v_3_1_10;
 
         public OBDiscoveryAPILinks getVersion(OBVersion version){
             switch (version){
@@ -116,6 +120,7 @@ public class DiscoveryConfigurationProperties {
                 case v3_1_7: return v_3_1_7;
                 case v3_1_8: return v_3_1_8;
                 case v3_1_9: return v_3_1_9;
+                case v3_1_10: return v_3_1_10;
                 default: return null;
             }
         }
@@ -137,6 +142,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksPayment4 v_3_1_7;
         public OBDiscoveryAPILinksPayment4 v_3_1_8;
         public OBDiscoveryAPILinksPayment4 v_3_1_9;
+        public OBDiscoveryAPILinksPayment4 v_3_1_10;
     }
 
     @Data
@@ -155,6 +161,7 @@ public class DiscoveryConfigurationProperties {
         public OBDiscoveryAPILinksAccount3 v_3_1_7;
         public OBDiscoveryAPILinksAccount3 v_3_1_8;
         public OBDiscoveryAPILinksAccount3 v_3_1_9;
+        public OBDiscoveryAPILinksAccount3 v_3_1_10;
     }
 
     @Data

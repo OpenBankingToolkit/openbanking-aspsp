@@ -85,7 +85,7 @@ public class FRDomesticVRPConvertersTest {
 
         // When
         FRDomesticVRPDataInitiation frInitiation =
-                FRDomesticVRPConverters.toFRDomesticVRPInitiation(obInitiation);
+                FRWriteDomesticVRPDataInitiationConverter.toFRWriteDomesticVRPDataInitiation(obInitiation);
 
         // Then
         assertThat(frInitiation).isNotNull();

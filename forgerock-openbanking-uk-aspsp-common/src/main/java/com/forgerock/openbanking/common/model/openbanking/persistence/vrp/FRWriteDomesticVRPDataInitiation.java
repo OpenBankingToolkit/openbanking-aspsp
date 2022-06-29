@@ -22,6 +22,7 @@ package com.forgerock.openbanking.common.model.openbanking.persistence.vrp;
 
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRAccountIdentifier;
 import com.forgerock.openbanking.common.model.openbanking.domain.common.FRFinancialAgent;
+import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRPostalAddress;
 import com.forgerock.openbanking.common.model.openbanking.domain.payment.common.FRRemittanceInformation;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,4 +47,5 @@ public class FRWriteDomesticVRPDataInitiation implements FRDomesticVRPDataInitia
     private FRAccountIdentifier creditorAccount;
     private FRRemittanceInformation remittanceInformation;
     private FRFinancialAgent creditorAgent;
+    private FRPostalAddress creditorPostalAddress;
 }

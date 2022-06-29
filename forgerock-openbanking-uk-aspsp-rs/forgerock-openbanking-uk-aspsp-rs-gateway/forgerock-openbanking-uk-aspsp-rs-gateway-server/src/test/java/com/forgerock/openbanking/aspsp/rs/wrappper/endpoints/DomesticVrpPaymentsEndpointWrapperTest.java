@@ -25,6 +25,7 @@ import com.forgerock.openbanking.aspsp.rs.wrappper.RSEndpointWrapperService;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRDomesticVRPConsent;
 import com.forgerock.openbanking.common.model.openbanking.persistence.vrp.FRWriteDomesticVRPDataInitiation;
 import com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPConverters;
+import com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRWriteDomesticVRPDataInitiationConverter;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.exceptions.OBErrorException;
 import com.forgerock.openbanking.integration.test.support.FRVrpTestDataFactory;
@@ -98,8 +99,7 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
                 new DomesticVrpPaymentsEndpointWrapper(endpointWrapperService, tppStoreService, riskValidator);
         OBDomesticVRPInitiation requestInitiation = OBDomesticVRPCommonTestDataFactory.aValidOBDomesticVRPInitiation();
         FRDomesticVRPConsent frConsent = FRVrpTestDataFactory.aValidFRDomesticVRPConsent();
-        FRWriteDomesticVRPDataInitiation matchingInitiation =
-                (FRWriteDomesticVRPDataInitiation) FRDomesticVRPConverters.toFRDomesticVRPInitiation(requestInitiation);
+        FRWriteDomesticVRPDataInitiation matchingInitiation = FRWriteDomesticVRPDataInitiationConverter.toFRWriteDomesticVRPDataInitiation(requestInitiation);
         frConsent.getVrpDetails().getData().setInitiation(matchingInitiation);
 
         // When
@@ -119,8 +119,7 @@ public class DomesticVrpPaymentsEndpointWrapperTest {
         OBDomesticVRPInitiation requestInitiation = OBDomesticVRPCommonTestDataFactory.aValidOBDomesticVRPInitiation();
           // Create an FR Consent with slightly differing initiation data
         FRDomesticVRPConsent frConsent = FRVrpTestDataFactory.aValidFRDomesticVRPConsent();
-        FRWriteDomesticVRPDataInitiation differentInitiationData =
-                (FRWriteDomesticVRPDataInitiation) FRDomesticVRPConverters.toFRDomesticVRPInitiation(requestInitiation);
+        FRWriteDomesticVRPDataInitiation differentInitiationData = FRWriteDomesticVRPDataInitiationConverter.toFRWriteDomesticVRPDataInitiation(requestInitiation);
         differentInitiationData.getDebtorAccount().setIdentification("mismatched identification");
         frConsent.getVrpDetails().getData().setInitiation(differentInitiationData);
 

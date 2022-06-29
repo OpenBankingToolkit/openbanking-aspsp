@@ -187,6 +187,7 @@ public class PaymentsApiControllerIT {
         request.getData().initiation(paymentSetupResponse.getData().getInitiation());
         request.getRisk().deliveryAddress(paymentSetupResponse.getRisk().getDeliveryAddress());
         request.getRisk().merchantCategoryCode(paymentSetupResponse.getRisk().getMerchantCategoryCode());
+        request.getRisk().paymentPurposeCode(null);
         return request;
     }
 
@@ -198,6 +199,7 @@ public class PaymentsApiControllerIT {
         paymentSetupResponse.getRisk().getDeliveryAddress().setAddressLine(Collections.emptyList());
         paymentSetupResponse.getRisk().getDeliveryAddress().setCountry("GB");
         paymentSetupResponse.getRisk().setMerchantCategoryCode("ABCD");
+        paymentSetupResponse.getRisk().paymentPurposeCode(null);
         paymentSetupResponse.getData().setCreationDateTime(new DateTime().withMillisOfSecond(0));
         paymentSetupResponse.getMeta().setFirstAvailableDateTime(new DateTime().withMillisOfSecond(0));
         paymentSetupResponse.getMeta().setLastAvailableDateTime(new DateTime().withMillisOfSecond(0));

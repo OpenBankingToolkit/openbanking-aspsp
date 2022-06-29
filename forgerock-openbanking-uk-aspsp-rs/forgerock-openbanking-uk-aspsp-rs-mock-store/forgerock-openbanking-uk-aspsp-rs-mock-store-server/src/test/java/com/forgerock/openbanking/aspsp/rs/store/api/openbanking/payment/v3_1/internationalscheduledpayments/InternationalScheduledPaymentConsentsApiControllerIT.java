@@ -143,7 +143,7 @@ public class InternationalScheduledPaymentConsentsApiControllerIT {
         consentRequest.getData().getInitiation().purpose("to");
         consentRequest.getData().getInitiation().getCreditorAgent().getPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
         consentRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
-        consentRequest.getRisk().merchantCategoryCode("ABCD")
+        consentRequest.getRisk().paymentPurposeCode(null).merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
                 .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))

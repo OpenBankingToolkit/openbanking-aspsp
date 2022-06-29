@@ -137,7 +137,7 @@ public class DomesticVrpsApiControllerIT {
         assertThat(paymentSubmission.getId()).isNotNull();
         assertThat(paymentSubmission.getDomesticVrpPayment().getData().getConsentId()).isEqualTo(request.getData().getConsentId());
         assertThat(vrpResponse.getData().getStatus()).isEqualTo(OBDomesticVRPResponseData.StatusEnum.PENDING);
-        assertThat(paymentSubmission.getStatus()).isEqualTo(vrpResponse.getData().getStatus());
+        assertThat(paymentSubmission.getStatus()).isEqualTo(vrpResponse.getData().getStatus().name());
     }
 
     @Test
@@ -178,7 +178,7 @@ public class DomesticVrpsApiControllerIT {
 
             assertThat(paymentSubmission.getDomesticVrpPayment().getData().getConsentId()).isEqualTo(consentId);
             assertThat(vrpResponse.getData().getStatus()).isEqualTo(OBDomesticVRPResponseData.StatusEnum.PENDING);
-            assertThat(paymentSubmission.getStatus()).isEqualTo(vrpResponse.getData().getStatus());
+            assertThat(paymentSubmission.getStatus()).isEqualTo(vrpResponse.getData().getStatus().name());
         }
         // Verify all ids were unique
         assertThat(domesticVrpIds.size()).isEqualTo(numPayments);
@@ -369,7 +369,7 @@ public class DomesticVrpsApiControllerIT {
         FRDomesticVrpPaymentSubmission paymentSubmission = FRDomesticVrpPaymentSubmission.builder()
                 .id(consentId)
                 .domesticVrpPayment(toFRDomesticVRPRequest(request))
-                .status(OBDomesticVRPResponseData.StatusEnum.PENDING)
+                .status(OBDomesticVRPResponseData.StatusEnum.PENDING.name())
                 .created(new Date())
                 .updated(new Date())
                 .obVersion(OBVersion.v3_1_8)

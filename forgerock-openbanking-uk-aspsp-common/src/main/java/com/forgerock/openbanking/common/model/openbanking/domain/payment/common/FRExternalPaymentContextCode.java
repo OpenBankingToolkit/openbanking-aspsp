@@ -24,6 +24,13 @@ import java.util.stream.Stream;
 
 public enum FRExternalPaymentContextCode {
 
+    BILLINGGOODSANDSERVICESINADVANCE("BillingGoodsAndServicesInAdvance"),
+    BILLINGGOODSANDSERVICESINARREARS("BillingGoodsAndServicesInArrears"),
+    PISPPAYEE("PispPayee"),
+    ECOMMERCEMERCHANTINITIATEDPAYMENT("EcommerceMerchantInitiatedPayment"),
+    FACETOFACEPOINTOFSALE("FaceToFacePointOfSale"),
+    TRANSFERTOSELF("TransferToSelf"),
+    TRANSFERTOTHIRDPARTY("TransferToThirdParty"),
     BILLPAYMENT("BillPayment"),
     ECOMMERCEGOODS("EcommerceGoods"),
     ECOMMERCESERVICES("EcommerceServices"),

@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentRiskConverter.*;
 import static com.forgerock.openbanking.common.services.openbanking.converter.payment.FRPaymentSupplementaryDataConverter.toOBSupplementaryData1;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPControlParametersConverter.toFRDomesticVRPControlParameters;
+import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRDomesticVRPControlParametersConverter.toOBVRPInteractionTypes;
 import static com.forgerock.openbanking.common.services.openbanking.converter.vrp.FRWriteDomesticVRPDataInitiationConverter.toFRWriteDomesticVRPDataInitiation;
 
 public class FRDomesticVRPConsentConverter {
@@ -52,8 +53,30 @@ public class FRDomesticVRPConsentConverter {
                 .build();
     }
 
+    public static FRDomesticVRPConsentDetails toFRDomesticVRPConsentDetails(
+            uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentRequest obDomesticVRPConsentRequest) {
+        return obDomesticVRPConsentRequest == null ? null : FRDomesticVRPConsentDetails.builder()
+                .data(toFRDomesticVRPConsentDetailsData(obDomesticVRPConsentRequest.getData()))
+                .risk(toFRRisk(obDomesticVRPConsentRequest.getRisk()))
+                .build();
+    }
+
     public static FRDomesticVRPConsentDetailsData toFRDomesticVRPConsentDetailsData(
             OBDomesticVRPConsentRequestData data
+    ) {
+        return data == null ? null : FRDomesticVRPConsentDetailsData.builder()
+                .readRefundAccount(
+                        FRReadRefundAccount.fromValue(
+                                data.getReadRefundAccount()==null ? null : data.getReadRefundAccount().getValue()
+                        )
+                )
+                .initiation(toFRWriteDomesticVRPDataInitiation(data.getInitiation()))
+                .controlParameters(toFRDomesticVRPControlParameters(data.getControlParameters()))
+                .build();
+    }
+
+    public static FRDomesticVRPConsentDetailsData toFRDomesticVRPConsentDetailsData(
+            uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentRequestData data
     ) {
         return data == null ? null : FRDomesticVRPConsentDetailsData.builder()
                 .readRefundAccount(
@@ -89,6 +112,15 @@ public class FRDomesticVRPConsentConverter {
         return initiation == null ? null : new OBDomesticVRPInitiation()
                 .creditorAccount(toOBCashAccountCreditor3(initiation.getCreditorAccount()))
                 .creditorAgent(toOBBranchAndFinancialInstitutionIdentification6(initiation.getCreditorAgent()))
+                .debtorAccount(toOBCashAccountDebtorWithName(initiation.getDebtorAccount()))
+                .remittanceInformation(toOBDomesticVRPInitiationRemittanceInformation(initiation.getRemittanceInformation()));
+    }
+
+    public static uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPInitiation toOBDomesticVRPInitiationv3_1_10(FRWriteDomesticVRPDataInitiation initiation) {
+        return initiation == null ? null : new uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPInitiation()
+                .creditorAccount(toOBCashAccountCreditor3(initiation.getCreditorAccount()))
+                // TODO Support mapping old data onto this field.
+                .creditorPostalAddress(toOBPostalAddress6(initiation.getCreditorPostalAddress()))
                 .debtorAccount(toOBCashAccountDebtorWithName(initiation.getDebtorAccount()))
                 .remittanceInformation(toOBDomesticVRPInitiationRemittanceInformation(initiation.getRemittanceInformation()));
     }
@@ -151,6 +183,18 @@ public class FRDomesticVRPConsentConverter {
                 .supplementaryData(toOBSupplementaryData1(controlParameters.getSupplementaryData()));
     }
 
+    public static uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPControlParameters toOBDomesticVRPControlParametersv3_1_10(FRDomesticVRPControlParameters controlParameters) {
+        return controlParameters == null ? null : new uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPControlParameters()
+                .psUAuthenticationMethods(controlParameters.getPsuAuthenticationMethods())
+                .vrPType(controlParameters.getVrpType())
+                .validFromDateTime(controlParameters.getValidFromDateTime())
+                .validToDateTime(controlParameters.getValidToDateTime())
+                .maximumIndividualAmount(toOBActiveOrHistoricCurrencyAndAmount(controlParameters.getMaximumIndividualAmount()))
+                .periodicLimits(toListOBDomesticVRPControlParametersPeriodicLimits(controlParameters.getPeriodicLimits()))
+                .supplementaryData(toOBSupplementaryData1(controlParameters.getSupplementaryData()))
+                .psUInteractionTypes(toOBVRPInteractionTypes(controlParameters.getPsUInteractionTypes()));
+    }
+
     public static OBActiveOrHistoricCurrencyAndAmount toOBActiveOrHistoricCurrencyAndAmount(FRAmount amount) {
         return amount == null ? null : new OBActiveOrHistoricCurrencyAndAmount()
                 .amount(amount.getAmount())
@@ -184,13 +228,25 @@ public class FRDomesticVRPConsentConverter {
                 .deliveryAddress(toOBRisk1DeliveryAddress(frPaymentRisk.getDeliveryAddress()))
                 .merchantCategoryCode(frPaymentRisk.getMerchantCategoryCode())
                 .merchantCustomerIdentification(frPaymentRisk.getMerchantCustomerIdentification())
-                .paymentContextCode(toOBExternalPaymentContext1Code(frPaymentRisk.getPaymentContextCode()));
+                .paymentContextCode(toOBExternalPaymentContext1Code(frPaymentRisk.getPaymentContextCode()))
+                .paymentPurposeCode(frPaymentRisk.getPaymentPurposeCode())
+                .beneficiaryPrepopulatedIndicator(frPaymentRisk.getBeneficiaryPrepopulatedIndicator())
+                .contractPresentInidicator(frPaymentRisk.getContractPresentIndicator())
+                .beneficiaryAccountType(toOBExternalExtendedAccountType1Code(frPaymentRisk.getBeneficiaryAccountType()));
     }
 
     // FR to OB response
     public static OBDomesticVRPConsentResponse toOBDomesticVRPConsentResponse(FRDomesticVRPConsent consent) {
         return consent == null ? null : new OBDomesticVRPConsentResponse()
                 .data(toOBDomesticVRPConsentResponseData(consent))
+                .meta(new Meta())
+                .risk(toOBRisk1(consent.getRisk()));
+
+    }
+
+    public static uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponse toOBDomesticVRPConsentResponsev3_1_10(FRDomesticVRPConsent consent) {
+        return consent == null ? null : new uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponse()
+                .data(toOBDomesticVRPConsentResponseDatav3_1_10(consent))
                 .meta(new Meta())
                 .risk(toOBRisk1(consent.getRisk()));
 
@@ -218,6 +274,31 @@ public class FRDomesticVRPConsentConverter {
                 .controlParameters(toOBDomesticVRPControlParameters(data.getControlParameters()))
                 .debtorAccount(toOBCashAccountDebtorWithName(data.getInitiation().getDebtorAccount()))
                 .initiation(toOBDomesticVRPInitiation(data.getInitiation()));
+
+    }
+
+    public static uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponseData toOBDomesticVRPConsentResponseDatav3_1_10(FRDomesticVRPConsent consent) {
+        FRDomesticVRPConsentDetails details = consent == null ? null : consent.getVrpDetails();
+        FRDomesticVRPConsentDetailsData data = details == null ? null : details.getData();
+        return data == null ? null : new uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponseData()
+                .consentId(consent.getId())
+                .creationDateTime(consent.getCreated())
+                .readRefundAccount(
+                        uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponseData.ReadRefundAccountEnum.fromValue
+                                (
+                                        data.getReadRefundAccount().getValue()
+                                )
+                )
+                .status(
+                        uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponseData.StatusEnum.fromValue
+                                (
+                                        consent.getStatus().getValue()
+                                )
+                )
+                .statusUpdateDateTime(consent.getStatusUpdate())
+                .controlParameters(toOBDomesticVRPControlParametersv3_1_10(data.getControlParameters()))
+                .debtorAccount(toOBCashAccountDebtorWithName(data.getInitiation().getDebtorAccount()))
+                .initiation(toOBDomesticVRPInitiationv3_1_10(data.getInitiation()));
 
     }
 }

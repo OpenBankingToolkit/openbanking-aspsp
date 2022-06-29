@@ -183,7 +183,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consentRequest.getData().getInitiation().getCreditorPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
         consentRequest.getData().getInitiation().supplementaryData(new OBSupplementaryData1());
-        consentRequest.getRisk().merchantCategoryCode("ABCD")
+        consentRequest.getRisk().paymentPurposeCode(null).merchantCategoryCode("ABCD")
                 .getDeliveryAddress()
                 .countrySubDivision("Wessex")
                 .addressLine(Collections.singletonList("3 Queens Square"))
@@ -224,7 +224,7 @@ public class DomesticPaymentConsentsApiControllerIT {
         consentRequest.getData().getInitiation().getInstructedAmount().currency("GBP").amount("1.00");
         consentRequest.getData().getInitiation().getCreditorPostalAddress().country("GB").addressLine(Collections.singletonList("3 Queens Square"));
         consentRequest.getData().getInitiation().supplementaryData(null);
-        consentRequest.getRisk().merchantCategoryCode("ABCD")
+        consentRequest.getRisk().paymentPurposeCode(null).merchantCategoryCode("ABCD")
                 .getDeliveryAddress().addressLine(Collections.singletonList("3 Queens Square")).country("GP").countrySubDivision("aaa");
         consentRequest.getData().getAuthorisation().completionDateTime(null);
 
