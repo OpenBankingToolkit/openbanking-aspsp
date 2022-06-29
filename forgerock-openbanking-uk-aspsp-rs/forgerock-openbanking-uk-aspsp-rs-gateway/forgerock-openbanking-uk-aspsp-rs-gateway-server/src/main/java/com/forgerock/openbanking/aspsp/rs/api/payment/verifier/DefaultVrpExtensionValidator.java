@@ -122,9 +122,7 @@ public class DefaultVrpExtensionValidator implements VrpExtensionValidator {
 
     private void checkMaximum2DecimalPlaces(String fieldName, String amount) throws OBErrorException {
         if (!AmountDecimalPlaceValidator.validateMax2DecimalPlaces(amount)) {
-            throw new OBErrorException(
-                    OBRIErrorType.REQUEST_AMOUNT_MAX_2_DP,
-                    fieldName);
+            throw new OBErrorException(OBRIErrorType.REQUEST_AMOUNT_MAX_2_DP, fieldName);
         }
     }
 }

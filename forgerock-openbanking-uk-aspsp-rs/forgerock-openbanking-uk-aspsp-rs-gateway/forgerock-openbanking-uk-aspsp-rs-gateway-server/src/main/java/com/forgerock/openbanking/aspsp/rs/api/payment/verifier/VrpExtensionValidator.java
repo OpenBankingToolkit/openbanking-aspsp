@@ -32,12 +32,16 @@ import uk.org.openbanking.datamodel.vrp.v3_1_10.OBVRPFundsConfirmationRequest;
  * The {@link NoOpVrpExtensionValidator} should be used when no additional validation is required.
  */
 public interface VrpExtensionValidator {
-    void validatePaymentRequest(uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest request) throws OBErrorException;
+
+    void validatePaymentRequest(OBDomesticVRPRequest request) throws OBErrorException;
 
     void validateConsent(OBDomesticVRPConsentRequest consentRequest) throws OBErrorException;
 
     void validateFundsConfirmationRequest(OBVRPFundsConfirmationRequest fundsConfirmationRequest) throws OBErrorException;
 
+    /**
+     * NoOp implementation, to be used when no additional validation is required.
+     */
     class NoOpVrpExtensionValidator implements VrpExtensionValidator {
         @Override
         public void validatePaymentRequest(OBDomesticVRPRequest request) {
