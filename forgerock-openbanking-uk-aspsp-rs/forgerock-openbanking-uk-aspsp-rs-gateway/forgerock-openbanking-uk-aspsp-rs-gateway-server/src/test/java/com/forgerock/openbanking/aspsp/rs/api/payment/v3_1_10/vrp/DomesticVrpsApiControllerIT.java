@@ -34,6 +34,7 @@ import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.common.services.store.vrp.DomesticVrpPaymentConsentService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
@@ -41,6 +42,7 @@ import com.forgerock.openbanking.model.error.ErrorCode;
 import com.forgerock.openbanking.model.error.OBRIErrorType;
 import com.forgerock.openbanking.model.error.VRPErrorControlParametersFields;
 import com.github.jsonzou.jmockdata.JMockData;
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -63,13 +65,17 @@ import uk.org.openbanking.datamodel.account.Links;
 import uk.org.openbanking.datamodel.error.OBError1;
 import uk.org.openbanking.datamodel.error.OBErrorResponse1;
 import uk.org.openbanking.datamodel.payment.OBRisk1;
+import uk.org.openbanking.datamodel.vrp.OBActiveOrHistoricCurrencyAndAmount;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponseData;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPInitiation;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPRequest;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPResponse;
+import uk.org.openbanking.testsupport.vrp.OBDomesticVRPRequestTestDataFactory3_1_10;
 import uk.org.openbanking.testsupport.vrp.OBDomesticVRPResponseTestDataFactory3_1_10;
 
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -406,6 +412,51 @@ public class DomesticVrpsApiControllerIT {
         Assert.assertEquals(ErrorCode.OBRI_REQUEST_VRP_LIMIT_BREACH_SIMULATION_INVALID_HEADER_VALUE.getValue(), error.getErrorCode());
         Assert.assertEquals("Invalid Header value 'badLimitBreachValue', unable to simulate the payment limitation breach",
                 error.getMessage());
+    }
+
+    @Test
+    public void shouldRejectedInstructedAmountsWithMoreThan2DecimalPlaces() throws Exception {
+        OBDomesticVRPRequest request = OBDomesticVRPRequestTestDataFactory3_1_10.aValidOBDomesticVRPRequest();
+        request.getData().getInstruction().setInstructedAmount(new OBActiveOrHistoricCurrencyAndAmount().amount("0.00001").currency("GBP"));
+        final HttpStatus expectedHttpStatus = HttpStatus.BAD_REQUEST;
+        final String expectedErrorCode = ErrorCode.OBRI_REQUEST_AMOUNT_MAX_2_DP.getValue();
+        final String expectedErrorMsg = "Amount represented in field: 'InstructedAmount' can have a maximum of 2 decimal places";
+
+        submitBadVrpRequestAndValidateErrorResponse(request, expectedHttpStatus, expectedErrorCode, expectedErrorMsg);
+    }
+
+    private void submitBadVrpRequestAndValidateErrorResponse(OBDomesticVRPRequest request, HttpStatus expectedHttpStatus,
+                                                             String expectedErrorCode, String expectedErrorMsg)
+            throws JOSEException, ParseException, InvalidTokenException, IOException {
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        FRDomesticVRPConsent frDomesticVRPConsent = aValidFRDomesticVRPConsent(
+                IntentType.DOMESTIC_VRP_PAYMENT_CONSENT.generateIntentId(),
+                ConsentStatusCode.AUTHORISED
+        );
+
+        Tpp tpp = new Tpp();
+        tpp.setAuthorisationNumber("test-tpp");
+        given(tppStoreService.findByClientId(any())).willReturn(Optional.of(tpp));
+        given(vrpPaymentConsentService.getVrpPaymentConsent(request.getData().getConsentId())).willReturn(frDomesticVRPConsent);
+
+        HttpResponse<OBErrorResponse1> response = Unirest.post(HOST + port + VRP_CONTXT_PATH)
+                .header(OBHeaders.X_FAPI_FINANCIAL_ID, rsConfiguration.financialId)
+                .header(OBHeaders.X_IDEMPOTENCY_KEY, IDEMPOTENCY_KEY)
+                .header(OBHeaders.X_JWS_SIGNATURE, jws)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .body(request)
+                .asObject(OBErrorResponse1.class);
+
+        assertThat(response.getStatus()).as("Http Response Code").isEqualTo(expectedHttpStatus.value());
+        final OBErrorResponse1 errorResponse = response.getBody();
+        assertThat(errorResponse.getErrors().size()).as("OBErrorResponse1.errors").isEqualTo(1);
+
+        final OBError1 obError1 = errorResponse.getErrors().get(0);
+        assertThat(obError1.getErrorCode()).as("ObError1.errorCode").isEqualTo(expectedErrorCode);
+        assertThat(obError1.getMessage()).as("OError1.message").isEqualTo(expectedErrorMsg);
     }
 
     private FRDomesticVRPConsent aValidFRDomesticVRPConsent(String consentId, ConsentStatusCode consentStatusCode) {
