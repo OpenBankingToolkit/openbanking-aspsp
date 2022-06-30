@@ -112,7 +112,7 @@ public class RSEndpointWrapperService {
                                     OBRisk1Validator riskValidator,
                                     DetachedJwsVerifier detachedJwsVerifier,
                                     DetachedJwsGenerator detachedJwsGenerator,
-                                    @Value("${rs.vrp.extended.validation.enable:true}") boolean enabledExtendedVrpValidation
+                                    @Value("${rs.vrp.extended.validation.enable:false}") boolean enabledExtendedVrpValidation
     ) {
         this.obHeaderCheckerService = obHeaderCheckerService;
         this.cryptoApiClient = cryptoApiClient;
