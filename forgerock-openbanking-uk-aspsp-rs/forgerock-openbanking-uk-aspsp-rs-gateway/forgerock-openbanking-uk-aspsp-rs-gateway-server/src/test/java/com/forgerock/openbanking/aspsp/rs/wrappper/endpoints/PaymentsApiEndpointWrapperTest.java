@@ -170,7 +170,7 @@ public class PaymentsApiEndpointWrapperTest {
                 null,
                 null,
                 null,
-                null);
+                null, false);
 
         return new PaymentsApiEndpointWrapper(
                 rsEndpointWrapperService,

@@ -66,6 +66,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                 .filters(f -> {
                     f.verifyIdempotencyKeyLength(xIdempotencyKey);
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
+                    f.applyExtendedConsentValidation(obDomesticVRPConsentRequest);
                 })
                 .execute(
                         (String tppId) -> {
@@ -142,6 +143,7 @@ public class DomesticVrpConsentsApiController implements DomesticVrpConsentsApi 
                 .obVersion(OBVersion.v3_1_10)
                 .filters(f -> {
                     f.verifyJwsDetachedSignature(xJwsSignature, request);
+                    f.applyExtendedFundsConfirmationRequestValidation(obVRPFundsConfirmationRequest);
                 })
                 .execute(
                         (String tppId) -> {

@@ -28,9 +28,12 @@ import com.forgerock.openbanking.common.services.store.RsStoreGateway;
 import com.forgerock.openbanking.common.services.store.tpp.TppStoreService;
 import com.forgerock.openbanking.constants.OIDCConstants;
 import com.forgerock.openbanking.integration.test.support.SpringSecForTest;
+import com.forgerock.openbanking.jwt.exceptions.InvalidTokenException;
 import com.forgerock.openbanking.jwt.services.CryptoApiClient;
 import com.forgerock.openbanking.model.OBRIRole;
 import com.forgerock.openbanking.model.Tpp;
+import com.forgerock.openbanking.model.error.ErrorCode;
+import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jwt.SignedJWT;
 import kong.unirest.HttpResponse;
 import kong.unirest.JacksonObjectMapper;
@@ -49,17 +52,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.org.openbanking.OBHeaders;
+import uk.org.openbanking.datamodel.error.OBError1;
+import uk.org.openbanking.datamodel.error.OBErrorResponse1;
+import uk.org.openbanking.datamodel.payment.OBExternalPaymentContext1Code;
 import uk.org.openbanking.datamodel.vrp.Links;
+import uk.org.openbanking.datamodel.vrp.OBActiveOrHistoricCurrencyAndAmount;
+import uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1;
+import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
+import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponseData;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentRequest;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentRequestData;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponse;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBDomesticVRPConsentResponseData;
-import uk.org.openbanking.datamodel.vrp.OBPAFundsAvailableResult1;
 import uk.org.openbanking.datamodel.vrp.v3_1_10.OBVRPFundsConfirmationRequest;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponse;
-import uk.org.openbanking.datamodel.vrp.OBVRPFundsConfirmationResponseData;
 
+import java.io.IOException;
 import java.net.URI;
+import java.text.ParseException;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -183,6 +193,35 @@ public class DomesticVrpConsentsApiControllerIT {
     }
 
     @Test
+    public void shouldFailToGetFundsConfirmationForAmountWithMoreThan2DP() throws Exception {
+        String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+        OBVRPFundsConfirmationRequest request = aValidOBVRPFundsConfirmationRequest();
+        request.getData().setInstructedAmount(new OBActiveOrHistoricCurrencyAndAmount().currency("GBP").amount("123.45678"));
+
+        // When
+        HttpResponse<OBErrorResponse1> response = Unirest.post(
+                        HOST + port + CONTEXT_PATH + request.getData().getConsentId() + "/funds-confirmation"
+                )
+                .header(OBHeaders.X_FAPI_INTERACTION_ID, rsConfiguration.financialId)
+                .header(OBHeaders.X_JWS_SIGNATURE, jws)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .body(request)
+                .asObject(OBErrorResponse1.class);
+
+        // Then
+        assertThat(response.getStatus()).as("Http Response Code").isEqualTo(HttpStatus.BAD_REQUEST.value());
+        final OBErrorResponse1 errorResponse = response.getBody();
+        assertThat(errorResponse.getErrors().size()).as("OBErrorResponse1.errors").isEqualTo(1);
+
+        final OBError1 obError1 = errorResponse.getErrors().get(0);
+        assertThat(obError1.getErrorCode()).as("ObError1.errorCode").isEqualTo(ErrorCode.OBRI_REQUEST_AMOUNT_MAX_2_DP.getValue());
+        assertThat(obError1.getMessage()).as("OError1.message").isEqualTo("Amount represented in field: 'InstructedAmount' can have a maximum of 2 decimal places");
+    }
+
+    @Test
     public void getVrpFundsConfirmationConsentIdDontMatch() throws Exception {
         String jws = jws("payments", OIDCConstants.GrantType.AUTHORIZATION_CODE);
         springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
@@ -281,6 +320,121 @@ public class DomesticVrpConsentsApiControllerIT {
 
         // Then
         assertThat(response.getStatus()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    @Test
+    public void shouldRejectConsentForNonSweepingVrpType() throws Exception {
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().getControlParameters().setVrPType(List.of("xyz"));
+        final HttpStatus expectedHttpStatus = HttpStatus.BAD_REQUEST;
+        final String expectedErrorCode = ErrorCode.OBRI_REQUEST_VRP_TYPE_MUST_BE_SWEEPING.getValue();
+        final String expectedErrorMsg = "'VRPType' field only supports value 'UK.OBIE.VRPType.Sweeping'";
+
+        submitBadVrpConsentAndValidateErrorResponse(request, expectedHttpStatus, expectedErrorCode, expectedErrorMsg);
+    }
+
+    @Test
+    public void shouldRejectConsentWithPeriodicLimitAmountMoreThan2Dp() throws Exception {
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().getControlParameters().getPeriodicLimits().get(0).setAmount("12.222");
+        final HttpStatus expectedHttpStatus = HttpStatus.BAD_REQUEST;
+        final String expectedErrorCode = ErrorCode.OBRI_REQUEST_AMOUNT_MAX_2_DP.getValue();
+        final String expectedErrorMsg = "Amount represented in field: 'PeriodicLimits.Amount' can have a maximum of 2 decimal places";
+
+        submitBadVrpConsentAndValidateErrorResponse(request, expectedHttpStatus, expectedErrorCode, expectedErrorMsg);
+    }
+
+    @Test
+    public void shouldRejectConsentInvalidPSUAuthenticationMethod() throws Exception {
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().getControlParameters().setPsUAuthenticationMethods(List.of("sgdfsfgdfsg"));
+        final HttpStatus expectedHttpStatus = HttpStatus.BAD_REQUEST;
+        final String expectedErrorCode = ErrorCode.OBRI_REQUEST_VRP_PSU_AUTHENTICATION_METHODS_INVALID.getValue();
+        final String expectedErrorMsg = "'PSUAuthenticationMethods' field only supports value 'UK.OBIE.SCANotRequired'";
+
+        submitBadVrpConsentAndValidateErrorResponse(request, expectedHttpStatus, expectedErrorCode, expectedErrorMsg);
+    }
+
+    @Test
+    public void shouldRejectConsentInvalidValidToDateTime() throws Exception {
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().getControlParameters().setValidToDateTime(request.getData().getControlParameters().getValidFromDateTime().minusMinutes(5));
+        final HttpStatus expectedHttpStatus = HttpStatus.BAD_REQUEST;
+        final String expectedErrorCode = ErrorCode.OBRI_REQUEST_VRP_CONSENT_VALID_TO_DATE_INVALID.getValue();
+        final String expectedErrorMsg = "'ValidToDateTime' must be > 'ValidFromDateTime'";
+
+        submitBadVrpConsentAndValidateErrorResponse(request, expectedHttpStatus, expectedErrorCode, expectedErrorMsg);
+    }
+
+    @Test
+    public void shouldRejectConsentInvalidValidFromDateTime() throws Exception {
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().getControlParameters().setValidFromDateTime(DateTime.now().plusDays(120));
+        request.getData().getControlParameters().setValidToDateTime(DateTime.now().plusDays(200));
+        final HttpStatus expectedHttpStatus = HttpStatus.BAD_REQUEST;
+        final String expectedErrorCode = ErrorCode.OBRI_REQUEST_VRP_CONSENT_VALID_FROM_DATE_INVALID.getValue();
+        final String expectedErrorMsg = "'ValidFromDateTime' cannot be more than 31 days in the future";
+
+        submitBadVrpConsentAndValidateErrorResponse(request, expectedHttpStatus, expectedErrorCode, expectedErrorMsg);
+    }
+
+    @Test
+    public void shouldRejectConsentInvalidPaymentContextCode() throws Exception {
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getRisk().setPaymentContextCode(OBExternalPaymentContext1Code.ECOMMERCESERVICES);
+        final HttpStatus expectedHttpStatus = HttpStatus.BAD_REQUEST;
+        final String expectedErrorCode = ErrorCode.OBRI_REQUEST_VRP_RISK_PAYMENT_CONTEXT_CODE_INVALID.getValue();
+        final String expectedErrorMsg = "'Risk.PaymentContextCode' only supports values: ['PartyToParty', 'TransferToSelf']";
+
+        submitBadVrpConsentAndValidateErrorResponse(request, expectedHttpStatus, expectedErrorCode, expectedErrorMsg);
+    }
+
+    @Test
+    public void shouldRejectConsentInvalidMaximumIndividualAmountWithMoreThan2DP() throws Exception {
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().getControlParameters().setMaximumIndividualAmount(new OBActiveOrHistoricCurrencyAndAmount().currency("GBP").amount("100.32122"));
+        final HttpStatus expectedHttpStatus = HttpStatus.BAD_REQUEST;
+        final String expectedErrorCode = ErrorCode.OBRI_REQUEST_AMOUNT_MAX_2_DP.getValue();
+        final String expectedErrorMsg = "Amount represented in field: 'MaximumIndividualAmount' can have a maximum of 2 decimal places";
+
+        submitBadVrpConsentAndValidateErrorResponse(request, expectedHttpStatus, expectedErrorCode, expectedErrorMsg);
+    }
+
+    @Test
+    public void shouldRejectConsentInvalidMaximumIndividualAmountTooSmall() throws Exception {
+        OBDomesticVRPConsentRequest request = aValidOBDomesticVRPConsentRequest();
+        request.getData().getControlParameters().setMaximumIndividualAmount(new OBActiveOrHistoricCurrencyAndAmount().currency("GBP").amount("0.22"));
+        final HttpStatus expectedHttpStatus = HttpStatus.BAD_REQUEST;
+        final String expectedErrorCode = ErrorCode.OBRI_REQUEST_VRP_MAX_INDIVIDUAL_AMOUNT_TOO_SMALL.getValue();
+        final String expectedErrorMsg = "'MaximumIndividualAmount' must be >= 1.00";
+
+        submitBadVrpConsentAndValidateErrorResponse(request, expectedHttpStatus, expectedErrorCode, expectedErrorMsg);
+    }
+
+    private void submitBadVrpConsentAndValidateErrorResponse(OBDomesticVRPConsentRequest request, HttpStatus expectedHttpStatus,
+                                                             String expectedErrorCode, String expectedErrorMsg)
+            throws JOSEException, ParseException, InvalidTokenException, IOException {
+
+        String jws = jws("payments", OIDCConstants.GrantType.CLIENT_CREDENTIAL);
+        springSecForTest.mockAuthCollector.mockAuthorities(OBRIRole.ROLE_PISP);
+        given(amResourceServerService.verifyAccessToken("Bearer " + jws)).willReturn(SignedJWT.parse(jws));
+
+        HttpResponse<OBErrorResponse1> response = Unirest.post(HOST + port + CONTEXT_PATH)
+                .header(OBHeaders.X_FAPI_INTERACTION_ID, rsConfiguration.financialId)
+                .header(OBHeaders.X_IDEMPOTENCY_KEY, IDEMPOTENCY_KEY)
+                .header(OBHeaders.X_JWS_SIGNATURE, jws)
+                .header(OBHeaders.AUTHORIZATION, "Bearer " + jws)
+                .header(OBHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType())
+                .body(request)
+                .asObject(OBErrorResponse1.class);
+
+        assertThat(response.getStatus()).as("Http Response Code").isEqualTo(expectedHttpStatus.value());
+        final OBErrorResponse1 errorResponse = response.getBody();
+        assertThat(errorResponse.getErrors().size()).as("OBErrorResponse1.errors").isEqualTo(1);
+
+        final OBError1 obError1 = errorResponse.getErrors().get(0);
+        assertThat(obError1.getErrorCode()).as("ObError1.errorCode").isEqualTo(expectedErrorCode);
+        assertThat(obError1.getMessage()).as("OError1.message").isEqualTo(expectedErrorMsg);
     }
 
     private OBDomesticVRPConsentResponse aValidOBDomesticVRPConsentResponse(OBDomesticVRPConsentRequest request) {

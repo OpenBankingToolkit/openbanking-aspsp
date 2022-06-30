@@ -154,6 +154,7 @@ public class DomesticVrpsApiController implements DomesticVrpsApi {
             f.checkRequestAndConsentRiskMatch(obDomesticVRPRequest, consent);
             f.checkControlParameters(obDomesticVRPRequest, consent, xVrpLimitBreachResponseSimulation);
             f.checkCreditorAccountIsInInstructionIfNotInConsent(obDomesticVRPRequest, consent);
+            f.applyExtendedPaymentRequestValidation(obDomesticVRPRequest);
         });
         ResponseEntity responseEntity = vrpPaymentsEndpointWrapper.execute((String tppId) -> {
             HttpHeaders additionalHeaders = new HttpHeaders();

@@ -83,7 +83,7 @@ public class PaymentsSubmissionEndpointWrapperTest {
                 null, null, rsConfiguration, null, null, false,
                 null, rsConfiguration.financialId, amOpenBankingConfiguration, null,
                 null, null, amResourceServerService, null,
-                null, null, null);
+                null, null, null, false);
 
         wrapper = new PaymentsSubmissionsEndpointWrapper(rsEndpointWrapperService, tppStoreService) {
             @Override
