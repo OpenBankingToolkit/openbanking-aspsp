@@ -167,9 +167,11 @@ public class DataEventsApiControllerIT {
 
         mockMvc.perform(get(URL_CONTEXT + "/all")
                 .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(createFRDataEvent()))
         )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
+
 
         // delete event created
         mockMvc.perform(delete(URL_CONTEXT)
