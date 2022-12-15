@@ -1,6 +1,197 @@
 # Git Changelog Maven plugin changelog
 Changelog of Git Changelog Maven plugin.
 ## Unreleased
+### GitHub [#507](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/507) 889: Enabling VRP validation by default
+[434811275b4998f](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/434811275b4998f) Dan Badham *2022-07-12 12:20:05*
+889: Enabling VRP validation by default (#507)
+
+* 889: Enabling VRP validation by default
+
+Defaulting property rs.vrp.extended.validation.enable to true
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/889
+### GitHub [#509](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/509) Release/2.1.2
+[6d97e96c419c732](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6d97e96c419c732) Dan Badham *2022-07-12 12:43:27*
+Release/2.1.2 (#509)
+
+* Release candidate: prepare release 2.1.2
+
+* Release candidate: prepare for next development iteration
+[36cb4834fd38a37](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/36cb4834fd38a37) JamieB *2022-07-11 13:35:59*
+Release candidate: prepare for next development iteration
+## 2.1.1
+[406878c100be45e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/406878c100be45e) JamieB *2022-07-11 13:35:55*
+Release candidate: prepare release 2.1.1
+[7e88fa9fbeb1b7a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/7e88fa9fbeb1b7a) JamieB *2022-07-11 13:19:56*
+888: Fix a failing test
+
+Issue: https://github.com/forgecloud/ob-deploy/issues/888
+[16ea2af76399c5e](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/16ea2af76399c5e) JamieB *2022-07-08 15:09:00*
+888: Allow Danish and Latvian TPPs to register
+
+Issue: https://github.com/forgecloud/ob-deploy/issues/888
+[afb305aa84bd5eb](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/afb305aa84bd5eb) Dan Badham *2022-06-30 12:51:45*
+Release candidate: prepare for next development iteration
+## 2.1.0
+### GitHub [#501](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/501) 874: Allow multiple VRP payments for a consent
+[be89dfaf7a06aae](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/be89dfaf7a06aae) Dan Badham *2022-06-21 12:28:04*
+874: Allow multiple VRP payments for a consent (#501)
+
+* 874: Bug fix to allow multiple VRP payments to be made for a single consent, the fix is being made to v3.1.8 and v3.1.9 implementations
+
+- Using Mongo to generate the id for the FRDomesticVrpPaymentSubmission (rather than using the consentId), and returning this value as domesticVRPId
+- v3.1.9 - add missing x-idempotency-key header to the API calls in order to implement idempotency
+- v3.1.8 - no idempotency support as the header is not in the OBIE spec, for consistency with v3.1.9 logic we generate a unique idempotencyKey value internally for this version
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/874
+### GitHub [#502](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/502) Feature/876 ob api 3.1.10
+[b0c5e472883f58d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0c5e472883f58d) Dan Badham *2022-06-29 08:22:53*
+Feature/876 ob api 3.1.10 (#502)
+
+Implementing Open Banking Read/Write API 3.1.10
+
+- Updating parent dependency to 2.1.0
+- Updating datamodel dependency to 3.1.10.0
+- Implementing 3.1.10 controllers
+
+Issues:
+ForgeCloud/ob-deploy#876
+ForgeCloud/ob-deploy#878
+ForgeCloud/ob-deploy#879
+ForgeCloud/ob-deploy#880
+ForgeCloud/ob-deploy#881
+ForgeCloud/ob-deploy#882
+### GitHub [#504](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/504) 883: Adding VRP validation customisation extensions
+[b243d0931543b67](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b243d0931543b67) Dan Badham *2022-06-30 11:32:42*
+883: Adding VRP validation customisation extensions (#504)
+
+* 883: Adding VRP validation customisation extensions
+
+- Added VrpExtensionValidator which can be used to customise the validation rules for the VRP flow
+- Added DefaultVrpExtensionValidator with a default set of customisations implemented
+- Spring property: rs.vrp.extended.validation.enable controls whether these additional validations are enabled or not
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/883
+### GitHub [#505](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/505) 879: Using correct version in 3.1.10 event controllers
+[173563d01e95670](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/173563d01e95670) Dan Badham *2022-06-29 15:25:18*
+879: Using correct version in 3.1.10 event controllers (#505)
+
+* 879: Using correct version in event controllers
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/883
+
+* 879: Adding 3.1.10 tests for Event controllers
+
+Issue: https://github.com/ForgeCloud/ob-deploy/issues/883
+[b0c5e472883f58d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0c5e472883f58d) Dan Badham *2022-06-29 08:22:53*
+Feature/876 ob api 3.1.10 (#502)
+
+Implementing Open Banking Read/Write API 3.1.10
+
+- Updating parent dependency to 2.1.0
+- Updating datamodel dependency to 3.1.10.0
+- Implementing 3.1.10 controllers
+
+Issues:
+ForgeCloud/ob-deploy#876
+ForgeCloud/ob-deploy#878
+ForgeCloud/ob-deploy#879
+ForgeCloud/ob-deploy#880
+ForgeCloud/ob-deploy#881
+ForgeCloud/ob-deploy#882
+[b0c5e472883f58d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0c5e472883f58d) Dan Badham *2022-06-29 08:22:53*
+Feature/876 ob api 3.1.10 (#502)
+
+Implementing Open Banking Read/Write API 3.1.10
+
+- Updating parent dependency to 2.1.0
+- Updating datamodel dependency to 3.1.10.0
+- Implementing 3.1.10 controllers
+
+Issues:
+ForgeCloud/ob-deploy#876
+ForgeCloud/ob-deploy#878
+ForgeCloud/ob-deploy#879
+ForgeCloud/ob-deploy#880
+ForgeCloud/ob-deploy#881
+ForgeCloud/ob-deploy#882
+[b0c5e472883f58d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0c5e472883f58d) Dan Badham *2022-06-29 08:22:53*
+Feature/876 ob api 3.1.10 (#502)
+
+Implementing Open Banking Read/Write API 3.1.10
+
+- Updating parent dependency to 2.1.0
+- Updating datamodel dependency to 3.1.10.0
+- Implementing 3.1.10 controllers
+
+Issues:
+ForgeCloud/ob-deploy#876
+ForgeCloud/ob-deploy#878
+ForgeCloud/ob-deploy#879
+ForgeCloud/ob-deploy#880
+ForgeCloud/ob-deploy#881
+ForgeCloud/ob-deploy#882
+[b0c5e472883f58d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0c5e472883f58d) Dan Badham *2022-06-29 08:22:53*
+Feature/876 ob api 3.1.10 (#502)
+
+Implementing Open Banking Read/Write API 3.1.10
+
+- Updating parent dependency to 2.1.0
+- Updating datamodel dependency to 3.1.10.0
+- Implementing 3.1.10 controllers
+
+Issues:
+ForgeCloud/ob-deploy#876
+ForgeCloud/ob-deploy#878
+ForgeCloud/ob-deploy#879
+ForgeCloud/ob-deploy#880
+ForgeCloud/ob-deploy#881
+ForgeCloud/ob-deploy#882
+[b0c5e472883f58d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0c5e472883f58d) Dan Badham *2022-06-29 08:22:53*
+Feature/876 ob api 3.1.10 (#502)
+
+Implementing Open Banking Read/Write API 3.1.10
+
+- Updating parent dependency to 2.1.0
+- Updating datamodel dependency to 3.1.10.0
+- Implementing 3.1.10 controllers
+
+Issues:
+ForgeCloud/ob-deploy#876
+ForgeCloud/ob-deploy#878
+ForgeCloud/ob-deploy#879
+ForgeCloud/ob-deploy#880
+ForgeCloud/ob-deploy#881
+ForgeCloud/ob-deploy#882
+[b0c5e472883f58d](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b0c5e472883f58d) Dan Badham *2022-06-29 08:22:53*
+Feature/876 ob api 3.1.10 (#502)
+
+Implementing Open Banking Read/Write API 3.1.10
+
+- Updating parent dependency to 2.1.0
+- Updating datamodel dependency to 3.1.10.0
+- Implementing 3.1.10 controllers
+
+Issues:
+ForgeCloud/ob-deploy#876
+ForgeCloud/ob-deploy#878
+ForgeCloud/ob-deploy#879
+ForgeCloud/ob-deploy#880
+ForgeCloud/ob-deploy#881
+ForgeCloud/ob-deploy#882
+[2a76c21dceb7f19](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/2a76c21dceb7f19) Dan Badham *2022-06-30 12:51:41*
+Release candidate: prepare release 2.1.0
+[4f31e0d24700829](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/4f31e0d24700829) Dan Badham *2022-06-30 12:48:44*
+Release 2.1.0
+- Open Banking Read/Write API 3.1.10
+- Bump parent to 2.1.0
+- Bump common to 1.5.0
+- Bump clients to 1.5.0
+- Bump jwkms to 1.5.0
+- Bump auth to 1.5.0
+[b29ab9236bd925a](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/b29ab9236bd925a) Dan Badham *2022-06-13 16:01:58*
+Release candidate: prepare for next development iteration
+## 2.0.1
 ### GitHub [#492](https://github.com/OpenBankingToolkit/openbanking-aspsp/pull/492) Release 1.7.5
 [37135dff95feaaf](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/37135dff95feaaf) Jamie Bowen *2022-03-18 18:33:51*
 Release 1.7.5 (#492)
@@ -24,6 +215,10 @@ Release/2.0.0 (#496)
 * Release candidate: prepare release 2.0.0
 
 * Release candidate: prepare for next development iteration
+[1bbf70f139223e9](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/1bbf70f139223e9) Dan Badham *2022-06-13 16:01:53*
+Release candidate: prepare release 2.0.1
+[6a26e3619cb3b05](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/6a26e3619cb3b05) Dan Badham *2022-06-13 15:59:59*
+Release 2.0.1 - Updating CHANGELOG.md
 [ae10ae0f561bd5b](https://github.com/OpenBankingToolkit/openbanking-aspsp/commit/ae10ae0f561bd5b) Dan Badham *2022-06-13 15:11:19*
 870: Support TPP testing VRP periodic limits breaches
 - Updating ob dependencies to 1.4.1 release
