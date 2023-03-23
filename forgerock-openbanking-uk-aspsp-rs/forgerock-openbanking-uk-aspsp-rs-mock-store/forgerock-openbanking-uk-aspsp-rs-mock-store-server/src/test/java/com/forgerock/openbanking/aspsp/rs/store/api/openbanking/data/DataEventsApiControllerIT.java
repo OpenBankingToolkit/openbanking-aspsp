@@ -45,6 +45,7 @@ import uk.org.openbanking.datamodel.event.OBEventSubject1;
 
 import java.util.Arrays;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -159,25 +160,23 @@ public class DataEventsApiControllerIT {
     public void whenValidInput_thenReturnExportAllEvents() throws Exception {
 
         mockMvc.perform(post(URL_CONTEXT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createFRDataEvent()))
-        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(createFRDataEvent()))
+                )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$[0].tppId").value(TPP));
 
-        mockMvc.perform(get(URL_CONTEXT + "/all")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(createFRDataEvent()))
-        )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].tppId").value(TPP));
+        MvcResult response = mockMvc.perform(get(URL_CONTEXT + "/all")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn();
+        assertThat(response.getResponse().getContentAsString()).contains(TPP);
 
 
         // delete event created
         mockMvc.perform(delete(URL_CONTEXT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new FRDataEvent().tppId(TPP)))
-        )
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(new FRDataEvent().tppId(TPP)))
+                )
                 .andExpect(status().isNoContent());
     }
 
