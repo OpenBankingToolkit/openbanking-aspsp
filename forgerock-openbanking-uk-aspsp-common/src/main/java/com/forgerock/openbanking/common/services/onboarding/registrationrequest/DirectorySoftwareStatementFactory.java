@@ -102,7 +102,7 @@ public class DirectorySoftwareStatementFactory {
                 .ifPresent(softwareStatementBuilder::software_policy_uri);
         softwareStatementClaims.getOptionalStringClaim(SSAClaims.SOFTWARE_ENVIRONMENT)
                 .ifPresent(softwareStatementBuilder::software_environment);
-        softwareStatementClaims.getOptionalDoubleClaim(SSAClaims.SOFTWARE_VERSION)
+        softwareStatementClaims.getOptionalStringClaim(SSAClaims.SOFTWARE_VERSION)
                 .ifPresent(softwareStatementBuilder::software_version);
         softwareStatementClaims.getOptionalStringClaim(SSAClaims.SOFTWARE_CLIENT_URI)
                 .ifPresent(softwareStatementBuilder::software_client_uri);
