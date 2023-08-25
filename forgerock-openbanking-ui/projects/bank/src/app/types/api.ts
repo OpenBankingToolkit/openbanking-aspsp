@@ -24,6 +24,7 @@ export module ApiResponses {
     merchantName: string;
     pispName: string;
     aspspName?: string;
+    aispName?: string;
     // optional
     permissions?: OBAccountPermissions[];
     expiredDate?: string;
